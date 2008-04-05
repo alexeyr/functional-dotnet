@@ -1,0 +1,9 @@
+F:\MyProgramming\FP\FPTests\obj\Debug\ResolveAssemblyReference.cache
+F:\MyProgramming\FP\FPTests\bin\Debug\FPTests.dll
+F:\MyProgramming\FP\FPTests\bin\Debug\FPTests.pdb
+F:\MyProgramming\FP\FPTests\bin\Debug\FP.dll
+F:\MyProgramming\FP\FPTests\bin\Debug\xunit.dll
+F:\MyProgramming\FP\FPTests\bin\Debug\xunit.xml
+F:\MyProgramming\FP\FPTests\bin\Debug\FP.pdb
+F:\MyProgramming\FP\FPTests\obj\Debug\FPTests.dll
+F:\MyProgramming\FP\FPTests\obj\Debug\FPTests.pdb
