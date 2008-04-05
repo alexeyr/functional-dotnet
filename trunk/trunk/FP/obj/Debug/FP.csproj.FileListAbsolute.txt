@@ -1,5 +1,0 @@
-F:\MyProgramming\FP\FP\bin\Debug\FP.dll
-F:\MyProgramming\FP\FP\bin\Debug\FP.pdb
-F:\MyProgramming\FP\FP\obj\Debug\ResolveAssemblyReference.cache
-F:\MyProgramming\FP\FP\obj\Debug\FP.dll
-F:\MyProgramming\FP\FP\obj\Debug\FP.pdb
