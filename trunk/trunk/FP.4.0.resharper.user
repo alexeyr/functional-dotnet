@@ -1,0 +1,254 @@
+<Configuration>
+  <UnitTestRunner>
+    <CustomStartDirectory>
+    </CustomStartDirectory>
+    <UseShadowCopy>True</UseShadowCopy>
+    <UseCustomFolder>False</UseCustomFolder>
+    <EnableUnitTesting>True</EnableUnitTesting>
+    <Providers />
+  </UnitTestRunner>
+  <NAntValidationSettings>
+    <NAntPath value="" />
+  </NAntValidationSettings>
+  <SettingsComponent>
+    <string />
+    <integer />
+    <boolean>
+      <setting name="livetemplates.csharp.usevar">False</setting>
+      <setting name="SolutionAnalysisEnabled">False</setting>
+    </boolean>
+  </SettingsComponent>
+  <CodeCleanup RecentlyUsed="Full Cleanup" />
+  <RecentFiles>
+    <RecentFiles>
+      <File id="3F1C9E17-7027-4DBC-A68D-0383818E7E9C/f:Class1.cs" caret="375" scrollPosition="0|0" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Functions.cs" caret="520" scrollPosition="0|0" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Maybe.cs" caret="61" scrollPosition="0|0" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:EmptySequenceException.cs" caret="476" scrollPosition="0|0" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:NotFoundException.cs" caret="324" scrollPosition="0|0" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Quadruple.cs" caret="3105" scrollPosition="0|75" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Triple.cs" caret="2464" scrollPosition="0|39" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Pair.cs" caret="2208" scrollPosition="0|39" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="57796" scrollPosition="0|1192" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable3.cs" caret="7087" scrollPosition="0|28" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Strings.cs" caret="1481" scrollPosition="0|31" />
+    </RecentFiles>
+    <RecentEdits>
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="48361" scrollPosition="0|1036" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="51185" scrollPosition="0|1072" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="49655" scrollPosition="0|1072" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Strings.cs" caret="1473" scrollPosition="0|0" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Strings.cs" caret="198" scrollPosition="0|0" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Strings.cs" caret="1008" scrollPosition="0|0" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Strings.cs" caret="1271" scrollPosition="0|0" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="54519" scrollPosition="0|1112" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="53983" scrollPosition="0|1132" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="53436" scrollPosition="0|1132" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="52932" scrollPosition="0|1132" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="53423" scrollPosition="0|1132" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="54569" scrollPosition="0|1147" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable3.cs" caret="6407" scrollPosition="0|144" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable3.cs" caret="7083" scrollPosition="0|144" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable3.cs" caret="7083" scrollPosition="0|153" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="62248" scrollPosition="0|1188" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable3.cs" caret="7083" scrollPosition="0|142" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="55265" scrollPosition="0|1180" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="56800" scrollPosition="0|1180" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="57679" scrollPosition="0|1198" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="56085" scrollPosition="0|1183" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="54672" scrollPosition="0|1164" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="55494" scrollPosition="0|1164" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="56338" scrollPosition="0|1164" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Enumerable2.cs" caret="57070" scrollPosition="0|1171" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Strings.cs" caret="2827" scrollPosition="0|21" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Strings.cs" caret="2133" scrollPosition="0|33" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Strings.cs" caret="2827" scrollPosition="0|48" />
+      <File id="891E86F6-A992-4B42-B88A-F1F46EA0FCE1/f:Strings.cs" caret="1473" scrollPosition="0|31" />
+    </RecentEdits>
+  </RecentFiles>
+  <CompletionStatisticsManager>
+    <ItemStatistics item="Default">
+      <Item value="using" priority="10" />
+      <Item value="System" priority="0" />
+      <Item value="Linq" priority="0" />
+      <Item value="private" priority="5" />
+      <Item value="T4" priority="1" />
+      <Item value="public" priority="28" />
+      <Item value="static" priority="30" />
+      <Item value="implicit" priority="0" />
+      <Item value="operator" priority="0" />
+      <Item value="T" priority="44" />
+      <Item value="Lazy" priority="2" />
+      <Item value="return" priority="50" />
+      <Item value="lazy" priority="0" />
+      <Item value="new" priority="14" />
+      <Item value="Lazy&lt;T&gt;" priority="0" />
+      <Item value="value" priority="3" />
+      <Item value="bool" priority="8" />
+      <Item value="Exception" priority="2" />
+      <Item value="if" priority="14" />
+      <Item value="_value" priority="3" />
+      <Item value="throw" priority="8" />
+      <Item value="tryf" priority="0" />
+      <Item value="finally" priority="0" />
+      <Item value="_thunk" priority="0" />
+      <Item value="_hasValue" priority="1" />
+      <Item value="true" priority="4" />
+      <Item value="_hasFailed" priority="0" />
+      <Item value="_ex" priority="0" />
+      <Item value="ex" priority="0" />
+      <Item value="get" priority="0" />
+      <Item value="Force" priority="0" />
+      <Item value="Func" priority="14" />
+      <Item value="KeyValuePair" priority="1" />
+      <Item value="T1" priority="4" />
+      <Item value="T2" priority="5" />
+      <Item value="Pair" priority="7" />
+      <Item value="pair" priority="6" />
+      <Item value="KeyValuePair&lt;T1,T2&gt;" priority="0" />
+      <Item value="_first" priority="0" />
+      <Item value="_second" priority="0" />
+      <Item value="Key" priority="0" />
+      <Item value="Value" priority="2" />
+      <Item value="protected" priority="0" />
+      <Item value="set" priority="0" />
+      <Item value="internal" priority="1" />
+      <Item value="Enumerable" priority="4" />
+      <Item value="#endregion" priority="0" />
+      <Item value="IEnumerable" priority="27" />
+      <Item value="TimeZoneInfo" priority="12" />
+      <Item value="ThreadStaticAttribute" priority="0" />
+      <Item value="this" priority="18" />
+      <Item value="Concat" priority="3" />
+      <Item value="first" priority="1" />
+      <Item value="second" priority="1" />
+      <Item value="sequence" priority="24" />
+      <Item value="First" priority="4" />
+      <Item value="Skip" priority="0" />
+      <Item value="Empty" priority="1" />
+      <Item value="SequenceEqual" priority="0" />
+      <Item value="InvalidOperationException" priority="7" />
+      <Item value="enumerator" priority="28" />
+      <Item value="GetEnumerator" priority="6" />
+      <Item value="MoveNext" priority="14" />
+      <Item value="AbandonedMutexException" priority="0" />
+      <Item value="while" priority="8" />
+      <Item value="yield" priority="24" />
+      <Item value="Current" priority="15" />
+      <Item value="Pair&lt;T,IEnumerable&lt;T&gt;&gt;" priority="0" />
+      <Item value="Tail" priority="0" />
+      <Item value="try" priority="0" />
+      <Item value="EmptySequenceException" priority="3" />
+      <Item value="e" priority="0" />
+      <Item value="IEnumerator" priority="4" />
+      <Item value="current" priority="0" />
+      <Item value="else" priority="1" />
+      <Item value="bYield" priority="0" />
+      <Item value="break" priority="1" />
+      <Item value="false" priority="1" />
+      <Item value="int" priority="11" />
+      <Item value="Count" priority="1" />
+      <Item value="TR" priority="0" />
+      <Item value="Select" priority="2" />
+      <Item value="string" priority="3" />
+      <Item value="Join" priority="1" />
+      <Item value="separator" priority="0" />
+      <Item value="Xunit" priority="0" />
+      <Item value="FPTests" priority="0" />
+      <Item value="Fact" priority="0" />
+      <Item value="volatile" priority="0" />
+      <Item value="var" priority="0" />
+      <Item value="emptyList" priority="0" />
+      <Item value="Assert" priority="0" />
+      <Item value="Throws" priority="0" />
+      <Item value="typeof" priority="0" />
+      <Item value="TAcc" priority="1" />
+      <Item value="Triple" priority="4" />
+      <Item value="initialAcc" priority="5" />
+      <Item value="foreach" priority="7" />
+      <Item value="acc" priority="4" />
+      <Item value="func" priority="9" />
+      <Item value="Aggregate" priority="1" />
+      <Item value="T3" priority="4" />
+      <Item value="func2" priority="0" />
+      <Item value="func1" priority="0" />
+      <Item value="psr" priority="0" />
+      <Item value="Flip" priority="1" />
+      <Item value="Reverse" priority="4" />
+      <Item value="Tses" priority="0" />
+      <Item value="tses" priority="3" />
+      <Item value="t" priority="6" />
+      <Item value="ts" priority="4" />
+      <Item value="bools" priority="2" />
+      <Item value="All" priority="0" />
+      <Item value="Any" priority="1" />
+      <Item value="do" priority="1" />
+      <Item value="ScanLeft" priority="0" />
+      <Item value="psvm" priority="0" />
+      <Item value="init" priority="0" />
+      <Item value="curr" priority="4" />
+      <Item value="times" priority="1" />
+      <Item value="for" priority="2" />
+      <Item value="IsEmpty" priority="0" />
+      <Item value="MaxValue" priority="1" />
+      <Item value="start" priority="3" />
+      <Item value="i" priority="2" />
+      <Item value="step" priority="7" />
+      <Item value="ArgumentException" priority="1" />
+      <Item value="MinValue" priority="0" />
+      <Item value="Pair&lt;T1,T2&gt;" priority="0" />
+      <Item value="third" priority="1" />
+      <Item value="Quadruple" priority="4" />
+      <Item value="fourth" priority="0" />
+      <Item value="TState" priority="3" />
+      <Item value="initialState" priority="1" />
+      <Item value="HasValue" priority="1" />
+      <Item value="pair&lt;T,TState&gt;" priority="0" />
+      <Item value="Second" priority="0" />
+      <Item value="end" priority="2" />
+      <Item value="where" priority="2" />
+      <Item value="IEquatable" priority="1" />
+      <Item value="Equals" priority="2" />
+      <Item value="prefix" priority="0" />
+      <Item value="suffix" priority="0" />
+      <Item value="IsPrefixOf" priority="0" />
+      <Item value="Replicate" priority="0" />
+      <Item value="predicate" priority="1" />
+      <Item value="null" priority="0" />
+      <Item value="struct" priority="2" />
+      <Item value="class" priority="3" />
+      <Item value="default" priority="0" />
+      <Item value="Maybe" priority="0" />
+      <Item value="KeyNotFoundException" priority="0" />
+      <Item value="SystemException" priority="0" />
+      <Item value="base" priority="0" />
+      <Item value="NotFoundException" priority="0" />
+      <Item value="Find" priority="0" />
+      <Item value="element" priority="1" />
+      <Item value="Where" priority="2" />
+      <Item value="sequence1" priority="0" />
+      <Item value="sequence2" priority="0" />
+      <Item value="enumerator1" priority="1" />
+      <Item value="enumerator2" priority="1" />
+      <Item value="Create" priority="0" />
+      <Item value="enumerator3" priority="2" />
+      <Item value="enumerator4" priority="0" />
+      <Item value="Zip" priority="0" />
+      <Item value="IntsFrom" priority="0" />
+      <Item value="function" priority="2" />
+      <Item value="char" priority="1" />
+      <Item value="StringBuilder" priority="1" />
+      <Item value="builder" priority="1" />
+      <Item value="Append" priority="0" />
+      <Item value="ToString" priority="0" />
+      <Item value="rYield" priority="0" />
+      <Item value="Delete" priority="0" />
+      <Item value="Sort" priority="0" />
+      <Item value="Comparer" priority="0" />
+      <Item value="Default" priority="0" />
+      <Item value="OrderBy" priority="0" />
+      <Item value="comparer" priority="0" />
+      <Item value="OrderByDescending" priority="0" />
+    </ItemStatistics>
+  </CompletionStatisticsManager>
+</Configuration>
