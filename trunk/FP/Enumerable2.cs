@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FP.HaskellNames;
@@ -146,31 +147,44 @@ namespace FP {
             //intercalate xs xss = concat (intersperse xs xss)
         }
 
-        //TODO: Is there any way to get Transpose to work with deferred evaluation?
-        ///// <summary>
-        ///// Transposes the "rows" and "columns" of the specified sequence.
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="sequence">The sequence.</param>
-        ///// <returns></returns>
-        ///// <example>
-        ///// <c>
-        ///// new[] { new[] {1, 2}, new[] {1, 2}, new[] {1, 2} }.Transpose().
-        /////     SequenceEquals(new[] { new[] {1, 1, 1}, new[] {2, 2, 2} }).
-        ///// </c>
-        ///// </example>
-        //public static IEnumerable<IEnumerable<T>> Transpose<T>(this IEnumerable<IEnumerable<T>> sequence)
-        //{
-        //    using (var rows = sequence.GetEnumerator())
-        //    {
+        /// <summary>
+        /// Transposes the "rows" and "columns" of the specified sequence.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <returns></returns>
+        /// <example>
+        /// <c>
+        /// new[] { new[] {1, 2}, new[] {1, 2}, new[] {1, 2} }.Transpose().
+        ///     SequenceEquals(new[] { new[] {1, 1, 1}, new[] {2, 2, 2} }).
+        /// </c>
+        /// </example>
+        /// <remarks>
+        /// This method currently isn't fully lazy; it has to construct each column fully before yielding it.
+        /// </remarks>
+        public static IEnumerable<IEnumerable<T>> Transpose<T>(this IEnumerable<IEnumerable<T>> sequence) {
+            var enumerators = sequence.Map(seq => seq.GetEnumerator());
+            var currentColumn = new List<T>();
+            while (true) {
+                foreach (var enumerator in enumerators) {
+                    if (enumerator.MoveNext())
+                        currentColumn.Add(enumerator.Current);
+                }
+                if (currentColumn.Any()) {
+                    yield return currentColumn;
+                    currentColumn.Clear();
+                }
+                else
+                    yield break;
+            }
+            
 
-        //    }
 
-        //    //transpose		:: [[a]] -> [[a]]
-        //    //transpose []		 = []
-        //    //transpose ([]	: xss)   = transpose xss
-        //    //transpose ((x:xs) : xss) = (x : [h | (h:t) <- xss]) : transpose (xs : [ t | (h:t) <- xss])
-        //}
+            //transpose		:: [[a]] -> [[a]]
+            //transpose []		 = []
+            //transpose ([]	: xss)   = transpose xss
+            //transpose ((x:xs) : xss) = (x : [h | (h:t) <- xss]) : transpose (xs : [ t | (h:t) <- xss])
+        }
 
         #endregion
 
