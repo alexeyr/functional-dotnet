@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FP
-{
+namespace FP {
     /// <summary>
     /// Provides a set of static (Shared in Visual Basic) methods for objects that 
-    /// implement <see cref="IEnumerable{char}"/>. 
+    /// implement <see cref="IEnumerable{T}"/>. 
     /// </summary>
     /// <remarks>
     /// The source of each method includes the Haskell version as a comment at the end.
@@ -17,22 +15,25 @@ namespace FP
     /// 
     /// See also the Remarks for <see cref="Enumerable"/>.
     /// </remarks>
-    public static class Strings
-    {
+    public static class Strings {
         /// <summary>
         /// Converts a sequence of <see cref="char"/>s to a <see cref="string"/>.
-        /// This should be called <c>ToString()</c>, but this is impossible for the
+        /// This should be called <c>ToString</c>, but this is impossible for the
         /// obvious reason.
         /// </summary>
         /// <param name="charSequence">The char sequence.</param>
         /// <returns></returns>
-        public static string ToStringProper(this IEnumerable<char> charSequence)
-        {
-            //TODO: Look into generic switch
-            var builder = new StringBuilder();
-            foreach (char c in charSequence)
-                builder.Append(c);
-            return builder.ToString();
+        public static string ToStringProper(
+            this IEnumerable<char> charSequence) {
+            return Switch.ExprOn<IEnumerable<char>, string>(
+                charSequence)
+                .Case<string>(s => s)
+                .Default(cs => {
+                             var builder = new StringBuilder();
+                             foreach (char c in charSequence)
+                                 builder.Append(c);
+                             return builder.ToString();
+                         });
         }
 
         //TODO:

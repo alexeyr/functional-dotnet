@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FP.HaskellNames
-{
+namespace FP.HaskellNames {
     /// <summary>
     /// Provides a set of static (Shared in Visual Basic) methods for querying objects that implement <see cref="IEnumerable{T}"/>. 
     /// This class provides alternate names, for those familiar with functional programming, for the methods already defined in LINQ.
@@ -15,9 +14,9 @@ namespace FP.HaskellNames
     /// 
     /// See also the Remarks for <see cref="Enumerable"/>.
     /// </remarks>
-    public static class Enumerable3
-    {
+    public static class Enumerable3 {
         #region Basic Functions
+
         /// <summary>
         /// Append two sequences. If the first one is infinite, the result is the first list.
         /// </summary>
@@ -29,15 +28,15 @@ namespace FP.HaskellNames
         /// An alternate name for <see cref="Enumerable.Concat{TSource}"/>.
         /// This is the ++ operator in Haskell, but this is not available in C#.
         /// </remarks>
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> first, IEnumerable<T> second)
-        {
+        public static IEnumerable<T> Append<T>(
+            this IEnumerable<T> first, IEnumerable<T> second) {
             return first.Concat(second);
 
             //(++) :: [a] -> [a] -> [a]
             //[]     ++ ys = ys
             //(x:xs) ++ ys = x : xs ++ ys
         }
-        
+
         /// <summary>
         /// Extract the first element of a sequence, which must be non-empty.
         /// </summary>
@@ -47,14 +46,11 @@ namespace FP.HaskellNames
         /// <remarks>
         /// An alternate name for <see cref="Enumerable.First(IEnumerable{T})"/>.
         /// </remarks>
-        public static T Head<T>(this IEnumerable<T> sequence)
-        {
-            try
-            {
+        public static T Head<T>(this IEnumerable<T> sequence) {
+            try {
                 return sequence.First();
             }
-            catch (InvalidOperationException e)
-            {
+            catch (InvalidOperationException e) {
                 throw new EmptySequenceException("head", e);
             }
 
@@ -74,8 +70,7 @@ namespace FP.HaskellNames
         /// <remarks>
         /// An alternate name for <see cref="Enumerable.Count(IEnumerable{T})"/>.
         /// </remarks>
-        public static int Length<T>(this IEnumerable<T> sequence)
-        {
+        public static int Length<T>(this IEnumerable<T> sequence) {
             return sequence.Count();
 
             //length                  :: [a] -> Int
@@ -89,6 +84,7 @@ namespace FP.HaskellNames
         #endregion
 
         #region List Transformations
+
         /// <summary>
         /// Applies the specified function to each element of the specified sequence.
         /// </summary>
@@ -98,10 +94,10 @@ namespace FP.HaskellNames
         /// <param name="func">The function.</param>
         /// <returns></returns>
         /// <remarks>
-        /// An alternate name for <see cref="Enumerable.Select(IEnumerable{T},Func{T,TR})"/>.
+        /// An alternate name for <see cref="Enumerable.Select(IEnumerable{T},Func{T,TResult})"/>.
         /// </remarks>
-        public static IEnumerable<TR> Map<T, TR>(this IEnumerable<T> sequence, Func<T, TR> func)
-        {
+        public static IEnumerable<TR> Map<T, TR>(
+            this IEnumerable<T> sequence, Func<T, TR> func) {
             return sequence.Select(func);
 
             //map :: (a -> b) -> [a] -> [b]
@@ -110,7 +106,9 @@ namespace FP.HaskellNames
         }
 
         #endregion
+
         #region Folds
+
         /// <summary>
         /// Reduces the sequence from left to right using the specified binary function
         /// starting with the specified accumulator value.
@@ -128,9 +126,9 @@ namespace FP.HaskellNames
         /// <remarks>
         /// An alternate name for <see cref="Enumerable.Aggregate{TSource,TAccumulate}"/>.
         /// </remarks>
-        public static TAcc FoldLeft<T, TAcc>(this IEnumerable<T> sequence, TAcc initialAcc, 
-            Func<TAcc, T, TAcc> func)
-        {
+        public static TAcc FoldLeft<T, TAcc>(
+            this IEnumerable<T> sequence, TAcc initialAcc,
+            Func<TAcc, T, TAcc> func) {
             return sequence.Aggregate(initialAcc, func);
         }
 
@@ -149,13 +147,15 @@ namespace FP.HaskellNames
         /// <remarks>
         /// An alternate name for <see cref="Enumerable.Aggregate{TSource}"/>.
         /// </remarks>
-        public static T FoldLeft<T>(this IEnumerable<T> sequence, Func<T, T, T> func)
-        {
+        public static T FoldLeft<T>(this IEnumerable<T> sequence,
+                                    Func<T, T, T> func) {
             return sequence.Aggregate(func);
         }
 
         #endregion
+
         #region Searching lists
+
         /// <summary>
         /// Filters a sequence of values based on a predicate.
         /// </summary>
@@ -166,10 +166,11 @@ namespace FP.HaskellNames
         /// <remarks>
         /// An alternate name for <see cref="Enumerable.Where(IEnumerable{T},Func{T,bool})"/>.
         /// </remarks>
-        public static IEnumerable<T> Filter<T>(this IEnumerable<T> sequence, Func<T, bool> predicate)
-        {
+        public static IEnumerable<T> Filter<T>(
+            this IEnumerable<T> sequence, Func<T, bool> predicate) {
             return sequence.Where(predicate);
         }
+
         #endregion
     }
 }

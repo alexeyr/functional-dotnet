@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FP.HaskellNames;
 
-namespace FP
-{
+namespace FP {
     /// <summary>
     /// Provides a set of static (Shared in Visual Basic) methods for querying objects that 
     /// implement <see cref="IEnumerable{T}"/>. Contains the methods from the Haskell Data.List 
@@ -19,9 +18,9 @@ namespace FP
     /// 
     /// See also the Remarks for <see cref="Enumerable"/>.
     /// </remarks>
-    public static class Enumerable2
-    {
+    public static class Enumerable2 {
         #region Basic Functions
+
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="sequence">The sequence.</param>
@@ -32,10 +31,10 @@ namespace FP
         /// If you wish to prevent this and are not concerned about not getting an
         /// exception for the empty list, use <c>sequence.Skip(1)</c> instead.
         /// </remarks>
-        public static IEnumerable<T> Tail<T>(this IEnumerable<T> sequence)
-        {
-            using (IEnumerator<T> enumerator = sequence.GetEnumerator())
-            {
+        public static IEnumerable<T> Tail<T>(
+            this IEnumerable<T> sequence) {
+            using (
+                IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 if (!enumerator.MoveNext())
                     throw new EmptySequenceException("tail");
                 while (enumerator.MoveNext())
@@ -59,14 +58,13 @@ namespace FP
         /// If you wish to prevent this and are not concerned about not getting an
         /// exception for the empty list, use <c>sequence.Skip(1)</c> instead.
         /// </remarks>
-        public static IEnumerable<T> Init<T>(this IEnumerable<T> sequence)
-        {
-            using (IEnumerator<T> enumerator = sequence.GetEnumerator())
-            {
+        public static IEnumerable<T> Init<T>(
+            this IEnumerable<T> sequence) {
+            using (
+                IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 if (!enumerator.MoveNext())
                     throw new EmptySequenceException("init");
-                while (true)
-                {
+                while (true) {
                     T current = enumerator.Current;
                     if (enumerator.MoveNext())
                         yield return current;
@@ -90,17 +88,18 @@ namespace FP
         /// <returns>
         /// 	<c>true</c> if the specified sequence is empty; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsEmpty<T>(this IEnumerable<T> sequence)
-        {
+        public static bool IsEmpty<T>(this IEnumerable<T> sequence) {
             return !sequence.Any();
 
             //null                    :: [a] -> Bool
             //null []                 =  True
             //null (_:_)              =  False
         }
+
         #endregion
 
         #region List Transformations
+
         /// <summary>
         /// Intersperses an element between all members of the specified sequence.
         /// </summary>
@@ -111,19 +110,18 @@ namespace FP
         /// <example>
         /// <c>"abcde".Intersperse(',').AsString() == "a,b,c,d,e"</c>
         /// </example>
-        public static IEnumerable<T> Intersperse<T>(this IEnumerable<T> sequence, T separator)
-        {
-            using (IEnumerator<T> enumerator = sequence.GetEnumerator())
-            {
+        public static IEnumerable<T> Intersperse<T>(
+            this IEnumerable<T> sequence, T separator) {
+            using (
+                IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 if (!enumerator.MoveNext()) yield break;
                 yield return enumerator.Current;
-                while (enumerator.MoveNext())
-                {
+                while (enumerator.MoveNext()) {
                     yield return separator;
                     yield return enumerator.Current;
                 }
             }
-            
+
             //intersperse		:: a -> [a] -> [a]
             //intersperse _   []      = []
             //intersperse _   [x]     = [x]
@@ -139,10 +137,11 @@ namespace FP
         /// <returns></returns>
         /// <remarks>
         /// This is a more general form of <see cref="string.Join(string,string[])"/></remarks>
-        public static IEnumerable<T> Intercalate<T>(this IEnumerable<IEnumerable<T>> sequences, IEnumerable<T> separator)
-        {
+        public static IEnumerable<T> Intercalate<T>(
+            this IEnumerable<IEnumerable<T>> sequences,
+            IEnumerable<T> separator) {
             return sequences.Intersperse(separator).Concat();
-            
+
             //intercalate :: [a] -> [[a]] -> [a]
             //intercalate xs xss = concat (intersperse xs xss)
         }
@@ -164,7 +163,7 @@ namespace FP
         //{
         //    using (var rows = sequence.GetEnumerator())
         //    {
-                
+
         //    }
 
         //    //transpose		:: [[a]] -> [[a]]
@@ -172,8 +171,11 @@ namespace FP
         //    //transpose ([]	: xss)   = transpose xss
         //    //transpose ((x:xs) : xss) = (x : [h | (h:t) <- xss]) : transpose (xs : [ t | (h:t) <- xss])
         //}
+
         #endregion
+
         #region Folds
+
         /// <summary>
         /// Reduces the sequence from right to left using the specified binary function
         /// starting with the specified accumulator value.
@@ -192,11 +194,12 @@ namespace FP
         /// Unlike Haskell, <paramref name="func"/> usually won't be lazy, so this
         /// should not be used for associative <paramref name="func"/>.
         /// </remarks>
-        public static TAcc FoldRight<T, TAcc>(this IEnumerable<T> sequence, TAcc initialAcc,
-            Func<T, TAcc, TAcc> func)
-        {
-            return sequence.Reverse().Aggregate(initialAcc, func.Flip());
-            
+        public static TAcc FoldRight<T, TAcc>(
+            this IEnumerable<T> sequence, TAcc initialAcc,
+            Func<T, TAcc, TAcc> func) {
+            return sequence.Reverse().Aggregate(initialAcc,
+                                                func.Flip());
+
             //foldr            :: (a -> b -> b) -> b -> [a] -> b
             //foldr k z xs = go xs
             //	     where
@@ -220,10 +223,10 @@ namespace FP
         /// Unlike Haskell, <paramref name="func"/> usually won't be lazy, so this
         /// should not be used for associative <paramref name="func"/>.
         /// </remarks>
-        public static T FoldRight<T>(this IEnumerable<T> sequence, Func<T, T, T> func)
-        {
+        public static T FoldRight<T>(this IEnumerable<T> sequence,
+                                     Func<T, T, T> func) {
             return sequence.Reverse().Aggregate(func);
-            
+
             //foldr1                  :: (a -> a -> a) -> [a] -> a
             //foldr1 _ [x]            =  x
             //foldr1 f (x:xs)         =  f x (foldr1 f xs)
@@ -235,12 +238,12 @@ namespace FP
         /// </summary>
         /// <param name="sequences">The sequence of sequences.</param>
         /// <returns></returns>
-        public static IEnumerable<T> Concat<T>(this IEnumerable<IEnumerable<T>> sequences)
-        {
+        public static IEnumerable<T> Concat<T>(
+            this IEnumerable<IEnumerable<T>> sequences) {
             foreach (var sequence in sequences)
-                foreach (var t in sequence)
+                foreach (T t in sequence)
                     yield return t;
-            
+
             //concat :: [[a]] -> [a]
             //concat = foldr (++) []
         }
@@ -251,9 +254,9 @@ namespace FP
         /// <param name="sequence">The first sequence.</param>
         /// <param name="sequences">The sequence of sequences.</param>
         /// <returns></returns>
-        public static IEnumerable<T> Concat<T>(this IEnumerable<T> sequence, 
-            IEnumerable<IEnumerable<T>> sequences)
-        {
+        public static IEnumerable<T> Concat<T>(
+            this IEnumerable<T> sequence,
+            IEnumerable<IEnumerable<T>> sequences) {
             return sequence.Concat(sequences.Concat());
         }
 
@@ -262,10 +265,9 @@ namespace FP
         /// </summary>
         /// <param name="bools">The bools.</param>
         /// <returns>The conjunction.</returns>
-        public static bool And(this IEnumerable<bool> bools)
-        {
+        public static bool And(this IEnumerable<bool> bools) {
             return bools.All(x => x);
-            
+
             //and []		=  True
             //and (x:xs)	=  x && and xs
         }
@@ -275,10 +277,9 @@ namespace FP
         /// </summary>
         /// <param name="bools">The bools.</param>
         /// <returns>The disjunction.</returns>
-        public static bool Or(this IEnumerable<bool> bools)
-        {
+        public static bool Or(this IEnumerable<bool> bools) {
             return bools.Any(x => x);
-            
+
             //or []		=  False
             //or (x:xs)	=  x || or xs
         }
@@ -288,15 +289,14 @@ namespace FP
         /// <param name="source">A sequence of <see cref="T:System.Double" /> values to calculate the product of.</param>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        public static double Product(this IEnumerable<double> source)
-        {
+        public static double Product(this IEnumerable<double> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
             double num = 1.0;
             foreach (double num2 in source)
                 num *= num2;
             return num;
-            
+
             //product	l	= prod l 1
             //  where
             //    prod []     a = a
@@ -310,12 +310,12 @@ namespace FP
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue" />.</exception>
-        public static decimal? Product(this IEnumerable<decimal?> source)
-        {
+        public static decimal? Product(
+            this IEnumerable<decimal?> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
             decimal num = 1M;
-            foreach (decimal? nullable in source)
+            foreach (var nullable in source)
                 if (nullable.HasValue)
                     num *= nullable.GetValueOrDefault();
             return num;
@@ -327,8 +327,7 @@ namespace FP
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue" />.</exception>
-        public static decimal Product(this IEnumerable<decimal> source)
-        {
+        public static decimal Product(this IEnumerable<decimal> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
             decimal num = 1M;
@@ -343,10 +342,8 @@ namespace FP
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
-        public static int Product(this IEnumerable<int> source)
-        {
-            if (source == null)
-            {
+        public static int Product(this IEnumerable<int> source) {
+            if (source == null) {
                 throw new ArgumentNullException("source");
             }
             int num = 1;
@@ -361,8 +358,7 @@ namespace FP
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue" />.</exception>
-        public static long Product(this IEnumerable<long> source)
-        {
+        public static long Product(this IEnumerable<long> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
             long num = 1L;
@@ -376,12 +372,11 @@ namespace FP
         /// <param name="source">A sequence of nullable <see cref="T:System.Double" /> values to calculate the product of.</param>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        public static double? Product(this IEnumerable<double?> source)
-        {
+        public static double? Product(this IEnumerable<double?> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
             double num = 1.0;
-            foreach (double? nullable in source)
+            foreach (var nullable in source)
                 if (nullable.HasValue)
                     num *= nullable.GetValueOrDefault();
             return num;
@@ -393,17 +388,13 @@ namespace FP
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
-        public static int? Product(this IEnumerable<int?> source)
-        {
-            if (source == null)
-            {
+        public static int? Product(this IEnumerable<int?> source) {
+            if (source == null) {
                 throw new ArgumentNullException("source");
             }
             int num = 1;
-            foreach (int? nullable in source)
-            {
-                if (nullable.HasValue)
-                {
+            foreach (var nullable in source) {
+                if (nullable.HasValue) {
                     num *= nullable.GetValueOrDefault();
                 }
             }
@@ -416,12 +407,11 @@ namespace FP
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue" />.</exception>
-        public static long? Product(this IEnumerable<long?> source)
-        {
+        public static long? Product(this IEnumerable<long?> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
             long num = 1L;
-            foreach (long? nullable in source)
+            foreach (var nullable in source)
                 if (nullable.HasValue)
                     num *= nullable.GetValueOrDefault();
             return num;
@@ -432,14 +422,13 @@ namespace FP
         /// <param name="source">A sequence of nullable <see cref="T:System.Single" /> values to calculate the product of.</param>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        public static float? Product(this IEnumerable<float?> source)
-        {
+        public static float? Product(this IEnumerable<float?> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
             double num = 1.0;
-            foreach (float? nullable in source)
+            foreach (var nullable in source)
                 if (nullable.HasValue)
-                    num *= (double) nullable.GetValueOrDefault();
+                    num *= nullable.GetValueOrDefault();
             return (float) num;
         }
 
@@ -448,8 +437,7 @@ namespace FP
         /// <param name="source">A sequence of <see cref="T:System.Single" /> values to calculate the product of.</param>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        public static float Product(this IEnumerable<float> source)
-        {
+        public static float Product(this IEnumerable<float> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
             double num = 1.0;
@@ -459,7 +447,9 @@ namespace FP
         }
 
         #endregion
+
         #region Building lists
+
         /// <summary>
         /// Reduces the sequence from left to right using the specified binary function
         /// starting with the specified accumulator value, and yields the intermediate
@@ -475,16 +465,15 @@ namespace FP
         /// <param name="func">The binary function.</param>
         /// <param name="initialAcc">The initial value of the accumulator.</param>
         /// <returns>The list of accumulator values.</returns>
-        public static IEnumerable<TAcc> ScanLeft<T, TAcc>(this IEnumerable<T> sequence, TAcc initialAcc,
-            Func<TAcc, T, TAcc> func)
-        {
+        public static IEnumerable<TAcc> ScanLeft<T, TAcc>(
+            this IEnumerable<T> sequence, TAcc initialAcc,
+            Func<TAcc, T, TAcc> func) {
             yield return initialAcc;
-            foreach (var t in sequence)
-            {
+            foreach (T t in sequence) {
                 initialAcc = func(initialAcc, t);
                 yield return initialAcc;
             }
-            
+
             //scanl                   :: (a -> b -> a) -> a -> [b] -> [a]
             //scanl f q ls            =  q : (case ls of
             //                                []   -> []
@@ -504,21 +493,20 @@ namespace FP
         /// <param name="sequence">The sequence to fold.</param>
         /// <param name="func">The binary function.</param>
         /// <returns>The list of accumulator values.</returns>
-        public static IEnumerable<T> ScanLeft<T>(this IEnumerable<T> sequence, Func<T, T, T> func)
-        {
-            using (IEnumerator<T> enumerator = sequence.GetEnumerator())
-            {
+        public static IEnumerable<T> ScanLeft<T>(
+            this IEnumerable<T> sequence, Func<T, T, T> func) {
+            using (
+                IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 if (!enumerator.MoveNext())
                     throw new EmptySequenceException("scanleft");
                 T acc = enumerator.Current;
                 yield return acc;
-                while (enumerator.MoveNext())
-                {
+                while (enumerator.MoveNext()) {
                     acc = func(acc, enumerator.Current);
                     yield return acc;
                 }
             }
-            
+
             //scanl1			:: (a -> a -> a) -> [a] -> [a]
             //scanl1 f (x:xs)	=  scanl f x xs
             //scanl1 _ []		=  []
@@ -539,11 +527,13 @@ namespace FP
         /// <param name="func">The binary function.</param>
         /// <param name="initialAcc">The initial value of the accumulator.</param>
         /// <returns>The list of accumulator values.</returns>
-        public static IEnumerable<TAcc> ScanRight<T, TAcc>(this IEnumerable<T> sequence, TAcc initialAcc,
-                                                          Func<T, TAcc, TAcc> func)
-        {
-            return sequence.Reverse().ScanLeft(initialAcc, func.Flip()).Reverse();
-            
+        public static IEnumerable<TAcc> ScanRight<T, TAcc>(
+            this IEnumerable<T> sequence, TAcc initialAcc,
+            Func<T, TAcc, TAcc> func) {
+            return
+                sequence.Reverse().ScanLeft(initialAcc, func.Flip()).
+                    Reverse();
+
             //scanr                   :: (a -> b -> b) -> b -> [a] -> [b]
             //scanr _ q0 []           =  [q0]
             //scanr f q0 (x:xs)       =  f x q : qs
@@ -563,10 +553,10 @@ namespace FP
         /// <param name="sequence">The sequence to fold.</param>
         /// <param name="func">The binary function.</param>
         /// <returns>The list of accumulator values.</returns>
-        public static IEnumerable<T> ScanRight<T>(this IEnumerable<T> sequence, Func<T, T, T> func)
-        {
+        public static IEnumerable<T> ScanRight<T>(
+            this IEnumerable<T> sequence, Func<T, T, T> func) {
             return sequence.Reverse().ScanLeft(func.Flip()).Reverse();
-            
+
             //scanr1                  :: (a -> a -> a) -> [a] -> [a]
             //scanr1 f []		=  []
             //scanr1 f [x]		=  [x]
@@ -587,15 +577,14 @@ namespace FP
         /// <param name="func">The function.</param>
         /// <param name="init">The initial value.</param>
         /// <returns></returns>
-        public static IEnumerable<T> Iterate<T>(this Func<T, T> func, T init)
-        {
+        public static IEnumerable<T> Iterate<T>(this Func<T, T> func,
+                                                T init) {
             T curr = init;
-            while (true)
-            {
+            while (true) {
                 yield return curr;
                 curr = func(curr);
             }
-            
+
             //iterate :: (a -> a) -> a -> [a]
             //iterate f x =  x : iterate f (f x)
         }
@@ -608,8 +597,8 @@ namespace FP
         /// <param name="times">The number of times to repeat the value.</param>
         /// <returns></returns>
         /// <remarks>Not an extension method in order not to pollute namespace.</remarks>
-        public static IEnumerable<T> Replicate<T>(/*this*/ T value, int times)
-        {
+        public static IEnumerable<T> Replicate<T>( /*this*/
+            T value, int times) {
             for (int i = 0; i < times; i++)
                 yield return value;
 
@@ -623,12 +612,12 @@ namespace FP
         /// <typeparam name="T"></typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <returns></returns>
-        public static IEnumerable<T> Cycle<T>(this IEnumerable<T> sequence)
-        {
+        public static IEnumerable<T> Cycle<T>(
+            this IEnumerable<T> sequence) {
             if (sequence.IsEmpty())
                 throw new EmptySequenceException("cycle");
             while (true)
-                foreach (var t in sequence)
+                foreach (T t in sequence)
                     yield return t;
 
             //cycle    :: [a] -> [a]
@@ -640,8 +629,7 @@ namespace FP
         /// <returns>An <see cref="IEnumerable{int}"/> that contains a range of sequential 
         /// integral numbers up to <see cref="int.MaxValue"/>.</returns>
         /// <param name="start">The value of the first integer in the sequence.</param>
-        public static IEnumerable<int> IntsFrom(int start)
-        {
+        public static IEnumerable<int> IntsFrom(int start) {
             for (int i = start; i < int.MaxValue; i++)
                 yield return i;
 
@@ -657,12 +645,10 @@ namespace FP
         /// <param name="step">The difference between two consequent elements of the
         /// sequence.</param>
         /// <exception cref="ArgumentException">if <paramref name="step"/> equals 0.</exception>
-        public static IEnumerable<int> IntsFrom(int start, int step)
-        {
+        public static IEnumerable<int> IntsFrom(int start, int step) {
             if (step == 0)
                 throw new ArgumentException();
-            if (step > 0)
-            {
+            if (step > 0) {
                 for (int i = start; i < int.MaxValue; i += step)
                     yield return i;
                 yield break;
@@ -678,8 +664,7 @@ namespace FP
         /// integral numbers.</returns>
         /// <param name="start">The value of the first integer in the sequence.</param>
         /// <param name="end">The value of the last integer in the sequence.</param>
-        public static IEnumerable<int> Range(int start, int end)
-        {
+        public static IEnumerable<int> Range(int start, int end) {
             for (int i = start; i <= end; i++)
                 yield return i;
 
@@ -696,12 +681,11 @@ namespace FP
         /// sequence.</param>
         /// <exception cref="ArgumentException">if <paramref name="step"/> equals 0
         /// or has a different sign from <c><paramref name="end"/> - <paramref name="start"/></c>.</exception>
-        public static IEnumerable<int> Range(int start, int end, int step)
-        {
-            if (step == 0 || step * (end - start) < 0)
+        public static IEnumerable<int> Range(int start, int end,
+                                             int step) {
+            if (step == 0 || step*(end - start) < 0)
                 throw new ArgumentException();
-            if (step > 0)
-            {
+            if (step > 0) {
                 for (int i = start; i <= end; i += step)
                     yield return i;
                 yield break;
@@ -726,12 +710,11 @@ namespace FP
         /// <param name="func">The function.</param>
         /// <param name="initialState">The initial state.</param>
         /// <returns></returns>
-        public static IEnumerable<T> Unfold<T, TState>(this Func<TState, Pair<T, TState>?> func, 
-            TState initialState)
-        {
+        public static IEnumerable<T> Unfold<T, TState>(
+            this Func<TState, Pair<T, TState>?> func,
+            TState initialState) {
             Pair<T, TState>? pair = func(initialState);
-            while (pair.HasValue)
-            {
+            while (pair.HasValue) {
                 yield return pair.Value.First;
                 pair = func(pair.Value.Second);
             }
@@ -742,9 +725,11 @@ namespace FP
             //   Just (a,new_b) -> a : unfoldr f new_b
             //   Nothing        -> []
         }
+
         #endregion
 
         #region Sublists
+
         //TODO: SplitAt, Span, Break
 
         /// <summary>
@@ -757,19 +742,19 @@ namespace FP
         /// <exception cref="InvalidOperationException">
         /// If <paramref name="prefix"/> is not a prefix of <paramref name="sequence"/>.
         /// </exception>
-        public static IEnumerable<T> StripPrefix<T>(this IEnumerable<T> sequence, IEnumerable<T> prefix)
-        {
-            using (IEnumerator<T> enumerator = sequence.GetEnumerator())
-            {
-                foreach (T t in prefix)
-                {
-                    if (!enumerator.MoveNext() || !t.Equals(enumerator.Current))
+        public static IEnumerable<T> StripPrefix<T>(
+            this IEnumerable<T> sequence, IEnumerable<T> prefix) {
+            using (
+                IEnumerator<T> enumerator = sequence.GetEnumerator()) {
+                foreach (T t in prefix) {
+                    if (!enumerator.MoveNext() ||
+                        !t.Equals(enumerator.Current))
                         throw new InvalidOperationException();
                 }
                 while (enumerator.MoveNext())
                     yield return enumerator.Current;
             }
-            
+
             //stripPrefix :: Eq a => [a] -> [a] -> Maybe [a]
             //stripPrefix [] ys = Just ys
             //stripPrefix (x:xs) (y:ys)
@@ -787,17 +772,15 @@ namespace FP
         /// <returns>
         /// 	<c>true</c> if the first sequence is a prefix of the second; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsPrefixOf<T>(this IEnumerable<T> prefix, IEnumerable<T> sequence)
-        {
+        public static bool IsPrefixOf<T>(this IEnumerable<T> prefix,
+                                         IEnumerable<T> sequence) {
             if (prefix == null)
                 throw new ArgumentNullException("prefix");
             if (sequence == null)
                 throw new ArgumentNullException("sequence");
             using (
-                IEnumerator<T> enumerator = sequence.GetEnumerator())
-            {
-                foreach (T t in prefix)
-                {
+                IEnumerator<T> enumerator = sequence.GetEnumerator()) {
+                foreach (T t in prefix) {
                     if (!enumerator.MoveNext() ||
                         !t.Equals(enumerator.Current))
                         return false;
@@ -820,18 +803,21 @@ namespace FP
         /// <returns>
         /// 	<c>true</c> if the first sequence is a suffix of the second; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsSuffixOf<T>(this IEnumerable<T> suffix, IEnumerable<T> sequence)
-            where T : IEquatable<T>
-        {
+        public static bool IsSuffixOf<T>(this IEnumerable<T> suffix,
+                                         IEnumerable<T> sequence)
+            where T : IEquatable<T> {
             return suffix.Reverse().IsPrefixOf(sequence.Reverse());
-           
+
             //isSuffixOf              :: (Eq a) => [a] -> [a] -> Bool
             //isSuffixOf x y          =  reverse x `isPrefixOf` reverse y
         }
 
         //TODO: IsInfixOf
+
         #endregion
+
         #region Searching lists
+
         /// <summary>
         /// Searches for an element that matches the conditions defined by the specified predicate.
         /// </summary>
@@ -843,8 +829,8 @@ namespace FP
         /// <exception cref="NotFoundException">
         /// If no element satisfying <paramref name="predicate"/> is found.
         /// </exception>
-        public static T Find<T>(this IEnumerable<T> sequence, Func<T, bool> predicate)
-        {
+        public static T Find<T>(this IEnumerable<T> sequence,
+                                Func<T, bool> predicate) {
             if (sequence == null)
                 throw new ArgumentNullException("sequence");
             if (predicate == null)
@@ -869,12 +855,15 @@ namespace FP
         /// <exception cref="NotFoundException">
         /// If no element satisfying <paramref name="element"/> is found.
         /// </exception>
-        public static T Find<T>(this IEnumerable<T> sequence, T element)
-        {
+        public static T Find<T>(this IEnumerable<T> sequence,
+                                T element) {
             return sequence.Find(t => t.Equals(element));
         }
+
         #endregion
+
         #region Indexing lists
+
         /// <summary>
         /// Searches for an element that matches the conditions defined by the specified predicate.
         /// </summary>
@@ -886,15 +875,14 @@ namespace FP
         /// <exception cref="NotFoundException">
         /// If no element satisfying <paramref name="predicate"/> is found.
         /// </exception>
-        public static int FindIndex<T>(this IEnumerable<T> sequence, Func<T, bool> predicate)
-        {
+        public static int FindIndex<T>(this IEnumerable<T> sequence,
+                                       Func<T, bool> predicate) {
             if (sequence == null)
                 throw new ArgumentNullException("sequence");
             if (predicate == null)
                 throw new ArgumentNullException("predicate");
             int i = 0;
-            foreach (T t in sequence)
-            {
+            foreach (T t in sequence) {
                 if (predicate(t))
                     return i;
                 i++;
@@ -916,8 +904,8 @@ namespace FP
         /// <exception cref="NotFoundException">
         /// If no element satisfying <paramref name="element"/> is found.
         /// </exception>
-        public static int FindIndex<T>(this IEnumerable<T> sequence, T element)
-        {
+        public static int FindIndex<T>(this IEnumerable<T> sequence,
+                                       T element) {
             return sequence.FindIndex(t => t.Equals(element));
             //
             //elemIndex	:: Eq a => a -> [a] -> Maybe Int
@@ -932,15 +920,14 @@ namespace FP
         /// <param name="predicate">The match.</param>
         /// <returns>The sequence of indices of elements that match the conditions defined by 
         /// <paramref name="predicate"/> within <paramref name="sequence"/>.</returns>
-        public static IEnumerable<int> FindIndices<T>(this IEnumerable<T> sequence, Func<T, bool> predicate)
-        {
+        public static IEnumerable<int> FindIndices<T>(
+            this IEnumerable<T> sequence, Func<T, bool> predicate) {
             if (sequence == null)
                 throw new ArgumentNullException("sequence");
             if (predicate == null)
                 throw new ArgumentNullException("predicate");
             int i = 0;
-            foreach (T t in sequence)
-            {
+            foreach (T t in sequence) {
                 if (predicate(t))
                     yield return i;
                 i++;
@@ -958,15 +945,18 @@ namespace FP
         /// <param name="element">The match.</param>
         /// <returns>The sequence of indices of elements that equal 
         /// <paramref name="element"/> within <paramref name="sequence"/>.</returns>
-        public static IEnumerable<int> FindIndices<T>(this IEnumerable<T> sequence, T element)
-        {
+        public static IEnumerable<int> FindIndices<T>(
+            this IEnumerable<T> sequence, T element) {
             return sequence.FindIndices(t => t.Equals(element));
             //
             //elemIndices     :: Eq a => a -> [a] -> [Int]
             //elemIndices x   = findIndices (x==)
         }
+
         #endregion
+
         #region Zipping and unzipping lists
+
         /// <summary>
         /// Takes two sequences and returns a sequence of corresponding pairs. 
         /// If one sequence is short, excess elements of the longer sequence are discarded.
@@ -976,14 +966,19 @@ namespace FP
         /// <param name="sequence1">The first sequence.</param>
         /// <param name="sequence2">The second sequence.</param>
         /// <returns></returns>
-        public static IEnumerable<Pair<T1, T2>> Zip<T1,T2>(this IEnumerable<T1> sequence1, IEnumerable<T2> sequence2)
-        {
-            using (IEnumerator<T1> enumerator1 = sequence1.GetEnumerator())
-            using(IEnumerator<T2> enumerator2 = sequence2.GetEnumerator())
-            {
-                while (enumerator1.MoveNext() && enumerator2.MoveNext())
-                {
-                    yield return Pair.New(enumerator1.Current, enumerator2.Current);
+        public static IEnumerable<Pair<T1, T2>> Zip<T1, T2>(
+            this IEnumerable<T1> sequence1, IEnumerable<T2> sequence2) {
+            using (
+                IEnumerator<T1> enumerator1 =
+                    sequence1.GetEnumerator())
+            using (
+                IEnumerator<T2> enumerator2 =
+                    sequence2.GetEnumerator()) {
+                while (enumerator1.MoveNext() &&
+                       enumerator2.MoveNext()) {
+                    yield return
+                        Pair.New(enumerator1.Current,
+                                 enumerator2.Current);
                 }
             }
             //
@@ -1000,19 +995,29 @@ namespace FP
         /// <param name="sequence2">The second sequence.</param>
         /// <param name="sequence3">The third sequence.</param>
         /// <returns></returns>
-        public static IEnumerable<Triple<T1, T2, T3>> 
-            Zip<T1, T2, T3>(this IEnumerable<T1> sequence1, IEnumerable<T2> sequence2, IEnumerable<T3> sequence3)
-        {
-            using (IEnumerator<T1> enumerator1 = sequence1.GetEnumerator())
-            using (IEnumerator<T2> enumerator2 = sequence2.GetEnumerator())
-            using (IEnumerator<T3> enumerator3 = sequence3.GetEnumerator())
-            {
-                while (enumerator1.MoveNext() && enumerator2.MoveNext() && enumerator3.MoveNext())
-                {
-                    yield return Triple.New(enumerator1.Current, enumerator2.Current, enumerator3.Current);
+        public static IEnumerable<Triple<T1, T2, T3>>
+            Zip<T1, T2, T3>(this IEnumerable<T1> sequence1,
+                            IEnumerable<T2> sequence2,
+                            IEnumerable<T3> sequence3) {
+            using (
+                IEnumerator<T1> enumerator1 =
+                    sequence1.GetEnumerator())
+            using (
+                IEnumerator<T2> enumerator2 =
+                    sequence2.GetEnumerator())
+            using (
+                IEnumerator<T3> enumerator3 =
+                    sequence3.GetEnumerator()) {
+                while (enumerator1.MoveNext() &&
+                       enumerator2.MoveNext() &&
+                       enumerator3.MoveNext()) {
+                    yield return
+                        Triple.New(enumerator1.Current,
+                                   enumerator2.Current,
+                                   enumerator3.Current);
                 }
             }
-            
+
             //zip3 :: [a] -> [b] -> [c] -> [(a,b,c)]
             //zip3 (a:as) (b:bs) (c:cs) = (a,b,c) : zip3 as bs cs
             //zip3 _      _      _      = []
@@ -1027,17 +1032,32 @@ namespace FP
         /// <param name="sequence3">The third sequence.</param>
         /// <param name="sequence4">The fourth sequence.</param>
         /// <returns></returns>
-        public static IEnumerable<Quadruple<T1, T2, T3, T4>> 
-            Zip<T1, T2, T3, T4>(this IEnumerable<T1> sequence1, IEnumerable<T2> sequence2, IEnumerable<T3> sequence3, IEnumerable<T4> sequence4)
-        {
-            using (IEnumerator<T1> enumerator1 = sequence1.GetEnumerator())
-            using (IEnumerator<T2> enumerator2 = sequence2.GetEnumerator())
-            using (IEnumerator<T3> enumerator3 = sequence3.GetEnumerator())
-            using (IEnumerator<T4> enumerator4 = sequence4.GetEnumerator())
-            {
-                while (enumerator1.MoveNext() && enumerator2.MoveNext() && enumerator3.MoveNext() && enumerator4.MoveNext())
-                {
-                    yield return Quadruple.New(enumerator1.Current, enumerator2.Current, enumerator3.Current, enumerator4.Current);
+        public static IEnumerable<Quadruple<T1, T2, T3, T4>>
+            Zip<T1, T2, T3, T4>(this IEnumerable<T1> sequence1,
+                                IEnumerable<T2> sequence2,
+                                IEnumerable<T3> sequence3,
+                                IEnumerable<T4> sequence4) {
+            using (
+                IEnumerator<T1> enumerator1 =
+                    sequence1.GetEnumerator())
+            using (
+                IEnumerator<T2> enumerator2 =
+                    sequence2.GetEnumerator())
+            using (
+                IEnumerator<T3> enumerator3 =
+                    sequence3.GetEnumerator())
+            using (
+                IEnumerator<T4> enumerator4 =
+                    sequence4.GetEnumerator()) {
+                while (enumerator1.MoveNext() &&
+                       enumerator2.MoveNext() &&
+                       enumerator3.MoveNext() &&
+                       enumerator4.MoveNext()) {
+                    yield return
+                        Quadruple.New(enumerator1.Current,
+                                      enumerator2.Current,
+                                      enumerator3.Current,
+                                      enumerator4.Current);
                 }
             }
             //
@@ -1054,13 +1074,20 @@ namespace FP
         /// <param name="sequence1">The first sequence.</param>
         /// <param name="sequence2">The second sequence.</param>
         /// <returns></returns>
-        public static IEnumerable<T> ZipWith<T1, T2, T>(this Func<T1, T2, T> function, IEnumerable<T1> sequence1, IEnumerable<T2> sequence2)
-        {
-            using (IEnumerator<T1> enumerator1 = sequence1.GetEnumerator())
-            using (IEnumerator<T2> enumerator2 = sequence2.GetEnumerator())
-            {
-                while (enumerator1.MoveNext() && enumerator2.MoveNext())
-                    yield return function(enumerator1.Current, enumerator2.Current);
+        public static IEnumerable<T> ZipWith<T1, T2, T>(
+            this Func<T1, T2, T> function, IEnumerable<T1> sequence1,
+            IEnumerable<T2> sequence2) {
+            using (
+                IEnumerator<T1> enumerator1 =
+                    sequence1.GetEnumerator())
+            using (
+                IEnumerator<T2> enumerator2 =
+                    sequence2.GetEnumerator()) {
+                while (enumerator1.MoveNext() &&
+                       enumerator2.MoveNext())
+                    yield return
+                        function(enumerator1.Current,
+                                 enumerator2.Current);
             }
             //
             //zipWith :: (a->b->c) -> [a]->[b]->[c]
@@ -1078,14 +1105,26 @@ namespace FP
         /// <param name="sequence2">The second sequence.</param>
         /// <param name="sequence3">The third sequence.</param>
         /// <returns></returns>
-        public static IEnumerable<T> ZipWith<T1, T2, T3, T>(this Func<T1, T2, T3, T> function, IEnumerable<T1> sequence1, IEnumerable<T2> sequence2, IEnumerable<T3> sequence3)
-        {
-            using (IEnumerator<T1> enumerator1 = sequence1.GetEnumerator())
-            using (IEnumerator<T2> enumerator2 = sequence2.GetEnumerator())
-            using (IEnumerator<T3> enumerator3 = sequence3.GetEnumerator())
-            {
-                while (enumerator1.MoveNext() && enumerator2.MoveNext() && enumerator3.MoveNext())
-                    yield return function(enumerator1.Current, enumerator2.Current, enumerator3.Current);
+        public static IEnumerable<T> ZipWith<T1, T2, T3, T>(
+            this Func<T1, T2, T3, T> function,
+            IEnumerable<T1> sequence1, IEnumerable<T2> sequence2,
+            IEnumerable<T3> sequence3) {
+            using (
+                IEnumerator<T1> enumerator1 =
+                    sequence1.GetEnumerator())
+            using (
+                IEnumerator<T2> enumerator2 =
+                    sequence2.GetEnumerator())
+            using (
+                IEnumerator<T3> enumerator3 =
+                    sequence3.GetEnumerator()) {
+                while (enumerator1.MoveNext() &&
+                       enumerator2.MoveNext() &&
+                       enumerator3.MoveNext())
+                    yield return
+                        function(enumerator1.Current,
+                                 enumerator2.Current,
+                                 enumerator3.Current);
             }
             //
             //zipWith3                :: (a->b->c->d) -> [a]->[b]->[c]->[d]
@@ -1105,16 +1144,31 @@ namespace FP
         /// <param name="sequence3">The third sequence.</param>
         /// <param name="sequence4">The fourth sequence.</param>
         /// <returns></returns>
-        public static IEnumerable<T> ZipWith<T1, T2, T3, T4, T>(this Func<T1, T2, T3, T4, T> function, 
-            IEnumerable<T1> sequence1, IEnumerable<T2> sequence2, IEnumerable<T3> sequence3, IEnumerable<T4> sequence4)
-        {
-            using (IEnumerator<T1> enumerator1 = sequence1.GetEnumerator())
-            using (IEnumerator<T2> enumerator2 = sequence2.GetEnumerator())
-            using (IEnumerator<T3> enumerator3 = sequence3.GetEnumerator())
-            using (IEnumerator<T4> enumerator4 = sequence4.GetEnumerator())
-            {
-                while (enumerator1.MoveNext() && enumerator2.MoveNext() && enumerator3.MoveNext() && enumerator4.MoveNext())
-                    yield return function(enumerator1.Current, enumerator2.Current, enumerator3.Current, enumerator4.Current);
+        public static IEnumerable<T> ZipWith<T1, T2, T3, T4, T>(
+            this Func<T1, T2, T3, T4, T> function,
+            IEnumerable<T1> sequence1, IEnumerable<T2> sequence2,
+            IEnumerable<T3> sequence3, IEnumerable<T4> sequence4) {
+            using (
+                IEnumerator<T1> enumerator1 =
+                    sequence1.GetEnumerator())
+            using (
+                IEnumerator<T2> enumerator2 =
+                    sequence2.GetEnumerator())
+            using (
+                IEnumerator<T3> enumerator3 =
+                    sequence3.GetEnumerator())
+            using (
+                IEnumerator<T4> enumerator4 =
+                    sequence4.GetEnumerator()) {
+                while (enumerator1.MoveNext() &&
+                       enumerator2.MoveNext() &&
+                       enumerator3.MoveNext() &&
+                       enumerator4.MoveNext())
+                    yield return
+                        function(enumerator1.Current,
+                                 enumerator2.Current,
+                                 enumerator3.Current,
+                                 enumerator4.Current);
             }
         }
 
@@ -1125,14 +1179,17 @@ namespace FP
         /// <typeparam name="T"></typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <returns></returns>
-        public static IEnumerable<Pair<int, T>> WithIndex<T>(this IEnumerable<T> sequence)
-        {
+        public static IEnumerable<Pair<int, T>> WithIndex<T>(
+            this IEnumerable<T> sequence) {
             return Zip(IntsFrom(0), sequence);
         }
 
         //TODO: Unzip
+
         #endregion
+
         #region Lists as Sets
+
         /// <summary>
         /// Searches for an element
         /// and removes it.
@@ -1141,8 +1198,8 @@ namespace FP
         /// <param name="sequence">The sequence.</param>
         /// <param name="element">The match.</param>
         /// <returns><paramref name="sequence"/> except the first occurrence of <paramref name="element"/>.</returns>
-        public static IEnumerable<T> Delete<T>(this IEnumerable<T> sequence, T element)
-        {
+        public static IEnumerable<T> Delete<T>(
+            this IEnumerable<T> sequence, T element) {
             return sequence.Delete(t => t.Equals(element));
         }
 
@@ -1155,12 +1212,11 @@ namespace FP
         /// <param name="predicate">The match.</param>
         /// <returns><paramref name="sequence"/> except the first occurrence of an element 
         /// that matches the conditions defined by <paramref name="predicate"/>.</returns>
-        public static IEnumerable<T> Delete<T>(this IEnumerable<T> sequence, Func<T, bool> predicate)
-        {
-            using (IEnumerator<T> enumerator = sequence.GetEnumerator())
-            {
-                while (enumerator.MoveNext())
-                {
+        public static IEnumerable<T> Delete<T>(
+            this IEnumerable<T> sequence, Func<T, bool> predicate) {
+            using (
+                IEnumerator<T> enumerator = sequence.GetEnumerator()) {
+                while (enumerator.MoveNext()) {
                     T current = enumerator.Current;
                     if (predicate(current))
                         break;
@@ -1172,17 +1228,20 @@ namespace FP
         }
 
         #endregion
+
         #region Ordered Lists
+
         /// <summary>Sorts the elements of a sequence in ascending order.</summary>
         /// <returns>An <see cref="T:System.Linq.IOrderedEnumerable`1" /> whose elements are sorted according to a key.</returns>
         /// <param name="sequence">A sequence of values to sort.</param>
         /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
-        public static IOrderedEnumerable<T> Sort<T>(this IEnumerable<T> sequence)
-        {
+        public static IOrderedEnumerable<T> Sort<T>(
+            this IEnumerable<T> sequence) {
             return sequence.Sort(Comparer<T>.Default);
         }
+
         /// <summary>Sorts the elements of a sequence in ascending order by using a specified comparer.</summary>
         /// <returns>An <see cref="T:System.Linq.IOrderedEnumerable`1" /> whose elements are sorted.</returns>
         /// <param name="sequence">A sequence of values to sort.</param>
@@ -1190,20 +1249,22 @@ namespace FP
         /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
-        public static IOrderedEnumerable<T> Sort<T>(this IEnumerable<T> sequence, IComparer<T> comparer)
-        {
+        public static IOrderedEnumerable<T> Sort<T>(
+            this IEnumerable<T> sequence, IComparer<T> comparer) {
             return sequence.OrderBy(x => x, comparer);
         }
+
         /// <summary>Sorts the elements of a sequence in descending order according to a key.</summary>
         /// <returns>An <see cref="T:System.Linq.IOrderedEnumerable`1" /> whose elements are sorted in descending order.</returns>
         /// <param name="sequence">A sequence of values to sort.</param>
         /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
-        public static IOrderedEnumerable<T> SortDescending<T>(this IEnumerable<T> sequence)
-        {
+        public static IOrderedEnumerable<T> SortDescending<T>(
+            this IEnumerable<T> sequence) {
             return sequence.SortDescending(Comparer<T>.Default);
         }
+
         /// <summary>Sorts the elements of a sequence in descending order by using a specified comparer.</summary>
         /// <returns>An <see cref="T:System.Linq.IOrderedEnumerable`1" /> whose elements are sorted in descending order.</returns>
         /// <param name="sequence">A sequence of values to sort.</param>
@@ -1211,14 +1272,15 @@ namespace FP
         /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
-        public static IOrderedEnumerable<T> SortDescending<T>(this IEnumerable<T> sequence, IComparer<T> comparer)
-        {
+        public static IOrderedEnumerable<T> SortDescending<T>(
+            this IEnumerable<T> sequence, IComparer<T> comparer) {
             return sequence.OrderByDescending(x => x, comparer);
         }
+
         #endregion
+
         #region Generalized functions
 
         #endregion
     }
-
 }
