@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FP.HaskellNames;
 
 namespace FP {
     /// <summary>
@@ -16,6 +18,16 @@ namespace FP {
     /// See also the Remarks for <see cref="Enumerable"/>.
     /// </remarks>
     public static class Strings {
+
+        /// <summary>
+        /// Clears the specified StringBuilder.
+        /// This is equivalent to calling <c>sb.Length = 0</c>.
+        /// </summary>
+        /// <param name="sb">The StringBuilder.</param>
+        public static void Clear(this StringBuilder sb) {
+            sb.Length = 0;
+        }
+
         /// <summary>
         /// Converts a sequence of <see cref="char"/>s to a <see cref="string"/>.
         /// This should be called <c>ToString</c>, but this is impossible for the
@@ -23,10 +35,8 @@ namespace FP {
         /// </summary>
         /// <param name="charSequence">The char sequence.</param>
         /// <returns></returns>
-        public static string ToStringProper(
-            this IEnumerable<char> charSequence) {
-            return Switch.ExprOn<IEnumerable<char>, string>(
-                charSequence)
+        public static string ToStringProper(this IEnumerable<char> charSequence) {
+            return Switch.ExprOn<IEnumerable<char>, string>(charSequence)
                 .Case<string>(s => s)
                 .Default(cs => {
                              var builder = new StringBuilder();
@@ -36,36 +46,140 @@ namespace FP {
                          });
         }
 
-        //TODO:
         //-- | 'lines' breaks a string up into a list of strings at newline
         //-- characters.  The resulting strings do not contain newlines.
-        //lines			:: String -> [String]
-        //lines ""		=  []
-        //lines s			=  let (l, s') = break (== '\n') s
-        //			   in  l : case s' of
-        //					[]     	-> []
-        //					(_:s'') -> lines s''
-        //
-        //-- | 'unlines' is an inverse operation to 'lines'.
-        //-- It joins lines, after appending a terminating newline to each.
-        //unlines			:: [String] -> String
-        //unlines [] = []
-        //unlines (l:ls) = l ++ '\n' : unlines ls
-        //
-        //-- | 'words' breaks a string up into a list of words, which were delimited
-        //-- by white space.
-        //words			:: String -> [String]
-        //words s			=  case dropWhile {-partain:Char.-}isSpace s of
-        //				"" -> []
-        //				s' -> w : words s''
-        //				      where (w, s'') = 
-        //                                             break {-partain:Char.-}isSpace s'
-        //
-        //-- | 'unwords' is an inverse operation to 'words'.
-        //-- It joins words with separating spaces.
-        //unwords			:: [String] -> String
-        //unwords []		=  ""
-        //unwords [w]		= w
-        //unwords (w:ws)		= w ++ ' ' : unwords ws
+
+        /// <summary>
+        /// Breaks the specified char sequence into a sequence of strings at newline
+        /// characters. The resulting strings do not contain newlines.
+        /// </summary>
+        /// <param name="charSequence">The char sequence.</param>
+        /// <returns>The sequence of lines.</returns>
+        public static IEnumerable<string> Lines(this IEnumerable<char> charSequence) {
+            var sb = new StringBuilder();
+            char lastChar = '\0';
+            foreach (char c in charSequence) {
+                if (c != '\n') 
+                    sb.Append(c);
+                else {
+                    if (lastChar == '\r')
+                        sb.Length -= 1;
+                    yield return sb.ToString();
+                    sb.Clear();
+                }
+                lastChar = c;
+            }
+            if (lastChar != '\n') {
+                yield return sb.ToString();
+            }
+
+            //lines			:: String -> [String]
+            //lines ""		=  []
+            //lines s			=  let (l, s') = break (== '\n') s
+            //			   in  l : case s' of
+            //					[]     	-> []
+            //					(_:s'') -> lines s''
+        }
+
+        /// <summary>
+        /// An inverse to <see cref="Lines"/>. It joins lines, after appending a terminating newline to each.
+        /// </summary>
+        /// <param name="lines">A sequence of sequences of chars.</param>
+        /// <returns></returns>
+        public static IEnumerable<char> UnLinesCS(this IEnumerable<IEnumerable<char>> lines) {
+            return lines.Intercalate(Environment.NewLine);
+
+            //unlines			:: [String] -> String
+            //unlines [] = []
+            //unlines (l:ls) = l ++ '\n' : unlines ls
+        }
+
+        /// <summary>
+        /// An inverse to <see cref="Lines"/>. It joins lines, after appending a terminating newline to each.
+        /// </summary>
+        /// <param name="lines">A sequence of strings.</param>
+        /// <returns></returns>
+        public static IEnumerable<char> UnLines(this IEnumerable<string> lines) {
+            return lines.Cast<IEnumerable<char>>().UnLinesCS();
+        }
+
+        /// <summary>
+        /// Equivalent to <c>UnLines().ToStringProper()</c>, but more efficient.
+        /// </summary>
+        /// <param name="lines">A sequence of strings.</param>
+        /// <returns></returns>
+        public static string UnLinesAsString(this IEnumerable<string> lines) {
+            var sb = new StringBuilder();
+            foreach (string s in lines.Intersperse(Environment.NewLine))
+                sb.Append(s);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Breaks the specified char sequence into a sequence of words
+        /// delimeted by whitespace. The resulting strings do not contain whitespace.
+        /// </summary>
+        /// <param name="charSequence">The char sequence.</param>
+        /// <returns>The sequence of words.</returns>
+        public static IEnumerable<string> Words(this IEnumerable<char> charSequence) {
+            var sb = new StringBuilder();
+            bool lastCharWasWhiteSpace = true;
+            foreach (char c in charSequence) {
+                if (!char.IsWhiteSpace(c)) {
+                    sb.Append(c);
+                }
+                else {
+                    if (!lastCharWasWhiteSpace) {
+                        yield return sb.ToString();
+                        sb.Clear();
+                    }
+                }
+                lastCharWasWhiteSpace = char.IsWhiteSpace(c);
+            }
+            if (!lastCharWasWhiteSpace)
+                yield return sb.ToString();
+
+            //words			:: String -> [String]
+            //words s			=  case dropWhile {-partain:Char.-}isSpace s of
+            //				"" -> []
+            //				s' -> w : words s''
+            //				      where (w, s'') = 
+            //                                             break {-partain:Char.-}isSpace s'
+        }
+
+        /// <summary>
+        /// An inverse to <see cref="Words"/>. It joins words, separating them by a single space.
+        /// </summary>
+        /// <param name="words">A sequence of sequences of chars.</param>
+        /// <returns></returns>
+        public static IEnumerable<char> UnWordsCS(this IEnumerable<IEnumerable<char>> words) {
+            return words.Intercalate(" ");
+
+            //unwords			:: [String] -> String
+            //unwords []		=  ""
+            //unwords [w]		= w
+            //unwords (w:ws)		= w ++ ' ' : unwords ws
+        }
+
+        /// <summary>
+        /// An inverse to <see cref="Words"/>. It joins words, separating them by a single space.
+        /// </summary>
+        /// <param name="words">A sequence of strings.</param>
+        /// <returns></returns>
+        public static IEnumerable<char> UnWords(this IEnumerable<string> words) {
+            return words.Map(word => word.AsEnumerable()).Intercalate(" ");
+        }
+
+        /// <summary>
+        /// Equivalent to <c>UnWords().ToStringProper()</c>, but more efficient.
+        /// </summary>
+        /// <param name="words">A sequence of strings.</param>
+        /// <returns></returns>
+        public static string UnWordsAsString(this IEnumerable<string> words) {
+            var sb = new StringBuilder();
+            foreach (string s in words.Intersperse(" "))
+                sb.Append(s);
+            return sb.ToString();
+        }
     }
 }

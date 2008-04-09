@@ -180,15 +180,14 @@ namespace FP {
         /// </summary>
         /// <param name="action">The action to do in this case.</param>
         public Switch<TNew, S> CaseWithFallthrough<TNew>(
-            Action<TNew> action) where TNew : S
-        {
+            Action<TNew> action) where TNew : S {
             return CaseWithFallthrough(x => true, action);
         }
 
         /// <summary>
         /// In case the value we are switching on has type <typeparam name="TNew"/> and equals <paramref name="t"/>, do <paramref name="action"/>.
         /// </summary>
-        /// <param name="t">The value to compare the value we are switching on to.</param>
+        /// <param name="t"></param>
         /// <param name="action">The action to do in this case.</param>
         public Switch<TNew, S> Case<TNew>(TNew t, Action<TNew> action)
             where TNew : S {
@@ -199,7 +198,7 @@ namespace FP {
         /// In case the value we are switching on has type <typeparam name="TNew"/> and equals <paramref name="t"/>, do <paramref name="action"/>
         /// and fall through to the next case.
         /// </summary>
-        /// <param name="t">The value to compare the value we are switching on to.</param>
+        /// <param name="t"></param>
         /// <param name="action">The action to do in this case.</param>
         public Switch<TNew, S> CaseWithFallthrough<TNew>(TNew t, Action<TNew> action) where TNew : S {
             return CaseWithFallthrough(x => true, action);

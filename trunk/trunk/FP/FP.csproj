@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\LazyList.cs" />
     <Compile Include="EmptySequenceException.cs" />
     <Compile Include="Enumerable2.cs" />
     <Compile Include="Enumerable3.cs" />
