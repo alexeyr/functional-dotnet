@@ -1,10 +1,13 @@
-﻿namespace FP {
+﻿using System;
+
+namespace FP.Collections.Immutable {
     /// <summary>
     /// A tuple with three elements.
     /// </summary>
     /// <typeparam name="T1">The type of the first element.</typeparam>
     /// <typeparam name="T2">The type of the second element.</typeparam>
     /// <typeparam name="T3">The type of the third element.</typeparam>
+    [Serializable]
     public struct Triple<T1, T2, T3> {
         private readonly T1 _first;
         private readonly T2 _second;
@@ -59,9 +62,7 @@
         /// <param name="second">The second element of the tuple.</param>
         /// <param name="third">The third element of the tuple.</param>
         /// <returns></returns>
-        public static Triple<T1, T2, T3> New<T1, T2, T3>(T1 first,
-                                                         T2 second,
-                                                         T3 third) {
+        public static Triple<T1,T2,T3> New<T1, T2, T3>(T1 first, T2 second, T3 third) {
             return new Triple<T1, T2, T3>(first, second, third);
         }
     }

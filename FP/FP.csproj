@@ -39,12 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\LazyList.cs" />
+    <Compile Include="Collections\Immutable\IImmutableList.cs" />
+    <Compile Include="Collections\Immutable\ImmutableListBase.cs" />
+    <Compile Include="Collections\Immutable\LazyList.cs" />
     <Compile Include="EmptySequenceException.cs" />
     <Compile Include="Enumerable2.cs" />
     <Compile Include="Enumerable3.cs" />
     <Compile Include="Functions.cs" />
-    <Compile Include="Maybe.cs" />
+    <Compile Include="Collections\Immutable\Maybe.cs" />
+    <Compile Include="Linq\MaybeMonad.cs" />
     <Compile Include="NotFoundException.cs" />
     <Compile Include="Collections\Immutable\Pair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

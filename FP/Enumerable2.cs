@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using FP.Collections.Immutable;
 using FP.HaskellNames;
 
 namespace FP {
@@ -22,18 +22,12 @@ namespace FP {
     public static class Enumerable2 {
         #region Basic Functions
 
-        /// </summary>
+        /// <summary>Returns all elements of the sequence except the first.</summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <returns></returns>
-        /// <remarks>
-        /// If the sequence has been modified between calling this method and iterating 
-        /// over its result, an <see cref="InvalidOperationException"/> will be thrown.
-        /// If you wish to prevent this and are not concerned about not getting an
-        /// exception for the empty list, use <c>sequence.Skip(1)</c> instead.
-        /// </remarks>
-        public static IEnumerable<T> Tail<T>(
-            this IEnumerable<T> sequence) {
+        /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
+        public static IEnumerable<T> Tail<T>(this IEnumerable<T> sequence) {
             using (
                 IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 if (!enumerator.MoveNext())
@@ -59,6 +53,7 @@ namespace FP {
         /// If you wish to prevent this and are not concerned about not getting an
         /// exception for the empty list, use <c>sequence.Skip(1)</c> instead.
         /// </remarks>
+        /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
         public static IEnumerable<T> Init<T>(
             this IEnumerable<T> sequence) {
             using (
@@ -90,7 +85,7 @@ namespace FP {
         /// 	<c>true</c> if the specified sequence is empty; otherwise, <c>false</c>.
         /// </returns>
         public static bool IsEmpty<T>(this IEnumerable<T> sequence) {
-            return !sequence.Any();
+            return (!sequence.Any());
 
             //null                    :: [a] -> Bool
             //null []                 =  True
@@ -301,8 +296,7 @@ namespace FP {
         /// <summary>Computes the product of a sequence of <see cref="T:System.Double" /> values.</summary>
         /// <returns>the product of the values in the sequence.</returns>
         /// <param name="source">A sequence of <see cref="T:System.Double" /> values to calculate the product of.</param>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="source" /> is null.</exception>
+        /// <exception cref="ArgumentNullException">if <paramref name="source" /> is null.</exception>
         public static double Product(this IEnumerable<double> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -321,9 +315,8 @@ namespace FP {
         /// <summary>Computes the product of a sequence of nullable <see cref="T:System.Decimal" /> values.</summary>
         /// <returns>the product of the values in the sequence.</returns>
         /// <param name="source">A sequence of nullable <see cref="T:System.Decimal" /> values to calculate the product of.</param>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="source" /> is null.</exception>
-        /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source" /> is null.</exception>
+        /// <exception cref="OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue" />.</exception>
         public static decimal? Product(
             this IEnumerable<decimal?> source) {
             if (source == null)
@@ -338,9 +331,8 @@ namespace FP {
         /// <summary>Computes the product of a sequence of <see cref="T:System.Decimal" /> values.</summary>
         /// <returns>the product of the values in the sequence.</returns>
         /// <param name="source">A sequence of <see cref="T:System.Decimal" /> values to calculate the product of.</param>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="source" /> is null.</exception>
-        /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue" />.</exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="source" /> is null.</exception>
+        /// <exception cref="OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue" />.</exception>
         public static decimal Product(this IEnumerable<decimal> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -353,9 +345,8 @@ namespace FP {
         /// <summary>Computes the product of a sequence of <see cref="T:System.Int32" /> values.</summary>
         /// <returns>the product of the values in the sequence.</returns>
         /// <param name="source">A sequence of <see cref="T:System.Int32" /> values to calculate the product of.</param>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="source" /> is null.</exception>
-        /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="source" /> is null.</exception>
+        /// <exception cref="OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
         public static int Product(this IEnumerable<int> source) {
             if (source == null) {
                 throw new ArgumentNullException("source");
@@ -369,9 +360,8 @@ namespace FP {
         /// <summary>Computes the product of a sequence of <see cref="T:System.Int64" /> values.</summary>
         /// <returns>the product of the values in the sequence.</returns>
         /// <param name="source">A sequence of <see cref="T:System.Int64" /> values to calculate the product of.</param>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="source" /> is null.</exception>
-        /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source" /> is null.</exception>
+        /// <exception cref="OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue" />.</exception>
         public static long Product(this IEnumerable<long> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -384,7 +374,7 @@ namespace FP {
         /// <summary>Computes the product of a sequence of nullable <see cref="T:System.Double" /> values.</summary>
         /// <returns>the product of the values in the sequence.</returns>
         /// <param name="source">A sequence of nullable <see cref="T:System.Double" /> values to calculate the product of.</param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
         public static double? Product(this IEnumerable<double?> source) {
             if (source == null)
@@ -399,9 +389,9 @@ namespace FP {
         /// <summary>Computes the product of a sequence of nullable <see cref="T:System.Int32" /> values.</summary>
         /// <returns>the product of the values in the sequence.</returns>
         /// <param name="source">A sequence of nullable <see cref="T:System.Int32" /> values to calculate the product of.</param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
+        /// <exception cref="OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
         public static int? Product(this IEnumerable<int?> source) {
             if (source == null) {
                 throw new ArgumentNullException("source");
@@ -418,9 +408,9 @@ namespace FP {
         /// <summary>Computes the product of a sequence of nullable <see cref="T:System.Int64" /> values.</summary>
         /// <returns>the product of the values in the sequence.</returns>
         /// <param name="source">A sequence of nullable <see cref="T:System.Int64" /> values to calculate the product of.</param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue" />.</exception>
+        /// <exception cref="OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue" />.</exception>
         public static long? Product(this IEnumerable<long?> source) {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -434,7 +424,7 @@ namespace FP {
         /// <summary>Computes the product of a sequence of nullable <see cref="T:System.Single" /> values.</summary>
         /// <returns>the product of the values in the sequence.</returns>
         /// <param name="source">A sequence of nullable <see cref="T:System.Single" /> values to calculate the product of.</param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
         public static float? Product(this IEnumerable<float?> source) {
             if (source == null)
@@ -449,7 +439,7 @@ namespace FP {
         /// <summary>Computes the product of a sequence of <see cref="T:System.Single" /> values.</summary>
         /// <returns>the product of the values in the sequence.</returns>
         /// <param name="source">A sequence of <see cref="T:System.Single" /> values to calculate the product of.</param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
         public static float Product(this IEnumerable<float> source) {
             if (source == null)
@@ -507,6 +497,7 @@ namespace FP {
         /// <param name="sequence">The sequence to fold.</param>
         /// <param name="func">The binary function.</param>
         /// <returns>The list of accumulator values.</returns>
+        /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
         public static IEnumerable<T> ScanLeft<T>(
             this IEnumerable<T> sequence, Func<T, T, T> func) {
             using (
@@ -626,6 +617,7 @@ namespace FP {
         /// <typeparam name="T"></typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <returns></returns>
+        /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
         public static IEnumerable<T> Cycle<T>(
             this IEnumerable<T> sequence) {
             if (sequence.IsEmpty())
@@ -786,6 +778,8 @@ namespace FP {
         /// <returns>
         /// 	<c>true</c> if the first sequence is a prefix of the second; otherwise, <c>false</c>.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="prefix"/> or <paramref name="sequence"/>
+        /// are null.</exception>
         public static bool IsPrefixOf<T>(this IEnumerable<T> prefix,
                                          IEnumerable<T> sequence) {
             if (prefix == null)
@@ -843,6 +837,8 @@ namespace FP {
         /// <exception cref="NotFoundException">
         /// If no element satisfying <paramref name="predicate"/> is found.
         /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="predicate"/>
+        /// are null.</exception>
         public static T Find<T>(this IEnumerable<T> sequence,
                                 Func<T, bool> predicate) {
             if (sequence == null)
@@ -889,6 +885,8 @@ namespace FP {
         /// <exception cref="NotFoundException">
         /// If no element satisfying <paramref name="predicate"/> is found.
         /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="predicate"/>
+        /// are null.</exception>
         public static int FindIndex<T>(this IEnumerable<T> sequence,
                                        Func<T, bool> predicate) {
             if (sequence == null)
@@ -934,6 +932,8 @@ namespace FP {
         /// <param name="predicate">The match.</param>
         /// <returns>The sequence of indices of elements that match the conditions defined by 
         /// <paramref name="predicate"/> within <paramref name="sequence"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="predicate"/>
+        /// are null.</exception>
         public static IEnumerable<int> FindIndices<T>(
             this IEnumerable<T> sequence, Func<T, bool> predicate) {
             if (sequence == null)
@@ -983,16 +983,12 @@ namespace FP {
         public static IEnumerable<Pair<T1, T2>> Zip<T1, T2>(
             this IEnumerable<T1> sequence1, IEnumerable<T2> sequence2) {
             using (
-                IEnumerator<T1> enumerator1 =
-                    sequence1.GetEnumerator())
+                IEnumerator<T1> enumerator1 = sequence1.GetEnumerator())
             using (
-                IEnumerator<T2> enumerator2 =
-                    sequence2.GetEnumerator()) {
-                while (enumerator1.MoveNext() &&
-                       enumerator2.MoveNext()) {
+                IEnumerator<T2> enumerator2 = sequence2.GetEnumerator()) {
+                while (enumerator1.MoveNext() && enumerator2.MoveNext()) {
                     yield return
-                        Pair.New(enumerator1.Current,
-                                 enumerator2.Current);
+                        Pair.New(enumerator1.Current, enumerator2.Current);
                 }
             }
             //

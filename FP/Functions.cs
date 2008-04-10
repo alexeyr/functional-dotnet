@@ -25,5 +25,18 @@ namespace FP {
             this Func<T1, T2, TR> func) {
             return (y, x) => func(x, y);
         }
+
+        /// <summary>
+        /// Does nothing.
+        /// </summary>
+        public static readonly Action DoNothing = () => { };
+        
+        /// <summary>
+        /// The identity function.
+        /// </summary>
+        /// <typeparam name="T">The type of argument and result.</typeparam>
+        public static Func<T, T> Id<T>() {
+            return x => x;
+        }
     }
 }

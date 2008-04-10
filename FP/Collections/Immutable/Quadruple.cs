@@ -1,4 +1,6 @@
-﻿namespace FP {
+﻿using System;
+
+namespace FP.Collections.Immutable {
     /// <summary>
     /// A tuple with four elements.
     /// </summary>
@@ -6,6 +8,7 @@
     /// <typeparam name="T2">The type of the second element.</typeparam>
     /// <typeparam name="T3">The type of the third element.</typeparam>
     /// <typeparam name="T4">The type of the fourth element.</typeparam>
+    [Serializable]
     public struct Quadruple<T1, T2, T3, T4> {
         private readonly T1 _first;
         private readonly T4 _fourth;
@@ -73,10 +76,9 @@
         /// <param name="third">The third element of the tuple.</param>
         /// <param name="fourth">The fourth element of the tuple.</param>
         /// <returns></returns>
-        public static Quadruple<T1, T2, T3, T4> New<T1, T2, T3, T4>(
+        public static Quadruple<T1,T2,T3,T4> New<T1, T2, T3, T4>(
             T1 first, T2 second, T3 third, T4 fourth) {
-            return new Quadruple<T1, T2, T3, T4>(first, second, third,
-                                                 fourth);
+            return new Quadruple<T1, T2, T3, T4>(first, second, third, fourth);
         }
     }
 }
