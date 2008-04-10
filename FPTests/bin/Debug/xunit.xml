@@ -562,10 +562,26 @@
             </summary>
             <param name="expected">The expected object value</param>
         </member>
-        <member name="T:Xunit.Executor">
+        <member name="T:Xunit.Sdk.Executor">
+            <summary>
+            Internal class used for version-resilient test runners. DO NOT CALL DIRECTLY.
+            Version-resilient runners should link against xunit.runner.utility.dll and use
+            ExecutorWrapper instead.
+            </summary>
+        </member>
+        <member name="M:Xunit.Sdk.Executor.#ctor(System.String)">
             <summary/>
         </member>
-        <member name="M:Xunit.Executor.RunAssembly(System.String,System.Web.UI.ICallbackEventHandler)">
+        <member name="T:Xunit.Sdk.Executor.AssemblyTestCount">
+            <summary/>
+        </member>
+        <member name="M:Xunit.Sdk.Executor.AssemblyTestCount.#ctor(Xunit.Sdk.Executor,System.Object)">
+            <summary/>
+        </member>
+        <member name="T:Xunit.Sdk.Executor.RunAssembly">
+            <summary/>
+        </member>
+        <member name="M:Xunit.Sdk.Executor.RunAssembly.#ctor(Xunit.Sdk.Executor,System.Object)">
             <summary/>
         </member>
         <member name="T:Xunit.IsAssignableFromException">
@@ -1185,19 +1201,6 @@
             <summary>
             Gets the trait value.
             </summary>
-        </member>
-        <member name="T:Xunit.Sdk.AssemblyRunner">
-            <summary>
-            Class that executes all the tests in an assembly.
-            </summary>
-        </member>
-        <member name="M:Xunit.Sdk.AssemblyRunner.Execute(System.Reflection.Assembly,Xunit.Sdk.TestResultCallback)">
-            <summary>
-            Executes all the tests in an assembly synchronously.
-            </summary>
-            <param name="assembly">The assembly to run tests from</param>
-            <param name="callback">Callback for test run status information</param>
-            <returns>The result of the assembly run</returns>
         </member>
         <member name="T:Xunit.Sdk.TestClassCommandRunner">
             <summary>
