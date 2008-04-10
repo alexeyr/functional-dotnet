@@ -1,1 +1,0 @@
-F:\MyProgramming\FP\trunk\FPTests\obj\Release\ResolveAssemblyReference.cache
