@@ -1,17 +1,19 @@
+using System;
 using System.Collections.Generic;
 
-namespace FP {
+namespace FP.Collections.Immutable {
     /// <summary>
     /// A tuple with two elements.
     /// </summary>
     /// <typeparam name="T1">The type of the first element.</typeparam>
     /// <typeparam name="T2">The type of the second element.</typeparam>
+    [Serializable]
     public struct Pair<T1, T2> {
         private readonly T1 _first;
         private readonly T2 _second;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FP.Pair{T1,T2}"/> struct.
+        /// Initializes a new instance of the <see cref="Pair{T1,T2}"/> struct.
         /// </summary>
         /// <param name="first">The first element of the tuple.</param>
         /// <param name="second">The second element of the tuple.</param>
@@ -57,7 +59,7 @@ namespace FP {
         /// <param name="first">The first element of the tuple.</param>
         /// <param name="second">The second element of the tuple.</param>
         /// <returns></returns>
-        public static Pair<T1, T2> New<T1, T2>(T1 first, T2 second) {
+        public static Pair<T1,T2> New<T1, T2>(T1 first, T2 second) {
             return new Pair<T1, T2>(first, second);
         }
     }

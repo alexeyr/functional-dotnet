@@ -46,6 +46,7 @@ namespace FP.HaskellNames {
         /// <remarks>
         /// An alternate name for <see cref="Enumerable.First(IEnumerable{T})"/>.
         /// </remarks>
+        /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
         public static T Head<T>(this IEnumerable<T> sequence) {
             try {
                 return sequence.First();
