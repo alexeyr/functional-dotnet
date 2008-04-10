@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿/* (C) Alexey Romanov 2008
+ * Code adapted from http://blogs.msdn.com/wesdyer/archive/2007/02/12/why-all-of-the-love-for-lists.aspx
+  */
+
+using System.Collections;
 using System.Collections.Generic;
 
 public class LazyList<T> : IEnumerable<T> {

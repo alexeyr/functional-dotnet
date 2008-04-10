@@ -46,12 +46,15 @@
     <Compile Include="Functions.cs" />
     <Compile Include="Maybe.cs" />
     <Compile Include="NotFoundException.cs" />
-    <Compile Include="Pair.cs" />
+    <Compile Include="Collections\Immutable\Pair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Quadruple.cs" />
+    <Compile Include="Collections\Immutable\Quadruple.cs" />
     <Compile Include="Strings.cs" />
     <Compile Include="Switch.cs" />
-    <Compile Include="Triple.cs" />
+    <Compile Include="Collections\Immutable\Triple.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Collections\Mutable\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
