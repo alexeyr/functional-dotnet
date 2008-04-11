@@ -11,6 +11,7 @@ namespace FP.Collections.Immutable {
         public abstract T Head { get; }
         public abstract IImmutableList<T> Tail { get; }
         public abstract bool IsEmpty { get; }
+        public abstract IImmutableList<T> Prepend(T newHead);
 
         ///<summary>
         ///Returns an enumerator that iterates through a collection.
@@ -34,7 +35,7 @@ namespace FP.Collections.Immutable {
         ///<filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator() {
             IImmutableList<T> list = this;
-            while (!list.IsEmpty) {
+            while (list != null && !list.IsEmpty) {
                 yield return list.Head;
                 list = list.Tail;
             }

@@ -54,10 +54,7 @@ namespace FP.Collections.Immutable {
         /// <returns><c>Nothing</c> if <paramref name="nullable"/> doesn't have a value;
         /// <c>Just(nullable.Value)</c> otherwise.</returns>
         public static Maybe<T> ToMaybe<T>(this T? nullable) where T : struct {
-            if (nullable.HasValue)
-                return Just(nullable.Value);
-            else
-                return Nothing<T>();
+            return nullable.HasValue ? Just(nullable.Value) : Nothing<T>();
         }
 
         /// <summary>
@@ -142,10 +139,14 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T">The type of wrapped object.</typeparam>
     /// <remarks>All instances which have value are <see cref="Just"/>, the only instance 
-    /// which doesn't have a value is <see cref="Nothing"/>.</remarks>
+    /// which doesn't have a value is <see cref="Nothing"/>.
+    /// 
+    /// While the class is declared to be <see cref="IEquatable{T}"/> and <see cref="IComparable{T}"/>,
+    /// this is only true if <typeparamref name="T"/> is <see cref="IEquatable{T}"/> and <see cref="IComparable{T}"/>!
+    /// </remarks>
     /// <seealso cref="Nullable{T}"/>
     [Serializable]
-    public abstract class Maybe<T> : IEnumerable<T> {
+    public abstract class Maybe<T> : IEnumerable<T>, IComparable<Maybe<T>>, IEquatable<Maybe<T>> {
         /// <summary>
         /// Gets the value, if it exists.
         /// </summary>
@@ -214,7 +215,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="default">The default value.</param>
         /// <returns></returns>
-        public T ValueWithDefault(T @default) {
+        public T ValueOrElse(T @default) {
             return HasValue ? Value : @default;
         }
 
@@ -224,8 +225,19 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="function">The function to call.</param>
         /// <param name="default">The default result.</param>
-        public R TryOrElse<R>(Func<T, R> function, R @default) {
+        public R MapOrElse<R>(Func<T, R> function, R @default) {
             return HasValue ? function(Value) : @default;
+        }
+
+        /// <summary>
+        /// If the current instance has a value, calls <paramref name="function"/> on it and returns <c>Just</c> the result.
+        /// Otherwise returns <c>Nothing</c>.
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="function">The function.</param>
+        /// <returns></returns>
+        public Maybe<R> Map<R>(Func<T, R> function) {
+            return HasValue ? Maybe.Just(function(Value)) : Maybe<R>.Nothing;
         }
 
         /// <summary>
@@ -247,7 +259,7 @@ namespace FP.Collections.Immutable {
         /// <param name="maybe">The maybe.</param>
         /// <returns><see cref="Value"/> if it exists; <c>default(T)</c> otherwise.</returns>
         public static explicit operator T(Maybe<T> maybe) {
-            return maybe.ValueWithDefault(default(T));
+            return maybe.ValueOrElse(default(T));
         }
         
         /// <summary>
@@ -324,6 +336,66 @@ namespace FP.Collections.Immutable {
             public override T Value {
                 get { return _value; }
             }
+        }
+
+        ///<summary>
+        ///Compares the current object with another object of the same type. <c>Nothing</c> is considered
+        ///to be less than all <c>Just(value)</c>; if both objects have values, they are compared.
+        ///</summary>
+        ///
+        ///<returns>
+        ///A 32-bit signed integer that indicates the relative order of the objects being compared. 
+        /// The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />. 
+        ///</returns>
+        ///
+        ///<param name="other">An object to compare with this object.</param>
+        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IComparable{T}"/>. Null is considered to be less than <c>Nothing</c>.</remarks>
+        public int CompareTo(Maybe<T> other) {
+            if (HasValue)
+                return other.HasValue
+                           ? Comparer<T>.Default.Compare(Value, other.Value)
+                           : 1;
+            else
+                return other != null
+                            ? (other.HasValue ? -1 : 0)
+                            : 1;
+        }
+
+        ///<summary>
+        ///Indicates whether the current object is equal to another object of the same type.
+        ///</summary>
+        ///
+        ///<returns>
+        ///true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        ///</returns>
+        ///
+        ///<param name="other">An object to compare with this object.</param>
+        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IEquatable{T}"/>.</remarks>
+        public bool Equals(Maybe<T> other) {
+            if (HasValue)
+                return other.HasValue && EqualityComparer<T>.Default.Equals(Value, other.Value);
+            else
+                return (other != null && !other.HasValue);
+        }
+
+        /// <summary>
+        /// Implements the equality operator. Calls <see cref="Equals"/>.
+        /// </summary>
+        /// <param name="one">The one.</param>
+        /// <param name="other">The other.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator==(Maybe<T> one, Maybe<T> other) {
+            return one == (object) null
+                       ? other == (object) null
+                       : one.Equals(other);
+        }
+
+        public static bool operator !=(Maybe<T> one, Maybe<T> other) {
+            return !(one == other);
+        }
+
+        public override int GetHashCode() {
+            return typeof(T).GetHashCode() ^ Value.GetHashCode();
         }
     }
 }
