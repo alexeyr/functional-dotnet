@@ -5,5 +5,6 @@ namespace FP.Collections.Immutable {
         T Head { get; }
         IImmutableList<T> Tail { get; }
         bool IsEmpty { get; }
+        IImmutableList<T> Prepend(T newHead);
     }
 }

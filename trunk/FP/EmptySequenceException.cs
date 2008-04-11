@@ -10,5 +10,7 @@ namespace FP {
             : base(message, innerException) {}
 
         public EmptySequenceException(string message) : base(message) {}
+
+        public EmptySequenceException() {}
     }
 }

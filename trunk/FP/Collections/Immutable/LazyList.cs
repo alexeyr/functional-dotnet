@@ -10,9 +10,14 @@ namespace FP.Collections.Immutable {
         readonly T _head;
         IEnumerator<T> _enumerator;
 
-        LazyList(T value, IEnumerator<T> enumerator) {
-            _head = value;
+        LazyList(T head, IEnumerator<T> enumerator) {
+            _head = head;
             _enumerator = enumerator;
+        }
+
+        LazyList(T head, IImmutableList<T> tail) {
+            _head = head;
+            _tail = tail;
         }
 
         public static IImmutableList<T> Create(IEnumerable<T> enumerable) {
@@ -40,5 +45,9 @@ namespace FP.Collections.Immutable {
         }
 
         public override T Head { get { return _head; } }
+
+        public override IImmutableList<T> Prepend(T newHead) {
+            return new LazyList<T>(newHead, this);
+        }
     }
 }
