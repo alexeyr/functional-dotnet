@@ -22,7 +22,7 @@ namespace FP.Collections.Immutable {
             if (t == null)
                 throw new ArgumentNullException();
             else
-                return new Maybe<T>.Just(t);
+                return new Maybe<T>(t);
         }
 
         /// <summary>
@@ -134,30 +134,37 @@ namespace FP.Collections.Immutable {
     }
 
     /// <summary>
-    /// This class represents an optional value, like <see cref="Nullable{T}"/>, but
+    /// This struct represents an optional value, like <see cref="Nullable{T}"/>, but
     /// works with reference types as well. Also known as <c>Option</c> in ML/F#/Scala.
     /// </summary>
     /// <typeparam name="T">The type of wrapped object.</typeparam>
-    /// <remarks>All instances which have value are <see cref="Just"/>, the only instance 
-    /// which doesn't have a value is <see cref="Nothing"/>.
-    /// 
+    /// <remarks>
     /// While the class is declared to be <see cref="IEquatable{T}"/> and <see cref="IComparable{T}"/>,
     /// this is only true if <typeparamref name="T"/> is <see cref="IEquatable{T}"/> and <see cref="IComparable{T}"/>!
     /// </remarks>
     /// <seealso cref="Nullable{T}"/>
     [Serializable]
-    public abstract class Maybe<T> : IEnumerable<T>, IComparable<Maybe<T>>, IEquatable<Maybe<T>> {
+    public struct Maybe<T> : IEnumerable<T>, IComparable<Maybe<T>>, IEquatable<Maybe<T>> {
+        private readonly bool _hasValue;
+        private readonly T _value;
+
         /// <summary>
         /// Gets the value, if it exists.
         /// </summary>
         /// <value>The value.</value>
-        abstract public T Value { get; }
+        /// <exception cref="ArgumentException">if this is <c>Nothing</c>.</exception>
+        public T Value { get {
+            if (_hasValue)
+                return Value;
+            else
+                throw new ArgumentException();
+        } }
 
         /// <summary>
         /// Gets a value indicating whether this instance has value.
         /// </summary>
         /// <value><c>true</c> if this instance has value; otherwise, <c>false</c>.</value>
-        abstract public bool HasValue { get; }
+        public bool HasValue { get { return _hasValue; } }
 
         ///<summary>
         ///Returns an enumerator that iterates through the collection.
@@ -167,7 +174,10 @@ namespace FP.Collections.Immutable {
         ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         ///</returns>
         ///<filterpriority>1</filterpriority>
-        public abstract IEnumerator<T> GetEnumerator();
+        public IEnumerator<T> GetEnumerator() {
+            if (_hasValue)
+                yield return _value;
+        }
 
         ///<summary>
         ///Returns an enumerator that iterates through a collection.
@@ -180,12 +190,21 @@ namespace FP.Collections.Immutable {
             return ((IEnumerable<T>)this).GetEnumerator();
         }
 
-        private Maybe() {}
-
         /// <summary>
         /// The wrapper for no value.
         /// </summary>
-        public static readonly NothingT Nothing = new NothingT();
+        public static readonly Maybe<T> Nothing;
+
+        internal Maybe(T value) {
+            if (value != null) {
+                _hasValue = true;
+                _value = value;
+            }
+            else {
+                _hasValue = false;
+                _value = default(T);
+            }
+        }
 
         /// <summary>
         /// If the current instance has a value, do <paramref name="action"/> with it.
@@ -230,6 +249,17 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
+        /// If the current instance has a value, calls <paramref name="function"/> on it and returns the result.
+        /// Otherwise calculates <paramref name="default"/> and returns it. This is the deferred version of
+        /// <see cref="MapOrElse(Func{T,R},R)"/>.
+        /// </summary>
+        /// <param name="function">The function to call.</param>
+        /// <param name="default">The default result.</param>
+        public R MapOrElse<R>(Func<T, R> function, Func<R> @default) {
+            return HasValue ? function(Value) : @default();
+        }
+
+        /// <summary>
         /// If the current instance has a value, calls <paramref name="function"/> on it and returns <c>Just</c> the result.
         /// Otherwise returns <c>Nothing</c>.
         /// </summary>
@@ -247,10 +277,7 @@ namespace FP.Collections.Immutable {
         /// <returns><c>Just(value)</c> if value is not null; <c>Nothing</c> otherwise.</returns>
         /// <remarks>It is implicit by parallel with <see cref="Nullable{T}"/>.</remarks>
         public static implicit operator Maybe<T>(T value) {
-            if (value != null)
-                return new Just(value);
-            else
-                return Nothing;            
+            return new Maybe<T>(value);
         }
 
         /// <summary>
@@ -262,82 +289,6 @@ namespace FP.Collections.Immutable {
             return maybe.ValueOrElse(default(T));
         }
         
-        /// <summary>
-        /// Represents the absence of value. Can't be called <c>Nothing</c> to prevent
-        /// naming conflict with <see cref="Maybe{T}.Nothing"/>.
-        /// </summary>
-        public class NothingT : Maybe<T> {
-            internal NothingT() {}
-
-            ///<summary>
-            ///Returns an enumerator that iterates through the collection.
-            ///</summary>
-            ///<returns>
-            ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> without any elements.
-            ///</returns>
-            ///<filterpriority>1</filterpriority>
-            public override IEnumerator<T> GetEnumerator() {
-                yield break;
-            }
-
-            /// <summary>
-            /// Gets a value indicating whether this instance has value.
-            /// </summary>
-            /// <value><c>false</c>.</value>
-            public override bool HasValue {
-                get { return false; }
-            }
-
-            /// <summary>
-            /// Gets the value, if it exists.
-            /// </summary>
-            /// <value>The value.</value>
-            /// <exception cref="ArgumentException"><c>ArgumentException</c>.</exception>
-            public override T Value {
-                get { throw new ArgumentException(); }
-            }
-        }
-
-        /// <summary>
-        /// Represents a non-null value.
-        /// </summary>
-        public class Just : Maybe<T> {
-            private readonly T _value;
-
-            internal Just(T value) {
-                _value = value;
-            }
-
-            ///<summary>
-            ///Returns an enumerator that iterates through the collection.
-            ///</summary>
-            ///
-            ///<returns>
-            ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> with a single element,
-            ///namely <see cref="Value"/>.
-            ///</returns>
-            ///<filterpriority>1</filterpriority>
-            public override IEnumerator<T> GetEnumerator() {
-                yield return _value;
-            }
-
-            /// <summary>
-            /// Gets a value indicating whether this instance has value.
-            /// </summary>
-            /// <value><c>true</c>.</value>
-            public override bool HasValue {
-                get { return true; }
-            }
-
-            /// <summary>
-            /// Gets the value, if it exists.
-            /// </summary>
-            /// <value>The value.</value>
-            public override T Value {
-                get { return _value; }
-            }
-        }
-
         ///<summary>
         ///Compares the current object with another object of the same type. <c>Nothing</c> is considered
         ///to be less than all <c>Just(value)</c>; if both objects have values, they are compared.
@@ -351,14 +302,11 @@ namespace FP.Collections.Immutable {
         ///<param name="other">An object to compare with this object.</param>
         /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IComparable{T}"/>. Null is considered to be less than <c>Nothing</c>.</remarks>
         public int CompareTo(Maybe<T> other) {
-            if (HasValue)
-                return other.HasValue
-                           ? Comparer<T>.Default.Compare(Value, other.Value)
-                           : 1;
-            else
-                return other != null
-                            ? (other.HasValue ? -1 : 0)
-                            : 1;
+            return HasValue
+                       ? (other.HasValue
+                              ? Comparer<T>.Default.Compare(Value, other.Value)
+                              : 1)
+                       : (other.HasValue ? -1 : 0);
         }
 
         ///<summary>
@@ -372,10 +320,9 @@ namespace FP.Collections.Immutable {
         ///<param name="other">An object to compare with this object.</param>
         /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IEquatable{T}"/>.</remarks>
         public bool Equals(Maybe<T> other) {
-            if (HasValue)
-                return other.HasValue && EqualityComparer<T>.Default.Equals(Value, other.Value);
-            else
-                return (other != null && !other.HasValue);
+            return HasValue
+                       ? other.HasValue && EqualityComparer<T>.Default.Equals(Value, other.Value)
+                       : !other.HasValue;
         }
 
         /// <summary>
@@ -385,9 +332,7 @@ namespace FP.Collections.Immutable {
         /// <param name="other">The other.</param>
         /// <returns>The result of the operator.</returns>
         public static bool operator==(Maybe<T> one, Maybe<T> other) {
-            return one == (object) null
-                       ? other == (object) null
-                       : one.Equals(other);
+            return one.Equals(other);
         }
 
         public static bool operator !=(Maybe<T> one, Maybe<T> other) {
