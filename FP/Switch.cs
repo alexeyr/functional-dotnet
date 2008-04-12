@@ -1,5 +1,4 @@
 ﻿/* (c) Alexey Romanov 2008
- * Functional .Net
  * Adapted from http://community.bartdesmet.net/blogs/bart/archive/2008/03/30/a-functional-c-type-switch.aspx
  * */
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿/* (C) Alexey Romanov 2008 */
+
+using System;
 using FP.Collections.Immutable;
 
 namespace FP.Linq {
