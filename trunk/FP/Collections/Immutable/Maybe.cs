@@ -1,4 +1,6 @@
-﻿using System;
+﻿/* (C) Alexey Romanov 2008 */
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using FP.HaskellNames;
@@ -341,6 +343,13 @@ namespace FP.Collections.Immutable {
 
         public override int GetHashCode() {
             return typeof(T).GetHashCode() ^ Value.GetHashCode();
+        }
+
+        public override bool Equals(object obj) {
+            var @this = this;
+            return Switch.ExprOn<object, bool>(obj)
+                .Case<Maybe<T>>(m => @this == m)
+                .Default(o => (object) @this == o);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿/* (C) Alexey Romanov 2008 */
+
+using System;
 
 namespace FP {
     /// <summary>

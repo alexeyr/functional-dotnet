@@ -42,9 +42,12 @@
     <Compile Include="Collections\Immutable\IImmutableList.cs" />
     <Compile Include="Collections\Immutable\ImmutableListBase.cs" />
     <Compile Include="Collections\Immutable\LazyList.cs" />
+    <Compile Include="Collections\Immutable\Lists.cs" />
+    <Compile Include="Collections\Mutable\Heap.cs" />
     <Compile Include="EmptySequenceException.cs" />
     <Compile Include="Enumerable2.cs" />
     <Compile Include="Enumerable3.cs" />
+    <Compile Include="Enumerators.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="Collections\Immutable\Maybe.cs" />
     <Compile Include="Linq\MaybeMonad.cs" />
@@ -55,9 +58,6 @@
     <Compile Include="Strings.cs" />
     <Compile Include="Switch.cs" />
     <Compile Include="Collections\Immutable\Triple.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Collections\Mutable\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

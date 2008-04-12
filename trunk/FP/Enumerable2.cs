@@ -1,4 +1,6 @@
-﻿using System;
+﻿/* (C) Alexey Romanov 2008 */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FP.Collections.Immutable;
@@ -90,6 +92,18 @@ namespace FP {
             //null                    :: [a] -> Bool
             //null []                 =  True
             //null (_:_)              =  False
+        }
+
+        /// <summary>
+        /// Conses <paramref name="t"/> to <paramref name="sequence"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t">The t.</param>
+        /// <param name="sequence">The sequence.</param>
+        /// <returns>A sequence starting with <paramref name="t"/> and continuing with
+        /// <paramref name="sequence"/>.</returns>
+        public static IEnumerable<T> Cons<T>(this T t, IEnumerable<T> sequence) {
+            return new[] {t}.Append(sequence);
         }
 
         #endregion
@@ -1292,5 +1306,23 @@ namespace FP {
         #region Generalized functions
 
         #endregion
+
+        /// <summary>
+        /// Converts the sequence to a lazy list, which allows memoizing its elements without
+        /// having to reevaluate them.
+        /// </summary>
+        /// <param name="sequence">The sequence.</param>
+        public static IImmutableList<T> ToLazyList<T>(this IEnumerable<T> sequence) {
+            return LazyList<T>.Create(sequence);
+        }
+
+        /// <summary>
+        /// Converts the sequence to a lazy list, which allows memoizing its elements without
+        /// having to reevaluate them.
+        /// </summary>
+        /// <param name="enumerator">The enumerator.</param>
+        public static IImmutableList<T> ToLazyList<T>(this IEnumerator<T> enumerator) {
+            return LazyList<T>.Create(enumerator);
+        }
     }
 }

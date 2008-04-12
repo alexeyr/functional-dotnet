@@ -1,3 +1,5 @@
+/* (C) Alexey Romanov 2008 */
+
 using System;
 using System.Collections.Generic;
 
