@@ -44,6 +44,8 @@
     <Compile Include="Collections\Immutable\LazyList.cs" />
     <Compile Include="Collections\Immutable\Lists.cs" />
     <Compile Include="Collections\Mutable\Heap.cs" />
+    <Compile Include="Collections\Mutable\PriorityQueue.cs" />
+    <Compile Include="ComparerConversions.cs" />
     <Compile Include="EmptySequenceException.cs" />
     <Compile Include="Enumerable2.cs" />
     <Compile Include="Enumerable3.cs" />
