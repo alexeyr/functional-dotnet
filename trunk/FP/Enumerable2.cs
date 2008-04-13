@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FP.Collections.Immutable;
+using FP.Collections.Mutable;
 using FP.HaskellNames;
 
 namespace FP {
@@ -1299,6 +1300,128 @@ namespace FP {
         public static IOrderedEnumerable<T> SortDescending<T>(
             this IEnumerable<T> sequence, IComparer<T> comparer) {
             return sequence.OrderByDescending(x => x, comparer);
+        }
+
+        /// <summary>
+        /// Returns bottom <paramref name="count"/> elements from <paramref name="sequence"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Bottom<T>(this IEnumerable<T> sequence, int count) where T : IComparable<T> {
+            return Bottom(sequence, count, Comparer<T>.Default, x => true);
+        }
+
+        /// <summary>
+        /// Returns bottom <paramref name="count"/> elements from <paramref name="sequence"/> by <paramref name="comparer"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Bottom<T>(this IEnumerable<T> sequence, int count,
+                                               IComparer<T> comparer) {
+            return Bottom(sequence, count, comparer, x => true);
+        }
+
+        /// <summary>
+        /// Returns bottom <paramref name="count"/> elements from <paramref name="sequence"/>
+        /// which satisfy <paramref name="predicate"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Bottom<T>(this IEnumerable<T> sequence, int count, Func<T, bool> predicate)
+        where T : IComparable<T> {
+            return Bottom(sequence, count, Comparer<T>.Default, predicate);
+        }
+
+        /// <summary>
+        /// Returns bottom <paramref name="count"/> elements from <paramref name="sequence"/> by <paramref name="comparer"/>
+        /// which satisfy <paramref name="predicate"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Bottom<T>(this IEnumerable<T> sequence, int count,
+            IComparer<T> comparer, Func<T, bool> predicate) {
+            var heap = Heap<T>.MaxHeap(count + 1, comparer);
+            int heapCount = 0;
+            using (var enumerator = sequence.GetEnumerator()) {
+                while (heapCount < count && enumerator.MoveNext() && predicate(enumerator.Current)) {
+                    heapCount++;
+                    heap.Add(enumerator.Current);
+                }
+                while (enumerator.MoveNext()) {
+                    heap.Add(enumerator.Current);
+                    heap.RemoveAndReturnRoot();
+                }
+            }
+            var list = new List<T>(heapCount);
+            while (heapCount > 0)
+                list.Add(heap.RemoveAndReturnRoot());
+            list.Reverse();
+            return list;
+        }
+
+        /// <summary>
+        /// Returns top <paramref name="count"/> elements from <paramref name="sequence"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Top<T>(this IEnumerable<T> sequence, int count) where T : IComparable<T> {
+            return Top(sequence, count, Comparer<T>.Default, x => true);
+        }
+
+        /// <summary>
+        /// Returns top <paramref name="count"/> elements from <paramref name="sequence"/> by <paramref name="comparer"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Top<T>(this IEnumerable<T> sequence, int count,
+                                               IComparer<T> comparer) {
+            return Top(sequence, count, comparer, x => true);
+        }
+
+        /// <summary>
+        /// Returns top <paramref name="count"/> elements from <paramref name="sequence"/>
+        /// which satisfy <paramref name="predicate"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Top<T>(this IEnumerable<T> sequence, int count, Func<T, bool> predicate)
+        where T : IComparable<T> {
+            return Top(sequence, count, Comparer<T>.Default, predicate);
+        }
+
+        /// <summary>
+        /// Returns top <paramref name="count"/> elements from <paramref name="sequence"/> by <paramref name="comparer"/>
+        /// which satisfy <paramref name="predicate"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Top<T>(this IEnumerable<T> sequence, 
+            int count, IComparer<T> comparer, Func<T, bool> predicate) {
+            return sequence.Bottom(count, comparer.Reverse(), predicate);
         }
 
         #endregion
