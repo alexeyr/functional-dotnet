@@ -133,6 +133,34 @@ namespace FP.Collections.Immutable {
         public static IEnumerable<R> MapMaybe<T, R>(this IEnumerable<T> sequence, Func<T, R?> function) where R : struct {
             return sequence.Map(function).SelectValues();
         }
+
+        /// <summary>
+        /// Tries the specified function.
+        /// </summary>
+        /// <typeparam name="T">The return type of the function.</typeparam>
+        /// <param name="function">The function.</param>
+        /// <returns><see cref="Maybe{T}.Nothing"/> if there were exceptions or the function returns <c>null</c>;
+        /// <c>Just(function())</c> otherwise.</returns>
+        public static Maybe<T> Try<T>(this Func<T> function) {
+            return function.Try<T, Exception>();
+        }
+
+        /// <summary>
+        /// Tries the specified function, catching only exceptions of type <typeparam name="E"/>.
+        /// </summary>
+        /// <typeparam name="T">The return type of the function.</typeparam>
+        /// <typeparam name="E">The type of exceptions to catch.</typeparam>
+        /// <param name="function">The function.</param>
+        /// <returns><see cref="Maybe{T}.Nothing"/> if there were exceptions or the function returns <c>null</c>;
+        /// <c>Just(function())</c> otherwise.</returns>
+        public static Maybe<T> Try<T, E>(this Func<T> function) where E : Exception {
+            try {
+                return new Maybe<T>(function());
+            }
+            catch (E) {
+                return new Maybe<T>();
+            }
+        }
     }
 
     /// <summary>
@@ -195,7 +223,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// The wrapper for no value.
         /// </summary>
-        public static readonly Maybe<T> Nothing;
+        public static readonly Maybe<T> Nothing = new Maybe<T>();
 
         internal Maybe(T value) {
             if (value != null) {
@@ -213,8 +241,8 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="action">The action to try.</param>
         /// <remarks>Called <c>may</c> in OCaml</remarks>
-        public void Try(Action<T> action) {
-            TryOrElse(action, Functions.DoNothing);
+        public void Do(Action<T> action) {
+            DoOrElse(action, Functions.DoNothing);
         }
 
         /// <summary>
@@ -223,7 +251,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="action">The action to try.</param>
         /// <param name="defaultAction">The default action.</param>
-        public void TryOrElse(Action<T> action, Action defaultAction) {
+        public void DoOrElse(Action<T> action, Action defaultAction) {
             if (HasValue)
                 action(Value);
             else
