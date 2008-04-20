@@ -52,6 +52,7 @@
     <Compile Include="Enumerators.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="Collections\Immutable\Maybe.cs" />
+    <Compile Include="Ints.cs" />
     <Compile Include="Linq\MaybeMonad.cs" />
     <Compile Include="NotFoundException.cs" />
     <Compile Include="Collections\Immutable\Pair.cs" />

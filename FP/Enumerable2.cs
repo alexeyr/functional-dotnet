@@ -104,7 +104,21 @@ namespace FP {
         /// <returns>A sequence starting with <paramref name="t"/> and continuing with
         /// <paramref name="sequence"/>.</returns>
         public static IEnumerable<T> Cons<T>(this T t, IEnumerable<T> sequence) {
-            return new[] { t }.Append(sequence);
+            yield return t;
+            foreach (var t1 in sequence)
+                yield return t1;
+        }
+
+        /// <summary>
+        /// Performs the specified action on each element of the sequence
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="action">The action.</param>
+        public static void ForEach<T>(this IEnumerable<T> sequence, Action<T> action) {
+            foreach (var t in sequence) {
+                action(t);
+            }
         }
 
         #endregion
@@ -219,10 +233,8 @@ namespace FP {
         /// should not be used for associative <paramref name="func"/>.
         /// </remarks>
         public static TAcc FoldRight<T, TAcc>(
-            this IEnumerable<T> sequence, TAcc initialAcc,
-            Func<T, TAcc, TAcc> func) {
-            return sequence.Reverse().Aggregate(initialAcc,
-                                                func.Flip());
+            this IEnumerable<T> sequence, TAcc initialAcc, Func<T, TAcc, TAcc> func) {
+            return sequence.Reverse().Aggregate(initialAcc, func.Flip());
 
             //foldr            :: (a -> b -> b) -> b -> [a] -> b
             //foldr k z xs = go xs
@@ -247,9 +259,8 @@ namespace FP {
         /// Unlike Haskell, <paramref name="func"/> usually won't be lazy, so this
         /// should not be used for associative <paramref name="func"/>.
         /// </remarks>
-        public static T FoldRight<T>(this IEnumerable<T> sequence,
-                                     Func<T, T, T> func) {
-            return sequence.Reverse().Aggregate(func);
+        public static T FoldRight<T>(this IEnumerable<T> sequence, Func<T, T, T> func) {
+            return sequence.Reverse().Aggregate(func.Flip());
 
             //foldr1                  :: (a -> a -> a) -> [a] -> a
             //foldr1 _ [x]            =  x
@@ -644,77 +655,6 @@ namespace FP {
             //cycle    :: [a] -> [a]
             //cycle [] = error "Prelude.cycle: empty list"
             //cycle xs = xs' where xs' = xs ++ xs'
-        }
-
-        /// <summary>Generates a sequence of integral numbers starting with a specified number.</summary>
-        /// <returns>An <see cref="IEnumerable{int}"/> that contains a range of sequential 
-        /// integral numbers up to <see cref="int.MaxValue"/>.</returns>
-        /// <param name="start">The value of the first integer in the sequence.</param>
-        public static IEnumerable<int> IntsFrom(int start) {
-            for (int i = start; i < int.MaxValue; i++)
-                yield return i;
-
-            //[start..]
-        }
-
-        /// <summary>Generates a sequence of integral numbers starting with a specified number
-        /// with a specified step.</summary>
-        /// <returns>An <see cref="IEnumerable{int}"/> that contains a range of 
-        /// integral numbers up to <see cref="int.MaxValue"/> or down to
-        /// <see cref="int.MinValue"/>.</returns>
-        /// <param name="start">The value of the first integer in the sequence.</param>
-        /// <param name="step">The difference between two consequent elements of the
-        /// sequence.</param>
-        /// <exception cref="ArgumentException">if <paramref name="step"/> equals 0.</exception>
-        public static IEnumerable<int> IntsFrom(int start, int step) {
-            if (step == 0)
-                throw new ArgumentException();
-            if (step > 0) {
-                for (int i = start; i < int.MaxValue; i += step)
-                    yield return i;
-                yield break;
-            }
-            for (int i = start; i > int.MinValue; i += step)
-                yield return i;
-
-            //[start, start + step..]
-        }
-
-        /// <summary>Generates a sequence of integral numbers starting and ending with a specified number.</summary>
-        /// <returns>An <see cref="IEnumerable{int}"/> that contains a range of sequential 
-        /// integral numbers.</returns>
-        /// <param name="start">The value of the first integer in the sequence.</param>
-        /// <param name="end">The value of the last integer in the sequence.</param>
-        public static IEnumerable<int> Range(int start, int end) {
-            for (int i = start; i <= end; i++)
-                yield return i;
-
-            //[start..end]
-        }
-
-        /// <summary>Generates a sequence of integral numbers starting and ending with a specified number
-        /// with a specified step.</summary>
-        /// <returns>An <see cref="IEnumerable{int}"/> that contains a range of 
-        /// sequential integral numbers.</returns>
-        /// <param name="start">The value of the first integer in the sequence.</param>
-        /// <param name="end">The value of the last integer in the sequence.</param>
-        /// <param name="step">The difference between two consequent elements of the
-        /// sequence.</param>
-        /// <exception cref="ArgumentException">if <paramref name="step"/> equals 0
-        /// or has a different sign from <c><paramref name="end"/> - <paramref name="start"/></c>.</exception>
-        public static IEnumerable<int> Range(int start, int end,
-                                             int step) {
-            if (step == 0 || step * (end - start) < 0)
-                throw new ArgumentException();
-            if (step > 0) {
-                for (int i = start; i <= end; i += step)
-                    yield return i;
-                yield break;
-            }
-            for (int i = start; i >= end; i += step)
-                yield return i;
-
-            //[start, start + step..end]
         }
 
         /// <summary>
@@ -1206,7 +1146,7 @@ namespace FP {
         /// <returns></returns>
         public static IEnumerable<Pair<int, T>> WithIndex<T>(
             this IEnumerable<T> sequence) {
-            return Zip(IntsFrom(0), sequence);
+            return Zip(Ints.From(0), sequence);
         }
 
         //TODO: Unzip
@@ -1262,8 +1202,8 @@ namespace FP {
         /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
-        public static IOrderedEnumerable<T> Sort<T>(
-            this IEnumerable<T> sequence) {
+        public static IOrderedEnumerable<T> Sort<T> (
+            this IEnumerable<T> sequence) where T : IComparable<T> {
             return sequence.Sort(Comparer<T>.Default);
         }
 
@@ -1286,7 +1226,7 @@ namespace FP {
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
         public static IOrderedEnumerable<T> SortDescending<T>(
-            this IEnumerable<T> sequence) {
+            this IEnumerable<T> sequence) where T : IComparable<T> {
             return sequence.SortDescending(Comparer<T>.Default);
         }
 
@@ -1355,18 +1295,22 @@ namespace FP {
             var heap = Heap<T>.MaxHeap(count + 1, comparer);
             int heapCount = 0;
             using (var enumerator = sequence.GetEnumerator()) {
-                while (heapCount < count && enumerator.MoveNext() && predicate(enumerator.Current)) {
-                    heapCount++;
-                    heap.Add(enumerator.Current);
-                }
-                while (enumerator.MoveNext()) {
-                    heap.Add(enumerator.Current);
-                    heap.RemoveAndReturnRoot();
-                }
+                while (heapCount < count && enumerator.MoveNext())
+                    if (predicate(enumerator.Current)) {
+                        heapCount++;
+                        heap.Add(enumerator.Current);
+                    }
+                while (enumerator.MoveNext())
+                    if (predicate(enumerator.Current)) {
+                        heap.Add(enumerator.Current);
+                        heap.RemoveAndReturnRoot();
+                    }
             }
             var list = new List<T>(heapCount);
-            while (heapCount > 0)
+            while (heapCount > 0) {
                 list.Add(heap.RemoveAndReturnRoot());
+                heapCount--;
+            }
             list.Reverse();
             return list;
         }
