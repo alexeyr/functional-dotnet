@@ -182,12 +182,12 @@ namespace FP.Collections.Immutable {
         /// Gets the value, if it exists.
         /// </summary>
         /// <value>The value.</value>
-        /// <exception cref="ArgumentException">if this is <c>Nothing</c>.</exception>
+        /// <exception cref="InvalidOperationException">if this doesn't have a value.</exception>
         public T Value { get {
             if (_hasValue)
                 return Value;
             else
-                throw new ArgumentException();
+                throw new InvalidOperationException("Maybe<T> doesn't have a value.");
         } }
 
         /// <summary>
@@ -272,13 +272,40 @@ namespace FP.Collections.Immutable {
             return HasValue ? Value : @default;
         }
         
+        ///// <summary>
+        ///// Similar to the <c>??<\c> operator.
+        ///// </summary>
+        ///// <seealso cref="ValueOrElse"/>
+        ///// <example><c>Nothing | 5 == 5.</c></example>
+        //public static T operator |(Maybe<T> maybe, T @default) {
+        //    return maybe._hasValue ? maybe.Value : @default;
+        //}
+
         /// <summary>
         /// Similar to the <c>??<\c> operator.
         /// </summary>
         /// <seealso cref="ValueOrElse"/>
-        public static T operator |(Maybe<T> maybe, T @default)
-        {
-            return maybe.HasValue ? maybe.Value : @default;
+        /// <example><c>Nothing || Just(3) || Just(5) == Just(3).</c></example>
+        public static Maybe<T> operator |(Maybe<T> maybe, Maybe<T> @default) {
+            return maybe._hasValue ? maybe : @default;
+        }
+
+        /// <summary>
+        /// Implements the operator true.
+        /// </summary>
+        /// <param name="maybe">The maybe.</param>
+        /// <returns><c>true</c> if <paramref name="maybe"/> has a value.</returns>
+        public static bool operator true(Maybe<T> maybe) {
+            return maybe._hasValue;
+        }
+
+        /// <summary>
+        /// Implements the operator false.
+        /// </summary>
+        /// <param name="maybe">The maybe.</param>
+        /// <returns><c>true</c> if <paramref name="maybe"/> doesn't have a value.</returns>
+        public static bool operator false(Maybe<T> maybe) {
+            return !maybe._hasValue;
         }
 
         /// <summary>

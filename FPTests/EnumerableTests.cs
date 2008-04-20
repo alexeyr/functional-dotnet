@@ -3,10 +3,8 @@ using Xunit;
 using FP;
 using XunitExtensions;
 
-namespace FPTests
-{
-    public class EnumerableTests
-    {
+namespace FPTests {
+    public class EnumerableTests {
         [Fact]
         public void TailShouldThrowOnEmptySeq() {
             var emptyList = Enumerable.Empty<int>();

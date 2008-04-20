@@ -45,15 +45,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="xunit, Version=1.0.0.1252, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Programming\Libraries\xUnitNet\xunit.dll</HintPath>
-    </Reference>
-    <Reference Include="xunitext, Version=1.0.0.1252, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Programming\Libraries\xUnitNet\xunitext.dll</HintPath>
-    </Reference>
-    <Reference Include="xunitext35, Version=1.0.0.1252, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Programming\Libraries\xUnitNet\xunitext35.dll</HintPath>
+      <HintPath>..\..\..\Programming\Libraries\.NET\xUnitNet\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
