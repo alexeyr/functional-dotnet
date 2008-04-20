@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/* (C) Alexey Romanov 2008 */
+
+using System;
 
 namespace FP.Collections.Immutable {
     /// <summary>

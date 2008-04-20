@@ -1,4 +1,6 @@
-﻿using Xunit;
+﻿/* (C) Alexey Romanov 2008 */
+
+using Xunit;
 
 namespace XunitExtensions {
     public class SequenceEqualException : AssertException {

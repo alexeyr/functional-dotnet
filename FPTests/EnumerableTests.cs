@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿/* (C) Alexey Romanov 2008 */
+
+using System.Linq;
 using Xunit;
 using FP;
 using XunitExtensions;
