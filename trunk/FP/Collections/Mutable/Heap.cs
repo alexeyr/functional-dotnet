@@ -207,17 +207,18 @@ namespace FP.Collections.Mutable {
         /// <param name="i"></param>
         /// <returns>The index of the greatest child of the i-th element or -1 if the i-th element has no children.</returns>
         private int GreatestChild(int i) {
-            int j;
             int k = 3 * i + 1;
             int count = _list.Count;
             if (k >= count) return -1;
             if (k + 1 >= count) return k;
-            j = _comparer.Compare(_list[k], _list[k + 1]) > 0
+            int j = _comparer.Compare(_list[k], _list[k + 1]) >= 0
                 ? k 
                 : k + 1;
-            return _comparer.Compare(_list[j], _list[k + 2]) > 0 
-                ? j 
-                : k + 2;
+            if (k + 2 >= count)
+                return j;
+            return _comparer.Compare(_list[j], _list[k + 2]) >= 0
+                       ? j
+                       : k + 2;
         }
 
         /// <summary>
@@ -279,8 +280,12 @@ namespace FP.Collections.Mutable {
         /// <exception cref="InvalidOperationException">if the heap is empty.</exception>
         public T RemoveAndReturnRoot() {
             if (_list.Count == 0)
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("The heap is empty");
             T root = _list[0];
+            if (_list.Count == 1) {
+                _list.Clear();
+                return root;
+            }
             Swap(0, _list.Count - 1);
             _list.RemoveAt(_list.Count - 1);
             SiftDown(0);

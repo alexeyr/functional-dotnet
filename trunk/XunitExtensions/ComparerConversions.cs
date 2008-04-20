@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FP {
+namespace XunitExtensions {
     /// <summary>
     /// A static class which provides conversions between <see cref="IComparer{T}"/> and <see cref="Comparison{T}"/>.
     /// </summary>

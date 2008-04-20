@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3F1C9E17-7027-4DBC-A68D-0383818E7E9C}</ProjectGuid>
+    <ProjectGuid>{8729126E-E1DD-413E-8051-2007E5FCDBA7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FPTests</RootNamespace>
-    <AssemblyName>FPTests</AssemblyName>
+    <RootNamespace>XunitExtensions</RootNamespace>
+    <AssemblyName>XunitExtensions</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -47,31 +47,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Programming\Libraries\xUnitNet\xunit.dll</HintPath>
     </Reference>
-    <Reference Include="xunitext, Version=1.0.0.1252, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Programming\Libraries\xUnitNet\xunitext.dll</HintPath>
-    </Reference>
-    <Reference Include="xunitext35, Version=1.0.0.1252, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Programming\Libraries\xUnitNet\xunitext35.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EnumerableTests.cs" />
-    <Compile Include="MaybeTests.cs" />
+    <Compile Include="Assert2.cs" />
+    <Compile Include="AssertionExtensionMethods.cs" />
+    <Compile Include="ComparerConversions.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringTests.cs" />
-    <Compile Include="SwitchTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FP\FP.csproj">
-      <Project>{891E86F6-A992-4B42-B88A-F1F46EA0FCE1}</Project>
-      <Name>FP</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\XunitExtensions\XunitExtensions.csproj">
-      <Project>{8729126E-E1DD-413E-8051-2007E5FCDBA7}</Project>
-      <Name>XunitExtensions</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

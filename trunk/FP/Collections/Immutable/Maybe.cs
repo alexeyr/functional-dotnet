@@ -221,11 +221,15 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// The wrapper for no value.
+        /// Represents absence of value.
         /// </summary>
         public static readonly Maybe<T> Nothing = new Maybe<T>();
 
-        internal Maybe(T value) {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Maybe&lt;T&gt;"/> struct.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public Maybe(T value) {
             if (value != null) {
                 _hasValue = true;
                 _value = value;
@@ -266,6 +270,15 @@ namespace FP.Collections.Immutable {
         /// <returns></returns>
         public T ValueOrElse(T @default) {
             return HasValue ? Value : @default;
+        }
+        
+        /// <summary>
+        /// Similar to the <c>??<\c> operator.
+        /// </summary>
+        /// <seealso cref="ValueOrElse"/>
+        public static T operator |(Maybe<T> maybe, T @default)
+        {
+            return maybe.HasValue ? maybe.Value : @default;
         }
 
         /// <summary>
