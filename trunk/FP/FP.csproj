@@ -39,10 +39,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Immutable\Either.cs" />
     <Compile Include="Collections\Immutable\IImmutableList.cs" />
     <Compile Include="Collections\Immutable\ImmutableListBase.cs" />
     <Compile Include="Collections\Immutable\LazyList.cs" />
     <Compile Include="Collections\Immutable\Lists.cs" />
+    <Compile Include="Collections\Immutable\Result.cs" />
+    <Compile Include="Collections\Immutable\Unit.cs" />
     <Compile Include="Collections\Mutable\Heap.cs" />
     <Compile Include="Collections\Mutable\PriorityQueue.cs" />
     <Compile Include="ComparerConversions.cs" />

@@ -32,5 +32,21 @@ namespace FPTests {
                         select x + y;
             Assert.False(query.HasValue);
         }
+
+        [Fact]
+        public void Maybe_DefaultOperatorShouldWork() {
+            Assert.Equal(Maybe<int>.Nothing || Maybe.Just(3) || Maybe.Just(5), Maybe.Just(3));
+        }
+
+        [Fact]
+        public void Maybe_DefaultOperatorShouldWorkWithValues1() {
+            Assert.Equal(Maybe<int>.Nothing || Maybe.Just(3) || 5, Maybe.Just(3));
+        }
+
+        [Fact]
+        public void Maybe_DefaultOperatorShouldWorkWithValues2() {
+            Assert.Equal(Maybe<int>.Nothing || Maybe<int>.Nothing || 5, 5);
+        }
+
     }
 }

@@ -36,13 +36,13 @@ namespace FP.Collections.Immutable {
     /// </summary>
     public static class ImmutableLists {
         /// <summary>
-        /// Does something depending on whether the given list is empty or not.
+        /// Case analysis on lists.
         /// </summary>
         /// <typeparam name="T">The type of the elements of the list.</typeparam>
         /// <param name="list">The list.</param>
         /// <param name="ifEmpty">The action to do if the list is empty.</param>
         /// <param name="ifNotEmpty">The action to do if the list is not empty.</param>
-        public static void MatchWith<T>(
+        public static void Match<T>(
             this IImmutableList<T> list, Action ifEmpty, Action<T, IImmutableList<T>> ifNotEmpty) {
             if (list.IsEmpty)
                 ifEmpty();
@@ -51,14 +51,14 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// Returns something depending on whether the given list is empty or not.
+        /// Case analysis on lists.
         /// </summary>
         /// <typeparam name="T">The type of the elements of the list.</typeparam>
         /// <typeparam name="R">The return type of the functions.</typeparam>
         /// <param name="list">The list.</param>
         /// <param name="ifEmpty">The function to call if the list is empty.</param>
         /// <param name="ifNotEmpty">The function to call if the list is not empty.</param>
-        public static R MatchWith<T,R>(
+        public static R Match<T,R>(
             this IImmutableList<T> list, Func<R> ifEmpty, Func<T, IImmutableList<T>, R> ifNotEmpty) {
             return list.IsEmpty ? ifEmpty() : ifNotEmpty(list.Head, list.Tail);
         }
