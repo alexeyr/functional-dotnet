@@ -1,4 +1,6 @@
-﻿using FP.Collections.Immutable;
+﻿/* (C) Alexey Romanov 2008 */
+
+using FP.Collections.Immutable;
 using FP.Linq;
 using Xunit;
 

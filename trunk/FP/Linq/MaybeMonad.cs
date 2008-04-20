@@ -5,7 +5,7 @@ using FP.Collections.Immutable;
 
 namespace FP.Linq {
     /// <summary>
-    /// Implements query pattern on <see cref="Maybe"/>. Makes <see cref="Maybe{T}"/> a monad.
+    /// Implements query pattern on <see cref="Maybe{T}"/>. Makes <see cref="Maybe{T}"/> a monad.
     /// </summary>
     public static class MaybeMonad {
         public static Maybe<T> Where<T>(this Maybe<T> maybe, Func<T, bool> function) {

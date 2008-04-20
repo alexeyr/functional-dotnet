@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿/* (C) Alexey Romanov 2008 */
+
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using FP;
