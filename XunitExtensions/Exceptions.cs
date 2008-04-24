@@ -4,9 +4,6 @@ using Xunit;
 
 namespace XunitExtensions {
     public class SequenceEqualException : AssertException {
-        public SequenceEqualException(int index) : 
-            base(string.Format("Sequences are different at index {0}", index)) {}
-
         public SequenceEqualException(int index, object expected, object actual) :
             base(string.Format("Sequences are different at index {0}: expected {1} but was {2}", 
             index, expected, actual)) {}

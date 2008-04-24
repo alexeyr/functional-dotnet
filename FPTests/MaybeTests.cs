@@ -1,5 +1,6 @@
 ﻿/* (C) Alexey Romanov 2008 */
 
+using System;
 using FP.Collections.Immutable;
 using FP.Linq;
 using Xunit;
@@ -8,7 +9,7 @@ namespace FPTests {
     public class MaybeTests {
         [Fact]
         public void Maybe_NullShouldConvertToNothing() {
-            Maybe<string> m = (string) null;
+            Maybe<string> m = (string)null;
             Assert.Equal(m, Maybe.Nothing<string>());
             Assert.False(m.HasValue);
         }
@@ -50,5 +51,11 @@ namespace FPTests {
             Assert.Equal(Maybe<int>.Nothing || Maybe<int>.Nothing || 5, 5);
         }
 
+        [Fact]
+        public void Maybe_TryCatchesExceptions() {
+            int zero = 0;
+            Assert.Equal(Maybe<int>.Nothing, Maybe.Try(() => 1 / zero));
+            Assert.Equal(Maybe<int>.Nothing, Maybe.Try<int, DivideByZeroException>(() => 1 / zero));
+        }
     }
 }
