@@ -82,6 +82,17 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
+        /// An explicit conversion from <typeparamref name="T"/> to <see cref="Maybe{T}"/>.
+        /// Works the same as the implicit cast.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value to convert.</param>
+        /// <returns></returns>
+        public static Maybe<T> Wrap<T>(T value) {
+            return value;
+        }
+
+        /// <summary>
         /// Selects the values of elements which have them.
         /// </summary>
         /// <param name="sequence">The sequence.</param>

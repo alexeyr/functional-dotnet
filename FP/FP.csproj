@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\Immutable\Either.cs" />
+    <Compile Include="Collections\Immutable\IImmutableDictionary.cs" />
     <Compile Include="Collections\Immutable\IImmutableList.cs" />
     <Compile Include="Collections\Immutable\ImmutableListBase.cs" />
     <Compile Include="Collections\Immutable\LazyList.cs" />
@@ -47,8 +48,10 @@
     <Compile Include="Collections\Immutable\Result.cs" />
     <Compile Include="Collections\Immutable\Unit.cs" />
     <Compile Include="Collections\Mutable\Heap.cs" />
+    <Compile Include="Collections\Mutable\IMutableDictionary.cs" />
     <Compile Include="Collections\Mutable\PriorityQueue.cs" />
     <Compile Include="ComparerConversions.cs" />
+    <Compile Include="Continuations.cs" />
     <Compile Include="EmptySequenceException.cs" />
     <Compile Include="Enumerable2.cs" />
     <Compile Include="Enumerable3.cs" />
@@ -56,6 +59,7 @@
     <Compile Include="Functions.cs" />
     <Compile Include="Collections\Immutable\Maybe.cs" />
     <Compile Include="Ints.cs" />
+    <Compile Include="Linq\ContinuationMonad.cs" />
     <Compile Include="Linq\MaybeMonad.cs" />
     <Compile Include="Linq\ResultMonad.cs" />
     <Compile Include="NotFoundException.cs" />
