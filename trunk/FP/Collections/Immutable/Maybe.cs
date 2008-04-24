@@ -67,10 +67,7 @@ namespace FP.Collections.Immutable {
         /// <returns><c>null</c> if <paramref name="maybe"/> is <c>Nothing</c>;
         /// <c>maybe.Value</c> otherwise.</returns>
         public static T? ToNullable<T>(this Maybe<T> maybe) where T : struct {
-            if (maybe.HasValue)
-                return maybe.Value;
-            else
-                return null;
+            return maybe.MapOrElse(x => x, null);
         }
 
         /// <summary>
@@ -185,7 +182,7 @@ namespace FP.Collections.Immutable {
         /// <exception cref="InvalidOperationException">if this doesn't have a value.</exception>
         public T Value { get {
             if (_hasValue)
-                return Value;
+                return _value;
             else
                 throw new InvalidOperationException("Maybe<T> doesn't have a value.");
         } }
@@ -257,7 +254,7 @@ namespace FP.Collections.Immutable {
         /// <param name="defaultAction">The default action.</param>
         public void DoOrElse(Action<T> action, Action defaultAction) {
             if (HasValue)
-                action(Value);
+                action(_value);
             else
                 defaultAction();
         }
@@ -269,7 +266,7 @@ namespace FP.Collections.Immutable {
         /// <param name="default">The default value.</param>
         /// <returns></returns>
         public T ValueOrElse(T @default) {
-            return HasValue ? Value : @default;
+            return HasValue ? _value : @default;
         }
         
         ///// <summary>
@@ -315,7 +312,7 @@ namespace FP.Collections.Immutable {
         /// <param name="function">The function to call.</param>
         /// <param name="default">The default result.</param>
         public R MapOrElse<R>(Func<T, R> function, R @default) {
-            return HasValue ? function(Value) : @default;
+            return HasValue ? function(_value) : @default;
         }
 
         /// <summary>
@@ -326,7 +323,7 @@ namespace FP.Collections.Immutable {
         /// <param name="function">The function to call.</param>
         /// <param name="default">The default result.</param>
         public R MapOrElse<R>(Func<T, R> function, Func<R> @default) {
-            return HasValue ? function(Value) : @default();
+            return HasValue ? function(_value) : @default();
         }
 
         /// <summary>
@@ -337,7 +334,7 @@ namespace FP.Collections.Immutable {
         /// <param name="function">The function.</param>
         /// <returns></returns>
         public Maybe<R> Map<R>(Func<T, R> function) {
-            return HasValue ? Maybe.Just(function(Value)) : Maybe<R>.Nothing;
+            return HasValue ? Maybe.Just(function(_value)) : Maybe<R>.Nothing;
         }
 
         /// <summary>
@@ -374,7 +371,7 @@ namespace FP.Collections.Immutable {
         public int CompareTo(Maybe<T> other) {
             return HasValue
                        ? (other.HasValue
-                              ? Comparer<T>.Default.Compare(Value, other.Value)
+                              ? Comparer<T>.Default.Compare(_value, other._value)
                               : 1)
                        : (other.HasValue ? -1 : 0);
         }
@@ -391,7 +388,7 @@ namespace FP.Collections.Immutable {
         /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IEquatable{T}"/>.</remarks>
         public bool Equals(Maybe<T> other) {
             return HasValue
-                       ? other.HasValue && EqualityComparer<T>.Default.Equals(Value, other.Value)
+                       ? other.HasValue && EqualityComparer<T>.Default.Equals(_value, other._value)
                        : !other.HasValue;
         }
 
@@ -410,7 +407,7 @@ namespace FP.Collections.Immutable {
         }
 
         public override int GetHashCode() {
-            return typeof(T).GetHashCode() ^ Value.GetHashCode();
+            return typeof (T).GetHashCode() ^ MapOrElse(x => x.GetHashCode(), 0);
         }
 
         public override bool Equals(object obj) {
