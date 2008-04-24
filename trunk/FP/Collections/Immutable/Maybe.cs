@@ -3,6 +3,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Globalization;
+using System.Net;
 using FP.HaskellNames;
 
 // ReSharper disable RedundantIfElseBlock
@@ -93,6 +96,16 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
+        /// Flattens the specified maybe.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="maybe">The maybe.</param>
+        /// <returns></returns>
+        public static Maybe<T> Flatten<T>(this Maybe<Maybe<T>> maybe) {
+            return maybe.Map(m => m.Value);
+        }
+
+        /// <summary>
         /// Selects the values of elements which have them.
         /// </summary>
         /// <param name="sequence">The sequence.</param>
@@ -169,6 +182,327 @@ namespace FP.Collections.Immutable {
                 return new Maybe<T>();
             }
         }
+
+#region Tries -- The versions of "Try..." methods from the framework
+        /// <summary>
+        /// Creates a new Uri using the specified String instance and a UriKind.
+        /// </summary>
+        public static Maybe<Uri> CreateUri(string uriString, UriKind uriKind) {
+            Uri uri;
+            return Uri.TryCreate(uriString, uriKind, out uri) ? uri : Nothing<Uri>();
+        }
+
+        /// <summary>
+        /// Creates a new Uri using the specified base and relative String instances.
+        /// </summary>
+        public static Maybe<Uri> CreateUri(Uri baseUri, string relativeUri) {
+            Uri uri;
+            return Uri.TryCreate(baseUri, relativeUri, out uri) ? uri : Nothing<Uri>();
+        }
+
+        /// <summary>
+        /// Creates a new Uri using the specified base and relative Uri instances.
+        /// </summary>
+        public static Maybe<Uri> CreateUri(Uri baseUri, Uri relativeUri) {
+            Uri uri;
+            return Uri.TryCreate(baseUri, relativeUri, out uri) ? uri : Nothing<Uri>();
+        }
+
+        /// <summary>
+        /// Retrieves the value corresponding to the specified key.
+        /// </summary>
+        /// <remarks>This method doesn't distinguish between cases when the value is <c>null</c>
+        /// and when the dictionary doesn't contain the key. Both cases return <c>Nothing</c>.</remarks>
+        public static Maybe<TValue> GetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key) {
+            TValue value;
+            return dictionary.TryGetValue(key, out value) ? value : Nothing<TValue>();
+        }
+
+        /// <summary>
+        /// Retrieves a value corresponding to the supplied key from this DbConnectionStringBuilder.
+        /// </summary>
+        public static Maybe<object> GetValue(this DbConnectionStringBuilder connectionStringBuilder, string keyword) {
+            object value;
+            return connectionStringBuilder.TryGetValue(keyword, out value) ? FromValue(value) : Nothing<object>();
+        }
+
+        public static class Parse {
+            /// <summary>
+            /// Parses a string which represents an <see cref="int"/>.
+            /// </summary>
+            public static Maybe<int> Int(string s) {
+                int i;
+                return int.TryParse(s, out i) ? i : Nothing<int>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="int"/>.
+            /// </summary>
+            public static Maybe<int> Int(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                int i;
+                return int.TryParse(s, styles, formatProvider, out i) ? i : Nothing<int>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents a <see cref="DateTime"/>.
+            /// </summary>
+            public static Maybe<DateTime> DateTime(string s) {
+                DateTime dateTime;
+                return System.DateTime.TryParse(s, out dateTime) ? dateTime : Nothing<DateTime>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents a <see cref="DateTime"/>.
+            /// </summary>
+            public static Maybe<DateTime> DateTime(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
+                DateTime dateTime;
+                return System.DateTime.TryParse(s, formatProvider, styles, out dateTime) ? dateTime : Nothing<DateTime>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents a <see cref="DateTimeOffset"/>.
+            /// </summary>
+            public static Maybe<DateTimeOffset> DateTimeOffset(string s) {
+                DateTimeOffset offset;
+                return System.DateTimeOffset.TryParse(s, out offset) ? offset : Nothing<DateTimeOffset>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents a <see cref="DateTimeOffset"/>.
+            /// </summary>
+            public static Maybe<DateTimeOffset> DateTimeOffset(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
+                DateTimeOffset offset;
+                return System.DateTimeOffset.TryParse(s, formatProvider, styles, out offset) ? offset : Nothing<DateTimeOffset>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents a <see cref="DateTime"/>.
+            /// </summary>
+            public static Maybe<DateTime> ExactDateTime(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
+                DateTime dateTime;
+                return System.DateTime.TryParseExact(s, format, formatProvider, styles, out dateTime) ? dateTime : Nothing<DateTime>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents a <see cref="DateTime"/>.
+            /// </summary>
+            public static Maybe<DateTime> ExactDateTime(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
+                DateTime dateTime;
+                return System.DateTime.TryParseExact(s, formats, formatProvider, styles, out dateTime) ? dateTime : Nothing<DateTime>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents a <see cref="DateTimeOffset"/>.
+            /// </summary>
+            public static Maybe<DateTimeOffset> ExactDateTimeOffset(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
+                DateTimeOffset offset;
+                return System.DateTimeOffset.TryParseExact(s, format, formatProvider, styles, out offset) ? offset : Nothing<DateTimeOffset>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents a <see cref="DateTimeOffset"/>.
+            /// </summary>
+            public static Maybe<DateTimeOffset> ExactDateTimeOffset(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
+                DateTimeOffset offset;
+                return System.DateTimeOffset.TryParseExact(s, formats, formatProvider, styles, out offset) ? offset : Nothing<DateTimeOffset>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents a <see cref="TimeSpan"/>.
+            /// </summary>
+            public static Maybe<TimeSpan> TimeSpan(string s) {
+                TimeSpan offset;
+                return System.TimeSpan.TryParse(s, out offset) ? offset : Nothing<TimeSpan>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="int"/>.
+            /// </summary>
+            public static Maybe<bool> Bool(string s) {
+                bool b;
+                return bool.TryParse(s, out b) ? b : Nothing<bool>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="int"/>.
+            /// </summary>
+            public static Maybe<char> Char(string s) {
+                char c;
+                return char.TryParse(s, out c) ? c : Nothing<char>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="byte"/>.
+            /// </summary>
+            public static Maybe<byte> Byte(string s) {
+                byte b;
+                return byte.TryParse(s, out b) ? b : Nothing<byte>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="byte"/>.
+            /// </summary>
+            public static Maybe<byte> Byte(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                byte b;
+                return byte.TryParse(s, styles, formatProvider, out b) ? b : Nothing<byte>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="decimal"/>.
+            /// </summary>
+            public static Maybe<decimal> Decimal(string s) {
+                decimal d;
+                return decimal.TryParse(s, out d) ? d : Nothing<decimal>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="decimal"/>.
+            /// </summary>
+            public static Maybe<decimal> Decimal(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                decimal d;
+                return decimal.TryParse(s, styles, formatProvider, out d) ? d : Nothing<decimal>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="double"/>.
+            /// </summary>
+            public static Maybe<double> Double(string s) {
+                double d;
+                return double.TryParse(s, out d) ? d : Nothing<double>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="double"/>.
+            /// </summary>
+            public static Maybe<double> Double(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                double d;
+                return double.TryParse(s, styles, formatProvider, out d) ? d : Nothing<double>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="short"/>.
+            /// </summary>
+            public static Maybe<short> Short(string s) {
+                short s1;
+                return short.TryParse(s, out s1) ? s1 : Nothing<short>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="short"/>.
+            /// </summary>
+            public static Maybe<short> Short(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                short s1;
+                return short.TryParse(s, styles, formatProvider, out s1) ? s1 : Nothing<short>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="long"/>.
+            /// </summary>
+            public static Maybe<long> Long(string s) {
+                long l;
+                return long.TryParse(s, out l) ? l : Nothing<long>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="long"/>.
+            /// </summary>
+            public static Maybe<long> Long(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                long l;
+                return long.TryParse(s, styles, formatProvider, out l) ? l : Nothing<long>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="sbyte"/>.
+            /// </summary>
+            public static Maybe<sbyte> Sbytes(string s) {
+                sbyte s1;
+                return sbyte.TryParse(s, out s1) ? s1 : Nothing<sbyte>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="sbyte"/>.
+            /// </summary>
+            public static Maybe<sbyte> Sbyte(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                sbyte s1;
+                return sbyte.TryParse(s, styles, formatProvider, out s1) ? s1 : Nothing<sbyte>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="float"/>.
+            /// </summary>
+            public static Maybe<float> Float(string s) {
+                float f;
+                return float.TryParse(s, out f) ? f : Nothing<float>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="float"/>.
+            /// </summary>
+            public static Maybe<float> Float(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                float f;
+                return float.TryParse(s, styles, formatProvider, out f) ? f : Nothing<float>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="ushort"/>.
+            /// </summary>
+            public static Maybe<ushort> Ushort(string s) {
+                ushort u;
+                return ushort.TryParse(s, out u) ? u : Nothing<ushort>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="ushort"/>.
+            /// </summary>
+            public static Maybe<ushort> Ushort(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                ushort u;
+                return ushort.TryParse(s, styles, formatProvider, out u) ? u : Nothing<ushort>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="uint"/>.
+            /// </summary>
+            public static Maybe<uint> Uint(string s) {
+                uint u;
+                return uint.TryParse(s, out u) ? u : Nothing<uint>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="uint"/>.
+            /// </summary>
+            public static Maybe<uint> Uint(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                uint u;
+                return uint.TryParse(s, styles, formatProvider, out u) ? u : Nothing<uint>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="ulong"/>.
+            /// </summary>
+            public static Maybe<ulong> Ulong(string s) {
+                ulong u;
+                return ulong.TryParse(s, out u) ? u : Nothing<ulong>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="ulong"/>.
+            /// </summary>
+            public static Maybe<ulong> Ulong(string s, NumberStyles styles, IFormatProvider formatProvider) {
+                ulong u;
+                return ulong.TryParse(s, styles, formatProvider, out u) ? u : Nothing<ulong>();
+            }
+
+            /// <summary>
+            /// Parses a string which represents an <see cref="ulong"/>.
+            /// </summary>
+            public static Maybe<IPAddress> IPAddress(string s) {
+                IPAddress address;
+                return System.Net.IPAddress.TryParse(s, out address) ? address : Nothing<IPAddress>();
+            }            
+        }
+
+
+
+#endregion
     }
 
     /// <summary>
