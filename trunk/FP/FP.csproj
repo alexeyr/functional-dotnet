@@ -53,8 +53,8 @@
     <Compile Include="ComparerConversions.cs" />
     <Compile Include="Continuations.cs" />
     <Compile Include="EmptySequenceException.cs" />
-    <Compile Include="Enumerable2.cs" />
-    <Compile Include="Enumerable3.cs" />
+    <Compile Include="Enumerables.cs" />
+    <Compile Include="Enumerables2.cs" />
     <Compile Include="Enumerators.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="Collections\Immutable\Maybe.cs" />
