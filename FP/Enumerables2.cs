@@ -16,7 +16,7 @@ namespace FP.HaskellNames {
     /// 
     /// See also the Remarks for <see cref="Enumerable"/>.
     /// </remarks>
-    public static class Enumerable3 {
+    public static class Enumerables2 {
         #region Basic Functions
 
         /// <summary>

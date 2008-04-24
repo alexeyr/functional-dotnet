@@ -126,7 +126,7 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// A version of <see cref="Enumerable3.Map{T,TR}"/> which can throw away elements.
+        /// A version of <see cref="Enumerables2.Map{T,TR}"/> which can throw away elements.
         /// In particular, if <c>function(x)</c> doesn't have a value for an element <c>x</c> of 
         /// the <paramref name="sequence"/>, no element is included in the result; if it has value <c>y</c>,
         /// <c>y</c> is included in the list.
@@ -141,7 +141,7 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// A version of <see cref="Enumerable3.Map{T,TR}"/> which can throw away elements.
+        /// A version of <see cref="Enumerables2.Map{T,TR}"/> which can throw away elements.
         /// In particular, if <c>function(x)</c> doesn't have a value for an element <c>x</c> of 
         /// the <paramref name="sequence"/>, no element is included in the result; if it has value <c>y</c>,
         /// <c>y</c> is included in the list.

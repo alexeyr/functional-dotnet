@@ -17,7 +17,7 @@ namespace FP.Linq {
         }
 
         public static Continuation<T2, R> SelectMany<T1, T2, R>(this Continuation<T1, R> cont, Func<T1, Continuation<T2, R>> function) {
-            return comp => cont(function.Compose<T1, T2, R>(comp));
+            return comp => cont(t1 => function(t1)(comp));
         }
     }
 }

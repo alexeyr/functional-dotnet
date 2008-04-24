@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace FP.Collections.Immutable {
     /// <summary>
-    /// More specific versions of some methods from <see cref="Enumerable2"/> and
+    /// More specific versions of some methods from <see cref="Enumerables"/> and
     /// <see cref="Enumerable"/>
     /// </summary>
     public static class Lists {

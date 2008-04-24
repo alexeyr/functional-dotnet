@@ -12,7 +12,7 @@ namespace FP {
     /// Provides a set of static (Shared in Visual Basic) methods for querying objects that 
     /// implement <see cref="IEnumerable{T}"/>. Contains the methods from the Haskell Data.List 
     /// module which are absent in LINQ. For alternate names for methods present in LINQ see 
-    /// <see cref="Enumerable3"/>.
+    /// <see cref="Enumerables2"/>.
     /// </summary>
     /// <remarks>
     /// The source of each method includes the Haskell version as a comment at the end.
@@ -22,7 +22,7 @@ namespace FP {
     /// 
     /// See also the Remarks for <see cref="Enumerable"/>.
     /// </remarks>
-    public static class Enumerable2 {
+    public static class Enumerables {
         #region Basic Functions
 
         /// <summary>Returns all elements of the sequence except the first.</summary>
