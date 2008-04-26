@@ -37,7 +37,8 @@ namespace FP.Collections.Immutable {
     }
 
     /// <summary>
-    /// A class which describes a result of a caluculation, which can succeed or fail.
+    /// A class which describes a result of a calculation. This is either a <see cref="Success"/> 
+    /// or a <see cref="Failure"/>.
     /// </summary>
     /// <seealso cref="Either{L,R}"/>
     /// <seealso cref="Maybe{T}"/>
