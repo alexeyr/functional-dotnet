@@ -58,6 +58,10 @@
     <Compile Include="Enumerators.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="Collections\Immutable\Maybe.cs" />
+    <Compile Include="Future\CyclicFutureException.cs" />
+    <Compile Include="Future\Future.cs" />
+    <Compile Include="Future\Promise.cs" />
+    <Compile Include="Future\PromiseAlreadyFulfilledException.cs" />
     <Compile Include="Ints.cs" />
     <Compile Include="Linq\ContinuationMonad.cs" />
     <Compile Include="Linq\MaybeMonad.cs" />

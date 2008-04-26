@@ -66,11 +66,35 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// Gets the wlement at the specified index.
+        /// Gets the element at the specified index.
         /// </summary>
         /// <value></value>
         public T this[int index] {
             get { return this.ElementAt(index); }
+        }
+
+        public static bool operator ==(ImmutableListBase<T> list1, ImmutableListBase<T> list2) {
+            return list1 == null
+                ? list2 == null
+                : list2 != null && list1.SequenceEqual(list2);
+        }
+
+        public static bool operator !=(ImmutableListBase<T> list1, ImmutableListBase<T> list2) {
+            return !(list1 == list2);
+        }
+
+        protected bool Equals(ImmutableListBase<T> list) {
+            return list != null && this.SequenceEqual(list);
+        }
+
+        public override bool Equals(object obj) {
+            return ReferenceEquals(this, obj) || Equals(obj as ImmutableListBase<T>);
+        }
+
+        public override int GetHashCode() {
+            return IsEmpty 
+                ? typeof(T).GetHashCode()
+                : Head.GetHashCode() + 29*Tail.GetHashCode();
         }
     }
 }
