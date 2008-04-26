@@ -75,6 +75,21 @@ namespace FP.Collections.Immutable {
         public abstract Maybe<T> ToMaybe();
 
         /// <summary>
+        /// Gets the value, if the result is a success; throws an exception otherwise.
+        /// </summary>
+        /// <value>The value, if the result is a success.</value>
+        public abstract T Value { get; }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="FP.Collections.Immutable.Result{T}"/> to <see cref="T"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>The value.</returns>
+        public static explicit operator T(Result<T> result) {
+            return result.Value;
+        }
+
+        /// <summary>
         /// Implements the operator false.
         /// </summary>
         /// <param name="result">The result.</param>
@@ -106,6 +121,14 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <value>The exception.</value>
             public Exception Exception { get; private set; }
+
+            /// <summary>
+            /// Throws the exception.
+            /// </summary>
+            /// <exception cref="Exception"></exception>
+            public override T Value {
+                get { throw Exception; }
+            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Result&lt;T&gt;.Failure"/> class.
@@ -201,14 +224,16 @@ namespace FP.Collections.Immutable {
             /// Gets the value.
             /// </summary>
             /// <value>The value.</value>
-            public T Value { get; private set; }
+            public override T Value { get { return _value; } }
+
+            private readonly T _value;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Result&lt;T&gt;.Success"/> class.
             /// </summary>
             /// <param name="value">The value.</param>
             public Success(T value) {
-                Value = value;
+                _value = value;
             }
 
             /// <summary>

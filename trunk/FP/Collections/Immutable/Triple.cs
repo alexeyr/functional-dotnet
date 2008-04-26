@@ -10,7 +10,7 @@ namespace FP.Collections.Immutable {
     /// <typeparam name="T2">The type of the second element.</typeparam>
     /// <typeparam name="T3">The type of the third element.</typeparam>
     [Serializable]
-    public struct Triple<T1, T2, T3> {
+    public struct Triple<T1, T2, T3> : IEquatable<Triple<T1, T2, T3>> {
         private readonly T1 _first;
         private readonly T2 _second;
         private readonly T3 _third;
@@ -49,6 +49,33 @@ namespace FP.Collections.Immutable {
         /// <value>The third element of the tuple.</value>
         public T3 Third {
             get { return _third; }
+        }
+
+        public static bool operator !=(Triple<T1, T2, T3> triple1, Triple<T1, T2, T3> triple2) {
+            return !triple1.Equals(triple2);
+        }
+
+        public static bool operator ==(Triple<T1, T2, T3> triple1, Triple<T1, T2, T3> triple2) {
+            return triple1.Equals(triple2);
+        }
+
+        public bool Equals(Triple<T1, T2, T3> triple) {
+            if (!Equals(_first, triple._first)) return false;
+            if (!Equals(_second, triple._second)) return false;
+            if (!Equals(_third, triple._third)) return false;
+            return true;
+        }
+
+        public override bool Equals(object obj) {
+            if (!(obj is Triple<T1, T2, T3>)) return false;
+            return Equals((Triple<T1, T2, T3>) obj);
+        }
+
+        public override int GetHashCode() {
+            int result = _first != null ? _first.GetHashCode() : 0;
+            result = 29*result + (_second != null ? _second.GetHashCode() : 0);
+            result = 29*result + (_third != null ? _third.GetHashCode() : 0);
+            return result;
         }
     }
 

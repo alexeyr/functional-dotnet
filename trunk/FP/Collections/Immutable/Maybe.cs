@@ -721,22 +721,6 @@ namespace FP.Collections.Immutable {
                        : (other.HasValue ? -1 : 0);
         }
 
-        ///<summary>
-        ///Indicates whether the current object is equal to another object of the same type.
-        ///</summary>
-        ///
-        ///<returns>
-        ///true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-        ///</returns>
-        ///
-        ///<param name="other">An object to compare with this object.</param>
-        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IEquatable{T}"/>.</remarks>
-        public bool Equals(Maybe<T> other) {
-            return HasValue
-                       ? other.HasValue && EqualityComparer<T>.Default.Equals(_value, other._value)
-                       : !other.HasValue;
-        }
-
         /// <summary>
         /// Implements the equality operator. Calls <see cref="Equals"/>.
         /// </summary>
@@ -751,15 +735,29 @@ namespace FP.Collections.Immutable {
             return !(one == other);
         }
 
-        public override int GetHashCode() {
-            return typeof (T).GetHashCode() ^ MapOrElse(x => x.GetHashCode(), 0);
+        ///<summary>
+        ///Indicates whether the current object is equal to another object of the same type.
+        ///</summary>
+        ///
+        ///<returns>
+        ///true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        ///</returns>
+        ///
+        ///<param name="other">An object to compare with this object.</param>
+        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IEquatable{T}"/>.</remarks>
+        public bool Equals(Maybe<T> other) {
+            return HasValue
+                       ? other.HasValue && _value.Equals(other._value)
+                       : !other.HasValue;
         }
 
         public override bool Equals(object obj) {
-            var @this = this;
-            return Switch.ExprOn<object, bool>(obj)
-                .Case<Maybe<T>>(m => @this == m)
-                .Default(o => (object) @this == o);
+            if (!(obj is Maybe<T>)) return false;
+            return Equals((Maybe<T>) obj);
+        }
+
+        public override int GetHashCode() {
+            return 29*typeof(T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
         }
     }
 }
