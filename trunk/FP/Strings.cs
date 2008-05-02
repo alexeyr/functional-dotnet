@@ -8,8 +8,7 @@ using FP.HaskellNames;
 
 namespace FP {
     /// <summary>
-    /// Provides a set of static (Shared in Visual Basic) methods for objects that 
-    /// implement <see cref="IEnumerable{T}"/>. 
+    /// Provides a set of static (Shared in Visual Basic) methods for <see cref="string"/>s.
     /// </summary>
     /// <remarks>
     /// The source of each method includes the Haskell version as a comment at the end.
@@ -22,10 +21,10 @@ namespace FP {
     public static class Strings {
 
         /// <summary>
-        /// Clears the specified StringBuilder.
+        /// Clears the specified <see cref="StringBuilder"/>.
         /// This is equivalent to calling <c>sb.Length = 0</c>.
         /// </summary>
-        /// <param name="sb">The StringBuilder.</param>
+        /// <param name="sb">The <see cref="StringBuilder"/>.</param>
         public static void Clear(this StringBuilder sb) {
             sb.Length = 0;
         }
@@ -118,14 +117,15 @@ namespace FP {
         }
 
         /// <summary>
-        /// Breaks the specified char sequence into a sequence of words
-        /// delimeted by whitespace. The resulting strings do not contain whitespace.
+        /// Breaks the specified char sequence into a sequence of words delimited by 
+        /// whitespace. The resulting strings do not contain whitespace.
         /// </summary>
         /// <param name="charSequence">The char sequence.</param>
         /// <returns>The sequence of words.</returns>
         public static IEnumerable<string> Words(this IEnumerable<char> charSequence) {
             var sb = new StringBuilder();
             bool lastCharWasWhiteSpace = true;
+
             foreach (char c in charSequence) {
                 if (!char.IsWhiteSpace(c)) {
                     sb.Append(c);
@@ -138,6 +138,7 @@ namespace FP {
                 }
                 lastCharWasWhiteSpace = char.IsWhiteSpace(c);
             }
+
             if (!lastCharWasWhiteSpace)
                 yield return sb.ToString();
 

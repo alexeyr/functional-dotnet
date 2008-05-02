@@ -95,18 +95,21 @@ namespace FP.Future {
         internal protected string ToStringHelper(string futureType) {
             return string.Format("{0}({1})", futureType,
                                  (HasResult
-                                      ? Result.MatchEx(v => v.ToString(),
+                                      ? Result.Match(v => v.ToString(),
                                                        ex => ex.ToString())
                                       : "?"));
         }
     }
 
+    /// <summary>
+    /// Static convenience methods for working with <see cref="Future{T}"/>.
+    /// </summary>
     public static class Future {
-        public static readonly int PollingInterval = 10;
+        //public static readonly int PollingInterval = 10;
 
         /// <summary>
         /// Blocks until one of two futures produces a result. Wraps the result into an <see cref="Either{L,R}"/>
-        /// and returns. If both futures produce a result at the same time (up to <see cref="PollingInterval"/> ms), the first future is preferred.
+        /// and returns. If both futures have produced a result already, the first future is preferred.
         /// </summary>
         /// <typeparam name="T1">The type of the first future.</typeparam>
         /// <typeparam name="T2">The type of the second future.</typeparam>
@@ -135,11 +138,11 @@ namespace FP.Future {
         /// Creates a future that has the result <see cref="Unit._"/> after the specified timeout. 
         /// In conjunction with awaitEither, this can be used to program timeouts.
         /// </summary>
-        /// <param name="mllisecondTimeout">The timeout in milliseconds.</param>
+        /// <param name="millisecondTimeout">The timeout in milliseconds.</param>
         /// <returns></returns>
-        public static Future<Unit> Alarm(int mllisecondTimeout) {
+        public static Future<Unit> Alarm(int millisecondTimeout) {
             return Spawn(() => {
-                             Thread.Sleep(mllisecondTimeout);
+                             Thread.Sleep(millisecondTimeout);
                              return Unit._;
                          });
         }

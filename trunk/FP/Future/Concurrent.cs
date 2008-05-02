@@ -44,9 +44,9 @@ namespace FP.Future {
             get {
                 return _thread.IsAlive
                            ? Future.Status.Future
-                           : _result.MatchEx(
-                                 _ => Future.Status.Successful,
-                                 _ => Future.Status.Failed);
+                           : _result.Match(
+                                 s => Future.Status.Successful,
+                                 f => Future.Status.Failed);
             }
         }
 

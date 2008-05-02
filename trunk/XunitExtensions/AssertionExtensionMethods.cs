@@ -1,11 +1,14 @@
-﻿using System;
-/* (C) Alexey Romanov 2008 */
+﻿/* (C) Alexey Romanov 2008 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
 namespace XunitExtensions.ExtensionMethods {
+    /// <summary>
+    /// Contains some assertions missing in xunit.net as extension methods.
+    /// </summary>
     public static class AssertionExtensionMethods {
         /// <summary>
         /// Verifies that two sequences contain same elements (by the default equality comparer) in the same order.
@@ -22,7 +25,8 @@ namespace XunitExtensions.ExtensionMethods {
         /// Verifies that two sequences contain same elements (by the given comparer) in the same order.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="actual">The first sequence.</param>
+        /// <param name="actual">The actual sequence.</param>
+        /// <param name="expected">The expected sequence.</param>
         /// <param name="comparer">The comparer.</param>
         /// <exception cref="SequenceEqualException">If the sequences turn out not to be equal.</exception>
         public static void ShouldBeSequenceEqualTo<T>(this IEnumerable<T> actual, IEnumerable<T> expected, IComparer<T> comparer) {

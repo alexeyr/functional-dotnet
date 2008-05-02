@@ -9,6 +9,7 @@ namespace FP.Collections.Immutable {
     /// <typeparam name="T1">The type of the first element.</typeparam>
     /// <typeparam name="T2">The type of the second element.</typeparam>
     /// <typeparam name="T3">The type of the third element.</typeparam>
+    /// <seealso cref="Triple"/>
     [Serializable]
     public struct Triple<T1, T2, T3> : IEquatable<Triple<T1, T2, T3>> {
         private readonly T1 _first;
@@ -51,26 +52,53 @@ namespace FP.Collections.Immutable {
             get { return _third; }
         }
 
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="triple1">The triple1.</param>
+        /// <param name="triple2">The triple2.</param>
+        /// <returns>The result of the operator.</returns>
         public static bool operator !=(Triple<T1, T2, T3> triple1, Triple<T1, T2, T3> triple2) {
             return !triple1.Equals(triple2);
         }
 
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="triple1">The triple1.</param>
+        /// <param name="triple2">The triple2.</param>
+        /// <returns>The result of the operator.</returns>
         public static bool operator ==(Triple<T1, T2, T3> triple1, Triple<T1, T2, T3> triple2) {
             return triple1.Equals(triple2);
         }
 
-        public bool Equals(Triple<T1, T2, T3> triple) {
-            if (!Equals(_first, triple._first)) return false;
-            if (!Equals(_second, triple._second)) return false;
-            if (!Equals(_third, triple._third)) return false;
-            return true;
+        public bool Equals(Triple<T1, T2, T3> other) {
+            return Equals(_first, other._first) && Equals(_second, other._second)
+                   && Equals(_third, other._third);
         }
 
+        ///<summary>
+        ///Indicates whether this instance and a specified object are equal.
+        ///</summary>
+        ///
+        ///<returns>
+        ///true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false.
+        ///</returns>
+        ///
+        ///<param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
         public override bool Equals(object obj) {
             if (!(obj is Triple<T1, T2, T3>)) return false;
             return Equals((Triple<T1, T2, T3>) obj);
         }
 
+        ///<summary>
+        ///Returns the hash code for this instance.
+        ///</summary>
+        ///
+        ///<returns>
+        ///A 32-bit signed integer that is the hash code for this instance.
+        ///</returns>
+        ///<filterpriority>2</filterpriority>
         public override int GetHashCode() {
             int result = _first != null ? _first.GetHashCode() : 0;
             result = 29*result + (_second != null ? _second.GetHashCode() : 0);
@@ -79,6 +107,9 @@ namespace FP.Collections.Immutable {
         }
     }
 
+    /// <summary>
+    /// A static class which contains a method to create <see cref="Triple{T1,T2,T3}"/>.
+    /// </summary>
     public static class Triple {
         /// <summary>
         /// Creates a <see cref="Triple{T1,T2,T3}"/> with the specified elements.

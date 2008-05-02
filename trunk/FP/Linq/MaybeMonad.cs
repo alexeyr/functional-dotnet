@@ -9,8 +9,7 @@ namespace FP.Linq {
     /// </summary>
     public static class MaybeMonad {
         public static Maybe<T> Where<T>(this Maybe<T> maybe, Func<T, bool> function) {
-            bool passes = maybe.MapOrElse(function, false);
-            return passes ? maybe : Maybe<T>.Nothing;
+            return maybe.MapOrElse(function, false) ? maybe : Maybe<T>.Nothing;
         }
 
         public static Maybe<T2> Select<T1, T2>(this Maybe<T1> maybe, Func<T1, T2> function) {

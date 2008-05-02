@@ -102,8 +102,8 @@ namespace FP {
         /// </summary>
         /// <param name="t">The value to compare the value we are switching on to.</param>
         /// <param name="action">The action to do in this case.</param>
-        public Switch<T, S> CaseWithFallthrough(T t, Action<T> action) {
-            return CaseWithFallthrough(x => x.Equals(t), action);
+        public Switch<T, S> CaseWithFallThrough(T t, Action<T> action) {
+            return CaseWithFallThrough(x => x.Equals(t), action);
         }
 
         /// <summary>
@@ -119,8 +119,8 @@ namespace FP {
         /// and fall through to the next case.
         /// </summary>
         /// <param name="action">The action to do in this case.</param>
-        public Switch<T, S> CaseWithFallthrough(Action<T> action) {
-            return CaseWithFallthrough(x => true, action);
+        public Switch<T, S> CaseWithFallThrough(Action<T> action) {
+            return CaseWithFallThrough(x => true, action);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace FP {
         /// </summary>
         /// <param name="predicate">The predicate to test the value we are switching on.</param>
         /// <param name="action">The action to do in this case.</param>
-        public Switch<T, S> CaseWithFallthrough(Func<T, bool> predicate, Action<T> action) {
+        public Switch<T, S> CaseWithFallThrough(Func<T, bool> predicate, Action<T> action) {
             if (_finished || _badType)
                 return this;
             if (predicate(_value))
@@ -178,9 +178,9 @@ namespace FP {
         /// and fall through to the next case.
         /// </summary>
         /// <param name="action">The action to do in this case.</param>
-        public Switch<TNew, S> CaseWithFallthrough<TNew>(
+        public Switch<TNew, S> CaseWithFallThrough<TNew>(
             Action<TNew> action) where TNew : S {
-            return CaseWithFallthrough(x => true, action);
+            return CaseWithFallThrough(x => true, action);
         }
 
         /// <summary>
@@ -199,8 +199,8 @@ namespace FP {
         /// </summary>
         /// <param name="t"></param>
         /// <param name="action">The action to do in this case.</param>
-        public Switch<TNew, S> CaseWithFallthrough<TNew>(TNew t, Action<TNew> action) where TNew : S {
-            return CaseWithFallthrough(x => true, action);
+        public Switch<TNew, S> CaseWithFallThrough<TNew>(TNew t, Action<TNew> action) where TNew : S {
+            return CaseWithFallThrough(x => true, action);
         }
 
         /// <summary>
@@ -224,14 +224,14 @@ namespace FP {
         /// </summary>
         /// <param name="predicate">The predicate to test the value we are switching on.</param>
         /// <param name="action">The action to do in this case.</param>
-        public Switch<TNew, S> CaseWithFallthrough<TNew>(
+        public Switch<TNew, S> CaseWithFallThrough<TNew>(
             Func<TNew, bool> predicate, Action<TNew> action)
             where TNew : S {
             bool goodType = _object is TNew;
             return new Switch<TNew, S>(
                 goodType ? (TNew) _object : default(TNew), _object)
                    {_badType = !goodType}
-                .CaseWithFallthrough(predicate, action);
+                .CaseWithFallThrough(predicate, action);
         }
 
         /// <summary>

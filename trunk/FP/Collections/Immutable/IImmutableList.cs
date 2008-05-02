@@ -4,6 +4,10 @@ using System;
 using System.Collections.Generic;
 
 namespace FP.Collections.Immutable {
+    /// <summary>
+    /// Represents an immutable list of values, which can be
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IImmutableList<T> : IEnumerable<T> {
         /// <summary>
         /// Gets the "head" (first element) of the list.

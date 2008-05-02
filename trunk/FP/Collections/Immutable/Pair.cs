@@ -9,6 +9,7 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T1">The type of the first element.</typeparam>
     /// <typeparam name="T2">The type of the second element.</typeparam>
+    /// <seealso cref="Pair"/>
     [Serializable]
     public struct Pair<T1, T2> : IEquatable<Pair<T1,T2>> {
         private readonly T1 _first;
@@ -40,11 +41,21 @@ namespace FP.Collections.Immutable {
             get { return _second; }
         }
 
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="FP.Collections.Immutable.Pair&lt;T1,T2&gt;"/> to <see cref="System.Collections.Generic.KeyValuePair&lt;T1,T2&gt;"/>.
+        /// </summary>
+        /// <param name="pair">The pair.</param>
+        /// <returns>The result of the conversion.</returns>
         public static implicit operator KeyValuePair<T1, T2>(
             Pair<T1, T2> pair) {
             return new KeyValuePair<T1, T2>(pair._first, pair._second);
         }
 
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Collections.Generic.KeyValuePair&lt;T1,T2&gt;"/> to <see cref="FP.Collections.Immutable.Pair&lt;T1,T2&gt;"/>.
+        /// </summary>
+        /// <param name="pair">The pair.</param>
+        /// <returns>The result of the conversion.</returns>
         public static implicit operator Pair<T1, T2>(
             KeyValuePair<T1, T2> pair) {
             return new Pair<T1, T2>(pair.Key, pair.Value);
@@ -63,24 +74,52 @@ namespace FP.Collections.Immutable {
             return _first.Equals(other.First) && _second.Equals(other.Second);
         }
 
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="one">The one.</param>
+        /// <param name="other">The other.</param>
+        /// <returns>The result of the operator.</returns>
         public static bool operator==(Pair<T1,T2> one, Pair<T1,T2> other) {
             return one.Equals(other);
         }
 
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="one">The one.</param>
+        /// <param name="other">The other.</param>
+        /// <returns>The result of the operator.</returns>
         public static bool operator !=(Pair<T1, T2> one, Pair<T1, T2> other) {
             return !(one.Equals(other));
         }
 
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">Another object to compare to.</param>
+        /// <returns>
+        /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
+        /// </returns>
         public override bool Equals(object obj) {
             if (!(obj is Pair<T1, T2>)) return false;
             return Equals((Pair<T1, T2>) obj);
         }
 
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A 32-bit signed integer that is the hash code for this instance.
+        /// </returns>
         public override int GetHashCode() {
             return (_first != null ? _first.GetHashCode() : 0) + 29*(_second != null ? _second.GetHashCode() : 0);
         }
     }
 
+    /// <summary>
+    /// A static class which contains a method to create <see cref="Pair{T1,T2}"/>.
+    /// </summary>
     public static class Pair {
         /// <summary>
         /// Creates a <see cref="Pair{T1,T2}"/> with the specified elements.
