@@ -28,7 +28,7 @@ namespace FP {
         }
 
         /// <summary>
-        /// Converts a comparison to a comparer.
+        /// Converts a <see cref="Comparison{T}"/> to a <see cref="IComparer{T}"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="comparison">The comparison.</param>
@@ -37,6 +37,12 @@ namespace FP {
             return new FunctorComparer<T>(comparison);
         }
 
+        /// <summary>
+        /// Converts a <see cref="IComparer{T}"/> to a <see cref="IEqualityComparer{T}"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
         public static IEqualityComparer<T> ToEqualityComparer<T>(this IComparer<T> comparer) {
             return new FunctorEqualityComparer<T>((x, y) => comparer.Compare(x, y) == 0);
         }
@@ -49,6 +55,10 @@ namespace FP {
     public class FunctorComparer<T> : IComparer<T> {
         private readonly Comparison<T> _comparison;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FunctorComparer&lt;T&gt;"/> class.
+        /// </summary>
+        /// <param name="comparison">The comparison.</param>
         public FunctorComparer(Comparison<T> comparison) {
             _comparison = comparison;
         }
@@ -75,6 +85,10 @@ namespace FP {
     public class FunctorEqualityComparer<T> : IEqualityComparer<T> {
         private readonly Func<T, T, bool> _comparison;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FunctorEqualityComparer&lt;T&gt;"/> class.
+        /// </summary>
+        /// <param name="comparison">The comparison.</param>
         public FunctorEqualityComparer(Func<T, T, bool> comparison) {
             _comparison = comparison;
         }
@@ -116,6 +130,10 @@ namespace FP {
     public class ReverseComparer<T> : IComparer<T> {
         private readonly IComparer<T> _baseComparer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReverseComparer&lt;T&gt;"/> class.
+        /// </summary>
+        /// <param name="baseComparer">The base comparer.</param>
         public ReverseComparer(IComparer<T> baseComparer) {
             _baseComparer = baseComparer;
         }

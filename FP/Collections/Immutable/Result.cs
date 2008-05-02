@@ -4,17 +4,32 @@ using System;
 
 namespace FP.Collections.Immutable {
     /// <summary>
-    /// A static class to help with type inference.
+    /// A static class to help with type inference on <see cref="Result{T}"/>.
     /// </summary>
     public static class Result {
+        /// <summary>
+        /// Returns a <see cref="Result{T}.Success"/> with the specified value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value.</param>
         public static Result<T>.Success Success<T>(T value) {
             return new Result<T>.Success(value);
         }
 
+        /// <summary>
+        /// Returns a <see cref="Result{T}.Failure"/> with the specified reason.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reason">The reason.</param>
         public static Result<T>.Failure Failure<T>(string reason) {
             return new Result<T>.Failure(reason);
         }
 
+        /// <summary>
+        /// Returns a <see cref="Result{T}.Failure"/> with the specified exception.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="exception">The exception.</param>
         public static Result<T>.Failure Failure<T>(Exception exception) {
             return new Result<T>.Failure(exception);
         }
@@ -43,6 +58,7 @@ namespace FP.Collections.Immutable {
     /// <seealso cref="Either{L,R}"/>
     /// <seealso cref="Maybe{T}"/>
     /// <typeparam name="T">The type of the result.</typeparam>
+    /// <seealso cref="Result"/>
     public abstract class Result<T> {
         private Result() {}
         /// <summary>
@@ -50,25 +66,25 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="onSuccess">The action to do if the result is a success.</param>
         /// <param name="onFailure">The action to do if the result is a failure.</param>
-        public abstract void Match(Action<T> onSuccess, Action<string> onFailure);
+        public abstract void MatchS(Action<T> onSuccess, Action<string> onFailure);
         /// <summary>
         /// Case analysis on results.
         /// </summary>
         /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
         /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
-        public abstract R Match<R>(Func<T, R> onSuccess, Func<string, R> onFailure);
+        public abstract R MatchS<R>(Func<T, R> onSuccess, Func<string, R> onFailure);
         /// <summary>
         /// Case analysis on results.
         /// </summary>
         /// <param name="onSuccess">The action to do if the result is a success.</param>
         /// <param name="onFailure">The action to do if the result is a failure.</param>
-        public abstract void MatchEx(Action<T> onSuccess, Action<Exception> onFailure);
+        public abstract void Match(Action<T> onSuccess, Action<Exception> onFailure);
         /// <summary>
         /// Case analysis on results.
         /// </summary>
         /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
         /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
-        public abstract R MatchEx<R>(Func<T, R> onSuccess, Func<Exception, R> onFailure);
+        public abstract R Match<R>(Func<T, R> onSuccess, Func<Exception, R> onFailure);
         /// <summary>
         /// Converts the result to <see cref="Maybe{T}"/>.
         /// </summary>
@@ -124,15 +140,15 @@ namespace FP.Collections.Immutable {
             public Exception Exception { get; private set; }
 
             /// <summary>
-            /// Throws the exception.
+            /// Throws the <see cref="Exception"/>.
             /// </summary>
-            /// <exception cref="Exception"></exception>
+            /// <value>Doesn't return a value.</value>
             public override T Value {
                 get { throw Exception; }
             }
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="Result&lt;T&gt;.Failure"/> class.
+            /// Initializes a new instance of the <see cref="Result{T}.Failure"/> class.
             /// </summary>
             /// <param name="reason">The reason.</param>
             public Failure(string reason) {
@@ -141,7 +157,7 @@ namespace FP.Collections.Immutable {
             }
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="Result&lt;T&gt;.Failure"/> class.
+            /// Initializes a new instance of the <see cref="Result{T}.Failure"/> class.
             /// </summary>
             /// <param name="exception">The exception.</param>
             public Failure(Exception exception) {
@@ -167,6 +183,12 @@ namespace FP.Collections.Immutable {
                 return failure.Exception;
             }
 
+            /// <summary>
+            /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+            /// </returns>
             public override string ToString() {
                 return Reason;
             }
@@ -176,7 +198,7 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
             /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
-            public override R Match<R>(Func<T, R> onSuccess, Func<string, R> onFailure) {
+            public override R MatchS<R>(Func<T, R> onSuccess, Func<string, R> onFailure) {
                 return onFailure(Reason);
             }
 
@@ -185,7 +207,7 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <param name="onSuccess">The action to do if the result is a success.</param>
             /// <param name="onFailure">The action to do if the result is a failure.</param>
-            public override void Match(Action<T> onSuccess, Action<string> onFailure) {
+            public override void MatchS(Action<T> onSuccess, Action<string> onFailure) {
                 onFailure(Reason);
             }
 
@@ -194,7 +216,7 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
             /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
-            public override R MatchEx<R>(Func<T, R> onSuccess,
+            public override R Match<R>(Func<T, R> onSuccess,
                                           Func<Exception, R> onFailure) {
                 return onFailure(Exception);
             }
@@ -204,7 +226,7 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <param name="onSuccess">The action to do if the result is a success.</param>
             /// <param name="onFailure">The action to do if the result is a failure.</param>
-            public override void MatchEx(Action<T> onSuccess, Action<Exception> onFailure) {
+            public override void Match(Action<T> onSuccess, Action<Exception> onFailure) {
                 onFailure(Exception);
             }
 
@@ -251,7 +273,7 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
             /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
-            public override R Match<R>(Func<T, R> onSuccess, Func<string, R> onFailure) {
+            public override R MatchS<R>(Func<T, R> onSuccess, Func<string, R> onFailure) {
                 return onSuccess(Value);
             }
 
@@ -260,7 +282,7 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <param name="onSuccess">The action to do if the result is a success.</param>
             /// <param name="onFailure">The action to do if the result is a failure.</param>
-            public override void Match(Action<T> onSuccess, Action<string> onFailure) {
+            public override void MatchS(Action<T> onSuccess, Action<string> onFailure) {
                 onSuccess(Value);
             }
 
@@ -269,7 +291,7 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
             /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
-            public override R MatchEx<R>(Func<T, R> onSuccess,
+            public override R Match<R>(Func<T, R> onSuccess,
                                           Func<Exception, R> onFailure) {
                 return onSuccess(Value);
             }
@@ -279,7 +301,7 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <param name="onSuccess">The action to do if the result is a success.</param>
             /// <param name="onFailure">The action to do if the result is a failure.</param>
-            public override void MatchEx(Action<T> onSuccess, Action<Exception> onFailure) {
+            public override void Match(Action<T> onSuccess, Action<Exception> onFailure) {
                 onSuccess(Value);
             }
 

@@ -9,7 +9,7 @@ namespace FP.Collections.Mutable {
     /// A generic ternary max heap.
     /// </summary>
     /// <typeparam name="T">Type of the data. If it is not <see cref="IComparable{K}"/>, 
-    /// you need to supply a comparer when creating an istance!!</typeparam>
+    /// you need to supply a comparer when creating an instance!</typeparam>
     [Serializable]
     public class Heap<T> : ICollection<T>, ICloneable {
         private readonly IComparer<T> _comparer;
@@ -242,7 +242,7 @@ namespace FP.Collections.Mutable {
         }
 
         /// <summary>
-        /// Moves the element with the specified index up repeteadly until it reaches the root
+        /// Moves the element with the specified index up repeatedly until it reaches the root
         /// or becomes less than (or equal to) its parent.
         /// </summary>
         /// <param name="n">The index of the element to move.</param>
@@ -258,7 +258,7 @@ namespace FP.Collections.Mutable {
         }
 
         /// <summary>
-        /// Moves the element with the specified index down repeteadly until it has no children
+        /// Moves the element with the specified index down repeatedly until it has no children
         /// or is greater than (or equal to) all its children.
         /// </summary>
         /// <param name="n">The index of the element to move.</param>

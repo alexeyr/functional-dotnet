@@ -185,7 +185,7 @@ namespace FP.Collections.Immutable {
 
 #region Tries -- The versions of "Try..." methods from the framework
         /// <summary>
-        /// Creates a new Uri using the specified String instance and a UriKind.
+        /// Creates a new Uri using the specified String instance and a <see cref="UriKind"/>.
         /// </summary>
         public static Maybe<Uri> CreateUri(string uriString, UriKind uriKind) {
             Uri uri;
@@ -219,13 +219,16 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// Retrieves a value corresponding to the supplied key from this DbConnectionStringBuilder.
+        /// Retrieves a value corresponding to the supplied key from this <see cref="DbConnectionStringBuilder"/>.
         /// </summary>
         public static Maybe<object> GetValue(this DbConnectionStringBuilder connectionStringBuilder, string keyword) {
             object value;
             return connectionStringBuilder.TryGetValue(keyword, out value) ? FromValue(value) : Nothing<object>();
         }
 
+        ///<summary>
+        ///Contains static methods for parsing strings which return <see cref="Maybe{T}"/>.
+        ///</summary>
         public static class Parse {
             /// <summary>
             /// Parses a string which represents an <see cref="int"/>.
@@ -244,7 +247,7 @@ namespace FP.Collections.Immutable {
             }
 
             /// <summary>
-            /// Parses a string which represents a <see cref="DateTime"/>.
+            /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
             public static Maybe<DateTime> DateTime(string s) {
                 DateTime dateTime;
@@ -252,7 +255,7 @@ namespace FP.Collections.Immutable {
             }
 
             /// <summary>
-            /// Parses a string which represents a <see cref="DateTime"/>.
+            /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
             public static Maybe<DateTime> DateTime(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTime dateTime;
@@ -260,7 +263,7 @@ namespace FP.Collections.Immutable {
             }
 
             /// <summary>
-            /// Parses a string which represents a <see cref="DateTimeOffset"/>.
+            /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
             public static Maybe<DateTimeOffset> DateTimeOffset(string s) {
                 DateTimeOffset offset;
@@ -268,7 +271,7 @@ namespace FP.Collections.Immutable {
             }
 
             /// <summary>
-            /// Parses a string which represents a <see cref="DateTimeOffset"/>.
+            /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
             public static Maybe<DateTimeOffset> DateTimeOffset(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTimeOffset offset;
@@ -276,7 +279,7 @@ namespace FP.Collections.Immutable {
             }
 
             /// <summary>
-            /// Parses a string which represents a <see cref="DateTime"/>.
+            /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
             public static Maybe<DateTime> ExactDateTime(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTime dateTime;
@@ -284,7 +287,7 @@ namespace FP.Collections.Immutable {
             }
 
             /// <summary>
-            /// Parses a string which represents a <see cref="DateTime"/>.
+            /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
             public static Maybe<DateTime> ExactDateTime(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTime dateTime;
@@ -292,7 +295,7 @@ namespace FP.Collections.Immutable {
             }
 
             /// <summary>
-            /// Parses a string which represents a <see cref="DateTimeOffset"/>.
+            /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
             public static Maybe<DateTimeOffset> ExactDateTimeOffset(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTimeOffset offset;
@@ -300,7 +303,7 @@ namespace FP.Collections.Immutable {
             }
 
             /// <summary>
-            /// Parses a string which represents a <see cref="DateTimeOffset"/>.
+            /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
             public static Maybe<DateTimeOffset> ExactDateTimeOffset(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTimeOffset offset;
@@ -308,7 +311,7 @@ namespace FP.Collections.Immutable {
             }
 
             /// <summary>
-            /// Parses a string which represents a <see cref="TimeSpan"/>.
+            /// Parses a string which represents a <see cref="T:System.TimeSpan"/>.
             /// </summary>
             public static Maybe<TimeSpan> TimeSpan(string s) {
                 TimeSpan offset;
@@ -414,7 +417,7 @@ namespace FP.Collections.Immutable {
             /// <summary>
             /// Parses a string which represents an <see cref="sbyte"/>.
             /// </summary>
-            public static Maybe<sbyte> Sbytes(string s) {
+            public static Maybe<sbyte> Sbyte(string s) {
                 sbyte s1;
                 return sbyte.TryParse(s, out s1) ? s1 : Nothing<sbyte>();
             }
@@ -586,7 +589,6 @@ namespace FP.Collections.Immutable {
         /// If the current instance has a value, do <paramref name="action"/> with it.
         /// </summary>
         /// <param name="action">The action to try.</param>
-        /// <remarks>Called <c>may</c> in OCaml</remarks>
         public void Do(Action<T> action) {
             DoOrElse(action, Functions.DoNothing);
         }
@@ -731,6 +733,12 @@ namespace FP.Collections.Immutable {
             return one.Equals(other);
         }
 
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="one">The one.</param>
+        /// <param name="other">The other.</param>
+        /// <returns>The result of the operator.</returns>
         public static bool operator !=(Maybe<T> one, Maybe<T> other) {
             return !(one == other);
         }
@@ -751,11 +759,24 @@ namespace FP.Collections.Immutable {
                        : !other.HasValue;
         }
 
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">Another object to compare to.</param>
+        /// <returns>
+        /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
+        /// </returns>
         public override bool Equals(object obj) {
             if (!(obj is Maybe<T>)) return false;
             return Equals((Maybe<T>) obj);
         }
 
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A 32-bit signed integer that is the hash code for this instance.
+        /// </returns>
         public override int GetHashCode() {
             return 29*typeof(T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
         }

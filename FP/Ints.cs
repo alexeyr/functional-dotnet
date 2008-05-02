@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 
 namespace FP {
+    /// <summary>
+    /// Static methods for generating sequences of <see cref="int"/>s and other convenience methods.
+    /// </summary>
     public static class Ints {
         /// <summary>Generates a sequence of integral numbers starting with a specified number.</summary>
         /// <returns>An <see cref="IEnumerable{int}"/> that contains a range of sequential 

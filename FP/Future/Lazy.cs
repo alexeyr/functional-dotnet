@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using FP.Collections.Immutable;
 
 namespace FP.Future {
@@ -54,9 +51,9 @@ namespace FP.Future {
         public override Future.Status Status {
             get {
                 return _hasResult
-                           ? _result.MatchEx(
-                                 _ => Future.Status.Successful,
-                                 _ => Future.Status.Failed)
+                           ? _result.Match(
+                                 s => Future.Status.Successful,
+                                 f => Future.Status.Failed)
                            : Future.Status.Future;
             }
         }

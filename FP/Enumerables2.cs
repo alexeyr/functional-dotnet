@@ -97,7 +97,7 @@ namespace FP.HaskellNames {
         /// <param name="func">The function.</param>
         /// <returns></returns>
         /// <remarks>
-        /// An alternate name for <see cref="Enumerable.Select(IEnumerable{T},Func{T,TResult})"/>.
+        /// An alternate name for <see cref="Enumerable.Select(IEnumerable{T},Func{T,TR})"/>.
         /// </remarks>
         public static IEnumerable<TR> Map<T, TR>(
             this IEnumerable<T> sequence, Func<T, TR> func) {

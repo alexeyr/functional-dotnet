@@ -73,12 +73,24 @@ namespace FP.Collections.Immutable {
             get { return this.ElementAt(index); }
         }
 
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="list1">The list1.</param>
+        /// <param name="list2">The list2.</param>
+        /// <returns>The result of the operator.</returns>
         public static bool operator ==(ImmutableListBase<T> list1, ImmutableListBase<T> list2) {
             return list1 == null
                 ? list2 == null
                 : list2 != null && list1.SequenceEqual(list2);
         }
 
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="list1">The list1.</param>
+        /// <param name="list2">The list2.</param>
+        /// <returns>The result of the operator.</returns>
         public static bool operator !=(ImmutableListBase<T> list1, ImmutableListBase<T> list2) {
             return !(list1 == list2);
         }
@@ -87,10 +99,24 @@ namespace FP.Collections.Immutable {
             return list != null && this.SequenceEqual(list);
         }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+        /// </returns>
+        /// <exception cref="T:System.NullReferenceException">The <paramref name="obj"/> parameter is null.</exception>
         public override bool Equals(object obj) {
             return ReferenceEquals(this, obj) || Equals(obj as ImmutableListBase<T>);
         }
 
+        /// <summary>
+        /// Serves as a hash function for this type.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"/>.
+        /// </returns>
         public override int GetHashCode() {
             return IsEmpty 
                 ? typeof(T).GetHashCode()

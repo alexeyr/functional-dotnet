@@ -48,7 +48,6 @@
     <Compile Include="Collections\Immutable\Result.cs" />
     <Compile Include="Collections\Immutable\Unit.cs" />
     <Compile Include="Collections\Mutable\Heap.cs" />
-    <Compile Include="Collections\Mutable\IMutableDictionary.cs" />
     <Compile Include="Collections\Mutable\PriorityQueue.cs" />
     <Compile Include="ComparerConversions.cs" />
     <Compile Include="Continuations.cs" />

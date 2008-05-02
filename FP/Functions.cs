@@ -8,7 +8,7 @@ namespace FP {
     /// </summary>
     public static class Functions {
         /// <summary>
-        /// Composes two fuctions left to right. This is the same as <c>flip (.)</c> in Haskell.
+        /// Composes two functions left to right. This is the same as <c>flip (.)</c> in Haskell.
         /// </summary>
         /// <param name="func1">First function.</param>
         /// <param name="func2">Second function.</param>
@@ -22,7 +22,7 @@ namespace FP {
         /// Flips the order of arguments of a function.
         /// </summary>
         /// <param name="func">The function.</param>
-        /// <returns>The fuction with flipped arguments.</returns>
+        /// <returns>The function with flipped arguments.</returns>
         public static Func<T2, T1, TR> Flip<T1, T2, TR>(
             this Func<T1, T2, TR> func) {
             return (y, x) => func(x, y);

@@ -11,6 +11,9 @@ namespace FP.Future {
         private Future<T> _future;
         private bool _isFulfilled;
 
+        ///<summary>
+        ///A future which has the same result as the promise.
+        ///</summary>
         public Future<T> Future {
             get {
                 lock (this) {
@@ -149,9 +152,9 @@ namespace FP.Future {
             get {
                 return _isFulfilled
                            ? (_result != null
-                                  ? _result.MatchEx(
-                                        _ => FP.Future.Future.Status.Successful,
-                                        _ => FP.Future.Future.Status.Failed)
+                                  ? _result.Match(
+                                        s => FP.Future.Future.Status.Successful,
+                                        f => FP.Future.Future.Status.Failed)
                                   : _future.Status)
                            : FP.Future.Future.Status.Future;
             }
@@ -165,9 +168,13 @@ namespace FP.Future {
             get { return (_future != null && _future.IsLazy); }
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="Future{T}"/>.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString() {
             return _future != null
-                       ? string.Format("Promise({0})", _future.ToString())
+                       ? string.Format("Promise({0})", _future)
                        : ToStringHelper("Promise");
         }
     }

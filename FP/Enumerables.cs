@@ -296,9 +296,9 @@ namespace FP {
         }
 
         /// <summary>
-        /// Returns the conjunction of a list of <see cref="bool"/>.
+        /// Returns the conjunction of a sequence of <see cref="bool"/>s.
         /// </summary>
-        /// <param name="bools">The bools.</param>
+        /// <param name="bools">The sequence of booleans.</param>
         /// <returns>The conjunction.</returns>
         public static bool And(this IEnumerable<bool> bools) {
             return bools.All(x => x);
@@ -308,9 +308,9 @@ namespace FP {
         }
 
         /// <summary>
-        /// Returns the disjunction of a list of <see cref="bool"/>.
+        /// Returns the disjunction of a sequence of <see cref="bool"/>s.
         /// </summary>
-        /// <param name="bools">The bools.</param>
+        /// <param name="bools">The sequence of booleans.</param>
         /// <returns>The disjunction.</returns>
         public static bool Or(this IEnumerable<bool> bools) {
             return bools.Any(x => x);
@@ -627,7 +627,7 @@ namespace FP {
         /// <param name="value">The value.</param>
         /// <param name="times">The number of times to repeat the value.</param>
         /// <returns></returns>
-        /// <remarks>Not an extension method in order not to pollute namespace.</remarks>
+        /// <remarks>Not an extension method in order not to pollute the namespace.</remarks>
         public static IEnumerable<T> Replicate<T>( /*this*/
             T value, int times) {
             for (int i = 0; i < times; i++)
@@ -658,7 +658,7 @@ namespace FP {
         }
 
         /// <summary>
-        /// Produces a list from the given seed using the cpecified function.
+        /// Produces a list from the given seed using the specified function.
         /// Function should return <c>null</c> in order to finish constructing the list;
         /// if <paramref name="func"/> returns a pair <c>x, state</c>, then <c>x</c> is added to the list
         /// and <paramref name="func"/> will next be called with <c>state</c> as its argument.
@@ -857,7 +857,7 @@ namespace FP {
             throw new NotFoundException();
             //
             //findIndex       :: (a -> Bool) -> [a] -> Maybe Int
-            //findIndex p     = listToMaybe . findIndices p
+            //findIndex p     = listToMaybe . findIndexes p
         }
 
         /// <summary>
@@ -885,11 +885,11 @@ namespace FP {
         /// <typeparam name="T"></typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <param name="predicate">The match.</param>
-        /// <returns>The sequence of indices of elements that match the conditions defined by 
+        /// <returns>The sequence of indexes of elements that match the conditions defined by 
         /// <paramref name="predicate"/> within <paramref name="sequence"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="predicate"/>
         /// are null.</exception>
-        public static IEnumerable<int> FindIndices<T>(
+        public static IEnumerable<int> FindIndexes<T>(
             this IEnumerable<T> sequence, Func<T, bool> predicate) {
             if (sequence == null)
                 throw new ArgumentNullException("sequence");
@@ -902,8 +902,8 @@ namespace FP {
                 i++;
             }
             //
-            //findIndices      :: (a -> Bool) -> [a] -> [Int]
-            //findIndices p xs = [ i | (x,i) <- zip xs [0..], p x]
+            //findIndexes      :: (a -> Bool) -> [a] -> [Int]
+            //findIndexes p xs = [ i | (x,i) <- zip xs [0..], p x]
         }
 
         /// <summary>
@@ -912,14 +912,14 @@ namespace FP {
         /// <typeparam name="T"></typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <param name="element">The match.</param>
-        /// <returns>The sequence of indices of elements that equal 
+        /// <returns>The sequence of indexes of elements that equal 
         /// <paramref name="element"/> within <paramref name="sequence"/>.</returns>
-        public static IEnumerable<int> FindIndices<T>(
+        public static IEnumerable<int> FindIndexes<T>(
             this IEnumerable<T> sequence, T element) {
-            return sequence.FindIndices(t => t.Equals(element));
+            return sequence.FindIndexes(t => t.Equals(element));
             //
-            //elemIndices     :: Eq a => a -> [a] -> [Int]
-            //elemIndices x   = findIndices (x==)
+            //elemIndexes     :: Eq a => a -> [a] -> [Int]
+            //elemIndexes x   = findIndexes (x==)
         }
 
         #endregion
@@ -1138,7 +1138,7 @@ namespace FP {
         }
 
         /// <summary>
-        /// Returns a sequence of pairs consisting of indices and corresponding elements of the
+        /// Returns a sequence of pairs consisting of indexes and corresponding elements of the
         /// specified sequence.
         /// </summary>
         /// <typeparam name="T"></typeparam>
