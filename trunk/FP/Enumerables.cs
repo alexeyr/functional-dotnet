@@ -180,7 +180,7 @@ namespace FP {
         /// <example>
         /// <c>
         /// new[] { new[] {1, 2}, new[] {1, 2}, new[] {1, 2} }.Transpose().
-        ///     SequenceEquals(new[] { new[] {1, 1, 1}, new[] {2, 2, 2} }).
+        ///     SequenceEquals(new[] { new[] {1, 1, 1}, new[] {2, 2, 2} })
         /// </c>
         /// </example>
         /// <remarks>
@@ -201,8 +201,6 @@ namespace FP {
                 else
                     yield break;
             }
-
-
 
             //transpose		:: [[a]] -> [[a]]
             //transpose []		 = []
@@ -232,8 +230,7 @@ namespace FP {
         /// Unlike Haskell, <paramref name="func"/> usually won't be lazy, so this
         /// should not be used for associative <paramref name="func"/>.
         /// </remarks>
-        public static TAcc FoldRight<T, TAcc>(
-            this IEnumerable<T> sequence, TAcc initialAcc, Func<T, TAcc, TAcc> func) {
+        public static TAcc FoldRight<T, TAcc>(this IEnumerable<T> sequence, TAcc initialAcc, Func<T, TAcc, TAcc> func) {
             return sequence.Reverse().Aggregate(initialAcc, func.Flip());
 
             //foldr            :: (a -> b -> b) -> b -> [a] -> b
@@ -608,8 +605,7 @@ namespace FP {
         /// <param name="func">The function.</param>
         /// <param name="init">The initial value.</param>
         /// <returns></returns>
-        public static IEnumerable<T> Iterate<T>(this Func<T, T> func,
-                                                T init) {
+        public static IEnumerable<T> Iterate<T>(this Func<T, T> func, T init) {
             T curr = init;
             while (true) {
                 yield return curr;
@@ -628,8 +624,7 @@ namespace FP {
         /// <param name="times">The number of times to repeat the value.</param>
         /// <returns></returns>
         /// <remarks>Not an extension method in order not to pollute the namespace.</remarks>
-        public static IEnumerable<T> Replicate<T>( /*this*/
-            T value, int times) {
+        public static IEnumerable<T> Replicate<T>( /*this*/ T value, int times) {
             for (int i = 0; i < times; i++)
                 yield return value;
 
@@ -685,6 +680,79 @@ namespace FP {
             //  case f b of
             //   Just (a,new_b) -> a : unfoldr f new_b
             //   Nothing        -> []
+        }
+
+        /// <summary>
+        /// Groups adjacent elements which have the same value of <paramref cref="keySelector"/>.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="keySelector">The key selector.</param>
+        /// <returns></returns>
+        public static IEnumerable<IGrouping<TKey, T>> Runs<TKey, T>(
+            this IEnumerable<T> sequence, Func<T, TKey> keySelector) where TKey : IEquatable<TKey> {
+            return sequence.Runs(keySelector, EqualityComparer<TKey>.Default);
+        }
+
+        /// <summary>
+        /// Groups adjacent elements which have the same value of <paramref cref="keySelector"/>
+        /// according to <paramref name="keyComparer"/>.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="keySelector">The key selector.</param>
+        /// <param name="keyComparer">The key comparer.</param>
+        /// <returns></returns>
+        public static IEnumerable<IGrouping<TKey, T>> Runs<TKey, T>(
+            this IEnumerable<T> sequence, Func<T, TKey> keySelector, IEqualityComparer<TKey> keyComparer) {
+            TKey currentKey = default(TKey);
+            bool theFirstElement = true;
+            var run = new List<T>();
+            foreach (var t in sequence) {
+                if (theFirstElement) {
+                    currentKey = keySelector(t);
+                    run.Add(t);
+                    theFirstElement = false;
+                }
+                else {
+                    if (keyComparer.Equals(currentKey, keySelector(t)))
+                        run.Add(t);
+                    else {
+                        yield return new Grouping<TKey, T>(run, currentKey);
+                        currentKey = keySelector(t);
+                        run = new List<T> {t};
+                    }
+                }
+            }
+            yield return new Grouping<TKey, T>(run, currentKey);
+        }
+
+        /// <summary>
+        /// Groups adjacent elements if <paramref name="match"/> returns true.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="match">The match.</param>
+        /// <returns></returns>
+        public static IEnumerable<IEnumerable<T>> Runs<T>(
+            this IEnumerable<T> sequence, Func<T, T, bool> match) {
+            T lastElement = default(T);
+            bool theFirstElement = true;
+            var run = new List<T>();
+            foreach (var t in sequence) {
+                if (theFirstElement) theFirstElement = false;
+                else {
+                    if (!match(lastElement, t)) {
+                        yield return run;
+                        run = new List<T>();
+                    }
+                }
+                lastElement = t;
+                run.Add(t);
+            }
+            yield return run;
         }
 
         #endregion

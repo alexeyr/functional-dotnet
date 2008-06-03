@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\Immutable\Either.cs" />
+    <Compile Include="Collections\Immutable\Grouping.cs" />
     <Compile Include="Collections\Immutable\IImmutableDictionary.cs" />
     <Compile Include="Collections\Immutable\IImmutableList.cs" />
     <Compile Include="Collections\Immutable\ImmutableListBase.cs" />
