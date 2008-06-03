@@ -7,7 +7,7 @@ namespace FP {
     /// Thrown by the methods which require their argument to be non-empty
     /// when called on an empty sequence.
     /// </summary>
-    public class EmptySequenceException : InvalidOperationException {
+    public class EmptySequenceException : ArgumentException {
         /// <summary>
         /// Initializes a new instance of the <see cref="EmptySequenceException"/> class.
         /// </summary>
