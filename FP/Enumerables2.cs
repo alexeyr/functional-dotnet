@@ -18,6 +18,18 @@ namespace FP.HaskellNames {
     /// </remarks>
     public static class Enumerables2 {
         #region Basic Functions
+        /// <summary>
+        /// Yields <paramref name="element"/> first, then all elements of <paramref name="sequence"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="element">The element.</param>
+        /// <param name="sequence">The sequence.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Cons<T>(this T element, IEnumerable<T> sequence) {
+            yield return element;
+            foreach (var t in sequence)
+                yield return t;
+        }
 
         /// <summary>
         /// Append two sequences. If the first one is infinite, the result is the first list.

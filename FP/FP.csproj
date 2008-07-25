@@ -40,12 +40,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\Immutable\Either.cs" />
+    <Compile Include="Collections\Immutable\FingerTreeHelpers.cs" />
+    <Compile Include="Collections\Immutable\FingerTreeList.cs" />
+    <Compile Include="Collections\Immutable\FingerTreeNode.cs" />
     <Compile Include="Collections\Immutable\Grouping.cs" />
     <Compile Include="Collections\Immutable\IImmutableDictionary.cs" />
     <Compile Include="Collections\Immutable\IImmutableList.cs" />
+    <Compile Include="Collections\Immutable\IMeasured.cs" />
     <Compile Include="Collections\Immutable\ImmutableListBase.cs" />
     <Compile Include="Collections\Immutable\LazyList.cs" />
     <Compile Include="Collections\Immutable\Lists.cs" />
+    <Compile Include="Collections\Immutable\MeasureMonoid.cs" />
+    <Compile Include="Collections\Immutable\Monoid.cs" />
     <Compile Include="Collections\Immutable\Result.cs" />
     <Compile Include="Collections\Immutable\Unit.cs" />
     <Compile Include="Collections\Mutable\Heap.cs" />
