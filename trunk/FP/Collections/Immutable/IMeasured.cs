@@ -2,15 +2,15 @@ using System;
 
 namespace FP.Collections.Immutable {
     /// <summary>
-    /// The type implementing the interface can be measured by elements of the type <typeparamref name="M"/>.
-    /// <typeparamref name="M"/> must have a monoidal structure.
+    /// The type implementing the interface can be measured by elements of the type <typeparamref name="V"/>.
+    /// <typeparamref name="V"/> must have a monoidal structure.
     /// </summary>
-    /// <typeparam name="M"></typeparam>
-    public interface IMeasured<M> {
+    /// <typeparam name="V"></typeparam>
+    public interface IMeasured<V> {
         /// <summary>
         /// Gets the measure of the object.
         /// </summary>
         /// <value>The measure.</value>
-        M Measure { get; }
+        V Measure { get; }
     }
 }
