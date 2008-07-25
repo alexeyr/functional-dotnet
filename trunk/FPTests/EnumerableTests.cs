@@ -1,5 +1,6 @@
 ﻿/* (C) Alexey Romanov 2008 */
 
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using FP;
@@ -7,13 +8,6 @@ using XunitExtensions;
 
 namespace FPTests {
     public class EnumerableTests {
-//        [Fact]
-//        public void TransposeTest() {
-//            Assert2.SequenceEqual(
-//                new List<List<int>>
-//                {new List<int> {1, 2}, new List<int> {1, 2}, new List<int> {1, 2}}.Transpose<int>(),
-//                new List<IEnumerable<int>> {new List<int> {1, 1, 1}, new List<int> {2, 2, 2}});
-//        }
 
         [Fact]
         public void TailShouldThrowOnEmptySeq() {

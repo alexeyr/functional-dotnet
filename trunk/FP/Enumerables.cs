@@ -186,6 +186,7 @@ namespace FP {
         /// <remarks>
         /// This method currently isn't fully lazy; it has to construct each column fully before yielding it.
         /// </remarks>
+        [Obsolete("No variance in generics, so it's very inconvenient to use.")]
         public static IEnumerable<IEnumerable<T>> Transpose<T>(this IEnumerable<IEnumerable<T>> sequence) {
             var enumerators = sequence.Map(seq => seq.GetEnumerator());
             var currentColumn = new List<T>();
