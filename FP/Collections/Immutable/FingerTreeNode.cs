@@ -5,25 +5,21 @@ namespace FP.Collections.Immutable {
     /// A node in the middle section of a deep finger tree.
     /// </summary>
     /// <typeparam name="T">Type of the elements in the node.</typeparam>
-    /// <typeparam name="M">Type of the weight monoid.</typeparam>
-    internal abstract class Node<T, M> : IMeasured<M> where T : IMeasured<M> {
-        private readonly Monoid<M> _monoid;
-
-        private Node(Monoid<M> monoid) {
-            _monoid = monoid;
-        }
+    /// <typeparam name="V">Type of the weight monoid.</typeparam>
+    internal abstract class Node<T, V> : IMeasured<V> where T : IMeasured<V> {
+        private Node() {}
 
         public abstract Func<A, A> ReduceR<A>(Func<T, A, A> binOp);
         public abstract Func<A, A> ReduceL<A>(Func<A, T, A> binOp);
-        public M Measure { get; private set; }
+        public V Measure { get; private set; }
 
         /// <summary>
         /// A node with two subtrees.
         /// </summary>
-        internal class Node2 : Node<T, M> {
+        internal class Node2 : Node<T, V> {
             public readonly T Item1;
             public readonly T Item2;
-            public Node2(T item1, T item2, Monoid<M> monoid) : base(monoid) {
+            public Node2(T item1, T item2, Monoid<V> monoid) {
                 Item1 = item1;
                 Item2 = item2;
                 Measure = monoid.Plus(Item1.Measure, item2.Measure);
@@ -41,11 +37,11 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// A node with three subtrees.
         /// </summary>
-        internal class Node3 : Node<T, M> {
+        internal class Node3 : Node<T, V> {
             public readonly T Item1;
             public readonly T Item2;
             public readonly T Item3;
-            public Node3(T item1, T item2, T item3, Monoid<M> monoid) : base(monoid) {
+            public Node3(T item1, T item2, T item3, Monoid<V> monoid) {
                 Item1 = item1;
                 Item2 = item2;
                 Item3 = item3;
