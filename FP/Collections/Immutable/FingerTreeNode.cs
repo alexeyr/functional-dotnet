@@ -6,8 +6,8 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T">Type of the elements in the node.</typeparam>
     /// <typeparam name="V">Type of the weight monoid.</typeparam>
-    internal abstract class Node<T, V> : IMeasured<V> where T : IMeasured<V> {
-        private Node() {}
+    internal abstract class FTNode<T, V> : IMeasured<V> where T : IMeasured<V> {
+        private FTNode() {}
 
         public abstract Func<A, A> ReduceR<A>(Func<T, A, A> binOp);
         public abstract Func<A, A> ReduceL<A>(Func<A, T, A> binOp);
@@ -16,7 +16,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// A node with two subtrees.
         /// </summary>
-        internal class Node2 : Node<T, V> {
+        internal class Node2 : FTNode<T, V> {
             public readonly T Item1;
             public readonly T Item2;
             public Node2(T item1, T item2, Monoid<V> monoid) {
@@ -37,7 +37,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// A node with three subtrees.
         /// </summary>
-        internal class Node3 : Node<T, V> {
+        internal class Node3 : FTNode<T, V> {
             public readonly T Item1;
             public readonly T Item2;
             public readonly T Item3;

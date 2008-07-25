@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using FP.HaskellNames;
+using FP.Collections.Immutable.FingerTrees;
 
 namespace FP.Collections.Immutable {
     /// <summary>
@@ -40,18 +40,36 @@ namespace FP.Collections.Immutable {
         public abstract V Measure { get; }
 
         internal Empty _emptyInstance;
-        internal FingerTreeList<Node<T, V>, V>.Empty _emptyInstanceNested;
+        internal FingerTreeList<FTNode<T, V>, V>.Empty _emptyInstanceNested;
+
+        internal FingerTreeList<T, V> EmptyInstance {
+            get {
+                return _emptyInstance ?? (_emptyInstance = new Empty(MeasureMonoid));
+            }
+        }
+
+        internal FingerTreeList<FTNode<T, V>, V>.Empty EmptyInstanceNested {
+            get {
+                return _emptyInstanceNested ?? (_emptyInstanceNested = new FingerTreeList<FTNode<T, V>, V>.Empty(MeasureMonoid));
+            }
+        }
 
         internal FingerTreeList(Monoid<V> measureMonoid) {
             MeasureMonoid = measureMonoid;
-            _emptyInstance = new Empty(measureMonoid);
-            _emptyInstanceNested = new FingerTreeList<Node<T, V>, V>.Empty(measureMonoid);
+            _emptyInstance = null;
+            _emptyInstanceNested = null;
+        }
+
+        internal FingerTreeList(Monoid<V> measureMonoid, Empty emptyInstance) {
+            MeasureMonoid = measureMonoid;
+            _emptyInstance = emptyInstance;
+            _emptyInstanceNested = null;
         }
 
         /// <summary>
         /// An empty <see cref="FingerTreeList{T,M}"/>.
         /// </summary>
-        internal class Empty : FingerTreeList<T, V> {
+        public class Empty : FingerTreeList<T, V> {
             internal Empty(Monoid<V> measureMonoid) : base(measureMonoid) {}
             
             public override Func<A, A> ReduceR<A>(Func<T, A, A> binOp) {
@@ -102,7 +120,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// A <see cref="FingerTreeList{T,M}"/> with the single element <see cref="Value"/>.
         /// </summary>
-        internal class Single : FingerTreeList<T, V> {
+        public class Single : FingerTreeList<T, V> {
             /// <summary>
             /// The value of the element.
             /// </summary>
@@ -125,11 +143,11 @@ namespace FP.Collections.Immutable {
             }
 
             public override FingerTreeList<T, V> Prepend(T newHead) {
-                return new Deep(new[] {newHead}, _emptyInstanceNested, new[] {Value}, MeasureMonoid);
+                return new Deep(new[] {newHead}, EmptyInstanceNested, new[] {Value}, MeasureMonoid);
             }
 
             public override FingerTreeList<T, V> Append(T newLast) {
-                return new Deep(new[] { Value }, _emptyInstanceNested, new[] { newLast }, MeasureMonoid);
+                return new Deep(new[] { Value }, EmptyInstanceNested, new[] { newLast }, MeasureMonoid);
             }
 
             public override IEnumerator<T> GetEnumerator() {
@@ -141,7 +159,7 @@ namespace FP.Collections.Immutable {
             }
 
             public override FingerTreeList<T, V> Tail {
-                get { return _emptyInstance; }
+                get { return EmptyInstance; }
             }
 
             public override bool IsEmpty {
@@ -152,13 +170,13 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// A <see cref="FingerTreeList{T,M}"/> with more than one element.
         /// </summary>
-        internal class Deep : FingerTreeList<T, V>  {
+        public class Deep : FingerTreeList<T, V>  {
             private readonly V _measure;
             private readonly T[] _left;
             private readonly T[] _right;
-            private readonly FingerTreeList<Node<T, V>, V> _middle;
+            private readonly FingerTreeList<FTNode<T, V>, V> _middle;
 
-            internal Deep(T[] left, FingerTreeList<Node<T, V>, V> middle, T[] right, Monoid<V> measureMonoid)
+            internal Deep(T[] left, FingerTreeList<FTNode<T, V>, V> middle, T[] right, Monoid<V> measureMonoid)
                 : base(measureMonoid) {
                 _measure = measureMonoid.Zero;
                 foreach (var t in _left)
@@ -174,22 +192,14 @@ namespace FP.Collections.Immutable {
                 else {}
             }
 
-            private static Func<A, A> ArrayReduceR<A>(T[] array, Func<T, A, A> binOp) {
-                return a => array.FoldRight(a, binOp);
-            }
-
-            private static Func<A, A> ArrayReduceL<A>(T[] array, Func<A, T, A> binOp) {
-                return a => array.FoldLeft(a, binOp);
-            }
-
             public override Func<A, A> ReduceR<A>(Func<T, A, A> binOp) {
-                Func<Node<T, V>, A, A> binOp1 = (n, a) => n.ReduceR(binOp)(ArrayReduceR(_right, binOp)(a));
-                return a => ArrayReduceR(_left, binOp)(_middle.ReduceR(binOp1)(a));
+                Func<FTNode<T, V>, A, A> binOp1 = (n, a) => n.ReduceR(binOp)(_right.ReduceR(binOp)(a));
+                return a => _left.ReduceR(binOp)(_middle.ReduceR(binOp1)(a));
             }
 
             public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
-                Func<A, Node<T, V>, A> binOp1 = (a, n) => ArrayReduceL(_right, binOp)(a);
-                return a => _middle.ReduceL(binOp1)(ArrayReduceL(_left, binOp)(a));
+                Func<A, FTNode<T, V>, A> binOp1 = (a, n) => _right.ReduceL(binOp)(a);
+                return a => _middle.ReduceL(binOp1)(_left.ReduceL(binOp)(a));
             }
 
             public override V Measure {
@@ -204,7 +214,7 @@ namespace FP.Collections.Immutable {
                     return new Deep(newLeft, _middle, _right, MeasureMonoid);
                 }
                 return new Deep(new[] {newHead, _left[0]},
-                                _middle.Prepend(new Node<T, V>.Node3(_left[1], _left[2], _left[3],
+                                _middle.Prepend(new FTNode<T, V>.Node3(_left[1], _left[2], _left[3],
                                     MeasureMonoid)),
                                 _right, MeasureMonoid);
             }
@@ -245,5 +255,6 @@ namespace FP.Collections.Immutable {
         public abstract FingerTreeList<T, V> Tail { get; }
 
         public abstract bool IsEmpty { get; }
+
     }
 }

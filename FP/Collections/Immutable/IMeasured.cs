@@ -3,7 +3,6 @@ using System;
 namespace FP.Collections.Immutable {
     /// <summary>
     /// The type implementing the interface can be measured by elements of the type <typeparamref name="V"/>.
-    /// <typeparamref name="V"/> must have a monoidal structure.
     /// </summary>
     /// <typeparam name="V"></typeparam>
     public interface IMeasured<V> {
