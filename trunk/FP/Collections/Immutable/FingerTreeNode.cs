@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace FP.Collections.Immutable {
     /// <summary>
@@ -6,7 +8,7 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T">Type of the elements in the node.</typeparam>
     /// <typeparam name="V">Type of the weight monoid.</typeparam>
-    internal abstract class FTNode<T, V> : IMeasured<V> where T : IMeasured<V> {
+    internal abstract class FTNode<T, V> : IMeasured<V>, IEnumerable<T> where T : IMeasured<V> {
         private FTNode() {}
 
         public abstract Func<A, A> ReduceR<A>(Func<T, A, A> binOp);
@@ -32,6 +34,23 @@ namespace FP.Collections.Immutable {
             public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
                 return (a => binOp(binOp(a, Item1), Item2));
             }
+
+            internal override T[] ToArray() {
+                return new[] {Item1, Item2};
+            }
+
+            ///<summary>
+            ///Returns an enumerator that iterates through the node.
+            ///</summary>
+            ///
+            ///<returns>
+            ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the node.
+            ///</returns>
+            ///<filterpriority>1</filterpriority>
+            public override IEnumerator<T> GetEnumerator() {
+                yield return Item1;
+                yield return Item2;
+            }
         }
 
         /// <summary>
@@ -55,6 +74,39 @@ namespace FP.Collections.Immutable {
             public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
                 return (a => binOp(binOp(binOp(a, Item1), Item2), Item3));
             }
+
+            internal override T[] ToArray() {
+                return new[] {Item1, Item2, Item3};
+            }
+
+            ///<summary>
+            ///Returns an enumerator that iterates through the node.
+            ///</summary>
+            ///
+            ///<returns>
+            ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the node.
+            ///</returns>
+            ///<filterpriority>1</filterpriority>
+            public override IEnumerator<T> GetEnumerator() {
+                yield return Item1;
+                yield return Item2;
+                yield return Item3;
+            }
+        }
+
+        internal abstract T[] ToArray();
+
+        ///<summary>
+        ///Returns an enumerator that iterates through the node.
+        ///</summary>
+        ///
+        ///<returns>
+        ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the node.
+        ///</returns>
+        ///<filterpriority>1</filterpriority>
+        public abstract IEnumerator<T> GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
         }
     }
 }
