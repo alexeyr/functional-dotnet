@@ -76,5 +76,15 @@ namespace FP {
         public static Func<T1, T2, T3, TR> Uncurry<T1, T2, T3, TR>(this Func<T1, T2, Func<T3, TR>> func) {
             return (x, y, z) => func(x, y)(z);
         }
+
+        /// <summary>
+        /// Negates the specified predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of the argument of <paramref name="predicate"/>.</typeparam>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        public static Func<T, bool> Not<T>(this Func<T, bool> predicate) {
+            return x => !predicate(x);
+        }
     }
 }

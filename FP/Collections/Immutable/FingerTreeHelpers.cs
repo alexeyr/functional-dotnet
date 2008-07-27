@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using FP.Collections.Immutable.FingerTrees;
 using FP.HaskellNames;
 
 namespace FP.Collections.Immutable {
@@ -33,14 +32,7 @@ namespace FP.Collections.Immutable {
             Func<FingerTreeList<T, V>, T, FingerTreeList<T, V>> append = (tree, a) => tree.Append(a);
             return sequence.ReduceL(append)(Empty<T, V>(measureMonoid));
         }
-    }
-}
 
-namespace FP.Collections.Immutable.FingerTrees {
-    /// <summary>
-    /// Utility class.
-    /// </summary>
-    public static class FingerTree2 {
         /// <summary>
         /// Reduces the specified sequence from the right.
         /// </summary>
@@ -83,7 +75,7 @@ namespace FP.Collections.Immutable.FingerTrees {
                 left.Add(t);
                 total = monoid.Plus(total, t.Measure);
             }
-            
+
             return new Split<T, T[]>(left.ToArray(), array[array.Length - 1], new T[0]);
         }
 
@@ -100,14 +92,15 @@ namespace FP.Collections.Immutable.FingerTrees {
     /// of type <typeparamref name="T"/>
     /// </summary>
     internal struct Split<T, FT> where FT : IEnumerable<T> {
-        internal readonly FT _left;
-        internal readonly T _center;
-        internal readonly FT _right;
+        internal readonly FT Left;
+        internal readonly T Middle;
+        internal readonly FT Right;
 
-        public Split(FT left, T center, FT right) : this() {
-            _left = left;
-            _right = right;
-            _center = center;
+        internal Split(FT left, T middle, FT right)
+            : this() {
+            Left = left;
+            Right = right;
+            Middle = middle;
         }
     }
 }
