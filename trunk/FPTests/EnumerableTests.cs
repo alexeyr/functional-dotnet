@@ -32,7 +32,7 @@ namespace FPTests {
 
         [Fact]
         public void FoldRightTest2() {
-            Assert.Equal(-2, new[] { 1, 2, 3, 4 }.FoldRight(0, (x, y) => x - y)); //1 - (2 - (3 - (4 - 0))
+            Assert.Equal(-2, new[] { 1, 2, 3, 4 }.FoldRight((x, y) => x - y, 0)); //1 - (2 - (3 - (4 - 0))
         }
 
         [Fact]

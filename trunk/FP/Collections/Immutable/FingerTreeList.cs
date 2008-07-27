@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using FP.Collections.Immutable.FingerTrees;
 using FP.HaskellNames;
 
 namespace FP.Collections.Immutable {
@@ -61,12 +60,10 @@ namespace FP.Collections.Immutable {
                 return new Deep(left, middle, right, measureMonoid);
             if (middle.IsEmpty)
                 return FingerTree.FromEnumerable(right, measureMonoid);
-            else {
-                var middleHead = middle.Head;
-                var middleTail = middle.Tail;
-                return new Deep(middleHead.ToArray(), middleTail, right,
-                                measureMonoid);
-            }
+            var middleHead = middle.Head;
+            var middleTail = middle.Tail;
+            return new Deep(middleHead.ToArray(), middleTail, right,
+                            measureMonoid);
         }
 
         internal static FingerTreeList<T, V> DeepR(T[] left, FingerTreeList<FTNode<T, V>, V> middle, T[] right, Monoid<V> measureMonoid) {
@@ -74,12 +71,10 @@ namespace FP.Collections.Immutable {
                 return new Deep(left, middle, right, measureMonoid);
             if (middle.IsEmpty)
                 return FingerTree.FromEnumerable(right, measureMonoid);
-            else {
-                var middleInit = middle.Init;
-                var middleLast = middle.Last;
-                return new Deep(left, middleInit, middleLast.ToArray(),
-                                measureMonoid);
-            }
+            var middleInit = middle.Init;
+            var middleLast = middle.Last;
+            return new Deep(left, middleInit, middleLast.ToArray(),
+                            measureMonoid);
         }
 
         internal static FingerTreeList<T, V> DeepL(T[] left, Func<FingerTreeList<FTNode<T, V>, V>> middleSuspended, T[] right, Monoid<V> measureMonoid) {
@@ -88,12 +83,10 @@ namespace FP.Collections.Immutable {
             var middle = middleSuspended();
             if (middle.IsEmpty)
                 return FingerTree.FromEnumerable(right, measureMonoid);
-            else {
-                var middleHead = middle.Head;
-                var middleTail = middle.Tail;
-                return new Deep(middleHead.ToArray(), middleTail, right,
-                                measureMonoid);
-            }
+            var middleHead = middle.Head;
+            var middleTail = middle.Tail;
+            return new Deep(middleHead.ToArray(), middleTail, right,
+                            measureMonoid);
         }
 
         internal static FingerTreeList<T, V> DeepR(T[] left, Func<FingerTreeList<FTNode<T, V>, V>> middleSuspended, T[] right, Monoid<V> measureMonoid) {
@@ -102,12 +95,10 @@ namespace FP.Collections.Immutable {
             var middle = middleSuspended();
             if (middle.IsEmpty)
                 return FingerTree.FromEnumerable(right, measureMonoid);
-            else {
-                var middleInit = middle.Init;
-                var middleLast = middle.Last;
-                return new Deep(left, middleInit, middleLast.ToArray(),
-                                measureMonoid);
-            }
+            var middleInit = middle.Init;
+            var middleLast = middle.Last;
+            return new Deep(left, middleInit, middleLast.ToArray(),
+                            measureMonoid);
         }
 
         internal FingerTreeList(Monoid<V> measureMonoid) {
@@ -247,6 +238,24 @@ namespace FP.Collections.Immutable {
 
             internal override Split<T, FingerTreeList<T, V>> SplitTree(Func<V, bool> predicate, V initial) {
                 throw new EmptySequenceException("Empty tree can't be split");
+            }
+
+            /// <summary>
+            /// Splits the list according to the specified predicate. The result has the following properties.
+            /// <code>
+            /// var left = tree.Split(predicate).First;
+            /// var right = tree.Split(predicate).Second;
+            /// ---------
+            /// tree.SequenceEquals(left.Concat(right);
+            /// left.IsEmpty() || !predicate(left.TotalMeasure);
+            /// right.IsEmpty() || !predicate(left.TotalMeasure + right.Head.Measure);
+            /// </code>
+            /// If there are several splits, the split returned is not guaranteed to be the first one!
+            /// </summary>
+            /// <param name="predicate">The predicate.</param>
+            /// <returns></returns>
+            public override Pair<FingerTreeList<T, V>, FingerTreeList<T, V>> Split(Func<V, bool> predicate) {
+                return Pair.New(EmptyInstance, EmptyInstance);
             }
         }
 
@@ -630,13 +639,35 @@ namespace FP.Collections.Immutable {
                 V totalLeft = _left.SumMeasures(MeasureMonoid, initial);
                 if (predicate(totalLeft)) {
                     var splitLeft = _left.SplitArray(MeasureMonoid, predicate, initial);
-                    return new Split<T, FingerTreeList<T, V>>(FingerTree.FromEnumerable(splitLeft._left, MeasureMonoid), splitLeft._center, 
-                        DeepL(splitLeft._right, _middle, _right, MeasureMonoid));
+                    var newRight = _middleSuspended == null
+                                      ? DeepL(splitLeft.Right, _middle, _right, MeasureMonoid)
+                                      : DeepL(splitLeft.Right, _middleSuspended, _right, MeasureMonoid);
+                    return
+                        new Split<T, FingerTreeList<T, V>>(
+                            FingerTree.FromEnumerable(splitLeft.Left, MeasureMonoid),
+                            splitLeft.Middle,
+                            newRight);
                 }
                 V totalMiddle = MeasureMonoid.Plus(totalLeft, _Middle.Measure);
                 if (predicate(totalMiddle)) {
-                    var splitMiddle = _Middle.SplitTree(predicate, totalLeft);
-                    V totalLeftAndMiddleLeft = splitMiddle._left.SumM
+                    var splitMiddle = _middle.SplitTree(predicate, totalLeft);
+                    V totalLeftAndMiddleLeft = splitMiddle.Left.SumMeasures(MeasureMonoid, totalLeft);
+                    var splitMiddleMiddle = splitMiddle.Middle.ToArray().
+                        SplitArray(MeasureMonoid, predicate, totalLeftAndMiddleLeft);
+                    var newLeft = DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left,
+                                        MeasureMonoid);
+                    var newRight = DeepL(splitMiddleMiddle.Right, splitMiddle.Right, _right,
+                                        MeasureMonoid);
+                    return new Split<T, FingerTreeList<T, V>>(newLeft, splitMiddleMiddle.Middle, newRight);
+                }
+                {
+                    var splitRight = _right.SplitArray(MeasureMonoid, predicate, totalMiddle);
+                    var newLeft = _middleSuspended == null
+                                       ? DeepR(_left, _middle, splitRight.Left, MeasureMonoid)
+                                       : DeepR(_left, _middleSuspended, splitRight.Left, MeasureMonoid);
+                    return new Split<T, FingerTreeList<T, V>>(newLeft, splitRight.Middle,
+                                                              FingerTree.FromEnumerable(
+                                                                  splitRight.Right, MeasureMonoid));
                 }
             }
         }
@@ -719,5 +750,45 @@ namespace FP.Collections.Immutable {
 
         internal abstract Split<T, FingerTreeList<T, V>> SplitTree(Func<V, bool> predicate,
                                                                     V initial);
+
+        /// <summary>
+        /// Splits the list according to the specified predicate. The result has the following properties.
+        /// <code>
+        /// var left = tree.Split(predicate).First;
+        /// var right = tree.Split(predicate).Second;
+        /// ---------
+        /// tree.SequenceEquals(left.Concat(right);
+        /// left.IsEmpty() || !predicate(left.Measure);
+        /// right.IsEmpty() || !predicate(left.Measure + right.Head.Measure);
+        /// </code>
+        /// If there are several splits, the split returned is not guaranteed to be the first one!
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        public virtual Pair<FingerTreeList<T, V>, FingerTreeList<T, V>> Split(Func<V, bool> predicate) {
+            if (!predicate(Measure)) {
+                return Pair.New(this, EmptyInstance);
+            }
+            var split = SplitTree(predicate, MeasureMonoid.Zero);
+            return Pair.New(split.Left, split.Right.Prepend(split.Middle));
+        }
+
+        /// <summary>
+        /// Takes the elements .
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        public FingerTreeList<T, V> TakeUntil(Func<V, bool> predicate) {
+            return Split(predicate).First;
+        }
+
+        /// <summary>
+        /// Drops the until.
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        public FingerTreeList<T, V> DropUntil(Func<V, bool> predicate) {
+            return Split(predicate).Second;
+        }
     }
 }
