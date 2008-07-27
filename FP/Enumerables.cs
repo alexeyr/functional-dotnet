@@ -96,17 +96,17 @@ namespace FP {
         }
 
         /// <summary>
-        /// Conses <paramref name="t"/> to <paramref name="sequence"/>.
+        /// Appends <paramref name="t"/> to <paramref name="sequence"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="t">The t.</param>
+        /// <param name="t">The added element.</param>
         /// <param name="sequence">The sequence.</param>
-        /// <returns>A sequence starting with <paramref name="t"/> and continuing with
-        /// <paramref name="sequence"/>.</returns>
-        public static IEnumerable<T> Cons<T>(this T t, IEnumerable<T> sequence) {
-            yield return t;
+        /// <returns>A sequence starting with <paramref name="sequence"/> and ending with
+        /// <paramref name="t"/>.</returns>
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> sequence, T t) {
             foreach (var t1 in sequence)
                 yield return t1;
+            yield return t;
         }
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace FP {
         /// Unlike Haskell, <paramref name="func"/> usually won't be lazy, so this
         /// should not be used for associative <paramref name="func"/>.
         /// </remarks>
-        public static TAcc FoldRight<T, TAcc>(this IEnumerable<T> sequence, TAcc initialAcc, Func<T, TAcc, TAcc> func) {
+        public static TAcc FoldRight<T, TAcc>(this IEnumerable<T> sequence, Func<T, TAcc, TAcc> func, TAcc initialAcc) {
             return sequence.Reverse().Aggregate(initialAcc, func.Flip());
 
             //foldr            :: (a -> b -> b) -> b -> [a] -> b

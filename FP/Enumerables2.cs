@@ -32,26 +32,6 @@ namespace FP.HaskellNames {
         }
 
         /// <summary>
-        /// Append two sequences. If the first one is infinite, the result is the first list.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// An alternate name for <see cref="Enumerable.Concat{TSource}"/>.
-        /// This is the ++ operator in Haskell, but this is not available in C#.
-        /// </remarks>
-        public static IEnumerable<T> Append<T>(
-            this IEnumerable<T> first, IEnumerable<T> second) {
-            return first.Concat(second);
-
-            //(++) :: [a] -> [a] -> [a]
-            //[]     ++ ys = ys
-            //(x:xs) ++ ys = x : xs ++ ys
-        }
-
-        /// <summary>
         /// Extract the first element of a sequence, which must be non-empty.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -141,9 +121,7 @@ namespace FP.HaskellNames {
         /// <remarks>
         /// An alternate name for <see cref="Enumerable.Aggregate{TSource,TAccumulate}"/>.
         /// </remarks>
-        public static TAcc FoldLeft<T, TAcc>(
-            this IEnumerable<T> sequence, TAcc initialAcc,
-            Func<TAcc, T, TAcc> func) {
+        public static TAcc FoldLeft<T, TAcc>(this IEnumerable<T> sequence, Func<TAcc, T, TAcc> func, TAcc initialAcc) {
             return sequence.Aggregate(initialAcc, func);
         }
 
