@@ -9,7 +9,7 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
     /// TODO: A lot of sharing is lost due to the lack of newtype! Consider making it a specialisation!
-    public class Sequence<T> : IEnumerable<T>, IEquatable<Sequence<T>> {
+    public class RandomAccessSequence<T> : IEnumerable<T>, IEquatable<RandomAccessSequence<T>> {
         private readonly FingerTree<Element, int> _ft;
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace FP.Collections.Immutable {
             internal readonly T Value;
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="Sequence&lt;T&gt;.Element"/> struct.
+            /// Initializes a new instance of the <see cref="RandomAccessSequence{T}.Element"/> struct.
             /// </summary>
             /// <param name="value">The value.</param>
             public Element(T value) {
@@ -36,21 +36,21 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Sequence&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class.
         /// </summary>
-        public Sequence() {
+        public RandomAccessSequence() {
             _ft = FingerTree.Empty<Element, int>(Monoids.Size);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Sequence&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class.
         /// </summary>
         /// <param name="sequence">The sequence.</param>
-        public Sequence(IEnumerable<T> sequence) {
+        public RandomAccessSequence(IEnumerable<T> sequence) {
             _ft = FingerTree.FromEnumerable(sequence.Map(x => new Element(x)), Monoids.Size);
         }
 
-        private Sequence(FingerTree<Element, int> ft) {
+        private RandomAccessSequence(FingerTree<Element, int> ft) {
             _ft = ft;
         }
 
@@ -83,7 +83,7 @@ namespace FP.Collections.Immutable {
         /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(Sequence<T> other) {
+        public bool Equals(RandomAccessSequence<T> other) {
             return Equals(other._ft, _ft);
         }
 
@@ -95,8 +95,8 @@ namespace FP.Collections.Immutable {
         /// </returns>
         /// <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
         public override bool Equals(object obj) {
-            if (obj.GetType() != typeof (Sequence<T>)) return false;
-            return Equals((Sequence<T>) obj);
+            if (obj.GetType() != typeof (RandomAccessSequence<T>)) return false;
+            return Equals((RandomAccessSequence<T>) obj);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace FP.Collections.Immutable {
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(Sequence<T> left, Sequence<T> right) {
+        public static bool operator ==(RandomAccessSequence<T> left, RandomAccessSequence<T> right) {
             return left.Equals(right);
         }
 
@@ -126,7 +126,7 @@ namespace FP.Collections.Immutable {
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(Sequence<T> left, Sequence<T> right) {
+        public static bool operator !=(RandomAccessSequence<T> left, RandomAccessSequence<T> right) {
             return !left.Equals(right);
         }
 
@@ -136,40 +136,43 @@ namespace FP.Collections.Immutable {
         /// <value>The number of elements in the sequence.</value>
         public int Count { get { return _ft.Measure; } }
 
-        public Sequence<T> Append(T newLast) {
-            return new Sequence<T>(_ft.Append(new Element(newLast)));
+        public RandomAccessSequence<T> Append(T newLast) {
+            return new RandomAccessSequence<T>(_ft.Append(new Element(newLast)));
         }
 
-        public Sequence<T> Prepend(T newHead) {
-            return new Sequence<T>(_ft.Prepend(new Element(newHead)));
+        public RandomAccessSequence<T> Prepend(T newHead) {
+            return new RandomAccessSequence<T>(_ft.Prepend(new Element(newHead)));
         }
 
-        public Pair<Sequence<T>, Sequence<T>> SplitAt(int index) {
+        public Pair<RandomAccessSequence<T>, RandomAccessSequence<T>> SplitAt(int index) {
             var ftSplit = _ft.Split(i => i > index);
-            return Pair.New(new Sequence<T>(ftSplit.First), new Sequence<T>(ftSplit.Second));
+            return Pair.New(new RandomAccessSequence<T>(ftSplit.First), new RandomAccessSequence<T>(ftSplit.Second));
         }
 
         public T this[int index] { get { return _ft.SplitTree(i => i > index, 0).Middle.Value; } }
 
-        public Sequence<T> SetAt(int index) {
-            throw new NotImplementedException();
+        public RandomAccessSequence<T> SetAt(int index, T newValue) {
+            var split = _ft.SplitTree(i => i > index, 0);
+            return new RandomAccessSequence<T>(split.Left.Append(new Element(newValue)).Concat(split.Right));
         }
 
-        public Sequence<T> Concat(Sequence<T> otherSequence) {
-            return new Sequence<T>(_ft.Concat(otherSequence._ft));
+        public RandomAccessSequence<T> Concat(RandomAccessSequence<T> otherSequence) {
+            return new RandomAccessSequence<T>(_ft.Concat(otherSequence._ft));
         }
 
         public T Head { get { return _ft.Head.Value; } }
-        public Sequence<T> Tail { get { return new Sequence<T>(_ft.Tail); } }
+        public RandomAccessSequence<T> Tail { get { return new RandomAccessSequence<T>(_ft.Tail); } }
         public T Last { get { return _ft.Last.Value; } }
-        public Sequence<T> Init { get { return new Sequence<T>(_ft.Init); } }
+        public RandomAccessSequence<T> Init { get { return new RandomAccessSequence<T>(_ft.Init); } }
         
-        public Sequence<T> InsertAt(int index) {
-            throw new NotImplementedException();
+        public RandomAccessSequence<T> InsertAt(int index, T newValue) {
+            var ftSplit = _ft.Split(i => i > index);
+            return new RandomAccessSequence<T>(ftSplit.First.Append(new Element(newValue)).Concat(ftSplit.Second));
         }
 
-        public Sequence<T> RemoveAt(int index) {
-            throw new NotImplementedException();
+        public RandomAccessSequence<T> RemoveAt(int index) {
+            var split = _ft.SplitTree(i => i > index, 0);
+            return new RandomAccessSequence<T>(split.Left.Concat(split.Right));
         }
     }
 }
