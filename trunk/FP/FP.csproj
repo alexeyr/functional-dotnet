@@ -57,7 +57,7 @@
     <Compile Include="Collections\Immutable\Unit.cs" />
     <Compile Include="Collections\Mutable\Heap.cs" />
     <Compile Include="Collections\Mutable\PriorityQueue.cs" />
-    <Compile Include="ComparerConversions.cs" />
+    <Compile Include="Comparers.cs" />
     <Compile Include="Continuations.cs" />
     <Compile Include="EmptySequenceException.cs" />
     <Compile Include="Enumerables.cs" />

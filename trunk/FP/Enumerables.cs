@@ -474,6 +474,46 @@ namespace FP {
             return (float)num;
         }
 
+        /// <summary>Returns the maximum value in a generic sequence according to <paramref name="comparer"/>.</summary>
+        /// <returns>The maximum value in the sequence.</returns>
+        /// <param name="source">A sequence of values to determine the maximum value of.</param>
+        /// <param name="comparer">A comparer.</param>
+        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="comparer" /> is null.</exception>
+        /// <exception cref="EmptySequenceException"><paramref name="source"/> is empty.</exception>
+        public static T Max<T>(this IEnumerable<T> source, IComparer<T> comparer) {
+            using (var enumerator = source.GetEnumerator()) {
+                if (!enumerator.MoveNext())
+                    throw new EmptySequenceException("source");
+                T max = enumerator.Current;
+                // ReSharper disable CompareNonConstrainedGenericWithNull
+                if (default(T) == null) {
+                    while (enumerator.MoveNext()) {
+                        T current = enumerator.Current;
+                        if (current != null && (max == null || comparer.Compare(max, current) < 0)) max = current;
+                    }
+                    return max;
+                }
+                // ReSharper restore CompareNonConstrainedGenericWithNull
+                while (enumerator.MoveNext()) {
+                    T current = enumerator.Current;
+                    if (comparer.Compare(max, current) < 0) max = current;
+                }
+                return max;
+            }
+        }
+
+        /// <summary>Returns the minimum value in a generic sequence according to <paramref name="comparer"/>.</summary>
+        /// <returns>The maximum value in the sequence.</returns>
+        /// <param name="source">A sequence of values to determine the maximum value of.</param>
+        /// <param name="comparer">A comparer.</param>
+        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="comparer" /> is null.</exception>
+        /// <exception cref="EmptySequenceException"><paramref name="source"/> is empty.</exception>
+        public static T Min<T>(this IEnumerable<T> source, IComparer<T> comparer) {
+            return source.Max(comparer.Reverse());
+        }
+
         #endregion
 
         #region Building lists

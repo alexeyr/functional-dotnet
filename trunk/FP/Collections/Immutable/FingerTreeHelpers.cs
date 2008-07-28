@@ -27,10 +27,7 @@ namespace FP.Collections.Immutable {
         /// <param name="measureMonoid">The measure monoid.</param>
         /// <returns></returns>
         public static FingerTree<T, V> FromEnumerable<T,V>(IEnumerable<T> sequence, Monoid<V> measureMonoid) where T : IMeasured<V> {
-//            Func<T, FingerTree<T, V>, FingerTree<T, V>> prepend1 = (a, tree) => tree.Prepend(a);
-//            return sequence.ReduceR(prepend1)(Empty<T,V>(measureMonoid));
-            Func<FingerTree<T, V>, T, FingerTree<T, V>> append = (tree, a) => tree.Append(a);
-            return sequence.ReduceL(append)(Empty<T, V>(measureMonoid));
+            return sequence.ReduceL(FingerTree<T, V>._append)(Empty<T, V>(measureMonoid));
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ using FP.HaskellNames;
 
 namespace FP.Collections.Immutable {
     /// <summary>
-    /// A finger-tree-based list (see ??)
+    /// A finger tree (see Ralf Hinze and Ross Paterson, "Finger trees: a simple general-purpose data structure", Journal of Functional Programming 16:2 (2006) pp 197-217)
     /// Usable for adding and removing elements at both ends (the deque operations), concatenation, 
     /// insertion and deletion at arbitrary points, finding an element satisfying some criterion, 
     /// and splitting the sequence into subsequences based on some property. 
@@ -47,6 +47,9 @@ namespace FP.Collections.Immutable {
 
         internal Empty _emptyInstance;
         internal FingerTree<FTNode<T, V>, V>.Empty _emptyInstanceNested;
+
+        internal static readonly Func<FingerTree<T, V>, T, FingerTree<T, V>> _append = ((tree, a) => tree.Append(a));
+        internal static readonly Func<T, FingerTree<T, V>, FingerTree<T, V>> _prepend = ((a, tree) => tree.Prepend(a));
 
         internal Empty EmptyInstance {
             get {
@@ -133,6 +136,106 @@ namespace FP.Collections.Immutable {
             _emptyInstanceNested = null;
         }
 
+        protected abstract bool IsSingle { get; }
+
+        protected abstract FingerTree<T, V> App3(IEnumerable<T> middleList,
+                                                 FingerTree<T, V> rightTree);
+
+        /// <summary>
+        /// Prepends the specified element to the beginning of the list.
+        /// </summary>
+        /// <param name="newHead">The new head.</param>
+        /// <returns>The resulting list.</returns>
+        public abstract FingerTree<T, V> Prepend(T newHead);
+
+        /// <summary>
+        /// Appends the specified element to the end of the list.
+        /// </summary>
+        /// <param name="newLast">The new last element.</param>
+        /// <returns>The resulting list.</returns>
+        public abstract FingerTree<T, V> Append(T newLast);
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// <returns>
+        /// An <see cref="IEnumerator{T}"/> object that can be used to iterate through the collection.
+        /// </returns>
+        public abstract IEnumerator<T> GetEnumerator();
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets the head of the list, provided it is not empty.
+        /// </summary>
+        /// <value>The head.</value>
+        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+        public abstract T Head { get; }
+
+        /// <summary>
+        /// Gets the tail of the list, provided it is not empty.
+        /// </summary>
+        /// <value>The tail.</value>
+        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+        public abstract FingerTree<T, V> Tail { get; }
+
+        /// <summary>
+        /// Gets the initial sublist (all elements but the last) of the list, provided it is not empty.
+        /// </summary>
+        /// <value>The last element.</value>
+        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+        public abstract FingerTree<T, V> Init { get; }
+
+        /// <summary>
+        /// Gets the last element of the list, provided it is not empty.
+        /// </summary>
+        /// <value>The last element of the list.</value>
+        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+        public abstract T Last { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this list is empty.
+        /// </summary>
+        /// <value><c>true</c> if this list is empty; otherwise, <c>false</c>.</value>
+        public abstract bool IsEmpty { get; }
+
+        /// <summary>
+        /// Concatenates the tree with another.
+        /// </summary>
+        /// <param name="otherTree">Another tree.</param>
+        /// <returns>The result of concatenation.</returns>
+        public abstract FingerTree<T, V> Concat(FingerTree<T, V> otherTree);
+
+        internal abstract Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate,
+                                                               V initial);
+
+        /// <summary>
+        /// Splits the list according to the specified predicate. The result has the following properties.
+        /// <code>
+        /// var left = tree.Split(predicate).First;
+        /// var right = tree.Split(predicate).Second;
+        /// ---------
+        /// tree.SequenceEquals(left.Concat(right);
+        /// left.IsEmpty() || !predicate(left.Measure);
+        /// right.IsEmpty() || predicate(left.Measure + right.Head.Measure);
+        /// </code>
+        /// If there are several splits, the split returned is not guaranteed to be the first one!
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        public virtual Pair<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate) {
+            if (!predicate(Measure)) return Pair.New(this, (FingerTree<T, V>) EmptyInstance);
+            var split = SplitTree(predicate, MeasureMonoid.Zero);
+            return Pair.New(split.Left, split.Right.Prepend(split.Middle));
+        }
+
         /// <summary>
         /// An empty <see cref="FingerTree{T,V}"/>.
         /// </summary>
@@ -179,9 +282,7 @@ namespace FP.Collections.Immutable {
 
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
-                Func<T, FingerTree<T, V>, FingerTree<T, V>> prepend =
-                    (a, tree) => tree.Prepend(a);
-                return middleList.ReduceR(prepend)(rightTree);
+                return middleList.ReduceR(_prepend)(rightTree);
             }
 
             /// <summary>
@@ -396,10 +497,10 @@ namespace FP.Collections.Immutable {
 
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
-                Func<FingerTree<T, V>, T, FingerTree<T, V>> append =
-                    (tree, a) => tree.Append(a);
-                FingerTree<T, V> app3 = middleList.ReduceL(append)(this);
-                return rightTree.IsEmpty ? app3 : app3.Prepend(Value);
+                if (rightTree.IsEmpty) {
+                    return middleList.ReduceL(_append)(this);
+                }
+                return middleList.ReduceR(_prepend)(rightTree).Prepend(Value);
             }
 
             /// <summary>
@@ -629,14 +730,10 @@ namespace FP.Collections.Immutable {
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
                 if (rightTree.IsEmpty) {
-                    Func<FingerTree<T, V>, T, FingerTree<T, V>> append =
-                        (tree, a) => tree.Append(a);
-                    return middleList.ReduceL(append)(this);
+                    return middleList.ReduceL(_append)(this);
                 }
                 if (rightTree.IsSingle) {
-                    Func<FingerTree<T, V>, T, FingerTree<T, V>> append =
-                        (tree, a) => tree.Append(a);
-                    return middleList.ReduceL(append)(this).Append(rightTree.Head);
+                    return middleList.ReduceL(_append)(this).Append(rightTree.Head);
                 }
                 var rightDeep = rightTree as Deep;
                 return MakeDeep(this._left,
@@ -725,8 +822,13 @@ namespace FP.Collections.Immutable {
             /// An <see cref="IEnumerator{T}"/> object that can be used to iterate through the collection.
             /// </returns>
             public override IEnumerator<T> GetEnumerator() {
-                yield return Head;
-                foreach (var t in Tail) yield return t;
+                foreach (var t in _left)
+                    yield return t;
+                foreach (var node in _Middle.AsEnumerable()) //CompilerBug: doesn't compile without AsEnumerable!
+                    foreach (var t in node)
+                        yield return t;
+                foreach (var t in _right)
+                    yield return t;
             }
 
             /// <summary>
@@ -898,106 +1000,6 @@ namespace FP.Collections.Immutable {
             public static bool operator !=(Deep left, Deep right) {
                 return !Equals(left, right);
             }
-        }
-
-        protected abstract bool IsSingle { get; }
-
-        protected abstract FingerTree<T, V> App3(IEnumerable<T> middleList,
-                                                 FingerTree<T, V> rightTree);
-
-        /// <summary>
-        /// Prepends the specified element to the beginning of the list.
-        /// </summary>
-        /// <param name="newHead">The new head.</param>
-        /// <returns>The resulting list.</returns>
-        public abstract FingerTree<T, V> Prepend(T newHead);
-
-        /// <summary>
-        /// Appends the specified element to the end of the list.
-        /// </summary>
-        /// <param name="newLast">The new last element..</param>
-        /// <returns>The resulting list.</returns>
-        public abstract FingerTree<T, V> Append(T newLast);
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// <returns>
-        /// An <see cref="IEnumerator{T}"/> object that can be used to iterate through the collection.
-        /// </returns>
-        public abstract IEnumerator<T> GetEnumerator();
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
-        }
-
-        /// <summary>
-        /// Gets the head of the list, provided it is not empty.
-        /// </summary>
-        /// <value>The head.</value>
-        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
-        public abstract T Head { get; }
-
-        /// <summary>
-        /// Gets the tail of the list, provided it is not empty.
-        /// </summary>
-        /// <value>The tail.</value>
-        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
-        public abstract FingerTree<T, V> Tail { get; }
-
-        /// <summary>
-        /// Gets the initial sublist (all elements but the last) of the list, provided it is not empty.
-        /// </summary>
-        /// <value>The last element.</value>
-        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
-        public abstract FingerTree<T, V> Init { get; }
-
-        /// <summary>
-        /// Gets the last element of the list, provided it is not empty.
-        /// </summary>
-        /// <value>The last element of the list.</value>
-        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
-        public abstract T Last { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this list is empty.
-        /// </summary>
-        /// <value><c>true</c> if this list is empty; otherwise, <c>false</c>.</value>
-        public abstract bool IsEmpty { get; }
-
-        /// <summary>
-        /// Concatenates the tree with another.
-        /// </summary>
-        /// <param name="otherTree">Another tree.</param>
-        /// <returns>The result of concatenation.</returns>
-        public abstract FingerTree<T, V> Concat(FingerTree<T, V> otherTree);
-
-        internal abstract Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate,
-                                                               V initial);
-
-        /// <summary>
-        /// Splits the list according to the specified predicate. The result has the following properties.
-        /// <code>
-        /// var left = tree.Split(predicate).First;
-        /// var right = tree.Split(predicate).Second;
-        /// ---------
-        /// tree.SequenceEquals(left.Concat(right);
-        /// left.IsEmpty() || !predicate(left.Measure);
-        /// right.IsEmpty() || predicate(left.Measure + right.Head.Measure);
-        /// </code>
-        /// If there are several splits, the split returned is not guaranteed to be the first one!
-        /// </summary>
-        /// <param name="predicate">The predicate.</param>
-        /// <returns></returns>
-        public virtual Pair<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate) {
-            if (!predicate(Measure)) return Pair.New(this, (FingerTree<T, V>) EmptyInstance);
-            var split = SplitTree(predicate, MeasureMonoid.Zero);
-            return Pair.New(split.Left, split.Right.Prepend(split.Middle));
         }
         }
 }

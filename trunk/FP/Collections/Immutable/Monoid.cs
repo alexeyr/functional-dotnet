@@ -30,5 +30,8 @@ namespace FP.Collections.Immutable {
 
     internal static class Monoids {
         internal static readonly Monoid<int> Size = new Monoid<int>(0, (x, y) => x + y);
+
+        internal static readonly Monoid<double> Priority =
+            new Monoid<double>(double.NegativeInfinity, Math.Max);
     }
 }
