@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace FP.Collections.Immutable {
     /// <summary>
@@ -18,6 +19,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// A node with two subtrees.
         /// </summary>
+        [DebuggerDisplay("Node2({Item1}, {Item2})")]
         internal class Node2 : FTNode<T, V> {
             public readonly T Item1;
             public readonly T Item2;
@@ -56,6 +58,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// A node with three subtrees.
         /// </summary>
+        [DebuggerDisplay("Node3({Item1}, {Item2}, {Item3})")]
         internal class Node3 : FTNode<T, V> {
             public readonly T Item1;
             public readonly T Item2;

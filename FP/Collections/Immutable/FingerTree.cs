@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using FP.HaskellNames;
 
@@ -49,15 +50,14 @@ namespace FP.Collections.Immutable {
 
         internal Empty EmptyInstance {
             get {
-                if (_emptyInstance != null) return _emptyInstance;
-                return _emptyInstance = new Empty(MeasureMonoid);
+                return _emptyInstance ?? (_emptyInstance = new Empty(MeasureMonoid));
             }
         }
 
         internal FingerTree<FTNode<T, V>, V>.Empty EmptyInstanceNested {
             get {
-                if (_emptyInstanceNested != null) return _emptyInstanceNested;
-                return _emptyInstanceNested = new FingerTree<FTNode<T, V>, V>.Empty(MeasureMonoid);
+                return _emptyInstanceNested ??
+                       (_emptyInstanceNested = new FingerTree<FTNode<T, V>, V>.Empty(MeasureMonoid));
             }
         }
 
@@ -91,7 +91,7 @@ namespace FP.Collections.Immutable {
             if (right.Length != 0)
                 return MakeDeep(left, middle, right);
             if (middle.IsEmpty)
-                return FingerTree.FromEnumerable(right, MeasureMonoid);
+                return FingerTree.FromEnumerable(left, MeasureMonoid);
             var middleInit = middle.Init;
             var middleLast = middle.Last;
             return MakeDeep(left, middleInit, middleLast.ToArray());
@@ -115,7 +115,7 @@ namespace FP.Collections.Immutable {
                 return MakeDeep(left, middleSuspended, right);
             var middle = middleSuspended();
             if (middle.IsEmpty)
-                return FingerTree.FromEnumerable(right, MeasureMonoid);
+                return FingerTree.FromEnumerable(left, MeasureMonoid);
             var middleInit = middle.Init;
             var middleLast = middle.Last;
             return MakeDeep(left, middleInit, middleLast.ToArray());
@@ -136,6 +136,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// An empty <see cref="FingerTree{T,V}"/>.
         /// </summary>
+        [DebuggerDisplay("Empty")]
         public class Empty : FingerTree<T, V>, IEquatable<Empty> {
             internal Empty(Monoid<V> measureMonoid, Empty emptyInstance)
                 : base(measureMonoid, emptyInstance) {}
@@ -349,6 +350,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// A <see cref="FingerTree{T,V}"/> with the single element <see cref="Value"/>.
         /// </summary>
+        [DebuggerDisplay("Single(Value = {Value}")]
         public class Single : FingerTree<T, V>, IEquatable<Single> {
             /// <summary>
             /// The value of the element.
@@ -632,9 +634,9 @@ namespace FP.Collections.Immutable {
                     return middleList.ReduceL(append)(this);
                 }
                 if (rightTree.IsSingle) {
-                    Func<T, FingerTree<T, V>, FingerTree<T, V>> prepend =
-                        (a, tree) => tree.Prepend(a);
-                    return middleList.ReduceR(prepend)(this).Append(rightTree.Head);
+                    Func<FingerTree<T, V>, T, FingerTree<T, V>> append =
+                        (tree, a) => tree.Append(a);
+                    return middleList.ReduceL(append)(this).Append(rightTree.Head);
                 }
                 var rightDeep = rightTree as Deep;
                 return MakeDeep(this._left,
@@ -653,26 +655,26 @@ namespace FP.Collections.Immutable {
                                                    buffer.Dequeue(),
                                                    MeasureMonoid);
                     }
-                    switch (buffer.Count) {
-                        case 2:
-                            yield return
-                                new FTNode<T, V>.Node2(buffer.Dequeue(), buffer.Dequeue(),
-                                                       MeasureMonoid);
-                            break;
-                        case 3:
-                            yield return
-                                new FTNode<T, V>.Node3(buffer.Dequeue(), buffer.Dequeue(),
-                                                       buffer.Dequeue(), MeasureMonoid);
-                            break;
-                        case 4:
-                            yield return
-                                new FTNode<T, V>.Node2(buffer.Dequeue(), buffer.Dequeue(),
-                                                       MeasureMonoid);
-                            yield return
-                                new FTNode<T, V>.Node2(buffer.Dequeue(), buffer.Dequeue(),
-                                                       MeasureMonoid);
-                            break;
-                    }
+                }
+                switch (buffer.Count) {
+                    case 2:
+                        yield return
+                            new FTNode<T, V>.Node2(buffer.Dequeue(), buffer.Dequeue(),
+                                                   MeasureMonoid);
+                        break;
+                    case 3:
+                        yield return
+                            new FTNode<T, V>.Node3(buffer.Dequeue(), buffer.Dequeue(),
+                                                   buffer.Dequeue(), MeasureMonoid);
+                        break;
+                    case 4:
+                        yield return
+                            new FTNode<T, V>.Node2(buffer.Dequeue(), buffer.Dequeue(),
+                                                   MeasureMonoid);
+                        yield return
+                            new FTNode<T, V>.Node2(buffer.Dequeue(), buffer.Dequeue(),
+                                                   MeasureMonoid);
+                        break;
                 }
             }
 
@@ -809,7 +811,7 @@ namespace FP.Collections.Immutable {
                 V totalMiddle = MeasureMonoid.Plus(totalLeft, _Middle.Measure);
                 if (predicate(totalMiddle)) {
                     var splitMiddle = _middle.SplitTree(predicate, totalLeft);
-                    V totalLeftAndMiddleLeft = splitMiddle.Left.SumMeasures(MeasureMonoid, totalLeft);
+                    V totalLeftAndMiddleLeft = MeasureMonoid.Plus(totalLeft, splitMiddle.Left.Measure);
                     var splitMiddleMiddle = splitMiddle.Middle.ToArray().
                         SplitArray(MeasureMonoid, predicate, totalLeftAndMiddleLeft);
                     var newLeft = DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left);
