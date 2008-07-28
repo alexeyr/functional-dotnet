@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using FP.HaskellNames;
 
 namespace FP.Collections.Immutable {
@@ -15,6 +16,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// An element of the sequence.
         /// </summary>
+        [DebuggerDisplay("Value = {Value}")]
         private struct Element : IMeasured<int> {
             /// <summary>
             /// Gets the measure of the object.

@@ -58,22 +58,22 @@ namespace FP.Collections.Immutable {
         }
 
         internal static Split<T, T[]> SplitArray<T, V>(this T[] array, Monoid<V> monoid, Func<V, bool> pred, V init) where T : IMeasured<V> {
-            var left = new List<T>(Math.Min(array.Length, 10));
             if (array.Length == 1) {
                 var empty = new T[0];
                 return new Split<T, T[]>(empty, array[0], empty);
             }
 
+            var left = new List<T>(Math.Min(array.Length, 10));
             V total = init;
             for (int offset = 0; offset < array.Length - 1; offset++) {
                 T t = array[offset];
+                total = monoid.Plus(total, t.Measure);
                 if (pred(total)) {
                     var right = new T[array.Length - offset - 1];
                     Array.Copy(array, offset + 1, right, 0, right.Length);
                     return new Split<T, T[]>(left.ToArray(), t, right);
                 }
                 left.Add(t);
-                total = monoid.Plus(total, t.Measure);
             }
 
             return new Split<T, T[]>(left.ToArray(), array[array.Length - 1], new T[0]);
