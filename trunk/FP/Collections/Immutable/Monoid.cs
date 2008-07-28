@@ -27,4 +27,8 @@ namespace FP.Collections.Immutable {
             Plus = add;
         }
     }
+
+    internal static class Monoids {
+        internal static readonly Monoid<int> Size = new Monoid<int>(0, (x, y) => x + y);
+    }
 }

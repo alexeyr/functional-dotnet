@@ -16,6 +16,11 @@ namespace FPTests {
         }
 
         [Fact]
+        public void TailTest() {
+            Assert2.SequenceEqual(Ints.Range(10, 100), Ints.Range(9, 100).Tail());
+        }
+
+        [Fact]
         public void IntersperseTest() {
             Assert.Equal("a,b,c,d,e", "abcde".Intersperse(',').ToStringProper());
         }
