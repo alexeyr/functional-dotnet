@@ -28,11 +28,11 @@ namespace FP.Collections.Immutable {
             }
 
             public override Func<A, A> ReduceR<A>(Func<T, A, A> binOp) {
-                return (a => binOp(Item1, binOp(Item2, a)));
+                return (x => binOp(Item1, binOp(Item2, x)));
             }
 
             public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
-                return (a => binOp(binOp(a, Item1), Item2));
+                return (x => binOp(binOp(x, Item1), Item2));
             }
 
             internal override T[] ToArray() {

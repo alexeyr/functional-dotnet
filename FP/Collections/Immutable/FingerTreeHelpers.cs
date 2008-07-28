@@ -14,8 +14,8 @@ namespace FP.Collections.Immutable {
         /// <typeparam name="V">The type of the measure values.</typeparam>
         /// <param name="measureMonoid">The measure monoid.</param>
         /// <returns></returns>
-        public static FingerTreeList<T, V>.Empty Empty<T, V>(Monoid<V> measureMonoid) where T : IMeasured<V> {
-            return new FingerTreeList<T, V>.Empty(measureMonoid);
+        public static FingerTree<T, V>.Empty Empty<T, V>(Monoid<V> measureMonoid) where T : IMeasured<V> {
+            return new FingerTree<T, V>.Empty(measureMonoid);
         }
 
         /// <summary>
@@ -26,10 +26,10 @@ namespace FP.Collections.Immutable {
         /// <param name="sequence">The sequence.</param>
         /// <param name="measureMonoid">The measure monoid.</param>
         /// <returns></returns>
-        public static FingerTreeList<T, V> FromEnumerable<T,V>(IEnumerable<T> sequence, Monoid<V> measureMonoid) where T : IMeasured<V> {
-//            Func<T, FingerTreeList<T, V>, FingerTreeList<T, V>> prepend1 = (a, tree) => tree.Prepend(a);
+        public static FingerTree<T, V> FromEnumerable<T,V>(IEnumerable<T> sequence, Monoid<V> measureMonoid) where T : IMeasured<V> {
+//            Func<T, FingerTree<T, V>, FingerTree<T, V>> prepend1 = (a, tree) => tree.Prepend(a);
 //            return sequence.ReduceR(prepend1)(Empty<T,V>(measureMonoid));
-            Func<FingerTreeList<T, V>, T, FingerTreeList<T, V>> append = (tree, a) => tree.Append(a);
+            Func<FingerTree<T, V>, T, FingerTree<T, V>> append = (tree, a) => tree.Append(a);
             return sequence.ReduceL(append)(Empty<T, V>(measureMonoid));
         }
 
