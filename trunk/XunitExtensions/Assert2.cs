@@ -46,11 +46,15 @@ namespace XunitExtensions {
             using (var enum1 = expected.GetEnumerator())
             using (var enum2 = actual.GetEnumerator()) {
                 while (true) {
-                    bool hasnext1 = enum1.MoveNext();
-                    bool hasnext2 = enum2.MoveNext();
-                    if (!(hasnext1 || hasnext2))
+                    bool finished1 = !enum1.MoveNext();
+                    bool finished2 = !enum2.MoveNext();
+                    if (finished1 && finished2)
                         break;
-                    if (hasnext1 != hasnext2 || !equalityComparer.Equals(enum1.Current, enum2.Current))
+                    if (finished1)
+                        throw new SequenceEqualException(i, "nothing", enum2.Current);
+                    if (finished2)
+                        throw new SequenceEqualException(i, enum1.Current, "nothing");
+                    if (!equalityComparer.Equals(enum1.Current, enum2.Current))
                         throw new SequenceEqualException(i, enum1.Current, enum2.Current);
                     i++;
                 }

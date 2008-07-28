@@ -53,7 +53,7 @@
     <Compile Include="Collections\Immutable\Monoid.cs" />
     <Compile Include="Collections\Immutable\PriorityQueue.cs" />
     <Compile Include="Collections\Immutable\Result.cs" />
-    <Compile Include="Collections\Immutable\Sequence.cs" />
+    <Compile Include="Collections\Immutable\RandomAccessSequence.cs" />
     <Compile Include="Collections\Immutable\Unit.cs" />
     <Compile Include="Collections\Mutable\Heap.cs" />
     <Compile Include="Collections\Mutable\PriorityQueue.cs" />
