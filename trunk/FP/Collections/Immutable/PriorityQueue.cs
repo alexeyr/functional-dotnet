@@ -9,7 +9,7 @@ namespace FP.Collections.Immutable {
     /// <typeparam name="P">The type of priority values.</typeparam>
     /// <typeparam name="T">The type of elements.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
-    public struct PriorityQueue<P, T> {
+    public struct PriorityQueue<P, T> : IEquatable<PriorityQueue<P, T>> {
         private readonly Monoid<P> _monoid;
         private readonly FingerTree<Element, P> _ft;
 
@@ -127,6 +127,50 @@ namespace FP.Collections.Immutable {
         /// <value>The maximum priority.</value>
         public P MaxPriority {
             get { return _ft.Measure; }
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(PriorityQueue<P, T> obj) {
+            return Equals(obj._monoid, _monoid) && Equals(obj._ft, _ft);
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <returns>
+        /// true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false.
+        /// </returns>
+        /// <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
+        public override bool Equals(object obj) {
+            if (obj.GetType() != typeof (PriorityQueue<P, T>)) return false;
+            return Equals((PriorityQueue<P, T>) obj);
+        }
+
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A 32-bit signed integer that is the hash code for this instance.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public override int GetHashCode() {
+            unchecked {
+                return ((_monoid != null ? _monoid.GetHashCode() : 0)*397) ^ (_ft != null ? _ft.GetHashCode() : 0);
+            }
+        }
+
+        public static bool operator ==(PriorityQueue<P, T> left, PriorityQueue<P, T> right) {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(PriorityQueue<P, T> left, PriorityQueue<P, T> right) {
+            return !left.Equals(right);
         }
     }
 

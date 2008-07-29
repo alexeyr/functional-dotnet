@@ -7,7 +7,8 @@ using FP.HaskellNames;
 namespace FP.Collections.Immutable {
     /// <summary>
     /// A finger-tree-based random access sequence.
-    /// An amortized running time is given for each operation, with <i>n</i> referring to the length of the sequence and i being the integral index used by some operations. 
+    /// An amortized running time is given for each operation, with <i>n</i> referring to the length 
+    /// of the sequence and <i>i</i> being the integral index used by some operations. 
     /// </summary>
     /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
@@ -74,11 +75,13 @@ namespace FP.Collections.Immutable {
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
+        /// <i>O(1)</i>
         /// </summary>
         /// <returns>
         /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
+        /// <remarks>It is possible to have two unequal sequences with the same elements.</remarks>
         public bool Equals(RandomAccessSequence<T> other) {
             return Equals(other._ft, _ft);
         }
@@ -263,7 +266,10 @@ namespace FP.Collections.Immutable {
         /// <param name="index">The index where the new element shall be inserted.</param>
         /// <param name="newValue">The new value.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> InsertAt(int index, T newValue) {
+            if (index < 0 || index >= Count)
+                throw new ArgumentOutOfRangeException("index");
             var ftSplit = _ft.Split(i => i > index);
             return new RandomAccessSequence<T>(ftSplit.First.Append(new Element(newValue)).Concat(ftSplit.Second));
         }
@@ -273,7 +279,10 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="index">The index of the element to remove.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> RemoveAt(int index) {
+            if (index < 0 || index >= Count)
+                throw new ArgumentOutOfRangeException("index");
             var split = _ft.SplitTree(i => i > index, 0);
             return new RandomAccessSequence<T>(split.Left.Concat(split.Right));
         }
@@ -283,35 +292,10 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <returns>The sequence containing the same elements in reverse order.</returns>
         public RandomAccessSequence<T> Reverse() {
-            // TODO: temp realisation until specialisation
-            //-- | /O(n)/. The reverse of a sequence.
-            //reverse :: Seq a -> Seq a
-            //reverse (Seq xs) = Seq (reverseTree id xs)
-            //
-            //reverseTree :: (a -> a) -> FingerTree a -> FingerTree a
-            //reverseTree _ Empty = Empty
-            //reverseTree f (Single x) = Single (f x)
-            //reverseTree f (Deep s pr m sf) =
-            //	Deep s (reverseDigit f sf)
-            //		(reverseTree (reverseNode f) m)
-            //		(reverseDigit f pr)
-            //
-            //reverseDigit :: (a -> a) -> Digit a -> Digit a
-            //reverseDigit f (One a) = One (f a)
-            //reverseDigit f (Two a b) = Two (f b) (f a)
-            //reverseDigit f (Three a b c) = Three (f c) (f b) (f a)
-            //reverseDigit f (Four a b c d) = Four (f d) (f c) (f b) (f a)
-            //
-            //reverseNode :: (a -> a) -> Node a -> Node a
-            //reverseNode f (Node2 s a b) = Node2 s (f b) (f a)
-            //reverseNode f (Node3 s a b c) = Node3 s (f c) (f b) (f a)
-
-            return
-                new RandomAccessSequence<T>(
-                    _ft.ReduceL(FingerTree<Element, int>._append)(_ft.EmptyInstance));
-
-            //TODO: Appendd/PrependRange, InsertRangeAt, RemoveRangeAt (consider specialisation first!)
+            return new RandomAccessSequence<T>(_ft.ReverseTree(Functions.Id<Element>()));
         }
+
+        //TODO: Appendd/PrependRange, InsertRangeAt, RemoveRangeAt (consider specialisation first!)
     }
 
     /// <summary>

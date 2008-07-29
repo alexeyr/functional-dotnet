@@ -10,7 +10,7 @@ namespace FP.Collections.Immutable {
     /// <typeparam name="K">The type of the keys.</typeparam>
     /// <typeparam name="T">The type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
-    public struct OrderedSequence<K, T> : IEnumerable<T> {
+    public struct OrderedSequence<K, T> : IEnumerable<T>, IEquatable<OrderedSequence<K, T>> {
         private readonly K _noKey;
         private readonly IComparer<K> _comparer;
 
@@ -240,7 +240,50 @@ namespace FP.Collections.Immutable {
             }
         }
 
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <remarks>It is possible to have two unequal sequences with the same elements and comparers.</remarks>
+        public bool Equals(OrderedSequence<K, T> other) {
+            return Equals(other._comparer, _comparer) && Equals(other._noKey, _noKey) &&
+                   Equals(other._ft, _ft);
         }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <returns>
+        /// true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false.
+        /// </returns>
+        /// <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
+        public override bool Equals(object obj) {
+            if (obj.GetType() != typeof (OrderedSequence<K, T>)) return false;
+            return Equals((OrderedSequence<K, T>) obj);
+        }
+
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A 32-bit signed integer that is the hash code for this instance.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public override int GetHashCode() {
+            return _ft.GetHashCode();
+        }
+
+        public static bool operator ==(OrderedSequence<K, T> left, OrderedSequence<K, T> right) {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(OrderedSequence<K, T> left, OrderedSequence<K, T> right) {
+            return !left.Equals(right);
+        }
+    }
 
     /// <summary>
     /// Utility methods for creating <see cref="OrderedSequence{K,T}"/>.

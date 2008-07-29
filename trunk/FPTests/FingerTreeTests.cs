@@ -11,7 +11,7 @@ namespace FPTests {
         private readonly RandomAccessSequence<int> _empty = RandomAccessSequence.Empty<int>();
         private readonly int[] _testData;
         private readonly RandomAccessSequence<int> _seq;
-        private const int N = 10000;
+        private const int N = 1000;
         private readonly Random _rnd = new Random();
 
         public RASequenceTests() {
@@ -117,6 +117,14 @@ namespace FPTests {
             Assert.Equal(0, seq[i2]);
             Assert.Equal(0, seq[i1]);
             Assert2.SequenceEqual(_testData, seq.RemoveAt(i3).RemoveAt(i2 - 1).RemoveAt(i1 - 2));
+        }
+
+        [Fact]
+        public void ReverseWorks() {
+            Assert2.SequenceEqual(_empty, _empty.Reverse());
+            var single = _empty.Append(1);
+            Assert2.SequenceEqual(single, single.Reverse());
+            Assert2.SequenceEqual(_testData.Reverse(), _seq.Reverse());
         }
     }
 

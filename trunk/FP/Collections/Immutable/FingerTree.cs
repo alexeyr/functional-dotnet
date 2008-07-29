@@ -45,8 +45,8 @@ namespace FP.Collections.Immutable {
         /// <value>The measure.</value>
         public abstract V Measure { get; }
 
-        internal Empty _emptyInstance;
-        internal FingerTree<FTNode<T, V>, V>.Empty _emptyInstanceNested;
+        private Empty _emptyInstance;
+        private FingerTree<FTNode<T, V>, V>.Empty _emptyInstanceNested;
 
         internal static readonly Func<FingerTree<T, V>, T, FingerTree<T, V>> _append = ((tree, a) => tree.Append(a));
         internal static readonly Func<T, FingerTree<T, V>, FingerTree<T, V>> _prepend = ((a, tree) => tree.Prepend(a));
@@ -237,6 +237,12 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
+        /// Reverses this tree.
+        /// </summary>
+        /// <returns>The reverse tree.</returns>
+        public abstract FingerTree<T, V> ReverseTree(Func<T, T> f);
+
+        /// <summary>
         /// An empty <see cref="FingerTree{T,V}"/>.
         /// </summary>
         [DebuggerDisplay("Empty")]
@@ -388,6 +394,14 @@ namespace FP.Collections.Immutable {
                 Func<V, bool> predicate) {
                 var empty = (FingerTree<T, V>) EmptyInstance;
                 return Pair.New(empty, empty);
+            }
+
+            /// <summary>
+            /// Reverses this tree.
+            /// </summary>
+            /// <returns>The reverse tree.</returns>
+            public override FingerTree<T, V> ReverseTree(Func<T, T> f) {
+                return this;
             }
 
             /// <summary>
@@ -582,6 +596,15 @@ namespace FP.Collections.Immutable {
             internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate,
                                                                    V initial) {
                 return new Split<T, FingerTree<T, V>>(EmptyInstance, Value, EmptyInstance);
+            }
+
+            /// <summary>
+            /// Reverses this tree.
+            /// </summary>
+            /// <returns>The reverse tree.</returns>
+            public override FingerTree<T, V> ReverseTree(Func<T, T> f) {
+                var newValue = f(Value);
+                return newValue.Equals(Value) ? this : MakeSingle(newValue);
             }
 
             /// <summary>
@@ -930,6 +953,24 @@ namespace FP.Collections.Immutable {
                                                           FingerTree.FromEnumerable(
                                                               splitRight.Right, MeasureMonoid));
                 }
+            }
+
+            /// <summary>
+            /// Reverses this tree.
+            /// </summary>
+            /// <returns>The reverse tree.</returns>
+            public override FingerTree<T, V> ReverseTree(Func<T, T> f) {
+                var newLeft = _right.Reverse().Map(f).ToArray();
+                var newRight = _left.Reverse().Map(f).ToArray();
+                // var newLeft = new T[_right.Length];
+                // var newRight = new T[_left.Length];
+                // _right.CopyTo(newLeft, 0);
+                // _left.CopyTo(newRight, 0);
+                // Array.Reverse(newLeft);
+                // Array.Reverse(newRight);
+                return _middleSuspended == null
+                           ? MakeDeep(newLeft, _middle.ReverseTree(node => node.Reverse(f)), newRight)
+                           : MakeDeep(newLeft, () => _middleSuspended().ReverseTree(node => node.Reverse(f)), newRight);
             }
 
             /// <summary>
