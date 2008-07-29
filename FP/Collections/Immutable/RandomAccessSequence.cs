@@ -10,15 +10,15 @@ namespace FP.Collections.Immutable {
     /// An amortized running time is given for each operation, with <i>n</i> referring to the length of the sequence and i being the integral index used by some operations. 
     /// </summary>
     /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
-    public class RandomAccessSequence<T> : IEnumerable<T>, IEquatable<RandomAccessSequence<T>> {
-        // TODO: A lot of sharing is lost due to the lack of newtype! Consider making it a specialisation!
+    /// <remarks>Do not use the default constructor.</remarks>
+    public struct RandomAccessSequence<T> : IEnumerable<T>, IEquatable<RandomAccessSequence<T>> {
         private readonly FingerTree<Element, int> _ft;
 
         /// <summary>
         /// An element of the sequence.
         /// </summary>
         [DebuggerDisplay("Value = {Value}")]
-        private struct Element : IMeasured<int> {
+        internal struct Element : IMeasured<int> {
             /// <summary>
             /// Gets the measure of the object.
             /// </summary>
@@ -39,13 +39,6 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class.
-        /// </summary>
-        public RandomAccessSequence() {
-            _ft = FingerTree.Empty<Element, int>(Monoids.Size);
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class
         /// containing the same elements as <paramref name="sequence"/>.
         /// </summary>
@@ -54,7 +47,7 @@ namespace FP.Collections.Immutable {
             _ft = FingerTree.FromEnumerable(sequence.Map(x => new Element(x)), Monoids.Size);
         }
 
-        private RandomAccessSequence(FingerTree<Element, int> ft) {
+        internal RandomAccessSequence(FingerTree<Element, int> ft) {
             _ft = ft;
         }
 
@@ -162,7 +155,8 @@ namespace FP.Collections.Immutable {
         /// the sequence and the second one contains the rest of them.
         /// </summary>
         /// <param name="count">The index at which the sequence will be split.</param>
-        /// <returns></returns>
+        /// <remarks>if <code>count <= 0 || count >= Count</code>, the corresponding part 
+        /// of the result will be empty.</remarks>
         public Pair<RandomAccessSequence<T>, RandomAccessSequence<T>> SplitAt(int count) {
             var ftSplit = _ft.Split(i => i > count);
             return Pair.New(new RandomAccessSequence<T>(ftSplit.First), new RandomAccessSequence<T>(ftSplit.Second));
@@ -185,7 +179,29 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Gets the <see cref="T"/> at the specified index.
         /// </summary>
-        public T this[int index] { get { return _ft.SplitTree(i => i > index, 0).Middle.Value; } }
+        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
+        public T this[int index] { get {
+            if (index < 0 || index >= Count)
+                throw new ArgumentOutOfRangeException("index");
+            return _ft.SplitTree(i => i > index, 0).Middle.Value;
+        } }
+
+        /// <summary>
+        /// Updates the element at <paramref name="index"/> using <paramref name="function"/>.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="function">The function to apply to the element currently at <paramref name="index"/></param>
+        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
+        /// <remarks>
+        /// Equivalent to <code>SetAt(index, function(this[index])), but faster.</code>
+        /// </remarks>
+        public RandomAccessSequence<T> AdjustAt(int index, Func<T, T> function) {
+            if (index < 0 || index >= Count)
+                throw new ArgumentOutOfRangeException("index");
+            var split = _ft.SplitTree(i => i > index, 0);
+            T currentValue = split.Middle.Value;
+            return new RandomAccessSequence<T>(split.Left.Append(new Element(function(currentValue))).Concat(split.Right));
+        }
 
         /// <summary>
         /// Replaces the <see cref="T"/> at the specified index with the specified value.
@@ -194,9 +210,9 @@ namespace FP.Collections.Immutable {
         /// <param name="newValue">The new value.</param>
         /// <returns>The sequence where the element at <paramref name="index"/> has the value <paramref name="newValue"/>
         /// and all other elements have the same value as in the original sequence.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> SetAt(int index, T newValue) {
-            var split = _ft.SplitTree(i => i > index, 0);
-            return new RandomAccessSequence<T>(split.Left.Append(new Element(newValue)).Concat(split.Right));
+            return AdjustAt(index, _ => newValue);
         }
 
         /// <summary>
@@ -302,15 +318,15 @@ namespace FP.Collections.Immutable {
     /// <seealso cref="RandomAccessSequence{T}"/>
     public static class RandomAccessSequence {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class.
+        /// Creates an empty <see cref="RandomAccessSequence{T}"/>.
         /// </summary>
         public static RandomAccessSequence<T> Empty<T>() {
-            return new RandomAccessSequence<T>();
+            return new RandomAccessSequence<T>(FingerTree.Empty<RandomAccessSequence<T>.Element, int>(Monoids.Size));
         }
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class.
+        /// Creates a <see cref="RandomAccessSequence{T}"/> containing the elements in <paramref name="sequence"/>.
         /// </summary>
-        /// <param name="sequence">The sequence of elements placed into the queue initially.</param>
         public static RandomAccessSequence<T> FromEnumerable<T>(IEnumerable<T> sequence) {
             return new RandomAccessSequence<T>(sequence);
         }
