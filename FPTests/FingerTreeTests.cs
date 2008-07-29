@@ -36,14 +36,14 @@ namespace FPTests {
         public void AppendWorks() {
             var seq = _empty;
             foreach (var i in _testData)
-                seq = seq.Append(i);
+                seq = seq | i;
             Assert2.SequenceEqual(_testData, seq);
         }
         [Fact]
         public void PrependWorks() {
             var seq = _empty;
             foreach (var i in _testData)
-                seq = seq.Prepend(i);
+                seq = i | seq;
             Assert2.SequenceEqual(_testData.Reverse(), seq);
         }
 
@@ -102,9 +102,9 @@ namespace FPTests {
 
         [Fact]
         public void ConcatWorks() {
-            Assert2.SequenceEqual(_testData.Concat(_testData), _seq.Concat(_seq));
-            Assert2.SequenceEqual(_testData, _seq.Concat(_empty));
-            Assert2.SequenceEqual(_testData, _empty.Concat(_seq));
+            Assert2.SequenceEqual(_testData.Concat(_testData), _seq + _seq);
+            Assert2.SequenceEqual(_testData, _seq + _empty);
+            Assert2.SequenceEqual(_testData, _empty + _seq);
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace FPTests {
         [Fact]
         public void ReverseWorks() {
             Assert2.SequenceEqual(_empty, _empty.Reverse());
-            var single = _empty.Append(1);
+            var single = _empty | 1;
             Assert2.SequenceEqual(single, single.Reverse());
             Assert2.SequenceEqual(_testData.Reverse(), _seq.Reverse());
         }
@@ -179,8 +179,8 @@ namespace FPTests {
             var enum2 = _testData.Skip(count);
             var seq1 = OrderedSequence.FromEnumerable(enum1, int.MinValue);
             var seq2 = OrderedSequence.FromEnumerable(enum2, int.MinValue);
-            Assert2.SequenceEqual(_testDataSorted, seq1.Union(seq2));
-            Assert2.SequenceEqual(_testDataSorted, seq2.Union(seq1));
+            Assert2.SequenceEqual(_testDataSorted, seq1 + seq2);
+            Assert2.SequenceEqual(_testDataSorted, seq2 + seq1);
         }
 
         [Fact]

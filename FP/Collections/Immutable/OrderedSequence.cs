@@ -138,7 +138,7 @@ namespace FP.Collections.Immutable {
             var ft2head = ft2.Head;
             var ft2tail = ft2.Tail;
             var ft1split = ft1.Split(pair => comparer.Compare(pair.First, ft2head.Key) > 0);
-            var newRight = MergeTrees(ft2tail, ft1split.Second).Prepend(ft2head);
+            var newRight = ft2head | MergeTrees(ft2tail, ft1split.Second);
             return ft1split.First.Concat(newRight);
         }
 
@@ -165,7 +165,7 @@ namespace FP.Collections.Immutable {
             return ft1_LE_ft2head.IsEmpty ||
                    comparer.Compare(ft1_LE_ft2head.Last.Key, ft2head.Key) < 0 //Does ft1_LE_ft2head contain ft2head?
                        ? recursive
-                       : recursive.Prepend(ft2head);
+                       : ft2head | recursive;
         }
 
         /// <summary>
@@ -284,6 +284,20 @@ namespace FP.Collections.Immutable {
         public static bool operator !=(OrderedSequence<K, T> left, OrderedSequence<K, T> right) {
             return !left.Equals(right);
         }
+
+        /// <summary>
+        /// Appends <paramref name="item"/> to <paramref name="tree"/>.
+        /// </summary>
+        public static OrderedSequence<K, T> operator |(OrderedSequence<K, T> tree, Pair<K, T> item) {
+            return tree.Insert(item.First, item.Second);
+        }
+
+        /// <summary>
+        /// Merges <paramref name="tree1"/> and <paramref name="tree2"/>.
+        /// </summary>
+        public static OrderedSequence<K, T> operator +(OrderedSequence<K, T> tree1, OrderedSequence<K, T> tree2) {
+            return tree1.Union(tree2);
+        }
     }
 
     /// <summary>
@@ -360,7 +374,7 @@ namespace FP.Collections.Immutable {
         /// <paramref name="sequence"/> is not required to be ordered.</remarks>
         public static OrderedSequence<K, T> FromEnumerable<K, T>(IEnumerable<Pair<K, T>> sequence, IComparer<K> comparer, K noKey) {
             var empty = Empty<K, T>(comparer, noKey);
-            Func<OrderedSequence<K, T>, Pair<K, T>, OrderedSequence<K, T>> insert = (seq, pair) => seq.Insert(pair.First, pair.Second);
+            Func<OrderedSequence<K, T>, Pair<K, T>, OrderedSequence<K, T>> insert = (seq, pair) => seq | pair;
             return sequence.FoldLeft(insert, empty);
         }
 
@@ -389,7 +403,7 @@ namespace FP.Collections.Immutable {
         /// <paramref name="sequence"/> is not required to be ordered.</remarks>
         public static OrderedSequence<T, T> FromEnumerable<T>(IEnumerable<T> sequence, IComparer<T> comparer, T noKey) {
             var empty = Empty<T, T>(comparer, noKey);
-            Func<OrderedSequence<T, T>, T, OrderedSequence<T, T>> insert = (seq, t) => seq.Insert(t, t);
+            Func<OrderedSequence<T, T>, T, OrderedSequence<T, T>> insert = (seq, t) => seq | Pair.New(t, t);
             return sequence.FoldLeft(insert, empty);
         }
 

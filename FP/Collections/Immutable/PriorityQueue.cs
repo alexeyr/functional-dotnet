@@ -116,7 +116,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="otherQueue">The other queue.</param>
         /// <returns>The queue containing all elements in both queues.</returns>
-        public PriorityQueue<P, T> Merge(PriorityQueue<P, T> otherQueue) {
+        public PriorityQueue<P, T> Union(PriorityQueue<P, T> otherQueue) {
             return new PriorityQueue<P, T>(_ft.Concat(otherQueue._ft));
         }
 
@@ -170,6 +170,13 @@ namespace FP.Collections.Immutable {
 
         public static bool operator !=(PriorityQueue<P, T> left, PriorityQueue<P, T> right) {
             return !left.Equals(right);
+        }
+
+        /// <summary>
+        /// Merges <paramref name="tree1"/> and <paramref name="tree2"/>.
+        /// </summary>
+        public static PriorityQueue<P, T> operator +(PriorityQueue<P, T> tree1, PriorityQueue<P, T> tree2) {
+            return tree1.Union(tree2);
         }
     }
 

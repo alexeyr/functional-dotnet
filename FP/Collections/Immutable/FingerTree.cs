@@ -54,8 +54,8 @@ namespace FP.Collections.Immutable {
         private Empty _emptyInstance;
         private FingerTree<FTNode<T, V>, V>.Empty _emptyInstanceNested;
 
-        internal static readonly Func<FingerTree<T, V>, T, FingerTree<T, V>> _append = ((tree, a) => tree.Append(a));
-        internal static readonly Func<T, FingerTree<T, V>, FingerTree<T, V>> _prepend = ((a, tree) => tree.Prepend(a));
+        internal static readonly Func<FingerTree<T, V>, T, FingerTree<T, V>> _append = ((tree, a) => tree | a);
+        internal static readonly Func<T, FingerTree<T, V>, FingerTree<T, V>> _prepend = ((a, tree) => a | tree);
 
         internal Empty EmptyInstance {
             get {
@@ -239,7 +239,7 @@ namespace FP.Collections.Immutable {
         public virtual Pair<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate) {
             if (!predicate(Measure)) return Pair.New(this, (FingerTree<T, V>) EmptyInstance);
             var split = SplitTree(predicate, MeasureMonoid.Zero);
-            return Pair.New(split.Left, split.Right.Prepend(split.Middle));
+            return Pair.New(split.Left, split.Middle | split.Right);
         }
 
         /// <summary>
@@ -247,6 +247,27 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <returns>The reverse tree.</returns>
         public abstract FingerTree<T, V> ReverseTree(Func<T, T> f);
+
+        /// <summary>
+        /// Prepends <paramref name="item"/> to <paramref name="tree"/>.
+        /// </summary>
+        public static FingerTree<T, V> operator |(T item, FingerTree<T,V> tree) {
+            return tree.Prepend(item);
+        }
+
+        /// <summary>
+        /// Appends <paramref name="item"/> to <paramref name="tree"/>.
+        /// </summary>
+        public static FingerTree<T, V> operator |(FingerTree<T, V> tree, T item) {
+            return tree.Append(item);
+        }
+
+        /// <summary>
+        /// Concatenates <paramref name="tree1"/> and <paramref name="tree2"/>.
+        /// </summary>
+        public static FingerTree<T, V> operator +(FingerTree<T,V> tree1, FingerTree<T, V> tree2) {
+            return tree1.Concat(tree2);
+        }
 
         /// <summary>
         /// An empty <see cref="FingerTree{T,V}"/>.
@@ -532,7 +553,7 @@ namespace FP.Collections.Immutable {
                 if (rightTree.IsEmpty) {
                     return middleList.FoldLeft(_append, this);
                 }
-                return middleList.FoldRight(_prepend, rightTree).Prepend(Value);
+                return Value | middleList.FoldRight(_prepend, rightTree);
             }
 
             /// <summary>
@@ -608,7 +629,7 @@ namespace FP.Collections.Immutable {
             /// <param name="otherTree">Another tree.</param>
             /// <returns>The result of concatenation.</returns>
             public override FingerTree<T, V> Concat(FingerTree<T, V> otherTree) {
-                return otherTree.Prepend(Value);
+                return Value | otherTree;
             }
 
             internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate,
@@ -836,8 +857,7 @@ namespace FP.Collections.Immutable {
                     //see page 7 of the paper
                 }
                 return MakeDeep(new[] {newHead, _left[0]},
-                                _Middle.Prepend(new FTNode<T, V>.Node3(_left[1], _left[2], _left[3],
-                                                                       MeasureMonoid)),
+                                new FTNode<T, V>.Node3(_left[1], _left[2], _left[3], MeasureMonoid) | _Middle,
                                 _right);
             }
 
