@@ -62,7 +62,7 @@ namespace FP.Collections.Immutable {
         /// Initializes a new instance of the <see cref="OrderedSequence{K,T}"/> class.
         /// </summary>
         /// <param name="noKey">The sentinel value.</param>
-        public OrderedSequence(K noKey) : this(Comparer<K>.Default, noKey) {}
+        public OrderedSequence(K noKey) : this(Comparer<K>.Default, noKey) { }
 
         internal OrderedSequence(IComparer<K> comparer, K noKey, FingerTree<Element, K> ft) {
             _comparer = comparer;
@@ -357,7 +357,7 @@ namespace FP.Collections.Immutable {
         /// <remarks>If an element with priority equal to <paramref name="noKey"/> is ever inserted into the sequence,
         /// the behaviour of the resulting sequence is undefined.</remarks>
         public static OrderedSequence<K, T> FromOrderedEnumerable<K, T>(IEnumerable<Pair<K, T>> sequence, IComparer<K> comparer, K noKey) {
-            Func <FingerTree<OrderedSequence<K, T>.Element, K>, Pair<K, T>,
+            Func<FingerTree<OrderedSequence<K, T>.Element, K>, Pair<K, T>,
                     FingerTree<OrderedSequence<K, T>.Element, K>> append =
                         (tree, pair) => tree.Append(new OrderedSequence<K, T>.Element(pair.First, pair.Second));
             var monoid = new Monoid<K>(noKey, (x, y) => comparer.Compare(y, noKey) == 0 ? x : y);
@@ -404,7 +404,7 @@ namespace FP.Collections.Immutable {
         /// Must be ordered by keys.</param>
         /// <remarks>If an element with priority equal to <paramref name="noKey"/> is ever inserted into the sequence,
         /// the behaviour of the resulting sequence is undefined.</remarks>
-        public static OrderedSequence<T, T> FromOrderedEnumerable<T>(IEnumerable<T> sequence, T noKey) 
+        public static OrderedSequence<T, T> FromOrderedEnumerable<T>(IEnumerable<T> sequence, T noKey)
             where T : IComparable<T> {
             return FromOrderedEnumerable<T>(sequence, Comparer<T>.Default, noKey);
         }

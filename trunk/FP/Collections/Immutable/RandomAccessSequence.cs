@@ -91,8 +91,8 @@ namespace FP.Collections.Immutable {
         /// </returns>
         /// <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
         public override bool Equals(object obj) {
-            if (obj.GetType() != typeof (RandomAccessSequence<T>)) return false;
-            return Equals((RandomAccessSequence<T>) obj);
+            if (obj.GetType() != typeof(RandomAccessSequence<T>)) return false;
+            return Equals((RandomAccessSequence<T>)obj);
         }
 
         /// <summary>
@@ -180,11 +180,13 @@ namespace FP.Collections.Immutable {
         /// Gets the <see cref="T"/> at the specified index.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
-        public T this[int index] { get {
-            if (index < 0 || index >= Count)
-                throw new ArgumentOutOfRangeException("index");
-            return _ft.SplitTree(i => i > index, 0).Middle.Value;
-        } }
+        public T this[int index] {
+            get {
+                if (index < 0 || index >= Count)
+                    throw new ArgumentOutOfRangeException("index");
+                return _ft.SplitTree(i => i > index, 0).Middle.Value;
+            }
+        }
 
         /// <summary>
         /// Updates the element at <paramref name="index"/> using <paramref name="function"/>.
