@@ -28,10 +28,27 @@ namespace FP.Collections.Immutable {
         }
     }
 
-    internal static class Monoids {
-        internal static readonly Monoid<int> Size = new Monoid<int>(0, (x, y) => x + y);
+    /// <summary>
+    /// Predefined monoids.
+    /// </summary>
+    public static class Monoids {
+        /// <summary>
+        /// The monoid used for <see cref="RandomAccessSequence{T}"/>.
+        /// </summary>
+        public static readonly Monoid<int> Size = new Monoid<int>(0, (x, y) => x + y);
 
-        internal static readonly Monoid<double> Priority =
+        /// <summary>
+        /// The monoid used for <see cref="PriorityQueue{P,T}"/>.
+        /// </summary>
+        public static readonly Monoid<double> Priority =
             new Monoid<double>(double.NegativeInfinity, Math.Max);
+
+        /// <summary>
+        /// The product of two monoids.
+        /// </summary>
+        public static Monoid<Pair<T1, T2>> Product<T1, T2>(this Monoid<T1> monoid1, Monoid<T2> monoid2) {
+            return new Monoid<Pair<T1, T2>>(Pair.New(monoid1.Zero, monoid2.Zero),
+                (p1, p2) => Pair.New(monoid1.Plus(p1.First, p2.First), monoid2.Plus(p1.Second, p2.Second)));
+        }
     }
 }

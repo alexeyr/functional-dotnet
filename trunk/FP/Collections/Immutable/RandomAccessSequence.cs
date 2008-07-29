@@ -46,9 +46,10 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class.
+        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class
+        /// containing the same elements as <paramref name="sequence"/>.
         /// </summary>
-        /// <param name="sequence">The sequence.</param>
+        /// <param name="sequence">The original sequence.</param>
         public RandomAccessSequence(IEnumerable<T> sequence) {
             _ft = FingerTree.FromEnumerable(sequence.Map(x => new Element(x)), Monoids.Size);
         }
@@ -293,5 +294,26 @@ namespace FP.Collections.Immutable {
 
             //TODO: Appendd/PrependRange, InsertRangeAt, RemoveRangeAt (consider specialisation first!)
         }
+    }
+
+    /// <summary>
+    /// Utility methods for creating <see cref="RandomAccessSequence{T}"/>.
+    /// </summary>
+    /// <seealso cref="RandomAccessSequence{T}"/>
+    public static class RandomAccessSequence {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class.
+        /// </summary>
+        public static RandomAccessSequence<T> Empty<T>() {
+            return new RandomAccessSequence<T>();
+        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class.
+        /// </summary>
+        /// <param name="sequence">The sequence of elements placed into the queue initially.</param>
+        public static RandomAccessSequence<T> FromEnumerable<T>(IEnumerable<T> sequence) {
+            return new RandomAccessSequence<T>(sequence);
+        }
+
     }
 }

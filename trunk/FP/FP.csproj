@@ -51,6 +51,7 @@
     <Compile Include="Collections\Immutable\LazyList.cs" />
     <Compile Include="Collections\Immutable\Lists.cs" />
     <Compile Include="Collections\Immutable\Monoid.cs" />
+    <Compile Include="Collections\Immutable\OrderedSequence.cs" />
     <Compile Include="Collections\Immutable\PriorityQueue.cs" />
     <Compile Include="Collections\Immutable\Result.cs" />
     <Compile Include="Collections\Immutable\RandomAccessSequence.cs" />
