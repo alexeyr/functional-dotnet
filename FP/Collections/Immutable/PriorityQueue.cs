@@ -37,24 +37,24 @@ namespace FP.Collections.Immutable {
         /// <param name="comparer">The comparer.</param>
         /// <param name="min">The minimal value according to <paramref name="comparer"/>.</param>
         public PriorityQueue(IComparer<P> comparer, P min) :
-            this(new Monoid<P>(min, (x, y) => comparer.Max(x, y))) {}
+            this(new Monoid<P>(min, (x, y) => comparer.Max(x, y))) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PriorityQueue&lt;P, T&gt;"/> class.
         /// </summary>
-        internal PriorityQueue(Monoid<P> monoid) : this(monoid, FingerTree.Empty<Element, P>(monoid)) {}
+        internal PriorityQueue(Monoid<P> monoid) : this(monoid, FingerTree.Empty<Element, P>(monoid)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PriorityQueue&lt;P, T&gt;"/> class.
         /// </summary>
         internal PriorityQueue(Monoid<P> monoid, IEnumerable<Pair<P, T>> sequence) :
-            this(monoid, FingerTree.FromEnumerable(sequence.Map(pair => new Element(pair.First, pair.Second)), monoid)) {}
+            this(monoid, FingerTree.FromEnumerable(sequence.Map(pair => new Element(pair.First, pair.Second)), monoid)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PriorityQueue&lt;P, T&gt;"/> class.
         /// </summary>
         /// <param name="min">The minimal value according to the default comparer.</param>
-        public PriorityQueue(P min) : this(Comparer<P>.Default, min) {}
+        public PriorityQueue(P min) : this(Comparer<P>.Default, min) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PriorityQueue&lt;P, T&gt;"/> class.
@@ -63,7 +63,7 @@ namespace FP.Collections.Immutable {
         /// <param name="min">The minimal value according to <paramref name="comparer"/>.</param>
         /// <param name="sequence">The sequence of pairs (priority, element) placed into the queue initially.</param>
         public PriorityQueue(IEnumerable<Pair<P, T>> sequence, IComparer<P> comparer, P min) :
-            this(new Monoid<P>(min, (x, y) => comparer.Max(x, y)), sequence) {}
+            this(new Monoid<P>(min, (x, y) => comparer.Max(x, y)), sequence) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PriorityQueue&lt;P, T&gt;"/> class.
