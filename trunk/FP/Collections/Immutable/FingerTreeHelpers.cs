@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FP.HaskellNames;
+using System.Linq;
 
 namespace FP.Collections.Immutable {
     /// <summary>
@@ -8,50 +9,35 @@ namespace FP.Collections.Immutable {
     /// </summary>
     public static class FingerTree {
         /// <summary>
-        /// Creates the empty tree-list with the specified measure monoid.
+        /// Creates the empty tree with the specified measure monoid.
         /// </summary>
-        /// <typeparam name="T">The type of the elements of the list.</typeparam>
+        /// <typeparam name="T">The type of the elements of the tree.</typeparam>
         /// <typeparam name="V">The type of the measure values.</typeparam>
         /// <param name="measureMonoid">The measure monoid.</param>
-        /// <returns></returns>
         public static FingerTree<T, V>.Empty Empty<T, V>(Monoid<V> measureMonoid) where T : IMeasured<V> {
             return new FingerTree<T, V>.Empty(measureMonoid);
         }
 
         /// <summary>
-        /// Creates the tree-list from the specified sequence.
+        /// Creates the tree with the single element <paramref name="item"/> and the specified measure monoid.
         /// </summary>
-        /// <typeparam name="T">The type of the elements of the list.</typeparam>
+        /// <typeparam name="T">The type of the elements of the tree.</typeparam>
+        /// <typeparam name="V">The type of the measure values.</typeparam>
+        /// <param name="item">The item.</param>
+        /// <param name="measureMonoid">The measure monoid.</param>
+        public static FingerTree<T, V>.Single Single<T, V>(T item, Monoid<V> measureMonoid) where T : IMeasured<V> {
+            return new FingerTree<T, V>.Single(item, measureMonoid, new FingerTree<T, V>.Empty(measureMonoid));
+        }
+
+        /// <summary>
+        /// Creates the tree from the specified sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of the tree.</typeparam>
         /// <typeparam name="V">The type of the measure values.</typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <param name="measureMonoid">The measure monoid.</param>
-        /// <returns></returns>
         public static FingerTree<T, V> FromEnumerable<T,V>(IEnumerable<T> sequence, Monoid<V> measureMonoid) where T : IMeasured<V> {
-            return sequence.ReduceL(FingerTree<T, V>._append)(Empty<T, V>(measureMonoid));
-        }
-
-        /// <summary>
-        /// Reduces the specified sequence from the right.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements of the sequence.</typeparam>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="sequence">The sequence.</param>
-        /// <param name="binOp">The binary operation.</param>
-        /// <returns></returns>
-        internal static Func<A, A> ReduceR<T, A>(this IEnumerable<T> sequence, Func<T, A, A> binOp) {
-            return a => sequence.FoldRight(binOp, a);
-        }
-
-        /// <summary>
-        /// Reduces the specified sequence from the left.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements of the sequence.</typeparam>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="sequence">The sequence.</param>
-        /// <param name="binOp">The binary operation.</param>
-        /// <returns></returns>
-        internal static Func<A, A> ReduceL<T, A>(this IEnumerable<T> sequence, Func<A, T, A> binOp) {
-            return a => sequence.FoldLeft(binOp, a);
+            return sequence.FoldLeft(FingerTree<T, V>._append, Empty<T, V>(measureMonoid));
         }
 
         internal static Split<T, T[]> SplitArray<T, V>(this T[] array, Monoid<V> monoid, Func<V, bool> pred, V init) where T : IMeasured<V> {
@@ -66,8 +52,7 @@ namespace FP.Collections.Immutable {
                 T t = array[offset];
                 total = monoid.Plus(total, t.Measure);
                 if (pred(total)) {
-                    var right = new T[array.Length - offset - 1];
-                    Array.Copy(array, offset + 1, right, 0, right.Length);
+                    var right = array.Skip(offset + 1).ToArray();
                     return new Split<T, T[]>(left.ToArray(), t, right);
                 }
                 left.Add(t);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace FP.Collections.Immutable {
     /// <summary>
@@ -49,6 +50,13 @@ namespace FP.Collections.Immutable {
         public static Monoid<Pair<T1, T2>> Product<T1, T2>(this Monoid<T1> monoid1, Monoid<T2> monoid2) {
             return new Monoid<Pair<T1, T2>>(Pair.New(monoid1.Zero, monoid2.Zero),
                 (p1, p2) => Pair.New(monoid1.Plus(p1.First, p2.First), monoid2.Plus(p1.Second, p2.Second)));
+        }
+
+        /// <summary>
+        /// The monoid used for <see cref="PriorityQueue{P,T}"/>.
+        /// </summary>
+        public static Monoid<P> PriorityM<P>(P min, IComparer<P> comparer) {
+            return new Monoid<P>(min, (x, y) => comparer.Max(x, y));
         }
     }
 }

@@ -311,6 +311,14 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
+        /// Creates a <see cref="RandomAccessSequence{T}"/> with a single element.
+        /// </summary>
+        /// <param name="item">The only item in the sequence.</param>
+        public static RandomAccessSequence<T> Singleton<T>(T item) {
+            return new RandomAccessSequence<T>(FingerTree.Single(new RandomAccessSequence<T>.Element(item), Monoids.Size));
+        }
+
+        /// <summary>
         /// Creates a <see cref="RandomAccessSequence{T}"/> containing the elements in <paramref name="sequence"/>.
         /// </summary>
         public static RandomAccessSequence<T> FromEnumerable<T>(IEnumerable<T> sequence) {
