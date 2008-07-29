@@ -141,7 +141,7 @@ namespace FP.Collections.Immutable {
         /// <param name="newHead">The new head.</param>
         /// <returns>The resulting list.</returns>
         public RandomAccessSequence<T> Prepend(T newHead) {
-            return new RandomAccessSequence<T>(_ft.Prepend(new Element(newHead)));
+            return new RandomAccessSequence<T>(new Element(newHead) | _ft);
         }
 
         /// <summary>
@@ -295,7 +295,29 @@ namespace FP.Collections.Immutable {
             return new RandomAccessSequence<T>(_ft.ReverseTree(Functions.Id<Element>()));
         }
 
-        //TODO: Appendd/PrependRange, InsertRangeAt, RemoveRangeAt (consider specialisation first!)
+
+        /// <summary>
+        /// Prepends <paramref name="item"/> to <paramref name="seq"/>.
+        /// </summary>
+        public static RandomAccessSequence<T> operator |(T item, RandomAccessSequence<T> seq) {
+            return seq.Prepend(item);
+        }
+
+        /// <summary>
+        /// Appends <paramref name="item"/> to <paramref name="seq"/>.
+        /// </summary>
+        public static RandomAccessSequence<T> operator |(RandomAccessSequence<T> seq, T item) {
+            return seq.Append(item);
+        }
+
+        /// <summary>
+        /// Concatenates <paramref name="seq1"/> and <paramref name="seq2"/>.
+        /// </summary>
+        public static RandomAccessSequence<T> operator +(RandomAccessSequence<T> seq1, RandomAccessSequence<T> seq2) {
+            return seq1.Concat(seq2);
+        }
+
+        //TODO: Append/PrependRange, InsertRangeAt, RemoveRangeAt
     }
 
     /// <summary>
