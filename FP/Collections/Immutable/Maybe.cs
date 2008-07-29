@@ -515,7 +515,8 @@ namespace FP.Collections.Immutable {
     /// <typeparam name="T">The type of wrapped object.</typeparam>
     /// <remarks>
     /// While the class is declared to be <see cref="IEquatable{T}"/> and <see cref="IComparable{T}"/>,
-    /// this is only true if <typeparamref name="T"/> is <see cref="IEquatable{T}"/> and <see cref="IComparable{T}"/>!
+    /// this is only true if <typeparamref name="T"/> is <see cref="IEquatable{T}"/> and <see cref="IComparable{T}"/>
+    /// respectively!
     /// </remarks>
     /// <seealso cref="Nullable{T}"/>
     [Serializable]
