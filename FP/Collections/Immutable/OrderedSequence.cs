@@ -152,7 +152,7 @@ namespace FP.Collections.Immutable {
 
         private FingerTree<Element, K> IntersectTrees(FingerTree<Element, K> ft1, FingerTree<Element, K> ft2) {
             if (ft2.IsEmpty)
-                return ft1;
+                return ft2;
             var comparer = _comparer;
             var ft2head = ft2.Head;
             var ft2tail = ft2.Tail;
@@ -406,7 +406,7 @@ namespace FP.Collections.Immutable {
         /// the behaviour of the resulting sequence is undefined.</remarks>
         public static OrderedSequence<T, T> FromOrderedEnumerable<T>(IEnumerable<T> sequence, T noKey)
             where T : IComparable<T> {
-            return FromOrderedEnumerable<T>(sequence, Comparer<T>.Default, noKey);
+            return FromOrderedEnumerable(sequence, Comparer<T>.Default, noKey);
         }
 
         /// <summary>
