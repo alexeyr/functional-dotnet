@@ -77,9 +77,23 @@ namespace FP.Collections.Immutable {
         /// <param name="item">The item.</param>
         /// <returns>The sequence with the inserted item.</returns>
         public OrderedSequence<K, T> Insert(K key, T item) {
+            return MakeOrderedSequence(InsertIntoTree(_ft, key, item, _comparer));
+        }
+
+        /// <summary>
+        /// Inserts all items in <paramref name="sequence"/> into this sequence.
+        /// </summary>
+        /// <param name="sequence">The sequence of (key, item) pairs.</param>
+        /// <returns>The sequence with the inserted items.</returns>
+        public OrderedSequence<K, T> InsertRange(IEnumerable<Pair<K, T>> sequence) {
             var comparer = _comparer;
-            var split = _ft.Split(pair => comparer.Compare(pair.First, key) >= 0);
-            return MakeOrderedSequence(split.First.Append(new Element(key, item)).Concat(split.Second));
+            var ft = sequence.FoldLeft((tree, pair) => InsertIntoTree(tree, pair.First, pair.Second, comparer), _ft);
+            return MakeOrderedSequence(ft);
+        }
+
+        private static FingerTree<Element, Pair<K, int>> InsertIntoTree(FingerTree<Element, Pair<K, int>> tree, K key, T item, IComparer<K> comparer) {
+            var split = tree.Split(pair => comparer.Compare(pair.First, key) >= 0);
+            return (split.First | new Element(key, item)) + split.Second;
         }
 
         /// <summary>
@@ -110,8 +124,8 @@ namespace FP.Collections.Immutable {
             var split2 = split.Second.Split(pair => comparer.Compare(pair.First, key) > 0);
             if (split2.First.IsEmpty)
                 return Pair.New(false, this);
-            var newFt = deleteAll ? split.First : split.First.Concat(split2.First.Tail);
-            return Pair.New(true, MakeOrderedSequence(newFt.Concat(split2.Second)));
+            var newFt = deleteAll ? split.First : split.First + split2.First.Tail;
+            return Pair.New(true, MakeOrderedSequence(newFt + split2.Second));
         }
 
         /// <summary>
@@ -133,7 +147,7 @@ namespace FP.Collections.Immutable {
             var ft2tail = ft2.Tail;
             var ft1split = ft1.Split(pair => comparer.Compare(pair.First, ft2head.Key) > 0);
             var newRight = ft2head | MergeTrees(ft2tail, ft1split.Second);
-            return ft1split.First.Concat(newRight);
+            return ft1split.First + newRight;
         }
 
         /// <summary>
@@ -368,8 +382,7 @@ namespace FP.Collections.Immutable {
         /// <paramref name="sequence"/> is not required to be ordered.</remarks>
         public static OrderedSequence<K, T> FromEnumerable<K, T>(IEnumerable<Pair<K, T>> sequence, IComparer<K> comparer, K noKey) {
             var empty = Empty<K, T>(comparer, noKey);
-            Func<OrderedSequence<K, T>, Pair<K, T>, OrderedSequence<K, T>> insert = (seq, pair) => seq | pair;
-            return sequence.FoldLeft(insert, empty);
+            return empty.InsertRange(sequence);
         }
 
         /// <summary>
@@ -397,8 +410,7 @@ namespace FP.Collections.Immutable {
         /// <paramref name="sequence"/> is not required to be ordered.</remarks>
         public static OrderedSequence<T, T> FromEnumerable<T>(IEnumerable<T> sequence, IComparer<T> comparer, T noKey) {
             var empty = Empty<T, T>(comparer, noKey);
-            Func<OrderedSequence<T, T>, T, OrderedSequence<T, T>> insert = (seq, t) => seq | Pair.New(t, t);
-            return sequence.FoldLeft(insert, empty);
+            return empty.InsertRange(sequence.Map(x => Pair.New(x, x)));
         }
 
         /// <summary>
@@ -438,7 +450,7 @@ namespace FP.Collections.Immutable {
         public static OrderedSequence<K, T> FromOrderedEnumerable<K, T>(IEnumerable<Pair<K, T>> sequence, IComparer<K> comparer, K noKey) {
             Func<FingerTree<OrderedSequence<K, T>.Element, Pair<K, int>>, Pair<K, T>,
                     FingerTree<OrderedSequence<K, T>.Element, Pair<K, int>>> append =
-                        (tree, pair) => tree.Append(new OrderedSequence<K, T>.Element(pair.First, pair.Second));
+                        (tree, pair) => tree | new OrderedSequence<K, T>.Element(pair.First, pair.Second);
             var empty = FingerTree.Empty<OrderedSequence<K, T>.Element, Pair<K, int>>(MakeMonoid(noKey, comparer));
             return new OrderedSequence<K, T>(comparer, sequence.FoldLeft(append, empty));
         }
@@ -468,7 +480,7 @@ namespace FP.Collections.Immutable {
         public static OrderedSequence<T, T> FromOrderedEnumerable<T>(IEnumerable<T> sequence, IComparer<T> comparer, T noKey) {
             Func<FingerTree<OrderedSequence<T, T>.Element, Pair<T, int>>, T,
                 FingerTree<OrderedSequence<T, T>.Element, Pair<T, int>>> append =
-                    (tree, t) => tree.Append(new OrderedSequence<T, T>.Element(t, t));
+                    (tree, t) => tree | new OrderedSequence<T, T>.Element(t, t);
             var empty = FingerTree.Empty<OrderedSequence<T, T>.Element, Pair<T, int>>(MakeMonoid(noKey, comparer));
             return new OrderedSequence<T, T>(comparer, sequence.FoldLeft(append, empty));
         }
