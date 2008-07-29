@@ -14,19 +14,39 @@ namespace FP.Collections.Immutable {
 
         public abstract Func<A, A> ReduceR<A>(Func<T, A, A> binOp);
         public abstract Func<A, A> ReduceL<A>(Func<A, T, A> binOp);
+        public abstract FTNode<T, V> Reverse(Func<T, T> f);
         public V Measure { get; private set; }
+
+        internal abstract T[] ToArray();
+
+        ///<summary>
+        ///Returns an enumerator that iterates through the node.
+        ///</summary>
+        ///
+        ///<returns>
+        ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the node.
+        ///</returns>
+        ///<filterpriority>1</filterpriority>
+        public abstract IEnumerator<T> GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
+        }
 
         /// <summary>
         /// A node with two subtrees.
         /// </summary>
         [DebuggerDisplay("Node2({Item1}, {Item2})")]
-        internal class Node2 : FTNode<T, V> {
+        internal class Node2 : FTNode<T, V>, IEquatable<Node2> {
             public readonly T Item1;
             public readonly T Item2;
-            public Node2(T item1, T item2, Monoid<V> monoid) {
+            public Node2(T item1, T item2, Monoid<V> monoid) :
+                this(item1, item2, monoid.Plus(item1.Measure, item2.Measure)){
+            }
+
+            internal Node2(T item1, T item2, V measure) {
                 Item1 = item1;
                 Item2 = item2;
-                Measure = monoid.Plus(Item1.Measure, item2.Measure);
+                Measure = measure;
             }
 
             public override Func<A, A> ReduceR<A>(Func<T, A, A> binOp) {
@@ -35,6 +55,10 @@ namespace FP.Collections.Immutable {
 
             public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
                 return (x => binOp(binOp(x, Item1), Item2));
+            }
+
+            public override FTNode<T, V> Reverse(Func<T, T> f) {
+                return new Node2(f(Item2), f(Item1), Measure);
             }
 
             internal override T[] ToArray() {
@@ -53,21 +77,73 @@ namespace FP.Collections.Immutable {
                 yield return Item1;
                 yield return Item2;
             }
+
+            /// <summary>
+            /// Indicates whether the current object is equal to another object of the same type.
+            /// </summary>
+            /// <returns>
+            /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+            /// </returns>
+            /// <param name="other">An object to compare with this object.</param>
+            public bool Equals(Node2 obj) {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                return Equals(obj.Item1, Item1) && Equals(obj.Item2, Item2);
+            }
+
+            /// <summary>
+            /// Determines whether the specified <see cref="T:System.Object" /> is equal to the current <see cref="T:System.Object" />.
+            /// </summary>
+            /// <returns>
+            /// true if the specified <see cref="T:System.Object" /> is equal to the current <see cref="T:System.Object" />; otherwise, false.
+            /// </returns>
+            /// <param name="obj">The <see cref="T:System.Object" /> to compare with the current <see cref="T:System.Object" />. </param>
+            /// <exception cref="T:System.NullReferenceException">The <paramref name="obj" /> parameter is null.</exception><filterpriority>2</filterpriority>
+            public override bool Equals(object obj) {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != typeof (Node2)) return false;
+                return Equals((Node2) obj);
+            }
+
+            /// <summary>
+            /// Serves as a hash function for a particular type. 
+            /// </summary>
+            /// <returns>
+            /// A hash code for the current <see cref="T:System.Object" />.
+            /// </returns>
+            /// <filterpriority>2</filterpriority>
+            public override int GetHashCode() {
+                unchecked {
+                    return (Item1.GetHashCode()*397) ^ Item2.GetHashCode();
+                }
+            }
+
+            public static bool operator ==(Node2 left, Node2 right) {
+                return Equals(left, right);
+            }
+
+            public static bool operator !=(Node2 left, Node2 right) {
+                return !Equals(left, right);
+            }
         }
 
         /// <summary>
         /// A node with three subtrees.
         /// </summary>
         [DebuggerDisplay("Node3({Item1}, {Item2}, {Item3})")]
-        internal class Node3 : FTNode<T, V> {
+        internal class Node3 : FTNode<T, V>, IEquatable<Node3> {
             public readonly T Item1;
             public readonly T Item2;
             public readonly T Item3;
-            public Node3(T item1, T item2, T item3, Monoid<V> monoid) {
+            public Node3(T item1, T item2, T item3, Monoid<V> monoid) :
+                this(item1, item2, item3, monoid.Plus(monoid.Plus(item1.Measure, item2.Measure), item3.Measure)) {}
+
+            internal Node3(T item1, T item2, T item3, V measure) {
                 Item1 = item1;
                 Item2 = item2;
                 Item3 = item3;
-                Measure = monoid.Plus(monoid.Plus(item1.Measure, item2.Measure), item3.Measure);
+                Measure = measure;
             }
 
             public override Func<A, A> ReduceR<A>(Func<T, A, A> binOp) {
@@ -76,6 +152,10 @@ namespace FP.Collections.Immutable {
 
             public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
                 return (a => binOp(binOp(binOp(a, Item1), Item2), Item3));
+            }
+
+            public override FTNode<T, V> Reverse(Func<T, T> f) {
+                return new Node3(f(Item3), f(Item2), f(Item1), Measure);
             }
 
             internal override T[] ToArray() {
@@ -95,21 +175,58 @@ namespace FP.Collections.Immutable {
                 yield return Item2;
                 yield return Item3;
             }
-        }
 
-        internal abstract T[] ToArray();
+            /// <summary>
+            /// Indicates whether the current object is equal to another object of the same type.
+            /// </summary>
+            /// <returns>
+            /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+            /// </returns>
+            /// <param name="other">An object to compare with this object.</param>
+            public bool Equals(Node3 obj) {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                return Equals(obj.Item1, Item1) && Equals(obj.Item2, Item2) && Equals(obj.Item3, Item3);
+            }
 
-        ///<summary>
-        ///Returns an enumerator that iterates through the node.
-        ///</summary>
-        ///
-        ///<returns>
-        ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the node.
-        ///</returns>
-        ///<filterpriority>1</filterpriority>
-        public abstract IEnumerator<T> GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
+            /// <summary>
+            /// Determines whether the specified <see cref="T:System.Object" /> is equal to the current <see cref="T:System.Object" />.
+            /// </summary>
+            /// <returns>
+            /// true if the specified <see cref="T:System.Object" /> is equal to the current <see cref="T:System.Object" />; otherwise, false.
+            /// </returns>
+            /// <param name="obj">The <see cref="T:System.Object" /> to compare with the current <see cref="T:System.Object" />. </param>
+            /// <exception cref="T:System.NullReferenceException">The <paramref name="obj" /> parameter is null.</exception><filterpriority>2</filterpriority>
+            public override bool Equals(object obj) {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != typeof (Node3)) return false;
+                return Equals((Node3) obj);
+            }
+
+            /// <summary>
+            /// Serves as a hash function for a particular type. 
+            /// </summary>
+            /// <returns>
+            /// A hash code for the current <see cref="T:System.Object" />.
+            /// </returns>
+            /// <filterpriority>2</filterpriority>
+            public override int GetHashCode() {
+                unchecked {
+                    int result = Item1.GetHashCode();
+                    result = (result*397) ^ Item2.GetHashCode();
+                    result = (result*397) ^ Item3.GetHashCode();
+                    return result;
+                }
+            }
+
+            public static bool operator ==(Node3 left, Node3 right) {
+                return Equals(left, right);
+            }
+
+            public static bool operator !=(Node3 left, Node3 right) {
+                return !Equals(left, right);
+            }
         }
     }
 }
