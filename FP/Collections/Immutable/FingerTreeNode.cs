@@ -9,7 +9,7 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T">Type of the elements in the node.</typeparam>
     /// <typeparam name="V">Type of the weight monoid.</typeparam>
-    internal abstract class FTNode<T, V> : IMeasured<V>, IEnumerable<T> where T : IMeasured<V> {
+    internal abstract class FTNode<T, V> : IMeasured<V>, IEnumerable<T>, IFoldable<T> where T : IMeasured<V> {
         private FTNode() {}
 
         public abstract A FoldRight<A>(Func<T, A, A> binOp, A initial);

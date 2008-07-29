@@ -79,7 +79,7 @@ namespace FP.Collections.Immutable {
         /// <returns>A <see cref="PriorityQueue{P,T}"/> containing all items of the original 
         /// <see cref="PriorityQueue{P,T}"/> and <paramref name="item"/>.</returns>
         public PriorityQueue<P, T> Enqueue(P priority, T item) {
-            return new PriorityQueue<P, T>(_ft.Append(new Element(priority, item)));
+            return new PriorityQueue<P, T>(_ft | new Element(priority, item));
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace FP.Collections.Immutable {
             var maxPriority = MaxPriority;
             var split = _ft.SplitTree(p => Equals(monoid.Plus(p, maxPriority), p), Monoid.Zero);
             var item = split.Middle;
-            return Triple.New(item.Priority, item.Value, new PriorityQueue<P, T>(split.Left.Concat(split.Right)));
+            return Triple.New(item.Priority, item.Value, new PriorityQueue<P, T>(split.Left + split.Right));
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace FP.Collections.Immutable {
         /// <param name="otherQueue">The other queue.</param>
         /// <returns>The queue containing all elements in both queues.</returns>
         public PriorityQueue<P, T> Union(PriorityQueue<P, T> otherQueue) {
-            return new PriorityQueue<P, T>(_ft.Concat(otherQueue._ft));
+            return new PriorityQueue<P, T>(_ft + otherQueue._ft);
         }
 
         /// <summary>

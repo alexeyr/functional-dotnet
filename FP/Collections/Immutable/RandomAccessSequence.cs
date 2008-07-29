@@ -150,7 +150,7 @@ namespace FP.Collections.Immutable {
         /// <param name="newLast">The new last element.</param>
         /// <returns>The resulting list.</returns>
         public RandomAccessSequence<T> Append(T newLast) {
-            return new RandomAccessSequence<T>(_ft.Append(new Element(newLast)));
+            return new RandomAccessSequence<T>(_ft | new Element(newLast));
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace FP.Collections.Immutable {
                 throw new ArgumentOutOfRangeException("index");
             var split = _ft.SplitTree(i => i > index, 0);
             T currentValue = split.Middle.Value;
-            return new RandomAccessSequence<T>(split.Left.Append(new Element(function(currentValue))).Concat(split.Right));
+            return new RandomAccessSequence<T>((split.Left | new Element(function(currentValue))) + split.Right);
         }
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace FP.Collections.Immutable {
         /// <param name="otherSequence">Another sequence.</param>
         /// <returns>The result of concatenation.</returns>
         public RandomAccessSequence<T> Concat(RandomAccessSequence<T> otherSequence) {
-            return new RandomAccessSequence<T>(_ft.Concat(otherSequence._ft));
+            return new RandomAccessSequence<T>(_ft + otherSequence._ft);
         }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace FP.Collections.Immutable {
             if (index < 0 || index >= Count)
                 throw new ArgumentOutOfRangeException("index");
             var ftSplit = _ft.Split(i => i > index);
-            return new RandomAccessSequence<T>(ftSplit.First.Append(new Element(newValue)).Concat(ftSplit.Second));
+            return new RandomAccessSequence<T>((ftSplit.First | new Element(newValue)) + ftSplit.Second);
         }
 
         /// <summary>
@@ -284,7 +284,7 @@ namespace FP.Collections.Immutable {
             if (index < 0 || index >= Count)
                 throw new ArgumentOutOfRangeException("index");
             var split = _ft.SplitTree(i => i > index, 0);
-            return new RandomAccessSequence<T>(split.Left.Concat(split.Right));
+            return new RandomAccessSequence<T>(split.Left + split.Right);
         }
 
         /// <summary>

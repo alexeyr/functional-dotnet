@@ -16,8 +16,7 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="V"></typeparam>
-    public abstract class FingerTree<T, V> : /* IImmutableList<T>,*/ IMeasured<V>, IEnumerable<T>
-        where T : IMeasured<V> {
+    public abstract class FingerTree<T, V> : /* IImmutableList<T>,*/ IMeasured<V>, IEnumerable<T>, IFoldable<T> where T : IMeasured<V> {
         /// <summary>
         /// The monoid to be used to combine the measures of values.
         /// </summary>
@@ -228,7 +227,7 @@ namespace FP.Collections.Immutable {
         /// var left = tree.Split(predicate).First;
         /// var right = tree.Split(predicate).Second;
         /// ---------
-        /// tree.SequenceEquals(left.Concat(right);
+        /// tree.SequenceEquals(left + right);
         /// left.IsEmpty() || !predicate(left.Measure);
         /// right.IsEmpty() || predicate(left.Measure + right.Head.Measure);
         /// </code>
@@ -415,7 +414,7 @@ namespace FP.Collections.Immutable {
             /// var left = tree.Split(predicate).First;
             /// var right = tree.Split(predicate).Second;
             /// ---------
-            /// tree.SequenceEquals(left.Concat(right);
+            /// tree.SequenceEquals(left + right);
             /// left.IsEmpty() || !predicate(left.TotalMeasure);
             /// right.IsEmpty() || !predicate(left.TotalMeasure + right.Head.Measure);
             /// </code>
@@ -800,7 +799,7 @@ namespace FP.Collections.Immutable {
                     return middleList.FoldLeft(_append, this);
                 }
                 if (rightTree.IsSingle) {
-                    return middleList.FoldLeft(_append, this).Append(rightTree.Head);
+                    return middleList.FoldLeft(_append, this) | rightTree.Head;
                 }
                 var rightDeep = rightTree as Deep;
                 return MakeDeep(this._left,
@@ -876,9 +875,8 @@ namespace FP.Collections.Immutable {
                     //see page 7 of the paper
                 }
                 return MakeDeep(_left,
-                                _Middle.Append(new FTNode<T, V>.Node3(_right[0], _right[1],
-                                                                      _right[2],
-                                                                      MeasureMonoid)),
+                                _Middle | new FTNode<T, V>.Node3(_right[0], _right[1], _right[2],
+                                                                      MeasureMonoid),
                                 new[] {_right[3], newLast});
             }
 
@@ -958,7 +956,7 @@ namespace FP.Collections.Immutable {
                 if (otherTree.IsEmpty)
                     return this;
                 if (otherTree.IsSingle)
-                    return this.Append(otherTree.Head);
+                    return this | otherTree.Head;
                 return this.App3(Enumerable.Empty<T>(), otherTree);
             }
 
