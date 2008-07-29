@@ -12,26 +12,24 @@ namespace FP.Collections.Immutable {
     /// <typeparam name="T">The type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
     public struct OrderedSequence<K, T> : IEnumerable<T>, IEquatable<OrderedSequence<K, T>> {
-        private readonly K _noKey;
+        
         private readonly IComparer<K> _comparer;
-
-        /// <summary>
-        /// Gets the comparer used to compare keys.
-        /// </summary>
-        public IComparer<K> Comparer {
-            get { return _comparer; }
-        }
-
-        private readonly Monoid<Pair<K, int>> _monoid;
         private readonly FingerTree<Element, Pair<K, int>> _ft;
 
         /// <summary>
         /// The sentinel value for keys. Never add an element with this value!
         /// </summary>
         public K NoKey {
-            get { return _noKey; }
+            get { return Monoid.Zero.First; }
         }
-
+        /// <summary>
+        /// Gets the comparer used to compare keys.
+        /// </summary>
+        public IComparer<K> Comparer {
+            get { return _comparer; }
+        }
+        private Monoid<Pair<K, int>> Monoid { get { return _ft.MeasureMonoid; } }
+        
         [DebuggerDisplay("Key = {Key}, Value = {Value}")]
         internal struct Element : IMeasured<Pair<K, int>> {
             internal readonly K Key;
@@ -54,9 +52,7 @@ namespace FP.Collections.Immutable {
         /// <param name="noKey">The sentinel value.</param>
         public OrderedSequence(IComparer<K> comparer, K noKey) {
             _comparer = comparer;
-            _monoid = OrderedSequence.MakeMonoid(noKey, comparer);
-            _ft = FingerTree.Empty<Element, Pair<K, int>>(_monoid);
-            _noKey = noKey;
+            _ft = FingerTree.Empty<Element, Pair<K, int>>(OrderedSequence.MakeMonoid(noKey, comparer));
         }
 
         /// <summary>
@@ -65,15 +61,13 @@ namespace FP.Collections.Immutable {
         /// <param name="noKey">The sentinel value.</param>
         public OrderedSequence(K noKey) : this(Comparer<K>.Default, noKey) { }
 
-        internal OrderedSequence(IComparer<K> comparer, K noKey, FingerTree<Element, Pair<K, int>> ft) {
+        internal OrderedSequence(IComparer<K> comparer, FingerTree<Element, Pair<K, int>> ft) {
             _comparer = comparer;
             _ft = ft;
-            _monoid = ft.MeasureMonoid;
-            _noKey = noKey;
         }
 
         private OrderedSequence<K, T> MakeOrderedSequence(FingerTree<Element, Pair<K, int>> ft) {
-            return new OrderedSequence<K, T>(_comparer, _noKey, ft);
+            return new OrderedSequence<K, T>(_comparer, ft);
         }
 
         /// <summary>
@@ -236,7 +230,7 @@ namespace FP.Collections.Immutable {
             get {
                 if (index < 0 || index >= Count)
                     throw new ArgumentOutOfRangeException("index");
-                Element result = _ft.SplitTree(pair => pair.Second > index, _monoid.Zero).Middle;
+                Element result = _ft.SplitTree(pair => pair.Second > index, Monoid.Zero).Middle;
                 return Pair.New(result.Measure.First, result.Value);
             }
         }
@@ -250,7 +244,7 @@ namespace FP.Collections.Immutable {
         /// <param name="other">An object to compare with this object.</param>
         /// <remarks>It is possible to have two unequal sequences with the same elements and comparers.</remarks>
         public bool Equals(OrderedSequence<K, T> other) {
-            return Equals(other._comparer, _comparer) && Equals(other._noKey, _noKey) &&
+            return Equals(other._comparer, _comparer) &&
                    Equals(other._ft, _ft);
         }
 
@@ -446,7 +440,7 @@ namespace FP.Collections.Immutable {
                     FingerTree<OrderedSequence<K, T>.Element, Pair<K, int>>> append =
                         (tree, pair) => tree.Append(new OrderedSequence<K, T>.Element(pair.First, pair.Second));
             var empty = FingerTree.Empty<OrderedSequence<K, T>.Element, Pair<K, int>>(MakeMonoid(noKey, comparer));
-            return new OrderedSequence<K, T>(comparer, noKey, sequence.FoldLeft(append, empty));
+            return new OrderedSequence<K, T>(comparer, sequence.FoldLeft(append, empty));
         }
 
         /// <summary>
@@ -476,7 +470,7 @@ namespace FP.Collections.Immutable {
                 FingerTree<OrderedSequence<T, T>.Element, Pair<T, int>>> append =
                     (tree, t) => tree.Append(new OrderedSequence<T, T>.Element(t, t));
             var empty = FingerTree.Empty<OrderedSequence<T, T>.Element, Pair<T, int>>(MakeMonoid(noKey, comparer));
-            return new OrderedSequence<T, T>(comparer, noKey, sequence.FoldLeft(append, empty));
+            return new OrderedSequence<T, T>(comparer, sequence.FoldLeft(append, empty));
         }
 
         /// <summary>
