@@ -187,5 +187,13 @@ namespace FPTests {
             Assert2.SequenceEqual(seq6, seq2.Intersect(seq3));
             Assert2.SequenceEqual(seq6, seq3.Intersect(seq2));
         }
+
+        [Fact]
+        public void IndexingWorks() {
+            Assert.Equal(N, _seq.Count);
+            for (int i = 0; i < N; i++) {
+                Assert.Equal(_testDataSorted[i], _seq[i].Second);
+            }
+        }
     }
 }
