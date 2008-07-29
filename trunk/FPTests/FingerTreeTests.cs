@@ -7,7 +7,7 @@ using XunitExtensions;
 
 namespace FPTests {
     public class SequenceTests {
-        private readonly RandomAccessSequence<int> _empty = new RandomAccessSequence<int>();
+        private readonly RandomAccessSequence<int> _empty = RandomAccessSequence.Empty<int>();
         private readonly int[] _testData;
         private readonly RandomAccessSequence<int> _seq;
         private const int N = 10000;
@@ -17,7 +17,13 @@ namespace FPTests {
             _testData = new int[N];
             for (int i = 0; i < N; i++)
                 _testData[i] = _rnd.Next();
-            _seq = new RandomAccessSequence<int>(_testData);
+            _seq = RandomAccessSequence.FromEnumerable(_testData);
+        }
+
+        [Fact]
+        public void IsEmptyWorks() {
+            Assert.True(_empty.IsEmpty);
+            Assert.False(_seq.IsEmpty);
         }
 
         [Fact]
