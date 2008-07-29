@@ -12,8 +12,8 @@ namespace FP.Collections.Immutable {
     internal abstract class FTNode<T, V> : IMeasured<V>, IEnumerable<T> where T : IMeasured<V> {
         private FTNode() {}
 
-        public abstract Func<A, A> ReduceR<A>(Func<T, A, A> binOp);
-        public abstract Func<A, A> ReduceL<A>(Func<A, T, A> binOp);
+        public abstract A FoldRight<A>(Func<T, A, A> binOp, A initial);
+        public abstract A FoldLeft<A>(Func<A, T, A> binOp, A initial);
         public abstract FTNode<T, V> Reverse(Func<T, T> f);
         public V Measure { get; private set; }
 
@@ -49,12 +49,12 @@ namespace FP.Collections.Immutable {
                 Measure = measure;
             }
 
-            public override Func<A, A> ReduceR<A>(Func<T, A, A> binOp) {
-                return (x => binOp(Item1, binOp(Item2, x)));
+            public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
+                return binOp(Item1, binOp(Item2, initial));
             }
 
-            public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
-                return (x => binOp(binOp(x, Item1), Item2));
+            public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
+                return binOp(binOp(initial, Item1), Item2);
             }
 
             public override FTNode<T, V> Reverse(Func<T, T> f) {
@@ -85,10 +85,10 @@ namespace FP.Collections.Immutable {
             /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
             /// </returns>
             /// <param name="other">An object to compare with this object.</param>
-            public bool Equals(Node2 obj) {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                return Equals(obj.Item1, Item1) && Equals(obj.Item2, Item2);
+            public bool Equals(Node2 other) {
+                if (ReferenceEquals(null, other)) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return Equals(other.Item1, Item1) && Equals(other.Item2, Item2);
             }
 
             /// <summary>
@@ -146,12 +146,12 @@ namespace FP.Collections.Immutable {
                 Measure = measure;
             }
 
-            public override Func<A, A> ReduceR<A>(Func<T, A, A> binOp) {
-                return (a => binOp(Item1, binOp(Item2, binOp(Item3, a))));
+            public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
+                return binOp(Item1, binOp(Item2, binOp(Item3, initial)));
             }
 
-            public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
-                return (a => binOp(binOp(binOp(a, Item1), Item2), Item3));
+            public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
+                return binOp(binOp(binOp(initial, Item1), Item2), Item3);
             }
 
             public override FTNode<T, V> Reverse(Func<T, T> f) {
@@ -183,10 +183,10 @@ namespace FP.Collections.Immutable {
             /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
             /// </returns>
             /// <param name="other">An object to compare with this object.</param>
-            public bool Equals(Node3 obj) {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                return Equals(obj.Item1, Item1) && Equals(obj.Item2, Item2) && Equals(obj.Item3, Item3);
+            public bool Equals(Node3 other) {
+                if (ReferenceEquals(null, other)) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return Equals(other.Item1, Item1) && Equals(other.Item2, Item2) && Equals(other.Item3, Item3);
             }
 
             /// <summary>

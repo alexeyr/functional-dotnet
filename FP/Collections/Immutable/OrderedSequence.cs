@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using FP.HaskellNames;
 
 namespace FP.Collections.Immutable {
     /// <summary>
@@ -53,7 +54,7 @@ namespace FP.Collections.Immutable {
         /// <param name="noKey">The sentinel value.</param>
         public OrderedSequence(IComparer<K> comparer, K noKey) {
             _comparer = comparer;
-            _monoid = new Monoid<K>(noKey, (x, y) => comparer.Compare(y, noKey) == 0 ? x : y).Product(Monoids.Size);
+            _monoid = OrderedSequence.MakeMonoid(noKey, comparer);
             _ft = FingerTree.Empty<Element, Pair<K, int>>(_monoid);
             _noKey = noKey;
         }
@@ -290,6 +291,10 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <seealso cref="OrderedSequence{K,T}"/>
     public static class OrderedSequence {
+        internal static Monoid<Pair<T, int>> MakeMonoid<T>(T noKey, IComparer<T> comparer) {
+            return new Monoid<T>(noKey, (x, y) => comparer.Compare(y, noKey) == 0 ? x : y).Product(Monoids.Size);
+        }
+
         /// <summary>
         /// Creates an empty <see cref="OrderedSequence{K,T}"/>.
         /// </summary>
@@ -356,7 +361,7 @@ namespace FP.Collections.Immutable {
         public static OrderedSequence<K, T> FromEnumerable<K, T>(IEnumerable<Pair<K, T>> sequence, IComparer<K> comparer, K noKey) {
             var empty = Empty<K, T>(comparer, noKey);
             Func<OrderedSequence<K, T>, Pair<K, T>, OrderedSequence<K, T>> insert = (seq, pair) => seq.Insert(pair.First, pair.Second);
-            return sequence.ReduceL(insert)(empty);
+            return sequence.FoldLeft(insert, empty);
         }
 
         /// <summary>
@@ -385,7 +390,7 @@ namespace FP.Collections.Immutable {
         public static OrderedSequence<T, T> FromEnumerable<T>(IEnumerable<T> sequence, IComparer<T> comparer, T noKey) {
             var empty = Empty<T, T>(comparer, noKey);
             Func<OrderedSequence<T, T>, T, OrderedSequence<T, T>> insert = (seq, t) => seq.Insert(t, t);
-            return sequence.ReduceL(insert)(empty);
+            return sequence.FoldLeft(insert, empty);
         }
 
         /// <summary>
@@ -426,9 +431,8 @@ namespace FP.Collections.Immutable {
             Func<FingerTree<OrderedSequence<K, T>.Element, Pair<K, int>>, Pair<K, T>,
                     FingerTree<OrderedSequence<K, T>.Element, Pair<K, int>>> append =
                         (tree, pair) => tree.Append(new OrderedSequence<K, T>.Element(pair.First, pair.Second));
-            var monoid = new Monoid<K>(noKey, (x, y) => comparer.Compare(y, noKey) == 0 ? x : y).Product(Monoids.Size);
-            var empty = FingerTree.Empty<OrderedSequence<K, T>.Element, Pair<K, int>>(monoid);
-            return new OrderedSequence<K, T>(comparer, noKey, sequence.ReduceL(append)(empty));
+            var empty = FingerTree.Empty<OrderedSequence<K, T>.Element, Pair<K, int>>(MakeMonoid(noKey, comparer));
+            return new OrderedSequence<K, T>(comparer, noKey, sequence.FoldLeft(append, empty));
         }
 
         /// <summary>
@@ -457,9 +461,8 @@ namespace FP.Collections.Immutable {
             Func<FingerTree<OrderedSequence<T, T>.Element, Pair<T, int>>, T,
                 FingerTree<OrderedSequence<T, T>.Element, Pair<T, int>>> append =
                     (tree, t) => tree.Append(new OrderedSequence<T, T>.Element(t, t));
-            var monoid = new Monoid<T>(noKey, (x, y) => comparer.Compare(y, noKey) == 0 ? x : y).Product(Monoids.Size);
-            var empty = FingerTree.Empty<OrderedSequence<T, T>.Element, Pair<T, int>>(monoid);
-            return new OrderedSequence<T, T>(comparer, noKey, sequence.ReduceL(append)(empty));
+            var empty = FingerTree.Empty<OrderedSequence<T, T>.Element, Pair<T, int>>(MakeMonoid(noKey, comparer));
+            return new OrderedSequence<T, T>(comparer, noKey, sequence.FoldLeft(append, empty));
         }
 
         /// <summary>

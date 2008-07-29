@@ -28,16 +28,22 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <typeparam name="A">The type of the accumulator.</typeparam>
         /// <param name="binOp">The binary operation.</param>
-        /// <returns>The function from the initial accumulator value to the final one.</returns>
-        public abstract Func<A, A> ReduceR<A>(Func<T, A, A> binOp);
+        /// <param name="initial">The initial accumulator value.</param>
+        /// <returns>
+        /// The final accumulator value.
+        /// </returns>
+        public abstract A FoldRight<A>(Func<T, A, A> binOp, A initial);
 
         /// <summary>
         /// Reduces the finger tree from the left.
         /// </summary>
         /// <typeparam name="A">The type of the accumulator.</typeparam>
         /// <param name="binOp">The binary operation.</param>
-        /// <returns>The function from the initial accumulator value to the final one.</returns>
-        public abstract Func<A, A> ReduceL<A>(Func<A, T, A> binOp);
+        /// <param name="initial">The initial accumulator value.</param>
+        /// <returns>
+        /// The final accumulator value.
+        /// </returns>
+        public abstract A FoldLeft<A>(Func<A, T, A> binOp, A initial);
 
         /// <summary>
         /// Gets the measure of the tree.
@@ -259,9 +265,12 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <typeparam name="A">The type of the accumulator.</typeparam>
             /// <param name="binOp">The binary operation.</param>
-            /// <returns>The function from the initial accumulator value to the final one.</returns>
-            public override Func<A, A> ReduceR<A>(Func<T, A, A> binOp) {
-                return Functions.Id<A>();
+            /// <param name="initial">The initial accumulator value.</param>
+            /// <returns>
+            /// The final accumulator value.
+            /// </returns>
+            public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
+                return initial;
             }
 
             /// <summary>
@@ -269,9 +278,12 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <typeparam name="A">The type of the accumulator.</typeparam>
             /// <param name="binOp">The binary operation.</param>
-            /// <returns>The function from the initial accumulator value to the final one.</returns>
-            public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
-                return Functions.Id<A>();
+            /// <param name="initial">The initial accumulator value.</param>
+            /// <returns>
+            /// The final accumulator value.
+            /// </returns>
+            public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
+                return initial;
             }
 
             /// <summary>
@@ -288,7 +300,7 @@ namespace FP.Collections.Immutable {
 
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
-                return middleList.ReduceR(_prepend)(rightTree);
+                return middleList.FoldRight(_prepend, rightTree);
             }
 
             /// <summary>
@@ -482,9 +494,12 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <typeparam name="A">The type of the accumulator.</typeparam>
             /// <param name="binOp">The binary operation.</param>
-            /// <returns>The function from the initial accumulator value to the final one.</returns>
-            public override Func<A, A> ReduceR<A>(Func<T, A, A> binOp) {
-                return a => binOp(Value, a);
+            /// <param name="initial">The initial accumulator value.</param>
+            /// <returns>
+            /// The final accumulator value.
+            /// </returns>
+            public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
+                return binOp(Value, initial);
             }
 
             /// <summary>
@@ -492,9 +507,12 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <typeparam name="A">The type of the accumulator.</typeparam>
             /// <param name="binOp">The binary operation.</param>
-            /// <returns>The function from the initial accumulator value to the final one.</returns>
-            public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
-                return a => binOp(a, Value);
+            /// <param name="initial">The initial accumulator value.</param>
+            /// <returns>
+            /// The final accumulator value.
+            /// </returns>
+            public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
+                return binOp(initial, Value);
             }
 
             /// <summary>
@@ -512,9 +530,9 @@ namespace FP.Collections.Immutable {
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
                 if (rightTree.IsEmpty) {
-                    return middleList.ReduceL(_append)(this);
+                    return middleList.FoldLeft(_append, this);
                 }
-                return middleList.ReduceR(_prepend)(rightTree).Prepend(Value);
+                return middleList.FoldRight(_prepend, rightTree).Prepend(Value);
             }
 
             /// <summary>
@@ -717,11 +735,13 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <typeparam name="A">The type of the accumulator.</typeparam>
             /// <param name="binOp">The binary operation.</param>
-            /// <returns>The function from the initial accumulator value to the final one.</returns>
-            public override Func<A, A> ReduceR<A>(Func<T, A, A> binOp) {
-                Func<FTNode<T, V>, A, A> binOp1 =
-                    (n, a) => n.ReduceR(binOp)(_right.ReduceR(binOp)(a));
-                return a => _left.ReduceR(binOp)(_Middle.ReduceR(binOp1)(a));
+            /// <param name="initial">The initial accumulator value.</param>
+            /// <returns>
+            /// The final accumulator value.
+            /// </returns>
+            public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
+                Func<FTNode<T, V>, A, A> binOp1 = (n, a) => n.FoldRight(binOp, a);
+                return _left.FoldRight(binOp, _Middle.FoldRight(binOp1, _right.FoldRight(binOp,initial)));
             }
 
             /// <summary>
@@ -729,10 +749,13 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <typeparam name="A">The type of the accumulator.</typeparam>
             /// <param name="binOp">The binary operation.</param>
-            /// <returns>The function from the initial accumulator value to the final one.</returns>
-            public override Func<A, A> ReduceL<A>(Func<A, T, A> binOp) {
-                Func<A, FTNode<T, V>, A> binOp1 = (a, n) => _right.ReduceL(binOp)(a);
-                return a => _Middle.ReduceL(binOp1)(_left.ReduceL(binOp)(a));
+            /// <param name="initial">The initial accumulator value.</param>
+            /// <returns>
+            /// The final accumulator value.
+            /// </returns>
+            public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
+                Func<A, FTNode<T, V>, A> binOp1 = (a, n) => n.FoldLeft(binOp, a);
+                return _right.FoldLeft(binOp, _Middle.FoldLeft(binOp1, _left.FoldLeft(binOp, initial)));
             }
 
             /// <summary>
@@ -753,10 +776,10 @@ namespace FP.Collections.Immutable {
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
                 if (rightTree.IsEmpty) {
-                    return middleList.ReduceL(_append)(this);
+                    return middleList.FoldLeft(_append, this);
                 }
                 if (rightTree.IsSingle) {
-                    return middleList.ReduceL(_append)(this).Append(rightTree.Head);
+                    return middleList.FoldLeft(_append, this).Append(rightTree.Head);
                 }
                 var rightDeep = rightTree as Deep;
                 return MakeDeep(this._left,
