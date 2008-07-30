@@ -39,7 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\Immutable\Either.cs" />
+    <Compile Include="Core\Either.cs" />
     <Compile Include="Collections\Immutable\FingerTreeHelpers.cs" />
     <Compile Include="Collections\Immutable\FingerTree.cs" />
     <Compile Include="Collections\Immutable\FingerTreeNode.cs" />
@@ -54,19 +54,24 @@
     <Compile Include="Collections\Immutable\Monoid.cs" />
     <Compile Include="Collections\Immutable\OrderedSequence.cs" />
     <Compile Include="Collections\Immutable\PriorityQueue.cs" />
-    <Compile Include="Collections\Immutable\Result.cs" />
+    <Compile Include="Core\Result.cs" />
     <Compile Include="Collections\Immutable\RandomAccessSequence.cs" />
-    <Compile Include="Collections\Immutable\Unit.cs" />
+    <Compile Include="Core\Tuple.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tuple.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Unit.cs" />
     <Compile Include="Collections\Mutable\Heap.cs" />
     <Compile Include="Collections\Mutable\PriorityQueue.cs" />
-    <Compile Include="Comparers.cs" />
-    <Compile Include="Continuations.cs" />
-    <Compile Include="EmptySequenceException.cs" />
-    <Compile Include="Enumerables.cs" />
-    <Compile Include="Enumerables2.cs" />
-    <Compile Include="Enumerators.cs" />
-    <Compile Include="Functions.cs" />
-    <Compile Include="Collections\Immutable\Maybe.cs" />
+    <Compile Include="Core\Comparers.cs" />
+    <Compile Include="Core\Continuations.cs" />
+    <Compile Include="Core\EmptySequenceException.cs" />
+    <Compile Include="Core\Enumerables.cs" />
+    <Compile Include="Core\Enumerables2.cs" />
+    <Compile Include="Core\Enumerators.cs" />
+    <Compile Include="Core\Functions.cs" />
+    <Compile Include="Core\Maybe.cs" />
     <Compile Include="Future\Concurrent.cs" />
     <Compile Include="Future\CyclicFutureException.cs" />
     <Compile Include="Future\EventArgs.cs" />
@@ -74,17 +79,26 @@
     <Compile Include="Future\Lazy.cs" />
     <Compile Include="Future\Promise.cs" />
     <Compile Include="Future\PromiseAlreadyFulfilledException.cs" />
-    <Compile Include="Ints.cs" />
+    <Compile Include="Core\Ints.cs" />
     <Compile Include="Linq\ContinuationMonad.cs" />
     <Compile Include="Linq\MaybeMonad.cs" />
     <Compile Include="Linq\ResultMonad.cs" />
-    <Compile Include="NotFoundException.cs" />
-    <Compile Include="Collections\Immutable\Pair.cs" />
+    <Compile Include="Core\NotFoundException.cs" />
+    <Compile Include="Core\Pair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Collections\Immutable\Quadruple.cs" />
-    <Compile Include="Strings.cs" />
-    <Compile Include="Switch.cs" />
-    <Compile Include="Collections\Immutable\Triple.cs" />
+    <Compile Include="Core\Quadruple.cs" />
+    <Compile Include="Core\Strings.cs" />
+    <Compile Include="Core\Switch.cs" />
+    <Compile Include="Core\Triple.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Core\Tuple.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Tuple.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
