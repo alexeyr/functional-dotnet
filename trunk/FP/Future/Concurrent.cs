@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using FP.Collections.Immutable;
+using FP.Core;
 
 namespace FP.Future {
     /// <summary>
@@ -17,7 +17,7 @@ namespace FP.Future {
         /// <param name="calculation">The calculation the new future does.</param>
         public Concurrent(Func<T> calculation) {
             _thread = new Thread(() => {
-                                     _result = Collections.Immutable.Result.Try(calculation);
+                                     _result = Core.Result.Try(calculation);
                                      OnDetermined(_result);
                                  });
             _thread.Start();
