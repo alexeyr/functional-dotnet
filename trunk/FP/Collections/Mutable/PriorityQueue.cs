@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FP.Collections.Immutable;
+using FP.Core;
 
 namespace FP.Collections.Mutable {
     /// <summary>
@@ -7,7 +7,7 @@ namespace FP.Collections.Mutable {
     /// </summary>
     /// <typeparam name="P">The type of priority.</typeparam>
     /// <typeparam name="T">The type of stored data.</typeparam>
-    public class PriorityQueue<P, T> : Heap<Pair<P, T>> {
+    public class PriorityQueue<P, T> : Heap<Tuple<P, T>> {
         /// <summary>
         /// Initializes a new instance of the <see cref="PriorityQueue{P,T}"/> class.
         /// </summary>
@@ -41,14 +41,14 @@ namespace FP.Collections.Mutable {
         /// Dequeues the item with the greatest priority.
         /// </summary>
         /// <returns>The dequeued item.</returns>
-        public Pair<P, T> Dequeue() {
+        public Tuple<P, T> Dequeue() {
             return RemoveAndReturnRoot();
         }
 
         ///<summary>
         ///Compares two pairs by their first elements.
         ///</summary>
-        private class ComparerByKey : IComparer<Pair<P, T>> {
+        private class ComparerByKey : IComparer<Tuple<P, T>> {
             private readonly IComparer<P> _baseComparer;
             /// <summary>
             /// Initializes a new instance of the <see cref="PriorityQueue{P,T}.ComparerByKey"/> class.
@@ -64,8 +64,8 @@ namespace FP.Collections.Mutable {
             ///
             ///<param name="x">The first object to compare.</param>
             ///<param name="y">The second object to compare.</param>
-            public int Compare(Pair<P, T> x, Pair<P, T> y) {
-                return _baseComparer.Compare(x.First, y.First);
+            public int Compare(Tuple<P, T> x, Tuple<P, T> y) {
+                return _baseComparer.Compare(x.Item1, y.Item1);
             }
         }
     }

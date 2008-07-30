@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using FP.Core;
 using FP.HaskellNames;
 
 namespace FP.Collections.Immutable {
@@ -14,13 +15,13 @@ namespace FP.Collections.Immutable {
     public struct OrderedSequence<K, T> : IEnumerable<T>, IEquatable<OrderedSequence<K, T>> {
         
         private readonly IComparer<K> _comparer;
-        private readonly FingerTree<Element, Pair<K, int>> _ft;
+        private readonly FingerTree<Element, Tuple<K, int>> _ft;
 
         /// <summary>
         /// The sentinel value for keys. Never add an element with this value!
         /// </summary>
         public K NoKey {
-            get { return Monoid.Zero.First; }
+            get { return Monoid.Zero.Item1; }
         }
         /// <summary>
         /// Gets the comparer used to compare keys.
@@ -28,10 +29,10 @@ namespace FP.Collections.Immutable {
         public IComparer<K> Comparer {
             get { return _comparer; }
         }
-        private Monoid<Pair<K, int>> Monoid { get { return _ft.MeasureMonoid; } }
+        private Monoid<Tuple<K, int>> Monoid { get { return _ft.MeasureMonoid; } }
         
         [DebuggerDisplay("Key = {Key}, Value = {Value}")]
-        internal struct Element : IMeasured<Pair<K, int>> {
+        internal struct Element : IMeasured<Tuple<K, int>> {
             internal readonly K Key;
             internal readonly T Value;
 
@@ -40,7 +41,7 @@ namespace FP.Collections.Immutable {
                 Value = value;
             }
 
-            public Pair<K, int> Measure {
+            public Tuple<K, int> Measure {
                 get { return Pair.New(Key, 1); }
             }
         }
@@ -52,7 +53,7 @@ namespace FP.Collections.Immutable {
         /// <param name="noKey">The sentinel value.</param>
         public OrderedSequence(IComparer<K> comparer, K noKey) {
             _comparer = comparer;
-            _ft = FingerTree.Empty<Element, Pair<K, int>>(OrderedSequence.MakeMonoid(noKey, comparer));
+            _ft = FingerTree.Empty<Element, Tuple<K, int>>(OrderedSequence.MakeMonoid(noKey, comparer));
         }
 
         /// <summary>
@@ -61,12 +62,12 @@ namespace FP.Collections.Immutable {
         /// <param name="noKey">The sentinel value.</param>
         public OrderedSequence(K noKey) : this(Comparer<K>.Default, noKey) { }
 
-        internal OrderedSequence(IComparer<K> comparer, FingerTree<Element, Pair<K, int>> ft) {
+        internal OrderedSequence(IComparer<K> comparer, FingerTree<Element, Tuple<K, int>> ft) {
             _comparer = comparer;
             _ft = ft;
         }
 
-        private OrderedSequence<K, T> MakeOrderedSequence(FingerTree<Element, Pair<K, int>> ft) {
+        private OrderedSequence<K, T> MakeOrderedSequence(FingerTree<Element, Tuple<K, int>> ft) {
             return new OrderedSequence<K, T>(_comparer, ft);
         }
 
@@ -85,15 +86,15 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="sequence">The sequence of (key, item) pairs.</param>
         /// <returns>The sequence with the inserted items.</returns>
-        public OrderedSequence<K, T> InsertRange(IEnumerable<Pair<K, T>> sequence) {
+        public OrderedSequence<K, T> InsertRange(IEnumerable<Tuple<K, T>> sequence) {
             var comparer = _comparer;
-            var ft = sequence.FoldLeft((tree, pair) => InsertIntoTree(tree, pair.First, pair.Second, comparer), _ft);
+            var ft = sequence.FoldLeft((tree, pair) => InsertIntoTree(tree, pair.Item1, pair.Item2, comparer), _ft);
             return MakeOrderedSequence(ft);
         }
 
-        private static FingerTree<Element, Pair<K, int>> InsertIntoTree(FingerTree<Element, Pair<K, int>> tree, K key, T item, IComparer<K> comparer) {
-            var split = tree.Split(pair => comparer.Compare(pair.First, key) >= 0);
-            return (split.First | new Element(key, item)) + split.Second;
+        private static FingerTree<Element, Tuple<K, int>> InsertIntoTree(FingerTree<Element, Tuple<K, int>> tree, K key, T item, IComparer<K> comparer) {
+            var split = tree.Split(pair => comparer.Compare(pair.Item1, key) >= 0);
+            return (split.Item1 | new Element(key, item)) + split.Item2;
         }
 
         /// <summary>
@@ -104,7 +105,7 @@ namespace FP.Collections.Immutable {
         /// in the original sequence, and <c>false</c> otherwise. The second element is the result of deletion.</returns>
         /// <remarks>Key equality 
         /// If there are several elements with key equal to <paramref name="key"/>, the first of them shall be deleted.</remarks>
-        public Pair<bool, OrderedSequence<K, T>> Delete(K key) {
+        public Tuple<bool, OrderedSequence<K, T>> Delete(K key) {
             return DeleteHelper(key, false);
         }
 
@@ -114,18 +115,18 @@ namespace FP.Collections.Immutable {
         /// <param name="key">The key.</param>
         /// <returns>A pair. The first element is <c>true</c> if there were items with key equal to <paramref name="key"/>
         /// in the original sequence, and <c>false</c> otherwise. The second element is the result of deletion.</returns>
-        public Pair<bool, OrderedSequence<K, T>> DeleteAll(K key) {
+        public Tuple<bool, OrderedSequence<K, T>> DeleteAll(K key) {
             return DeleteHelper(key, true);
         }
 
-        private Pair<bool, OrderedSequence<K, T>> DeleteHelper(K key, bool deleteAll) {
+        private Tuple<bool, OrderedSequence<K, T>> DeleteHelper(K key, bool deleteAll) {
             var comparer = _comparer;
-            var split = _ft.Split(pair => comparer.Compare(pair.First, key) >= 0);
-            var split2 = split.Second.Split(pair => comparer.Compare(pair.First, key) > 0);
-            if (split2.First.IsEmpty)
+            var split = _ft.Split(pair => comparer.Compare(pair.Item1, key) >= 0);
+            var split2 = split.Item2.Split(pair => comparer.Compare(pair.Item1, key) > 0);
+            if (split2.Item1.IsEmpty)
                 return Pair.New(false, this);
-            var newFt = deleteAll ? split.First : split.First + split2.First.Tail;
-            return Pair.New(true, MakeOrderedSequence(newFt + split2.Second));
+            var newFt = deleteAll ? split.Item1 : split.Item1 + split2.Item1.Tail;
+            return Pair.New(true, MakeOrderedSequence(newFt + split2.Item2));
         }
 
         /// <summary>
@@ -138,16 +139,16 @@ namespace FP.Collections.Immutable {
             return MakeOrderedSequence(MergeTrees(_ft, otherSequence._ft));
         }
 
-        private FingerTree<Element, Pair<K, int>> MergeTrees(FingerTree<Element, Pair<K, int>> ft1,
-            FingerTree<Element, Pair<K, int>> ft2) {
+        private FingerTree<Element, Tuple<K, int>> MergeTrees(FingerTree<Element, Tuple<K, int>> ft1,
+            FingerTree<Element, Tuple<K, int>> ft2) {
             if (ft2.IsEmpty)
                 return ft1;
             var comparer = _comparer;
             var ft2head = ft2.Head;
             var ft2tail = ft2.Tail;
-            var ft1split = ft1.Split(pair => comparer.Compare(pair.First, ft2head.Key) > 0);
-            var newRight = ft2head | MergeTrees(ft2tail, ft1split.Second);
-            return ft1split.First + newRight;
+            var ft1split = ft1.Split(pair => comparer.Compare(pair.Item1, ft2head.Key) > 0);
+            var newRight = ft2head | MergeTrees(ft2tail, ft1split.Item2);
+            return ft1split.Item1 + newRight;
         }
 
         /// <summary>
@@ -160,16 +161,16 @@ namespace FP.Collections.Immutable {
             return MakeOrderedSequence(IntersectTrees(_ft, otherSequence._ft));
         }
 
-        private FingerTree<Element, Pair<K, int>> IntersectTrees(FingerTree<Element, Pair<K, int>> ft1,
-            FingerTree<Element, Pair<K, int>> ft2) {
+        private FingerTree<Element, Tuple<K, int>> IntersectTrees(FingerTree<Element, Tuple<K, int>> ft1,
+            FingerTree<Element, Tuple<K, int>> ft2) {
             if (ft2.IsEmpty)
                 return ft2;
             var comparer = _comparer;
             var ft2head = ft2.Head;
             var ft2tail = ft2.Tail;
-            var ft1split = ft1.Split(pair => comparer.Compare(pair.First, ft2head.Key) > 0);
-            var recursive = IntersectTrees(ft2tail, ft1split.Second);
-            var ft1_LE_ft2head = ft1split.First;
+            var ft1split = ft1.Split(pair => comparer.Compare(pair.Item1, ft2head.Key) > 0);
+            var recursive = IntersectTrees(ft2tail, ft1split.Item2);
+            var ft1_LE_ft2head = ft1split.Item1;
             return ft1_LE_ft2head.IsEmpty ||
                    comparer.Compare(ft1_LE_ft2head.Last.Key, ft2head.Key) < 0 //Does ft1_LE_ft2head contain ft2head?
                        ? recursive
@@ -181,7 +182,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <remarks>If several elements have the maximal key, the element inserted last will be returned.</remarks>
         /// <exception cref="EmptySequenceException">There are no elements in the sequence.</exception>
-        public Pair<K, T> PeekMax() {
+        public Tuple<K, T> PeekMax() {
             Element item = _ft.Last;
             return Pair.New(item.Key, item.Value);
         }
@@ -191,7 +192,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <remarks>If several elements have the minimal key, the element inserted first will be returned.</remarks>
         /// <exception cref="EmptySequenceException">There are no elements in the sequence.</exception>
-        public Pair<K, T> PeekMin() {
+        public Tuple<K, T> PeekMin() {
             Element item = _ft.Head;
             return Pair.New(item.Key, item.Value);
         }
@@ -232,20 +233,20 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Gets the number of elements in the sequence.
         /// </summary>
-        public int Count { get { return _ft.Measure.Second; } }
+        public int Count { get { return _ft.Measure.Item2; } }
 
         /// <summary>
-        /// Gets the <see cref="FP.Collections.Immutable.Pair{K,T}"/> at the specified index.
+        /// Gets the <see cref="Pair{T1,T2}"/> at the specified index.
         /// </summary>
         /// <remarks><c>this[0]</c> is the element with the smallest key, <c>this[Count - 1]</c> is the
         /// element with the greatest key.</remarks>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
-        public Pair<K, T> this[int index] {
+        public Tuple<K, T> this[int index] {
             get {
                 if (index < 0 || index >= Count)
                     throw new ArgumentOutOfRangeException("index");
-                Element result = _ft.SplitTree(pair => pair.Second > index, Monoid.Zero).Middle;
-                return Pair.New(result.Measure.First, result.Value);
+                Element result = _ft.SplitTree(pair => pair.Item2 > index, Monoid.Zero).Middle;
+                return Pair.New(result.Measure.Item1, result.Value);
             }
         }
 
@@ -296,8 +297,8 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Appends <paramref name="item"/> to <paramref name="tree"/>.
         /// </summary>
-        public static OrderedSequence<K, T> operator |(OrderedSequence<K, T> tree, Pair<K, T> item) {
-            return tree.Insert(item.First, item.Second);
+        public static OrderedSequence<K, T> operator |(OrderedSequence<K, T> tree, Tuple<K, T> item) {
+            return tree.Insert(item.Item1, item.Item2);
         }
 
         /// <summary>
@@ -313,7 +314,7 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <seealso cref="OrderedSequence{K,T}"/>
     public static class OrderedSequence {
-        internal static Monoid<Pair<T, int>> MakeMonoid<T>(T noKey, IComparer<T> comparer) {
+        internal static Monoid<Tuple<T, int>> MakeMonoid<T>(T noKey, IComparer<T> comparer) {
             return new Monoid<T>(noKey, (x, y) => comparer.Compare(y, noKey) == 0 ? x : y).Product(Monoids.Size);
         }
 
@@ -380,7 +381,7 @@ namespace FP.Collections.Immutable {
         /// the behaviour of the resulting sequence is undefined.
         /// 
         /// <paramref name="sequence"/> is not required to be ordered.</remarks>
-        public static OrderedSequence<K, T> FromEnumerable<K, T>(IEnumerable<Pair<K, T>> sequence, IComparer<K> comparer, K noKey) {
+        public static OrderedSequence<K, T> FromEnumerable<K, T>(IEnumerable<Tuple<K, T>> sequence, IComparer<K> comparer, K noKey) {
             var empty = Empty<K, T>(comparer, noKey);
             return empty.InsertRange(sequence);
         }
@@ -394,7 +395,7 @@ namespace FP.Collections.Immutable {
         /// the behaviour of the resulting sequence is undefined.
         /// 
         /// <paramref name="sequence"/> is not required to be ordered.</remarks>
-        public static OrderedSequence<K, T> FromEnumerable<K, T>(IEnumerable<Pair<K, T>> sequence, K noKey) where K : IComparable<K> {
+        public static OrderedSequence<K, T> FromEnumerable<K, T>(IEnumerable<Tuple<K, T>> sequence, K noKey) where K : IComparable<K> {
             return FromEnumerable(sequence, Comparer<K>.Default, noKey);
         }
 
@@ -434,7 +435,7 @@ namespace FP.Collections.Immutable {
         /// the behaviour of the resulting sequence is undefined.
         /// 
         /// <paramref name="sequence"/> is not required to be ordered.</remarks>
-        public static OrderedSequence<double, T> FromEnumerable<T>(IEnumerable<Pair<double, T>> sequence) {
+        public static OrderedSequence<double, T> FromEnumerable<T>(IEnumerable<Tuple<double, T>> sequence) {
             return FromEnumerable(sequence, double.NegativeInfinity);
         }
 
@@ -447,11 +448,11 @@ namespace FP.Collections.Immutable {
         /// Must be ordered by keys.</param>
         /// <remarks>If an element with priority equal to <paramref name="noKey"/> is ever inserted into the sequence,
         /// the behaviour of the resulting sequence is undefined.</remarks>
-        public static OrderedSequence<K, T> FromOrderedEnumerable<K, T>(IEnumerable<Pair<K, T>> sequence, IComparer<K> comparer, K noKey) {
-            Func<FingerTree<OrderedSequence<K, T>.Element, Pair<K, int>>, Pair<K, T>,
-                    FingerTree<OrderedSequence<K, T>.Element, Pair<K, int>>> append =
-                        (tree, pair) => tree | new OrderedSequence<K, T>.Element(pair.First, pair.Second);
-            var empty = FingerTree.Empty<OrderedSequence<K, T>.Element, Pair<K, int>>(MakeMonoid(noKey, comparer));
+        public static OrderedSequence<K, T> FromOrderedEnumerable<K, T>(IEnumerable<Tuple<K, T>> sequence, IComparer<K> comparer, K noKey) {
+            Func<FingerTree<OrderedSequence<K, T>.Element, Tuple<K, int>>, Tuple<K, T>,
+                    FingerTree<OrderedSequence<K, T>.Element, Tuple<K, int>>> append =
+                        (tree, pair) => tree | new OrderedSequence<K, T>.Element(pair.Item1, pair.Item2);
+            var empty = FingerTree.Empty<OrderedSequence<K, T>.Element, Tuple<K, int>>(MakeMonoid(noKey, comparer));
             return new OrderedSequence<K, T>(comparer, sequence.FoldLeft(append, empty));
         }
 
@@ -463,7 +464,7 @@ namespace FP.Collections.Immutable {
         /// Must be ordered by keys.</param>
         /// <remarks>If an element with priority equal to <paramref name="noKey"/> is ever inserted into the sequence,
         /// the behaviour of the resulting sequence is undefined.</remarks>
-        public static OrderedSequence<K, T> FromOrderedEnumerable<K, T>(IEnumerable<Pair<K, T>> sequence, K noKey)
+        public static OrderedSequence<K, T> FromOrderedEnumerable<K, T>(IEnumerable<Tuple<K, T>> sequence, K noKey)
             where K : IComparable<K> {
             return FromOrderedEnumerable(sequence, Comparer<K>.Default, noKey);
         }
@@ -478,10 +479,10 @@ namespace FP.Collections.Immutable {
         /// <remarks>If an element with priority equal to <paramref name="noKey"/> is ever inserted into the sequence,
         /// the behaviour of the resulting sequence is undefined.</remarks>
         public static OrderedSequence<T, T> FromOrderedEnumerable<T>(IEnumerable<T> sequence, IComparer<T> comparer, T noKey) {
-            Func<FingerTree<OrderedSequence<T, T>.Element, Pair<T, int>>, T,
-                FingerTree<OrderedSequence<T, T>.Element, Pair<T, int>>> append =
+            Func<FingerTree<OrderedSequence<T, T>.Element, Tuple<T, int>>, T,
+                FingerTree<OrderedSequence<T, T>.Element, Tuple<T, int>>> append =
                     (tree, t) => tree | new OrderedSequence<T, T>.Element(t, t);
-            var empty = FingerTree.Empty<OrderedSequence<T, T>.Element, Pair<T, int>>(MakeMonoid(noKey, comparer));
+            var empty = FingerTree.Empty<OrderedSequence<T, T>.Element, Tuple<T, int>>(MakeMonoid(noKey, comparer));
             return new OrderedSequence<T, T>(comparer, sequence.FoldLeft(append, empty));
         }
 
@@ -505,7 +506,7 @@ namespace FP.Collections.Immutable {
         /// Must be ordered by keys.</param>
         /// <remarks>If an element with priority equal to <see cref="double.NegativeInfinity"/> is ever inserted into the sequence,
         /// the behaviour of the resulting sequence is undefined.</remarks>
-        public static OrderedSequence<double, T> FromOrderedEnumerable<T>(IEnumerable<Pair<double, T>> sequence) {
+        public static OrderedSequence<double, T> FromOrderedEnumerable<T>(IEnumerable<Tuple<double, T>> sequence) {
             return FromOrderedEnumerable(sequence, double.NegativeInfinity);
         }
     }

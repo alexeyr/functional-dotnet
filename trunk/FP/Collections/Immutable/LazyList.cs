@@ -3,6 +3,7 @@
  */
 
 using System.Collections.Generic;
+using FP.Core;
 
 namespace FP.Collections.Immutable {
     /// <summary>
