@@ -1,7 +1,7 @@
 ﻿/* (C) Alexey Romanov 2008 */
 
 using System.Collections.Generic;
-using FP;
+using FP.Core;
 using Xunit;
 
 namespace FPTests {

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using FP.Core;
 using Xunit;
 using FP;
 using XunitExtensions;
