@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FP.Core;
 using FP.HaskellNames;
 
 namespace FP.Collections.Immutable {
@@ -46,8 +47,8 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Initializes a new instance of the <see cref="PriorityQueue&lt;P, T&gt;"/> class.
         /// </summary>
-        internal PriorityQueue(Monoid<P> monoid, IEnumerable<Pair<P, T>> sequence) :
-            this(FingerTree.FromEnumerable(sequence.Map(pair => new Element(pair.First, pair.Second)), monoid)) { }
+        internal PriorityQueue(Monoid<P> monoid, IEnumerable<Tuple<P, T>> sequence) :
+            this(FingerTree.FromEnumerable(sequence.Map(pair => new Element(pair.Item1, pair.Item2)), monoid)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PriorityQueue&lt;P, T&gt;"/> class.
@@ -61,7 +62,7 @@ namespace FP.Collections.Immutable {
         /// <param name="comparer">The comparer.</param>
         /// <param name="min">The minimal value according to <paramref name="comparer"/>.</param>
         /// <param name="sequence">The sequence of pairs (priority, element) placed into the queue initially.</param>
-        public PriorityQueue(IEnumerable<Pair<P, T>> sequence, IComparer<P> comparer, P min) :
+        public PriorityQueue(IEnumerable<Tuple<P, T>> sequence, IComparer<P> comparer, P min) :
             this(Monoids.PriorityM(min, comparer), sequence) { }
 
         /// <summary>
@@ -69,7 +70,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="min">The minimal value according to the default comparer.</param>
         /// <param name="sequence">The sequence of pairs (priority, element) placed into the queue initially.</param>
-        public PriorityQueue(IEnumerable<Pair<P, T>> sequence, P min) : this(sequence, Comparer<P>.Default, min) { }
+        public PriorityQueue(IEnumerable<Tuple<P, T>> sequence, P min) : this(sequence, Comparer<P>.Default, min) { }
 
         /// <summary>
         /// Adds an item to to <see cref="PriorityQueue{P,T}"/>.
@@ -89,7 +90,7 @@ namespace FP.Collections.Immutable {
         /// the second is its value and the third is the original <see cref="PriorityQueue{P,T}"/> 
         /// without this element.</returns>
         /// <remarks>If several elements have the maximal priority, the first of them shall be dequeued.</remarks>
-        public Triple<P, T, PriorityQueue<P, T>> Dequeue() {
+        public Tuple<P, T, PriorityQueue<P, T>> Dequeue() {
             var monoid = Monoid;
             var maxPriority = MaxPriority;
             var split = _ft.SplitTree(p => Equals(monoid.Plus(p, maxPriority), p), Monoid.Zero);
@@ -104,7 +105,7 @@ namespace FP.Collections.Immutable {
         /// the second is its value and the third is the original <see cref="PriorityQueue{P,T}"/> 
         /// without this element.</returns>
         /// <remarks>If several elements have the maximal priority, the first of them shall be returned.</remarks>
-        public Pair<P, T> Peek() {
+        public Tuple<P, T> Peek() {
             var monoid = Monoid;
             var maxPriority = MaxPriority;
             var item = _ft.SplitTree(p => Equals(monoid.Plus(p, maxPriority), p), Monoid.Zero).Middle;
@@ -223,7 +224,7 @@ namespace FP.Collections.Immutable {
         /// <param name="sequence">The sequence of pairs (priority, element) placed into the queue initially.</param>
         /// <remarks>If an element with priority less than <paramref name="min"/> is ever enqueued,
         /// the behaviour of the resulting queue is undefined.</remarks>
-        public static PriorityQueue<P, T> FromEnumerable<P, T>(IEnumerable<Pair<P, T>> sequence, IComparer<P> comparer, P min) {
+        public static PriorityQueue<P, T> FromEnumerable<P, T>(IEnumerable<Tuple<P, T>> sequence, IComparer<P> comparer, P min) {
             return new PriorityQueue<P, T>(sequence, comparer, min);
         }
 
@@ -234,7 +235,7 @@ namespace FP.Collections.Immutable {
         /// <param name="sequence">The sequence of pairs (priority, element) placed into the queue initially.</param>
         /// <remarks>If an element with priority less than <paramref name="min"/> is ever enqueued,
         /// the behaviour of the resulting queue is undefined.</remarks>
-        public static PriorityQueue<P, T> FromEnumerable<P, T>(IEnumerable<Pair<P, T>> sequence, P min) where P : IComparable<P> {
+        public static PriorityQueue<P, T> FromEnumerable<P, T>(IEnumerable<Tuple<P, T>> sequence, P min) where P : IComparable<P> {
             return FromEnumerable(sequence, Comparer<P>.Default, min);
         }
 
@@ -244,7 +245,7 @@ namespace FP.Collections.Immutable {
         /// <param name="sequence">The sequence of pairs (priority, element) placed into the queue initially.</param>
         /// <remarks>If an element with priority <see cref="double.NaN"/> is ever enqueued,
         /// the behaviour of the resulting queue is undefined.</remarks>
-        public static PriorityQueue<double, T> FromEnumerable<T>(IEnumerable<Pair<double, T>> sequence) {
+        public static PriorityQueue<double, T> FromEnumerable<T>(IEnumerable<Tuple<double, T>> sequence) {
             return new PriorityQueue<double, T>(Monoids.Priority, sequence);
         }
 

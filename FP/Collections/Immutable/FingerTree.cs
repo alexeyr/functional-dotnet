@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using FP.Core;
 using FP.HaskellNames;
 
 namespace FP.Collections.Immutable {
@@ -224,8 +225,8 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Splits the list according to the specified predicate. The result has the following properties.
         /// <code>
-        /// var left = tree.Split(predicate).First;
-        /// var right = tree.Split(predicate).Second;
+        /// var left = tree.Split(predicate).Item1;
+        /// var right = tree.Split(predicate).Item2;
         /// ---------
         /// tree.SequenceEquals(left + right);
         /// left.IsEmpty() || !predicate(left.Measure);
@@ -235,7 +236,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="predicate">The predicate.</param>
         /// <returns></returns>
-        public virtual Pair<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate) {
+        public virtual Tuple<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate) {
             if (!predicate(Measure)) return Pair.New(this, (FingerTree<T, V>) EmptyInstance);
             var split = SplitTree(predicate, MeasureMonoid.Zero);
             return Pair.New(split.Left, split.Middle | split.Right);
@@ -411,8 +412,8 @@ namespace FP.Collections.Immutable {
             /// <summary>
             /// Splits the list according to the specified predicate. The result has the following properties.
             /// <code>
-            /// var left = tree.Split(predicate).First;
-            /// var right = tree.Split(predicate).Second;
+            /// var left = tree.Split(predicate).Item1;
+            /// var right = tree.Split(predicate).Item2;
             /// ---------
             /// tree.SequenceEquals(left + right);
             /// left.IsEmpty() || !predicate(left.TotalMeasure);
@@ -422,8 +423,7 @@ namespace FP.Collections.Immutable {
             /// </summary>
             /// <param name="predicate">The predicate.</param>
             /// <returns></returns>
-            public override Pair<FingerTree<T, V>, FingerTree<T, V>> Split(
-                Func<V, bool> predicate) {
+            public override Tuple<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate) {
                 var empty = (FingerTree<T, V>) EmptyInstance;
                 return Pair.New(empty, empty);
             }

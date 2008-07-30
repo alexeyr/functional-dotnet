@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using FP.Core;
 using FP.HaskellNames;
 
 namespace FP.Collections.Immutable {
@@ -158,25 +159,25 @@ namespace FP.Collections.Immutable {
         /// the sequence and the second one contains the rest of them.
         /// </summary>
         /// <param name="count">The index at which the sequence will be split.</param>
-        /// <remarks>if <code>count <= 0 || count >= Count</code>, the corresponding part 
+        /// <remarks>if <code>count &lt;= 0 || count &gt;= Count</code>, the corresponding part 
         /// of the result will be empty.</remarks>
-        public Pair<RandomAccessSequence<T>, RandomAccessSequence<T>> SplitAt(int count) {
+        public Tuple<RandomAccessSequence<T>, RandomAccessSequence<T>> SplitAt(int count) {
             var ftSplit = _ft.Split(i => i > count);
-            return Pair.New(new RandomAccessSequence<T>(ftSplit.First), new RandomAccessSequence<T>(ftSplit.Second));
+            return Pair.New(new RandomAccessSequence<T>(ftSplit.Item1), new RandomAccessSequence<T>(ftSplit.Item2));
         }
 
         /// <summary>Returns a specified number of contiguous elements from the start of the sequence.</summary>
         /// <returns>A <see cref="RandomAccessSequence{T}" /> that contains the specified number of elements from the start of the input sequence.</returns>
         /// <param name="count">The number of elements to return.</param>
         public RandomAccessSequence<T> Take(int count) {
-            return SplitAt(count).First;
+            return SplitAt(count).Item1;
         }
 
         /// <summary>Bypasses a specified number of elements in a sequence and then returns the remaining elements.</summary>
         /// <returns>A <see cref="RandomAccessSequence{T}" /> that contains the elements that occur after the specified index in the input sequence.</returns>
         /// <param name="count">The number of elements to return.</param>
         public RandomAccessSequence<T> Skip(int count) {
-            return SplitAt(count).Second;
+            return SplitAt(count).Item2;
         }
 
         /// <summary>
@@ -271,7 +272,7 @@ namespace FP.Collections.Immutable {
             if (index < 0 || index >= Count)
                 throw new ArgumentOutOfRangeException("index");
             var ftSplit = _ft.Split(i => i > index);
-            return new RandomAccessSequence<T>((ftSplit.First | new Element(newValue)) + ftSplit.Second);
+            return new RandomAccessSequence<T>((ftSplit.Item1 | new Element(newValue)) + ftSplit.Item2);
         }
 
         /// <summary>
