@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using FP;
 using FP.Collections.Immutable;
+using FP.Core;
 using Xunit;
 using XunitExtensions;
 
@@ -51,8 +51,8 @@ namespace FPTests {
         public void SplitAtWorks() {
             for (int i = 1; i < 50; i++) {
                 var split = _seq.SplitAt(i);
-                Assert2.SequenceEqual(_seq.Take(i), split.First);
-                Assert2.SequenceEqual(_seq.Skip(i), split.Second);
+                Assert2.SequenceEqual(_seq.Take(i), split.Item1);
+                Assert2.SequenceEqual(_seq.Skip(i), split.Item2);
             }
         }
 
@@ -200,7 +200,7 @@ namespace FPTests {
         public void IndexingWorks() {
             Assert.Equal(N, _seq.Count);
             for (int i = 0; i < N; i++) {
-                Assert.Equal(_testDataSorted[i], _seq[i].Second);
+                Assert.Equal(_testDataSorted[i], _seq[i].Item2);
             }
         }
     }
