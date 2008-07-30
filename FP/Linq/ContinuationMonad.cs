@@ -2,6 +2,7 @@
 
 using System;
 using FP;
+using FP.Core;
 
 namespace FP.Linq {
     /// <summary>

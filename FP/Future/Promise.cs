@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using FP.Collections.Immutable;
+using FP.Core;
 
 namespace FP.Future {
     /// <summary>
@@ -62,7 +62,7 @@ namespace FP.Future {
         public void Fulfill(T value) {
             lock (this) {
                 if (_isFulfilled) throw new PromiseAlreadyFulfilledException();
-                _result = Collections.Immutable.Result.Success(value);
+                _result = Core.Result.Success(value);
                 OnCompletelyFulfilled();
             }
         }
@@ -118,7 +118,7 @@ namespace FP.Future {
         public void Fail(Exception e) {
             lock (this) {
                 if (_isFulfilled) throw new PromiseAlreadyFulfilledException();
-                _result = Collections.Immutable.Result.Failure<T>(e);
+                _result = Core.Result.Failure<T>(e);
                 OnCompletelyFulfilled();
             }
         }
@@ -132,7 +132,7 @@ namespace FP.Future {
             get {
                 if (!_isFulfilled)
                     using (var resetEvent = new ManualResetEvent(false)) {
-                        EventHandler<PromiseFulfilledArgs<T>> endWait = delegate { resetEvent.Set(); };
+                        EventHandler<PromiseFulfilledArgs<T>> endWait = (sender, e) => resetEvent.Set();
                         Fulfilled += endWait;
                         resetEvent.WaitOne();
                     }

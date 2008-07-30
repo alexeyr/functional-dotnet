@@ -1,5 +1,5 @@
 ﻿using System;
-using FP.Collections.Immutable;
+using FP.Core;
 
 namespace FP.Future {
     /// <summary>

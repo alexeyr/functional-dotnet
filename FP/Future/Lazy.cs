@@ -1,5 +1,5 @@
 ﻿using System;
-using FP.Collections.Immutable;
+using FP.Core;
 
 namespace FP.Future {
     /// <summary>
@@ -36,7 +36,7 @@ namespace FP.Future {
         public override Result<T> Result {
             get {
                 if (!_hasResult) {
-                    _result = Collections.Immutable.Result.Try(_calculation);
+                    _result = Core.Result.Try(_calculation);
                     _hasResult = true;
                     _calculation = null;
                 }

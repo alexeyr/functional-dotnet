@@ -1,7 +1,7 @@
 ﻿/* (C) Alexey Romanov 2008 */
 
 using System;
-using FP.Collections.Immutable;
+using FP.Core;
 
 namespace FP.Linq {
     /// <summary>
