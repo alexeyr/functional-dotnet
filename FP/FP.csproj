@@ -100,6 +100,9 @@
       <LastGenOutput>Tuple.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="License.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -108,4 +111,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

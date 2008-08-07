@@ -1,8 +1,24 @@
-/* (C) Alexey Romanov 2008 */
+#region License
+/*
+* ImmutableListBase.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2008 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
+#endregion
 
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using FP.Core;
 
 namespace FP.Collections.Immutable {
     /// <summary>
@@ -63,7 +79,7 @@ namespace FP.Collections.Immutable {
                 yield return list.Head;
                 list = list.Tail;
             }
-        }
+        } // GetEnumerator()
 
         /// <summary>
         /// Gets the element at the specified index.
@@ -122,5 +138,5 @@ namespace FP.Collections.Immutable {
                 ? typeof(T).GetHashCode()
                 : Head.GetHashCode() + 29*Tail.GetHashCode();
         }
-    }
-}
+    } // class ImmutableListBase
+} // namespace FP.Collections.Immutable

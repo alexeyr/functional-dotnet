@@ -1,6 +1,19 @@
-﻿/* (C) Alexey Romanov 2008 */
-
-using System;
+﻿#region License
+/*
+* Triple.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2008 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
+#endregion
 
 namespace FP.Core {
     /// <summary>
@@ -21,5 +34,5 @@ namespace FP.Core {
         public static Tuple<T1,T2,T3> New<T1, T2, T3>(T1 first, T2 second, T3 third) {
             return new Tuple<T1, T2, T3>(first, second, third);
         }
-    }
-}
+    } // class Triple
+} // namespace FP.Core
