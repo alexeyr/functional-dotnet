@@ -1,6 +1,23 @@
 ﻿// Author of the template: _FRED_
 // Modified by Alexey Romanov
 
+#region License
+/*
+* Switch.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2008 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -82,6 +99,8 @@ namespace FP.Core
                &&  EqualityComparer<T2>.Default.Equals(Item2, other.Item2) ;           }
 
     #endregion IEquatable<Tuple<T1, T2>> Members
+    
+    
   }
 
   #endregion struct Tuple<T1, T2>
@@ -170,6 +189,8 @@ namespace FP.Core
                &&  EqualityComparer<T3>.Default.Equals(Item3, other.Item3) ;           }
 
     #endregion IEquatable<Tuple<T1, T2, T3>> Members
+    
+    
   }
 
   #endregion struct Tuple<T1, T2, T3>
@@ -267,6 +288,8 @@ namespace FP.Core
                &&  EqualityComparer<T4>.Default.Equals(Item4, other.Item4) ;           }
 
     #endregion IEquatable<Tuple<T1, T2, T3, T4>> Members
+    
+    
   }
 
   #endregion sealed class Tuple<T1, T2, T3, T4>
@@ -373,6 +396,8 @@ namespace FP.Core
                &&  EqualityComparer<T5>.Default.Equals(Item5, other.Item5) ;           }
 
     #endregion IEquatable<Tuple<T1, T2, T3, T4, T5>> Members
+    
+    
   }
 
   #endregion sealed class Tuple<T1, T2, T3, T4, T5>
@@ -488,6 +513,8 @@ namespace FP.Core
                &&  EqualityComparer<T6>.Default.Equals(Item6, other.Item6) ;           }
 
     #endregion IEquatable<Tuple<T1, T2, T3, T4, T5, T6>> Members
+    
+    
   }
 
   #endregion sealed class Tuple<T1, T2, T3, T4, T5, T6>
@@ -612,6 +639,8 @@ namespace FP.Core
                &&  EqualityComparer<T7>.Default.Equals(Item7, other.Item7) ;           }
 
     #endregion IEquatable<Tuple<T1, T2, T3, T4, T5, T6, T7>> Members
+    
+    
   }
 
   #endregion sealed class Tuple<T1, T2, T3, T4, T5, T6, T7>

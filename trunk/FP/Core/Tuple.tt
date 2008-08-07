@@ -9,6 +9,23 @@
 <#@ import namespace="System.Diagnostics" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
+#region License
+/*
+* Switch.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2008 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -109,6 +126,8 @@ namespace <#= NamespaceName #>
     }
 
     #endregion IEquatable<<#= typeName #>> Members
+    
+    
   }
 
   #endregion <# if(isValueType) { #>struct<# } else { #>sealed class<# }//if #> <#= typeName #>

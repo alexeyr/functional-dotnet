@@ -1,4 +1,21 @@
-﻿using System;
+﻿#region License
+/*
+* Future.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2008 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
+#endregion
+
+using System;
 using System.Threading;
 using FP.Collections.Immutable;
 using FP.Core;
@@ -136,7 +153,7 @@ namespace FP.Future {
         }
 
         /// <summary>
-        /// Creates a future that has the result <see cref="Unit._"/> after the specified timeout. 
+        /// Creates a future that has the result <see cref="Unit.Unit"/> after the specified timeout. 
         /// In conjunction with awaitEither, this can be used to program timeouts.
         /// </summary>
         /// <param name="millisecondTimeout">The timeout in milliseconds.</param>
@@ -144,7 +161,7 @@ namespace FP.Future {
         public static Future<Unit> Alarm(int millisecondTimeout) {
             return Spawn(() => {
                              Thread.Sleep(millisecondTimeout);
-                             return Unit._;
+                             return Unit.Unit;
                          });
         }
 

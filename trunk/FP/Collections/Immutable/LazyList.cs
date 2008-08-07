@@ -1,6 +1,21 @@
-﻿/* (C) Alexey Romanov 2008
- * Code adapted from http://blogs.msdn.com/wesdyer/archive/2007/02/12/why-all-of-the-love-for-lists.aspx
- */
+﻿#region License
+/*
+* LazyList.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2008 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
+#endregion
+
+// Code adapted from http://blogs.msdn.com/wesdyer/archive/2007/02/12/why-all-of-the-love-for-lists.aspx
 
 using System.Collections.Generic;
 using FP.Core;
@@ -82,8 +97,8 @@ namespace FP.Collections.Immutable {
                     _enumerator = null;
                 }
                 return _tail;
-            }
-        }
+            } // get
+        } // Tail
 
         /// <summary>
         /// Gets a value indicating whether this instance is empty.
@@ -135,6 +150,6 @@ namespace FP.Collections.Immutable {
             public override IImmutableList<T> Tail {
                 get { throw new EmptySequenceException(); }
             }
-        }
-    }
-}
+        } // class EmptyList
+    } // class LazyList
+} // namespace FP.Collections.Immutable
