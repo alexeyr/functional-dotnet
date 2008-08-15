@@ -23,7 +23,7 @@ using System.Linq;
 using FP.Core;
 using FP.HaskellNames;
 
-//TODO: Monoid.Plus3, review where middleSuspended can be used, performance test, Ropes
+//TODO: Monoid.Plus3, performance test, Ropes
 
 namespace FP.Collections.Immutable {
     /// <summary>
