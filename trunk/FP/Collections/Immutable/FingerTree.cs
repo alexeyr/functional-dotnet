@@ -109,9 +109,7 @@ namespace FP.Collections.Immutable {
                 return MakeDeep(left, middle, right);
             if (middle.IsEmpty)
                 return FingerTree.FromEnumerable(right, MeasureMonoid);
-            var middleHead = middle.Head;
-            var middleTail = middle.Tail;
-            return MakeDeep(middleHead.ToArray(), middleTail, right);
+            return MakeDeep(middle.Head.ToArray(), () => middle.Tail, right);
         }
 
         internal FingerTree<T, V> DeepR(T[] left, FingerTree<FTNode<T, V>, V> middle,
@@ -120,33 +118,21 @@ namespace FP.Collections.Immutable {
                 return MakeDeep(left, middle, right);
             if (middle.IsEmpty)
                 return FingerTree.FromEnumerable(left, MeasureMonoid);
-            var middleInit = middle.Init;
-            var middleLast = middle.Last;
-            return MakeDeep(left, middleInit, middleLast.ToArray());
+            return MakeDeep(left, () => middle.Init, middle.Last.ToArray());
         }
 
         internal FingerTree<T, V> DeepL(T[] left, Func<FingerTree<FTNode<T, V>, V>>
                                             middleSuspended, T[] right) {
             if (left.Length != 0)
                 return MakeDeep(left, middleSuspended, right);
-            var middle = middleSuspended();
-            if (middle.IsEmpty)
-                return FingerTree.FromEnumerable(right, MeasureMonoid);
-            var middleHead = middle.Head;
-            var middleTail = middle.Tail;
-            return MakeDeep(middleHead.ToArray(), middleTail, right);
+            return DeepL(left, middleSuspended(), right);
         }
 
         internal FingerTree<T, V> DeepR(T[] left, Func<FingerTree<FTNode<T, V>, V>>
                                             middleSuspended, T[] right) {
             if (right.Length != 0)
                 return MakeDeep(left, middleSuspended, right);
-            var middle = middleSuspended();
-            if (middle.IsEmpty)
-                return FingerTree.FromEnumerable(left, MeasureMonoid);
-            var middleInit = middle.Init;
-            var middleLast = middle.Last;
-            return MakeDeep(left, middleInit, middleLast.ToArray());
+            return DeepR(left, middleSuspended(), right);
         }
 
         internal FingerTree(Monoid<V> measureMonoid) {
@@ -822,9 +808,10 @@ namespace FP.Collections.Immutable {
                 }
                 var rightDeep = rightTree as Deep;
                 return MakeDeep(this._left,
-                                this._Middle.App3(
-                                    Nodes(this._right.Concat(middleList).Concat(rightDeep._left)),
-                                    rightDeep._Middle), rightDeep._right);
+                                () => this._Middle.App3(
+                                          Nodes(this._right.Concat(middleList).Concat(rightDeep._left)),
+                                          rightDeep._Middle),
+                                rightDeep._right);
             }
 
             private IEnumerable<FTNode<T, V>> Nodes(IEnumerable<T> elements) {
@@ -1028,9 +1015,7 @@ namespace FP.Collections.Immutable {
                 // _left.CopyTo(newRight, 0);
                 // Array.Reverse(newLeft);
                 // Array.Reverse(newRight);
-                return _middleSuspended == null
-                           ? MakeDeep(newLeft, _middle.ReverseTree(node => node.Reverse(f)), newRight)
-                           : MakeDeep(newLeft, () => _middleSuspended().ReverseTree(node => node.Reverse(f)), newRight);
+                return MakeDeep(newLeft, () => _Middle.ReverseTree(node => node.Reverse(f)), newRight);
             }
 
             /// <summary>
