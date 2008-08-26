@@ -54,7 +54,7 @@ namespace FP.Collections.Immutable {
         /// <param name="sequence">The sequence.</param>
         /// <param name="measureMonoid">The measure monoid.</param>
         public static FingerTree<T, V> FromEnumerable<T,V>(IEnumerable<T> sequence, Monoid<V> measureMonoid) where T : IMeasured<V> {
-            return sequence.FoldLeft(FingerTree<T, V>._append, Empty<T, V>(measureMonoid));
+            return Empty<T, V>(measureMonoid).AppendRange(sequence);
         }
 
         internal static Split<T, T[]> SplitArray<T, V>(this T[] array, Monoid<V> monoid, Func<V, bool> pred, V init) where T : IMeasured<V> {

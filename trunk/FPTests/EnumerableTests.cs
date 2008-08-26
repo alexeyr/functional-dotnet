@@ -17,6 +17,7 @@
 
 using System.Linq;
 using FP.Core;
+using FP.Text;
 using Xunit;
 using XunitExtensions;
 

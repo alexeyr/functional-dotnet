@@ -17,7 +17,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using FP.Core;
+using FP.Text;
 using Xunit;
 
 namespace FPTests {

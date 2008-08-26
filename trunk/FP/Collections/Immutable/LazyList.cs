@@ -17,16 +17,18 @@
 
 // Code adapted from http://blogs.msdn.com/wesdyer/archive/2007/02/12/why-all-of-the-love-for-lists.aspx
 
+using System.Collections;
 using System.Collections.Generic;
 using FP.Core;
 
 namespace FP.Collections.Immutable {
+    //TODO: Test lazy lists!
     /// <summary>
     /// A lazy singly linked list which allows saving the state of enumerators.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LazyList<T> : ImmutableListBase<T> {
-        IImmutableList<T> _tail;
+    public class LazyList<T> : IImmutableList<T, LazyList<T>> {
+        LazyList<T> _tail;
         readonly T _head;
         IEnumerator<T> _enumerator;
         /// <summary>
@@ -50,7 +52,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="head">The head.</param>
         /// <param name="tail">The tail.</param>
-        private LazyList(T head, IImmutableList<T> tail) {
+        private LazyList(T head, LazyList<T> tail) {
             _head = head;
             _tail = tail;
         }
@@ -81,7 +83,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <value>The head of the list.</value>
         /// <exception cref="EmptySequenceException">is the current list <see cref="IsEmpty"/>.</exception>
-        public override T Head {
+        public virtual T Head {
             get { return _head; }
         }
 
@@ -90,7 +92,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <value>The tail of the list.</value>
         /// <exception cref="EmptySequenceException">is the current list <see cref="IsEmpty"/>.</exception>
-        public override IImmutableList<T> Tail {
+        public virtual LazyList<T> Tail {
             get {
                 if (_enumerator != null) {
                     _tail = Create(_enumerator);
@@ -104,7 +106,7 @@ namespace FP.Collections.Immutable {
         /// Gets a value indicating whether this instance is empty.
         /// </summary>
         /// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
-        public override bool IsEmpty {
+        public virtual bool IsEmpty {
             get { return false; }
         }
 
@@ -116,8 +118,33 @@ namespace FP.Collections.Immutable {
         /// The list with <paramref name="newHead"/> as <see cref="Head"/>
         /// and the current list as <see cref="Tail"/>.
         /// </returns>
-        public override IImmutableList<T> Prepend(T newHead) {
+        public LazyList<T> Prepend(T newHead) {
             return new LazyList<T>(newHead, this);
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// </returns>
+        public virtual IEnumerator<T> GetEnumerator() {
+            yield return _head;
+            LazyList<T> tail = Tail;
+            while (!tail.IsEmpty) {
+                yield return tail.Head;
+                tail = tail.Tail;
+            }
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -125,7 +152,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public class EmptyList : LazyList<T> {
-            internal EmptyList() : base(default(T), (IImmutableList<T>)null) { }
+            internal EmptyList() : base(default(T), (LazyList<T>)null) { }
 
             /// <summary>
             /// Gets the "head" (first element) of the list.
@@ -147,8 +174,18 @@ namespace FP.Collections.Immutable {
             /// Gets the "tail" (all elements but the first) of the list.
             /// </summary>
             /// <exception cref="EmptySequenceException">is the current list <see cref="IsEmpty"/>.</exception>
-            public override IImmutableList<T> Tail {
+            public override LazyList<T> Tail {
                 get { throw new EmptySequenceException(); }
+            }
+
+            /// <summary>
+            /// Returns an enumerator that iterates through the collection.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+            /// </returns>
+            public override IEnumerator<T> GetEnumerator() {
+                yield break;
             }
         } // class EmptyList
     } // class LazyList

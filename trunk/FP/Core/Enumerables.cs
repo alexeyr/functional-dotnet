@@ -47,8 +47,7 @@ namespace FP.Core {
         /// <returns></returns>
         /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
         public static IEnumerable<T> Tail<T>(this IEnumerable<T> sequence) {
-            using (
-                IEnumerator<T> enumerator = sequence.GetEnumerator()) {
+            using (IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 if (!enumerator.MoveNext())
                     throw new EmptySequenceException("tail");
                 while (enumerator.MoveNext())
@@ -1524,7 +1523,7 @@ namespace FP.Core {
         /// having to reevaluate them.
         /// </summary>
         /// <param name="sequence">The sequence.</param>
-        public static IImmutableList<T> ToLazyList<T>(this IEnumerable<T> sequence) {
+        public static LazyList<T> ToLazyList<T>(this IEnumerable<T> sequence) {
             return LazyList<T>.Create(sequence);
         }
 
@@ -1533,7 +1532,7 @@ namespace FP.Core {
         /// having to reevaluate them.
         /// </summary>
         /// <param name="enumerator">The enumerator.</param>
-        public static IImmutableList<T> ToLazyList<T>(this IEnumerator<T> enumerator) {
+        public static LazyList<T> ToLazyList<T>(this IEnumerator<T> enumerator) {
             return LazyList<T>.Create(enumerator);
         }
 
