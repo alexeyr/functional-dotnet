@@ -60,6 +60,7 @@
     <Compile Include="RopeTests.cs" />
     <Compile Include="StringTests.cs" />
     <Compile Include="SwitchTests.cs" />
+    <Compile Include="VectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FP\FP.csproj">
