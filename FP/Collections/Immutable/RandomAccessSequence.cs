@@ -35,10 +35,14 @@ namespace FP.Collections.Immutable {
     public struct RandomAccessSequence<T> :
         IEquatable<RandomAccessSequence<T>>,
         IRandomAccessSequenceRead<T, RandomAccessSequence<T>>, IDeque<T, RandomAccessSequence<T>>,
-        IReversible<RandomAccessSequence<T>> {
+        IReversible<RandomAccessSequence<T>>, ICatenable<RandomAccessSequence<T>>,
+        ISplittable<RandomAccessSequence<T>> {
         private static readonly RandomAccessSequence<T> _emptyInstance =
             new RandomAccessSequence<T>(FingerTree.Empty<Element, int>(Monoids.Size));
 
+        /// <summary>
+        /// The empty <see cref="RandomAccessSequence{T}"/>.
+        /// </summary>
         public static RandomAccessSequence<T> Empty {
             get { return _emptyInstance; }
         }

@@ -5,7 +5,7 @@ namespace FP.Collections.Immutable {
     /// A vector.
     /// </summary>
     [Serializable]
-    public class Vector {
+    public class Vector<T> : IRandomAccessSequenceRead<T, Vector<T>> {
         
     }
 }

@@ -43,9 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Immutable\ICatenable.cs" />
+    <Compile Include="Collections\Immutable\ICollection.cs" />
     <Compile Include="Collections\Immutable\IReversible.cs" />
     <Compile Include="Collections\Immutable\Vector.cs" />
     <Compile Include="Collections\IReversibleEnumerable.cs" />
+    <Compile Include="Collections\ISplittable.cs" />
     <Compile Include="Text\ArrayCharSequence.cs" />
     <Compile Include="Text\ArrayRope.cs" />
     <Compile Include="Text\FTRope.cs" />
@@ -135,7 +138,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
+      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
