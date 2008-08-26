@@ -15,6 +15,9 @@
 */
 #endregion
 
+// Inspired by the Scala implementation by Daniel Spiewak, 
+// http://www.codecommit.com/blog/scala/implementing-persistent-vectors-in-scala
+
 using System;
 using System.Linq;
 using System.Collections;
@@ -23,7 +26,7 @@ using FP.Core;
 
 namespace FP.Collections.Immutable {
     /// <summary>
-    /// A vector (nearly array-like sequence).
+    /// A vector (nearly array-like sequence). Implemented as a 32-nary trie.
     /// </summary>
     [Serializable]
     public sealed class Vector<T> : IRandomAccessSequence<T, Vector<T>> {
@@ -70,8 +73,6 @@ namespace FP.Collections.Immutable {
             var newBranches = new Vector<T>[newBranchesLength];
             Vector<T> vector = head >= _branches.Length ? _default : (_branches[head] ?? _default);
             Array.Copy(_branches, newBranches, _branches.Length);
-            for (int i = _branches.Length; i < newBranchesLength; i++)
-                newBranches[i] = Empty;
             newBranches[head] = vector.UpdateAtPath(tail, function);
             return new Vector<T>(_data, Math.Max(_count, Number(path) + 1), newBranches);
         }
@@ -88,10 +89,9 @@ namespace FP.Collections.Immutable {
         ///</returns>
         ///<filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator() {
-            if (_count == 0)
-                yield break;
-            yield return _data;
-
+            //TODO: More effective
+            for (int i = 0; i < _count; i++)
+                yield return this[i]; 
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -124,7 +124,7 @@ namespace FP.Collections.Immutable {
                     throw new ArgumentOutOfRangeException("index");
                 var vector = this;
                 foreach (int i in Digits(index)) {
-                    if (vector._branches.Length <= i)
+                    if (vector._branches.Length <= i || vector._branches[i] == null)
                         return default(T);
                     vector = vector._branches[i];
                 }

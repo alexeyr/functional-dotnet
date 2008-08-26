@@ -1,3 +1,19 @@
+#region License
+/*
+* VectorTests.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2008 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
+#endregion
 using System;
 using FP.Collections.Immutable;
 using Xunit;
@@ -22,7 +38,7 @@ namespace FPTests {
                 Vector<int> vector = _emptyVector.SetAt(0, value);
                 Assert.Equal(value, vector[0]);
             }            
-        }
+        } // SingleElementVector()
 
         [Fact]
         public void ReplaceSingleElement() {
@@ -35,8 +51,8 @@ namespace FPTests {
                     else
                         Assert.Equal(vector[j], vector2[j]);
                 }
-            }
-        }
+            } // for (int)
+        } // ReplaceSingleElement()
 
         [Fact]
         public void StoreManyElements() {
@@ -51,6 +67,6 @@ namespace FPTests {
             }
             for (int i = 0; i < LENGTH; i++)
                 Assert.Equal(array[i], vector[i]);
-        }
-    }
-}
+        } // StoreManyElements()
+    } // class VectorTests
+} // namespace FPTests
