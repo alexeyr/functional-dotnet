@@ -1,4 +1,5 @@
 #region License
+
 /*
 * RandomAccessSequence.cs is part of functional-dotnet project
 * 
@@ -13,6 +14,7 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
+
 #endregion
 
 using System;
@@ -30,7 +32,17 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
-    public struct RandomAccessSequence<T> : IEnumerable<T>, IEquatable<RandomAccessSequence<T>> {
+    public struct RandomAccessSequence<T> :
+        IEquatable<RandomAccessSequence<T>>,
+        IRandomAccessSequenceRead<T, RandomAccessSequence<T>>, IDeque<T, RandomAccessSequence<T>>,
+        IReversible<RandomAccessSequence<T>> {
+        private static readonly RandomAccessSequence<T> _emptyInstance =
+            new RandomAccessSequence<T>(FingerTree.Empty<Element, int>(Monoids.Size));
+
+        public static RandomAccessSequence<T> Empty {
+            get { return _emptyInstance; }
+        }
+
         private readonly FingerTree<Element, int> _ft;
 
         /// <summary>
@@ -112,8 +124,8 @@ namespace FP.Collections.Immutable {
         /// </returns>
         /// <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
         public override bool Equals(object obj) {
-            if (obj.GetType() != typeof(RandomAccessSequence<T>)) return false;
-            return Equals((RandomAccessSequence<T>)obj);
+            if (obj.GetType() != typeof (RandomAccessSequence<T>)) return false;
+            return Equals((RandomAccessSequence<T>) obj);
         }
 
         /// <summary>
@@ -151,7 +163,9 @@ namespace FP.Collections.Immutable {
         /// Gets the number of elements in the sequence.
         /// </summary>
         /// <value>The number of elements in the sequence.</value>
-        public int Count { get { return _ft.Measure; } }
+        public int Count {
+            get { return _ft.Measure; }
+        }
 
         /// <summary>
         /// Prepends the specified element to the beginning of the list.
@@ -179,8 +193,13 @@ namespace FP.Collections.Immutable {
         /// <remarks>if <code>count &lt;= 0 || count &gt;= Count</code>, the corresponding part 
         /// of the result will be empty.</remarks>
         public Tuple<RandomAccessSequence<T>, RandomAccessSequence<T>> SplitAt(int count) {
+            if (count <= 0)
+                return Pair.New(Empty, this);
+            if (count >= Count)
+                return Pair.New(this, Empty);
             var ftSplit = _ft.Split(i => i > count);
-            return Pair.New(new RandomAccessSequence<T>(ftSplit.Item1), new RandomAccessSequence<T>(ftSplit.Item2));
+            return Pair.New(new RandomAccessSequence<T>(ftSplit.Item1),
+                            new RandomAccessSequence<T>(ftSplit.Item2));
         }
 
         /// <summary>Returns a specified number of contiguous elements from the start of the sequence.</summary>
@@ -223,7 +242,9 @@ namespace FP.Collections.Immutable {
                 throw new ArgumentOutOfRangeException("index");
             var split = _ft.SplitTree(i => i > index, 0);
             T currentValue = split.Middle.Value;
-            return new RandomAccessSequence<T>((split.Left | new Element(function(currentValue))) + split.Right);
+            return
+                new RandomAccessSequence<T>((split.Left | new Element(function(currentValue))) +
+                                            split.Right);
         }
 
         /// <summary>
@@ -251,32 +272,45 @@ namespace FP.Collections.Immutable {
         /// Gets a value indicating whether this list is empty.
         /// </summary>
         /// <value><c>true</c>.</value>
-        public bool IsEmpty { get { return _ft.IsEmpty; } }
+        public bool IsEmpty {
+            get { return _ft.IsEmpty; }
+        }
 
         /// <summary>
         /// Gets the head of the list.
         /// </summary>
         /// <value>Throws <see cref="EmptySequenceException"/>.</value>
         /// <exception cref="EmptySequenceException"></exception>
-        public T Head { get { return _ft.Head.Value; } }
+        public T Head {
+            get { return _ft.Head.Value; }
+        }
+
         /// <summary>
         /// Gets the tail of the list.
         /// </summary>
         /// <value>Throws <see cref="EmptySequenceException"/>.</value>
         /// <exception cref="EmptySequenceException"></exception>
-        public RandomAccessSequence<T> Tail { get { return new RandomAccessSequence<T>(_ft.Tail); } }
+        public RandomAccessSequence<T> Tail {
+            get { return new RandomAccessSequence<T>(_ft.Tail); }
+        }
+
         /// <summary>
         /// Gets the initial sublist (all elements but the last) of the list.
         /// </summary>
         /// <value>Throws <see cref="EmptySequenceException"/>.</value>
         /// <exception cref="EmptySequenceException"></exception>
-        public RandomAccessSequence<T> Init { get { return new RandomAccessSequence<T>(_ft.Init); } }
+        public RandomAccessSequence<T> Init {
+            get { return new RandomAccessSequence<T>(_ft.Init); }
+        }
+
         /// <summary>
         /// Gets the last element of the list.
         /// </summary>
         /// <value>Throws <see cref="EmptySequenceException"/>.</value>
         /// <exception cref="EmptySequenceException"></exception>
-        public T Last { get { return _ft.Last.Value; } }
+        public T Last {
+            get { return _ft.Last.Value; }
+        }
 
         /// <summary>
         /// Inserts <paramref name="newValue"/> at <paramref name="index"/>.
@@ -289,7 +323,8 @@ namespace FP.Collections.Immutable {
             if (index < 0 || index >= Count)
                 throw new ArgumentOutOfRangeException("index");
             var ftSplit = _ft.Split(i => i > index);
-            return new RandomAccessSequence<T>((ftSplit.Item1 | new Element(newValue)) + ftSplit.Item2);
+            return
+                new RandomAccessSequence<T>((ftSplit.Item1 | new Element(newValue)) + ftSplit.Item2);
         }
 
         /// <summary>
@@ -305,6 +340,77 @@ namespace FP.Collections.Immutable {
             return new RandomAccessSequence<T>(split.Left + split.Right);
         }
 
+        public RandomAccessSequence<T> PrependRange(IEnumerable<T> ts) {
+            return new RandomAccessSequence<T>(_ft.PrependRange(ts.Map(t => new Element(t))));
+        }
+
+        public RandomAccessSequence<T> AppendRange(IEnumerable<T> ts) {
+            return new RandomAccessSequence<T>(_ft.AppendRange(ts.Map(t => new Element(t))));
+        }
+
+        /// <summary>
+        /// Inserts all elements in <paramref name="ts"/> at <paramref name="index"/>.
+        /// </summary>
+        /// <param name="index">The index where the new element shall be inserted.</param>
+        /// <param name="ts">The collection of values to insert.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
+        public RandomAccessSequence<T> InsertRangeAt(int index, IEnumerable<T> ts) {
+            if (index < 0 || index >= Count)
+                throw new ArgumentOutOfRangeException("index");
+            var ftSplit = _ft.Split(i => i > index);
+            return
+                new RandomAccessSequence<T>(
+                    (ftSplit.Item1.AppendRange(ts.Map(t => new Element(t)))) + ftSplit.Item2);
+        }
+
+        /// <summary>
+        /// Removes <paramref name="length"/> elements, starting at index <paramref name="startIndex"/>.
+        /// </summary>
+        /// <param name="startIndex">The index of the first element to remove.</param>
+        /// <param name="length">The number of elements to remove.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or 
+        /// <paramref name="length"/> is out of range.</exception>
+        public RandomAccessSequence<T> RemoveRangeAt(int startIndex, int length) {
+            if (startIndex < 0 || startIndex >= Count)
+                throw new ArgumentOutOfRangeException("startIndex");
+            if (startIndex + length > Count)
+                throw new ArgumentOutOfRangeException("length");
+            //is special casing this needed?
+//            if (length == 0)
+//                return this;
+//            if (startIndex == 0)
+//                return Skip(length);
+//            if (startIndex + length == Count)
+//                return Take(startIndex);
+            var split1 = _ft.Split(i => i >= startIndex);
+            var split2 = split1.Item2.Split(i => i >= length);
+            return new RandomAccessSequence<T>(split1.Item1 + split2.Item2);
+        }
+
+        /// <summary>
+        /// Returns the subsequence of length <paramref name="length"/> starting at index <paramref name="startIndex"/>.
+        /// </summary>
+        /// <param name="startIndex">The index of the first element in the subsequence.</param>
+        /// <param name="length">The number of elements in the subsequence.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
+        public RandomAccessSequence<T> Subsequence(int startIndex, int length) {
+            if (startIndex < 0 || startIndex >= Count)
+                throw new ArgumentOutOfRangeException("startIndex");
+            if (startIndex + length > Count)
+                throw new ArgumentOutOfRangeException("length");
+            //is special casing this needed?
+            //            if (length == 0)
+            //                return this;
+            //            if (startIndex == 0)
+            //                return Skip(length);
+            //            if (startIndex + length == Count)
+            //                return Take(startIndex);
+            var split1 = _ft.Split(i => i >= startIndex);
+            var split2 = split1.Item2.Split(i => i >= length);
+            return new RandomAccessSequence<T>(split2.Item1);
+        }
+
         /// <summary>
         /// Reverses the sequence.
         /// </summary>
@@ -312,7 +418,6 @@ namespace FP.Collections.Immutable {
         public RandomAccessSequence<T> Reverse() {
             return new RandomAccessSequence<T>(_ft.ReverseTree(Functions.Id<Element>()));
         }
-
 
         /// <summary>
         /// Prepends <paramref name="item"/> to <paramref name="seq"/>.
@@ -331,12 +436,11 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Concatenates <paramref name="seq1"/> and <paramref name="seq2"/>.
         /// </summary>
-        public static RandomAccessSequence<T> operator +(RandomAccessSequence<T> seq1, RandomAccessSequence<T> seq2) {
+        public static RandomAccessSequence<T> operator +(
+            RandomAccessSequence<T> seq1, RandomAccessSequence<T> seq2) {
             return seq1.Concat(seq2);
         }
-
-        //TODO: Append/PrependRange, InsertRangeAt, RemoveRangeAt
-    }
+        }
 
     /// <summary>
     /// Utility methods for creating <see cref="RandomAccessSequence{T}"/>.
@@ -347,7 +451,7 @@ namespace FP.Collections.Immutable {
         /// Creates an empty <see cref="RandomAccessSequence{T}"/>.
         /// </summary>
         public static RandomAccessSequence<T> Empty<T>() {
-            return new RandomAccessSequence<T>(FingerTree.Empty<RandomAccessSequence<T>.Element, int>(Monoids.Size));
+            return RandomAccessSequence<T>.Empty;
         }
 
         /// <summary>
@@ -355,7 +459,9 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <param name="item">The only item in the sequence.</param>
         public static RandomAccessSequence<T> Singleton<T>(T item) {
-            return new RandomAccessSequence<T>(FingerTree.Single(new RandomAccessSequence<T>.Element(item), Monoids.Size));
+            return
+                new RandomAccessSequence<T>(
+                    FingerTree.Single(new RandomAccessSequence<T>.Element(item), Monoids.Size));
         }
 
         /// <summary>
@@ -364,6 +470,5 @@ namespace FP.Collections.Immutable {
         public static RandomAccessSequence<T> FromEnumerable<T>(IEnumerable<T> sequence) {
             return new RandomAccessSequence<T>(sequence);
         }
-
     }
 }

@@ -16,6 +16,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using FP.Core;
 
@@ -44,6 +45,30 @@ namespace FP.Collections.Immutable {
         public Monoid(T zero, Func<T, T, T> add) {
             Zero = zero;
             Plus = add;
+        }
+
+        /// <summary>
+        /// Sums three <typeparamref name="T"/>s.
+        /// </summary>
+        public T Sum(T t1, T t2, T t3) {
+            return Plus(Plus(t1, t2), t3);
+        }
+
+        /// <summary>
+        /// Sums three <typeparamref name="T"/>s.
+        /// </summary>
+        public T Sum(params T[] ts) {
+            return Sum(ts.AsEnumerable());
+        }
+
+        /// <summary>
+        /// Sums a sequence of <typeparamref name="T"/>s.
+        /// </summary>
+        public T Sum(IEnumerable<T> ts) {
+            T total = Zero;
+            foreach (T t in ts)
+                total = Plus(total, t);
+            return total;
         }
     }
 

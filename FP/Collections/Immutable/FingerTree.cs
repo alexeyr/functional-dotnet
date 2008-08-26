@@ -23,7 +23,7 @@ using System.Linq;
 using FP.Core;
 using FP.HaskellNames;
 
-//TODO: Monoid.Plus3, performance test, Ropes
+//TODO: performance test
 
 namespace FP.Collections.Immutable {
     /// <summary>
@@ -36,7 +36,8 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="V"></typeparam>
-    public abstract class FingerTree<T, V> : /* IImmutableList<T>,*/ IMeasured<V>, IEnumerable<T>, IFoldable<T> where T : IMeasured<V> {
+    public abstract class FingerTree<T, V> : IImmutableList<T, FingerTree<T,V>>, 
+        IMeasured<V>, IFoldable<T> where T : IMeasured<V> {
         /// <summary>
         /// The monoid to be used to combine the measures of values.
         /// </summary>
@@ -72,9 +73,6 @@ namespace FP.Collections.Immutable {
 
         private Empty _emptyInstance;
         private FingerTree<FTNode<T, V>, V>.Empty _emptyInstanceNested;
-
-        internal static readonly Func<FingerTree<T, V>, T, FingerTree<T, V>> _append = ((tree, a) => tree | a);
-        internal static readonly Func<T, FingerTree<T, V>, FingerTree<T, V>> _prepend = ((a, tree) => a | tree);
 
         internal Empty EmptyInstance {
             get {
@@ -151,6 +149,22 @@ namespace FP.Collections.Immutable {
 
         protected abstract FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                  FingerTree<T, V> rightTree);
+
+        /// <summary>
+        /// Appends the sequence of elements to the end of the tree.
+        /// </summary>
+        /// <param name="ts">The sequence.</param>
+        public FingerTree<T, V> AppendRange(IEnumerable<T> ts) {
+            return ts.FoldLeft((tree, a) => tree | a, this);
+        }
+
+        /// <summary>
+        /// Prepends the sequence of elements to the beginning of the tree.
+        /// </summary>
+        /// <param name="ts">The sequence.</param>
+        public FingerTree<T, V> PrependRange(IEnumerable<T> ts) {
+            return ts.FoldRight((a, tree) => a | tree, this);
+        }
 
         /// <summary>
         /// Prepends the specified element to the beginning of the list.
@@ -326,7 +340,7 @@ namespace FP.Collections.Immutable {
 
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
-                return middleList.FoldRight(_prepend, rightTree);
+                return rightTree.PrependRange(middleList);
             }
 
             /// <summary>
@@ -555,9 +569,9 @@ namespace FP.Collections.Immutable {
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
                 if (rightTree.IsEmpty) {
-                    return middleList.FoldLeft(_append, this);
+                    return this.AppendRange(middleList);
                 }
-                return Value | middleList.FoldRight(_prepend, rightTree);
+                return Value | rightTree.PrependRange(middleList);
             }
 
             /// <summary>
@@ -801,15 +815,15 @@ namespace FP.Collections.Immutable {
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
                 if (rightTree.IsEmpty) {
-                    return middleList.FoldLeft(_append, this);
+                    return this.AppendRange(middleList);
                 }
                 if (rightTree.IsSingle) {
-                    return middleList.FoldLeft(_append, this) | rightTree.Head;
+                    return this.AppendRange(middleList) | rightTree.Head;
                 }
                 var rightDeep = rightTree as Deep;
-                return MakeDeep(this._left,
-                                () => this._Middle.App3(
-                                          Nodes(this._right.Concat(middleList).Concat(rightDeep._left)),
+                return MakeDeep(_left,
+                                () => _Middle.App3(
+                                          Nodes(_right.Concat(middleList).Concat(rightDeep._left)),
                                           rightDeep._Middle),
                                 rightDeep._right);
             }
@@ -854,7 +868,7 @@ namespace FP.Collections.Immutable {
             /// <returns>The resulting list.</returns>
             public override FingerTree<T, V> Prepend(T newHead) {
                 if (_left.Length != 4) {
-                    T[] newLeft = newHead.Cons(_left).ToArray();
+                    T[] newLeft = Enumerables2.Cons(newHead,_left).ToArray();
                     //return (_middleSuspended == null) ?
                     //    makeDeep(newLeft, _middle, _right) :
                     //    makeDeep(newLeft, _middleSuspended, _right);
@@ -963,7 +977,7 @@ namespace FP.Collections.Immutable {
                     return this;
                 if (otherTree.IsSingle)
                     return this | otherTree.Head;
-                return this.App3(Enumerable.Empty<T>(), otherTree);
+                return App3(Enumerable.Empty<T>(), otherTree);
             }
 
             internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate,
