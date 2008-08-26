@@ -19,7 +19,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <value>Throws <see cref="EmptySequenceException"/>.</value>
         /// <exception cref="EmptySequenceException"></exception>
-        RandomAccessSequence<T> Init { get; }
+        TDeque Init { get; }
 
         /// <summary>
         /// Gets the last element of the list.

@@ -37,7 +37,7 @@ namespace FP.Collections.Immutable {
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="V"></typeparam>
     public abstract class FingerTree<T, V> : IImmutableList<T, FingerTree<T,V>>, 
-        IMeasured<V>, IFoldable<T> where T : IMeasured<V> {
+        IMeasured<V>, IFoldable<T>, ICatenable<FingerTree<T,V>> where T : IMeasured<V> {
         /// <summary>
         /// The monoid to be used to combine the measures of values.
         /// </summary>
