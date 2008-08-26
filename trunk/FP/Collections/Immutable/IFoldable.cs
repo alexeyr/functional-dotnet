@@ -26,23 +26,23 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Reduces the finger tree from the right.
         /// </summary>
-        /// <typeparam name="A">The type of the accumulator.</typeparam>
+        /// <typeparam name="TAcc">The type of the accumulator.</typeparam>
         /// <param name="binOp">The binary operation.</param>
         /// <param name="initial">The initial accumulator value.</param>
         /// <returns>
         /// The final accumulator value.
         /// </returns>
-        A FoldRight<A>(Func<T, A, A> binOp, A initial);
+        TAcc FoldRight<TAcc>(Func<T, TAcc, TAcc> binOp, TAcc initial);
 
         /// <summary>
         /// Reduces the finger tree from the left.
         /// </summary>
-        /// <typeparam name="A">The type of the accumulator.</typeparam>
+        /// <typeparam name="TAcc">The type of the accumulator.</typeparam>
         /// <param name="binOp">The binary operation.</param>
         /// <param name="initial">The initial accumulator value.</param>
         /// <returns>
         /// The final accumulator value.
         /// </returns>
-        A FoldLeft<A>(Func<A, T, A> binOp, A initial);
+        TAcc FoldLeft<TAcc>(Func<TAcc, T, TAcc> binOp, TAcc initial);
     }
 }

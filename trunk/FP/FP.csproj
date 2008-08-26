@@ -43,8 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Immutable\BitVector.cs" />
     <Compile Include="Collections\Immutable\ICatenable.cs" />
     <Compile Include="Collections\Immutable\ICollection.cs" />
+    <Compile Include="Collections\Immutable\IInsertableRandomAccessSequence.cs" />
+    <Compile Include="Collections\Immutable\IRandomAccessSequence.cs" />
     <Compile Include="Collections\Immutable\IReversible.cs" />
     <Compile Include="Collections\Immutable\Vector.cs" />
     <Compile Include="Collections\IReversibleEnumerable.cs" />

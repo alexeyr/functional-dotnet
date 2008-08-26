@@ -26,24 +26,19 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T">The type of elements of the list.</typeparam>
     /// <typeparam name="TList">The type of the list.</typeparam>
-    public interface IList<T, TList> : IEnumerable<T> where TList : IList<T, TList> {
+    public interface IList<T, TList> : ICollection<T> where TList : IList<T, TList> {
         /// <summary>
         /// Gets the "head" (first element) of the list.
         /// </summary>
         /// <value>The head of the list.</value>
-        /// <exception cref="EmptySequenceException">if the current list <see cref="IsEmpty"/>.</exception>
+        /// <exception cref="EmptySequenceException">if the current list <see cref="ICollection{T}.IsEmpty"/>.</exception>
         T Head { get; }
         /// <summary>
         /// Gets the "tail" (all elements but the first) of the list.
         /// </summary>
         /// <value>The tail of the list.</value>
-        /// <exception cref="EmptySequenceException">if the list <see cref="IsEmpty"/>.</exception>
+        /// <exception cref="EmptySequenceException">if the list <see cref="ICollection{T}.IsEmpty"/>.</exception>
         TList Tail { get; }
-        /// <summary>
-        /// Gets a value indicating whether this list is empty.
-        /// </summary>
-        /// <value><c>true</c> if this list is empty; otherwise, <c>false</c>.</value>
-        bool IsEmpty { get; }
         /// <summary>
         /// Prepends a new head.
         /// </summary>

@@ -33,8 +33,7 @@ namespace FP.Collections.Immutable {
     /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
     public struct RandomAccessSequence<T> :
-        IEquatable<RandomAccessSequence<T>>,
-        IRandomAccessSequenceRead<T, RandomAccessSequence<T>>, IDeque<T, RandomAccessSequence<T>>,
+        IEquatable<RandomAccessSequence<T>>, IInsertableRandomAccessSequence<T, RandomAccessSequence<T>>,
         IReversible<RandomAccessSequence<T>>, ICatenable<RandomAccessSequence<T>>,
         ISplittable<RandomAccessSequence<T>> {
         private static readonly RandomAccessSequence<T> _emptyInstance =
@@ -241,7 +240,7 @@ namespace FP.Collections.Immutable {
         /// <remarks>
         /// Equivalent to <code>SetAt(index, function(this[index])), but faster.</code>
         /// </remarks>
-        public RandomAccessSequence<T> AdjustAt(int index, Func<T, T> function) {
+        public RandomAccessSequence<T> UpdateAt(int index, Func<T, T> function) {
             if (index < 0 || index >= Count)
                 throw new ArgumentOutOfRangeException("index");
             var split = _ft.SplitTree(i => i > index, 0);
@@ -249,18 +248,6 @@ namespace FP.Collections.Immutable {
             return
                 new RandomAccessSequence<T>((split.Left | new Element(function(currentValue))) +
                                             split.Right);
-        }
-
-        /// <summary>
-        /// Replaces the <see cref="T"/> at the specified index with the specified value.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="newValue">The new value.</param>
-        /// <returns>The sequence where the element at <paramref name="index"/> has the value <paramref name="newValue"/>
-        /// and all other elements have the same value as in the original sequence.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
-        public RandomAccessSequence<T> SetAt(int index, T newValue) {
-            return AdjustAt(index, _ => newValue);
         }
 
         /// <summary>
