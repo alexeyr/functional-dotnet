@@ -27,7 +27,7 @@ namespace FP.Collections.Immutable {
     /// A lazy singly linked list which allows saving the state of enumerators.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LazyList<T> : IImmutableList<T, LazyList<T>> {
+    public class LazyList<T> : IList<T, LazyList<T>> {
         LazyList<T> _tail;
         readonly T _head;
         IEnumerator<T> _enumerator;

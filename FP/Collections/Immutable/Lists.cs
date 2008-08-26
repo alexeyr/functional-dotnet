@@ -33,7 +33,7 @@ namespace FP.Collections.Immutable {
         /// <param name="list">The tail.</param>
         /// <returns>A list starting with <paramref name="t"/> and continuing with
         /// <paramref name="list"/>.</returns>
-        public static TList Cons<T, TList>(this T t, TList list) where TList : IImmutableList<T, TList>  {
+        public static TList Cons<T, TList>(this T t, TList list) where TList : IList<T, TList>  {
             return list.Prepend(t);
         }
 
@@ -43,7 +43,7 @@ namespace FP.Collections.Immutable {
         /// <returns>The head of the list.</returns>
         /// <exception cref="EmptySequenceException">if the current list is empty.</exception>
         /// <param name="list">The list.</param>
-        public static T First<T, TList>(this TList list) where TList : IImmutableList<T, TList> {
+        public static T First<T, TList>(this TList list) where TList : IList<T, TList> {
             return list.Head;
         }
 
@@ -51,7 +51,7 @@ namespace FP.Collections.Immutable {
         /// <returns>A <typeparamref name="TList"/> that contains the elements that occur after the specified index in the input list.</returns>
         /// <param name="list">A <typeparamref name="TList"/> to return elements from.</param>
         /// <param name="count">The number of elements to skip before returning the remaining elements.</param>
-        public static TList Skip<T, TList>(this TList list, int count) where TList : IImmutableList<T, TList> {
+        public static TList Skip<T, TList>(this TList list, int count) where TList : IList<T, TList> {
             while (count > 0 && !list.IsEmpty) {
                 list = list.Tail;
                 count--;
@@ -63,7 +63,7 @@ namespace FP.Collections.Immutable {
         /// <returns>An <typeparamref name="TList"/> that contains the elements from the input sequence starting at the first element in the linear series that does not pass the test specified by <paramref name="predicate" />.</returns>
         /// <param name="list">An <typeparamref name="TList"/> to return elements from.</param>
         /// <param name="predicate">A function to test each element for a condition.</param>
-        public static TList SkipWhile<T, TList>(this TList list, Func<T, bool> predicate) where TList : IImmutableList<T, TList> {
+        public static TList SkipWhile<T, TList>(this TList list, Func<T, bool> predicate) where TList : IList<T, TList> {
             while (!list.IsEmpty && predicate(list.Head))
                 list = list.Tail;
             return list;
@@ -73,7 +73,7 @@ namespace FP.Collections.Immutable {
         /// <returns>An <typeparamref name="TList"/> that contains the elements from the input sequence starting at the first element in the linear series that does not pass the test specified by <paramref name="predicate" />.</returns>
         /// <param name="list">An <typeparamref name="TList"/> to return elements from.</param>
         /// <param name="predicate">A function to test each element for a condition; the second parameter of the function represents the index of the source element..</param>
-        public static TList SkipWhile<T, TList>(this TList list, Func<T, int, bool> predicate) where TList : IImmutableList<T, TList> {
+        public static TList SkipWhile<T, TList>(this TList list, Func<T, int, bool> predicate) where TList : IList<T, TList> {
             int index = 0;
             while (!list.IsEmpty && predicate(list.Head, index)) {
                 list = list.Tail;
