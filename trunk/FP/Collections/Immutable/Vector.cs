@@ -89,9 +89,67 @@ namespace FP.Collections.Immutable {
         ///</returns>
         ///<filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator() {
-            //TODO: More effective
-            for (int i = 0; i < _count; i++)
-                yield return this[i]; 
+//            //TODO: More effective
+//            for (int i = 0; i < _count; i++)
+//                yield return this[i]; 
+            Vector<T> currentVector = this;
+            var vectorStack = new Stack<Vector<T>>();
+            var digitStack = new Stack<int>();
+            for (int currentIndex = 0, lastDigit = 0; currentIndex < _count; currentIndex++, lastDigit++) {
+                if (lastDigit == BRANCHING) {
+                    int numZeroDigits = 0;
+                    while (digitStack.Count > 0 && lastDigit == BRANCHING) {
+                        numZeroDigits++;
+                        vectorStack.Pop();
+                        lastDigit = digitStack.Pop();
+                        lastDigit++;
+                    }
+                    if (digitStack.Count == 0) {
+                        vectorStack.Push(this);
+                        if (lastDigit == BRANCHING) {
+                            numZeroDigits++;
+                            lastDigit = 1;               
+                        }
+                    }
+                    currentVector = vectorStack.Peek();
+                    digitStack.Push(lastDigit);
+                    currentVector = currentVector.Branches(lastDigit);
+                    vectorStack.Push(currentVector);
+                    lastDigit = 0;
+                    for (int i = 0; i < numZeroDigits - 1; i++) {
+                        digitStack.Push(lastDigit);
+                        currentVector = currentVector.Branches(lastDigit);
+                        vectorStack.Push(currentVector);
+                    }
+                }
+                yield return currentVector.BranchesData(lastDigit);
+            }
+        }
+
+        public IEnumerable<int> CheckIntsEnumerated() {
+            //            //TODO: More effective
+            //            for (int i = 0; i < _count; i++)
+            //                yield return this[i]; 
+            var digitStack = new Stack<int>();
+            for (int currentIndex = 0, lastDigit = 0; currentIndex < _count; currentIndex++, lastDigit++) {
+                if (lastDigit == BRANCHING) {
+                    int numZeroDigits = 1;
+                    while (digitStack.Count > 0 && lastDigit == BRANCHING) {
+                        lastDigit = digitStack.Pop();
+                        lastDigit++;
+                        numZeroDigits++;
+                    }
+                    if (digitStack.Count == 0) {
+                        lastDigit = 1;
+                    }
+                    digitStack.Push(lastDigit);
+                    lastDigit = 0;
+                    for (int i = 0; i < numZeroDigits - 1; i++) {
+                        digitStack.Push(lastDigit);
+                    }
+                }
+                yield return lastDigit;
+            }            
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -130,6 +188,18 @@ namespace FP.Collections.Immutable {
                 }
                 return vector._data;
             }
+        }
+
+        private Vector<T> Branches(int index) {
+            return _branches.Length <= index || _branches[index] == null
+                       ? _default
+                       : _branches[index];
+        }
+
+        private T BranchesData(int index) {
+            return _branches.Length <= index || _branches[index] == null
+                       ? default(T)
+                       : _branches[index]._data;
         }
 
         private static IEnumerable<int> Digits(int number) {

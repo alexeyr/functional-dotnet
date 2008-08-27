@@ -17,6 +17,7 @@
 using System;
 using FP.Collections.Immutable;
 using Xunit;
+using XunitExtensions;
 
 namespace FPTests {
     public class VectorTests {
@@ -67,6 +68,9 @@ namespace FPTests {
             }
             for (int i = 0; i < LENGTH; i++)
                 Assert.Equal(array[i], vector[i]);
+            vector = vector.SetAt(LENGTH - 1, array[LENGTH - 1]); //otherwise the last elements may be still default and not included in the count.
+            Assert.Equal(LENGTH, vector.Count);
+            Assert2.SequenceEqual(array, vector);
         } // StoreManyElements()
     } // class VectorTests
 } // namespace FPTests
