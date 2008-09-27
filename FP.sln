@@ -13,6 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XunitExtensions", "XunitExt
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{0C945040-68D8-4D9C-903B-07A45321D95B}"
 	ProjectSection(SolutionItems) = preProject
+		Lib\Pex.Xunit.dll = Lib\Pex.Xunit.dll
 		Lib\xunit.dll = Lib\xunit.dll
 		Lib\xunit.xml = Lib\xunit.xml
 		Lib\xunitext.dll = Lib\xunitext.dll
@@ -48,7 +49,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		HeaderCommentSolution = #region License$LineBreak$/*$LineBreak$* %file% is part of functional-dotnet project$LineBreak$* $LineBreak$* Copyright (c) %years% Alexey Romanov$LineBreak$* All rights reserved.$LineBreak$*$LineBreak$* This source file is available under The New BSD License.$LineBreak$* See license.txt file for more information.$LineBreak$* $LineBreak$* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND $LineBreak$* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, $LineBreak$* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF $LineBreak$* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.$LineBreak$*/$LineBreak$#endregion
 		AddHeaderCommentSolution = True
+		HeaderCommentSolution = #region License$LineBreak$/*$LineBreak$* %file% is part of functional-dotnet project$LineBreak$* $LineBreak$* Copyright (c) %years% Alexey Romanov$LineBreak$* All rights reserved.$LineBreak$*$LineBreak$* This source file is available under The New BSD License.$LineBreak$* See license.txt file for more information.$LineBreak$* $LineBreak$* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND $LineBreak$* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, $LineBreak$* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF $LineBreak$* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.$LineBreak$*/$LineBreak$#endregion
 	EndGlobalSection
 EndGlobal

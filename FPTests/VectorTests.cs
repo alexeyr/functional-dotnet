@@ -18,58 +18,52 @@ using System;
 using FP.Collections.Immutable;
 using Xunit;
 using XunitExtensions;
+using Microsoft.Pex.Framework;
 
 namespace FPTests {
-    public class VectorTests {
-        private Vector<int> _emptyVector = Vector<int>.Empty;
-        private Random _rnd = new Random();
-
-        [Fact]
-        public void InfiniteBounds() {
-            for (int i = 0; i < 100; i++) {
-                int index = _rnd.Next();
-                Assert.Equal(0, _emptyVector[index]);
-            }
+    [PexClass(typeof(Vector<>))]
+    public partial class VectorTests {
+        [PexMethod]
+        public void InfiniteBounds(int i) {
+            PexAssume.IsTrue(i >= 0);
+            Assert.Equal(0, Vector<int>.Empty[i]);
+            Assert.Equal(null, Vector<string>.Empty[i]);
         }
 
-        [Fact]
-        public void SingleElementVector() {
-            for (int i = 0; i < 100; i++) {
-                int value = _rnd.Next();
-                Vector<int> vector = _emptyVector.SetAt(0, value);
-                Assert.Equal(value, vector[0]);
-            }            
+        [PexGenericArguments(typeof(int))]
+        [PexGenericArguments(typeof(string))]
+        [PexMethod(MaxBranches = 2000)]
+        public void SingleElementVector<T>(int i, T value) {
+            PexAssume.IsTrue(i >= 0);
+            Vector<T> vector = Vector<T>.Empty.SetAt(i, value);
+            Assert.Equal(value, vector[i]);
         } // SingleElementVector()
 
-        [Fact]
-        public void ReplaceSingleElement() {
+        [PexMethod(MaxBranches = 4000)]
+        public void ReplaceSingleElement(int i, int j) {
             var vector = Vector.New("Haskell", "Ocaml", "Scala", "Ruby");
-            for (int i = 0; i < 4; i++) {
-                var vector2 = vector.SetAt(i, "C#");
-                for (int j = 0; j < 4; j++) {
-                    if (j == i)
-                        Assert.Equal("C#", vector2[j]);
-                    else
-                        Assert.Equal(vector[j], vector2[j]);
-                }
-            } // for (int)
-        } // ReplaceSingleElement()
+            PexAssume.IsTrue(i >= 0);
+            PexAssume.IsTrue(j >= 0);
+            var vector2 = vector.SetAt(i, "C#");
+            PexAssume.IsTrue(j < vector2.Count + 1);
+            if (j == i)
+                Assert.Equal("C#", vector2[j]);
+            else
+                Assert.Equal(vector[j], vector2[j]);
+        } // ReplaceSingleElement(i, j)
 
-        [Fact]
-        public void StoreManyElements() {
-            const int LENGTH = 10000;
-            var array = new int[LENGTH];
-            var vector = _emptyVector;
-            for (int i = 0; i < LENGTH; i++) {
-                int index = _rnd.Next(LENGTH);
-                int value = _rnd.Next();
-                array[index] = value;
-                vector = vector.SetAt(index, value);
-            }
-            for (int i = 0; i < LENGTH; i++)
+        [PexGenericArguments(typeof(int))]
+        [PexGenericArguments(typeof(string))]
+        [PexMethod(MaxBranches = 4000)]
+        public void StoreManyElements<T>([PexAssumeNotNull] T[] array) {
+            PexAssume.IsNotNull(array);
+            PexAssume.IsTrue(array.Length <= 65);
+            var vector = Vector<T>.Empty;
+            for (int i = 0; i < array.Length; i++)
+                vector = vector.SetAt(i, array[i]);
+            for (int i = 0; i < array.Length; i++)
                 Assert.Equal(array[i], vector[i]);
-            vector = vector.SetAt(LENGTH - 1, array[LENGTH - 1]); //otherwise the last elements may be still default and not included in the count.
-            Assert.Equal(LENGTH, vector.Count);
+            Assert.Equal(array.Length, vector.Count);
             Assert2.SequenceEqual(array, vector);
         } // StoreManyElements()
     } // class VectorTests

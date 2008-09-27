@@ -103,7 +103,7 @@ namespace FP.Core {
         /// 	<c>true</c> if the specified sequence is empty; otherwise, <c>false</c>.
         /// </returns>
         public static bool IsEmpty<T>(this IEnumerable<T> sequence) {
-            return (!sequence.Any());
+            return !sequence.Any();
 
             //null                    :: [a] -> Bool
             //null []                 =  True

@@ -89,9 +89,6 @@ namespace FP.Collections.Immutable {
         ///</returns>
         ///<filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator() {
-//            //TODO: More effective
-//            for (int i = 0; i < _count; i++)
-//                yield return this[i]; 
             Vector<T> currentVector = this;
             var vectorStack = new Stack<Vector<T>>();
             var digitStack = new Stack<int>();
