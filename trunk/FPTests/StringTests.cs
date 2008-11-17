@@ -21,39 +21,39 @@ using FP.Text;
 using Xunit;
 
 namespace FPTests {
-    public class StringTests {
+    public partial class StringTests {
         
         [Fact]
-        public void Words_EmptyStringContainsNoWords() {
+        public void Test_EmptyStringContainsNoWords() {
             Assert.Empty("".Words());
         }
 
         [Fact]
-        public void Words_ShouldIncludePunctuationAndIgnoreExtraWhitespace() {
+        public void Test_WordsShouldIncludePunctuationAndIgnoreExtraWhitespace() {
             Assert.True("This, \r\n  is  a \t test.".Words().SequenceEqual(
                             new[] { "This,", "is", "a", "test." }));
         }
 
         [Fact]
-        public void UnWordsAndUnlines_ShouldReturnEmptyStringsOnEmptySequences() {
+        public void Test_UnWordsAndUnlines_ShouldReturnEmptyStringsOnEmptySequences() {
             Assert.Equal((new List<string>()).UnWordsAsString(), "");
             Assert.Equal((new List<string>()).UnLinesAsString(), "");
         }
 
         [Fact] 
-        public void Lines_ShouldWorkWithAllLineEndings() {
+        public void Test_Lines_ShouldWorkWithAllLineEndings() {
             Assert.True("This,   is \r\n a \t\n test.".Lines().
                             SequenceEqual(new[] {"This,   is ", " a \t", " test."}));
         }
 
         [Fact]
-        public void UnWords_ShouldWork() {
+        public void Test_UnWords() {
             Assert.Equal(new[] {"This,", "is", "a", "test."}.UnWordsAsString(),
                          "This, is a test.");
         }
 
         [Fact]
-        public void UnLines_ShouldWork() {
+        public void Test_UnLines() {
             Assert.Equal(new[] { "This,", "is", "a", "test." }.UnLinesAsString(),
 @"This,
 is

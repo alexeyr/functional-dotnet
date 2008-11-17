@@ -20,9 +20,10 @@ using FP.Core;
 using FP.Text;
 using Xunit;
 using XunitExtensions;
+using Microsoft.Pex.Framework;
 
 namespace FPTests {
-    public class EnumerableTests {
+    public partial class EnumerableTests {
 
         [Fact]
         public void TailShouldThrowOnEmptySeq() {
@@ -60,39 +61,28 @@ namespace FPTests {
             Assert2.SequenceEqual(new[] { 1, 3, 6, 10 }, new[] { 1, 2, 3, 4 }.ScanLeft((x, y) => x + y));
         }
 
-        [Fact]
-        public void TopTest_Basic() {
-            Assert2.SequenceEqual(new[] {10, 8, 7}, new[] {1, 10, 5, 8, 7, 4}.Top(3));
+        [PexMethod]
+        public void TopTest([PexAssumeNotNull] int[] arr, int count) {
+            PexAssume.IsTrue(count >= 0);
+            PexAssume.IsTrue(count + 1 > 0);
+            Assert2.SequenceEqual(arr.Where(x => x % 5 == 0).SortDescending().Take(count), arr.Top(count, x => x % 5 == 0));
+        }
+
+        [PexMethod]
+        public void BottomTest([PexAssumeNotNull] int[] arr, int count) {
+            PexAssume.IsTrue(count >= 0);
+            PexAssume.IsTrue(count + 1 > 0);
+            Assert2.SequenceEqual(arr.Where(x => x % 5 == 0).Sort().Take(count), arr.Bottom(count, x => x % 5 == 0));
         }
 
         [Fact]
-        public void TopTest_WithFilter() {
-            Assert2.SequenceEqual(new[] { 10, 8, 4 }, new[] { 1, 10, 5, 8, 7, 4 }.Top(3, x => x % 2 == 0));
+        public void SortAscendingTest([PexAssumeNotNull] int[] arr) {
+            Assert2.SequenceEqual(arr.OrderBy(x => x), arr.Sort());
         }
 
         [Fact]
-        public void TopTest_ShouldReturnEmptySequenceIfThereAreNoSuitableElements() {
-            Assert2.SequenceEqual(new int[0] , new[] { 1, 10, 5, 8, 7, 4 }.Top(3, x => x % 12 == 0));
-        }
-
-        [Fact]
-        public void TopTest_ShouldReturnAllSuitableElementsIfThereAreNotEnough() {
-            Assert2.SequenceEqual(new[] {10, 5}, new[] { 1, 10, 5, 8, 7, 4 }.Top(3, x => x % 5 == 0));
-        }
-
-        [Fact]
-        public void BottomTest() {
-            Assert2.SequenceEqual(new[] {1, 4, 5}, new[] {1, 10, 5, 8, 7, 4}.Bottom(3));
-        }
-
-        [Fact]
-        public void SortTest1() {
-            Assert2.SequenceEqual(new[] { 1, 4, 5, 7, 8, 10 }, new[] { 1, 10, 5, 8, 7, 4 }.Sort());
-        }
-
-        [Fact]
-        public void SortTest2() {
-            Assert2.SequenceEqual(new[] { 10, 8, 7, 5, 4, 1 }, new[] { 1, 10, 5, 8, 7, 4 }.SortDescending());
+        public void SortDescendingTest([PexAssumeNotNull] int[] arr) {
+            Assert2.SequenceEqual(arr.OrderByDescending(x => x), arr.SortDescending());
         }
     }
 }

@@ -31,6 +31,7 @@ namespace FP.Text {
     /// create a subclass.</remarks>
     [Serializable]
     public class CharSequenceRope<TChar, TSequence> : FlatRope<TChar> where TSequence : ICharSequence<TChar> {
+        [CLSCompliant(false)]
         protected readonly TSequence _charSequence;
 
         /// <summary>

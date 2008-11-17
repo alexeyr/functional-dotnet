@@ -432,7 +432,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="sbyte"/>.
             /// </summary>
-            public static Maybe<sbyte> Sbyte(string s) {
+            [CLSCompliant(false)]
+            public static Maybe<sbyte> SByte(string s) {
                 sbyte s1;
                 return sbyte.TryParse(s, out s1) ? s1 : Nothing<sbyte>();
             }
@@ -440,7 +441,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="sbyte"/>.
             /// </summary>
-            public static Maybe<sbyte> Sbyte(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            [CLSCompliant(false)]
+            public static Maybe<sbyte> SByte(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 sbyte s1;
                 return sbyte.TryParse(s, styles, formatProvider, out s1) ? s1 : Nothing<sbyte>();
             }
@@ -464,7 +466,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="ushort"/>.
             /// </summary>
-            public static Maybe<ushort> Ushort(string s) {
+            [CLSCompliant(false)]
+            public static Maybe<ushort> UShort(string s) {
                 ushort u;
                 return ushort.TryParse(s, out u) ? u : Nothing<ushort>();
             }
@@ -472,7 +475,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="ushort"/>.
             /// </summary>
-            public static Maybe<ushort> Ushort(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            [CLSCompliant(false)]
+            public static Maybe<ushort> UShort(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 ushort u;
                 return ushort.TryParse(s, styles, formatProvider, out u) ? u : Nothing<ushort>();
             }
@@ -480,7 +484,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="uint"/>.
             /// </summary>
-            public static Maybe<uint> Uint(string s) {
+            [CLSCompliant(false)]
+            public static Maybe<uint> UInt(string s) {
                 uint u;
                 return uint.TryParse(s, out u) ? u : Nothing<uint>();
             }
@@ -488,7 +493,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="uint"/>.
             /// </summary>
-            public static Maybe<uint> Uint(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            [CLSCompliant(false)]
+            public static Maybe<uint> UInt(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 uint u;
                 return uint.TryParse(s, styles, formatProvider, out u) ? u : Nothing<uint>();
             }
@@ -496,7 +502,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="ulong"/>.
             /// </summary>
-            public static Maybe<ulong> Ulong(string s) {
+            [CLSCompliant(false)]
+            public static Maybe<ulong> ULong(string s) {
                 ulong u;
                 return ulong.TryParse(s, out u) ? u : Nothing<ulong>();
             }
@@ -504,7 +511,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="ulong"/>.
             /// </summary>
-            public static Maybe<ulong> Ulong(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            [CLSCompliant(false)]
+            public static Maybe<ulong> ULong(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 ulong u;
                 return ulong.TryParse(s, styles, formatProvider, out u) ? u : Nothing<ulong>();
             }

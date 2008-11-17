@@ -24,23 +24,23 @@ namespace FPTests {
     [PexClass(typeof(Vector<>))]
     public partial class VectorTests {
         [PexMethod]
-        public void InfiniteBounds(int i) {
+        public void Test_InfiniteBounds(int i) {
             PexAssume.IsTrue(i >= 0);
             Assert.Equal(0, Vector<int>.Empty[i]);
-            Assert.Equal(null, Vector<string>.Empty[i]);
+            Assert.Equal(null, Vector<object>.Empty[i]);
         }
 
         [PexGenericArguments(typeof(int))]
-        [PexGenericArguments(typeof(string))]
+        [PexGenericArguments(typeof(object))]
         [PexMethod(MaxBranches = 2000)]
-        public void SingleElementVector<T>(int i, T value) {
+        public void Test_SingleElementVector<T>(int i, T value) {
             PexAssume.IsTrue(i >= 0);
             Vector<T> vector = Vector<T>.Empty.SetAt(i, value);
             Assert.Equal(value, vector[i]);
         } // SingleElementVector()
 
         [PexMethod(MaxBranches = 4000)]
-        public void ReplaceSingleElement(int i, int j) {
+        public void Test_ReplaceSingleElement(int i, int j) {
             var vector = Vector.New("Haskell", "Ocaml", "Scala", "Ruby");
             PexAssume.IsTrue(i >= 0);
             PexAssume.IsTrue(j >= 0);
@@ -53,9 +53,9 @@ namespace FPTests {
         } // ReplaceSingleElement(i, j)
 
         [PexGenericArguments(typeof(int))]
-        [PexGenericArguments(typeof(string))]
+        [PexGenericArguments(typeof(object))]
         [PexMethod(MaxBranches = 4000)]
-        public void StoreManyElements<T>([PexAssumeNotNull] T[] array) {
+        public void Test_StoreManyElements<T>([PexAssumeNotNull] T[] array) {
             PexAssume.IsNotNull(array);
             PexAssume.IsTrue(array.Length <= 65);
             var vector = Vector<T>.Empty;
