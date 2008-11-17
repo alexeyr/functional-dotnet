@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\Immutable\BitVector.cs" />
     <Compile Include="Collections\Immutable\ICatenable.cs" />
     <Compile Include="Collections\Immutable\ICollection.cs" />
     <Compile Include="Collections\Immutable\IInsertableRandomAccessSequence.cs" />
@@ -95,13 +94,6 @@
     <Compile Include="Core\Enumerators.cs" />
     <Compile Include="Core\Functions.cs" />
     <Compile Include="Core\Maybe.cs" />
-    <Compile Include="Future\Concurrent.cs" />
-    <Compile Include="Future\CyclicFutureException.cs" />
-    <Compile Include="Future\EventArgs.cs" />
-    <Compile Include="Future\Future.cs" />
-    <Compile Include="Future\Lazy.cs" />
-    <Compile Include="Future\Promise.cs" />
-    <Compile Include="Future\PromiseAlreadyFulfilledException.cs" />
     <Compile Include="Core\Ints.cs" />
     <Compile Include="Linq\ContinuationMonad.cs" />
     <Compile Include="Linq\MaybeMonad.cs" />

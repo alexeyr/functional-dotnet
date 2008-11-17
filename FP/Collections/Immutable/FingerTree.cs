@@ -455,6 +455,10 @@ namespace FP.Collections.Immutable {
                 return this;
             }
 
+            internal override bool Invariant {
+                get { return true; }
+            }
+
             /// <summary>
             /// Indicates whether the current object is equal to another object of the same type.
             /// </summary>
@@ -662,6 +666,10 @@ namespace FP.Collections.Immutable {
             public override FingerTree<T, V> ReverseTree(Func<T, T> f) {
                 var newValue = f(Value);
                 return newValue.Equals(Value) ? this : MakeSingle(newValue);
+            }
+
+            internal override bool Invariant {
+                get { return true; }
             }
 
             /// <summary>
@@ -1032,6 +1040,15 @@ namespace FP.Collections.Immutable {
                 return MakeDeep(newLeft, () => _Middle.ReverseTree(node => node.Reverse(f)), newRight);
             }
 
+            internal override bool Invariant {
+                get {
+                    return
+                        _left != null && !_left.IsEmpty() && _left.Length < 4 &&
+                        _right != null && !_right.IsEmpty() && _right.Length < 4 &&
+                        _Middle.Invariant;
+                }
+            }
+
             /// <summary>
             /// Indicates whether the current object is equal to another object of the same type.
             /// </summary>
@@ -1101,5 +1118,7 @@ namespace FP.Collections.Immutable {
                 return !Equals(left, right);
             }
         }
+
+        internal abstract bool Invariant { get; }
         }
 }

@@ -48,6 +48,10 @@ namespace FP.Collections.Immutable {
 
         private readonly FingerTree<Element, int> _ft;
 
+        internal bool Invariant {
+            get { return _ft != null /*&& _ft.Invariant*/; }
+        }
+
         /// <summary>
         /// An element of the sequence.
         /// </summary>

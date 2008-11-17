@@ -19,9 +19,10 @@ using System;
 using FP.Core;
 using FP.Linq;
 using Xunit;
+using Microsoft.Pex.Framework;
 
 namespace FPTests {
-    public class MaybeTests {
+    public partial class MaybeTests {
         [Fact]
         public void Maybe_NullShouldConvertToNothing() {
             Maybe<string> m = (string)null;
@@ -29,41 +30,42 @@ namespace FPTests {
             Assert.False(m.HasValue);
         }
 
-        [Fact]
-        public void Maybe_ValueShouldConvertToSomething() {
-            Maybe<string> m = "test";
-            Assert.Equal(m.Value, "test");
+        [PexMethod]
+        public void Maybe_ValueShouldConvertToSomething([PexAssumeNotNull] object o) {
+            Maybe<object> m = o;
+            Assert.True(m.HasValue);
+            Assert.Equal(m.Value, o);
         }
 
-        [Fact]
-        public void Maybe_QueriesShouldWork() {
-            var query = from x in Maybe.Just(4)
-                        from y in Maybe.Just(5)
-                        select x + y;
-            Assert.Equal(query.Value, 9);
+        [PexMethod]
+        public void Maybe_QueriesShouldWork(int x, int y) {
+            var query = from x1 in Maybe.Just(x)
+                        from y1 in Maybe.Just(y)
+                        select x1 + y1;
+            Assert.Equal(query.Value, x + y);
         }
 
-        [Fact]
-        public void Maybe_NullsShouldPropagateInQueries() {
-            var query = from x in Maybe.Just(4)
-                        from y in Maybe.Nothing<int>()
-                        select x + y;
+        [PexMethod]
+        public void Maybe_NullsShouldPropagateInQueries(int x) {
+            var query = from x1 in Maybe.Just(x)
+                        from y1 in Maybe<int>.Nothing
+                        select x1 + y1;
             Assert.False(query.HasValue);
         }
 
-        [Fact]
-        public void Maybe_DefaultOperatorShouldWork() {
-            Assert.Equal(Maybe<int>.Nothing || Maybe.Just(3) || Maybe.Just(5), Maybe.Just(3));
+        [PexMethod]
+        public void Maybe_DefaultOperatorReturnsTheFirstJustValue (int x, Maybe<int> my) {
+            Assert.Equal(Maybe.Just(x) || my, Maybe.Just(x));
         }
 
-        [Fact]
-        public void Maybe_DefaultOperatorShouldWorkWithValues1() {
-            Assert.Equal(Maybe<int>.Nothing || Maybe.Just(3) || 5, Maybe.Just(3));
+        [PexMethod]
+        public void Maybe_DefaultOperatorCausesConversions(int x, int y) {
+            Assert.Equal(Maybe<int>.Nothing || x || y, Maybe.Just(x));
         }
 
-        [Fact]
-        public void Maybe_DefaultOperatorShouldWorkWithValues2() {
-            Assert.Equal(Maybe<int>.Nothing || Maybe<int>.Nothing || 5, 5);
+        [PexMethod]
+        public void Maybe_DefaultOperatorIgnoresNothingAsFirstArgument(Maybe<int> mx) {
+            Assert.Equal(Maybe<int>.Nothing || mx, mx);
         }
 
         [Fact]

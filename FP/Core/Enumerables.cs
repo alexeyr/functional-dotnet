@@ -1434,6 +1434,8 @@ namespace FP.Core {
         /// <returns></returns>
         public static IEnumerable<T> Bottom<T>(this IEnumerable<T> sequence, int count,
             IComparer<T> comparer, Func<T, bool> predicate) {
+            if (count < 0) throw new ArgumentOutOfRangeException("count", "count < 0");
+            if (count + 1 < 0) throw new ArgumentOutOfRangeException("count", "count + 1 overflows");
             var heap = Heap<T>.MaxHeap(count + 1, comparer);
             int heapCount = 0;
             using (var enumerator = sequence.GetEnumerator()) {

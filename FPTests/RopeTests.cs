@@ -15,38 +15,30 @@
 */
 #endregion
 
-using System;
-using FP.Core;
-using FP.Linq;
 using FP.Text;
+using Microsoft.Pex.Framework;
 using Xunit;
 
 namespace FPTests {
-    public class RopeTests {
-        private const string _digits = "0123456789";
-        private readonly static StringRope _digitsRope = _digits.ToRope();
-
-        [Fact] 
-        public void Substring() {
-            Assert.Equal(_digits.Substring(0, 5), _digitsRope.SubString(0, 5).AsString());
-            Assert.Equal(_digits.Substring(5, 5), _digitsRope.SubString(5, 5).AsString());
+    [PexClass(typeof(Rope<>))]
+    public partial class RopeTests {
+        [PexMethod]
+        public void Test_Creation([PexAssumeNotNull] string[] strings) {
+            string largeString = string.Concat(strings);
+            Rope<char> largeRope = new StringRope("");
+            foreach (string s in strings) {
+                PexAssume.IsNotNull(s);
+                PexAssume.IsTrue(s.Length >= 256);
+                largeRope.Concat(new StringRope(s));
+            }
+            Assert.Equal(largeString, largeRope.AsString());
         }
 
-        [Fact]
-        public void ConcatTwoShortFlat() {
-            var concat = _digitsRope.Concat(_digitsRope);
-            Assert.IsAssignableFrom<FlatRope<char>>(concat);
-            Assert.Equal(string.Concat(_digits, _digits), concat.AsString());
+        [PexMethod]
+        public void Test_Concat([PexAssumeNotNull] Rope<char> rope1, [PexAssumeNotNull] Rope<char> rope2) {
+            Assert.Equal(rope1.AsString() + rope2.AsString(), rope1.Concat(rope2).AsString());
         }
 
-        [Fact]
-        public void ConcatSeveralShortFlat() {
-            var manyDigits = string.Concat(_digits, _digits, _digits, _digits, _digits);
-            var manyDigitsRope =
-                _digitsRope.Concat(_digitsRope).Concat(_digitsRope).Concat(_digitsRope).Concat(
-                    _digitsRope);
-            Assert.Equal(manyDigits, manyDigitsRope.AsString());
-            Assert.Equal(string.Concat(_digits, _digits, _digits), manyDigitsRope.SubString(10, 30).AsString());
-        }
+        //TODO: Test substring creation!
     }
 }
