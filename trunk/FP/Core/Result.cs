@@ -114,7 +114,7 @@ namespace FP.Core {
         public abstract T Value { get; }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="FP.Collections.Immutable.Result{T}"/> to <see cref="T"/>.
+        /// Performs an explicit conversion from <see cref="Result{T}"/> to <see cref="T"/>.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>The value.</returns>
@@ -182,7 +182,7 @@ namespace FP.Core {
             }
 
             /// <summary>
-            /// Performs an implicit conversion from <see cref="FP.Collections.Immutable.Result&lt;T&gt;.Failure"/> to <see cref="System.String"/>.
+            /// Performs an implicit conversion from <see cref="Result{T}.Failure"/> to <see cref="System.String"/>.
             /// </summary>
             /// <param name="failure">The failure.</param>
             /// <returns>The reason of the failure.</returns>
@@ -191,7 +191,7 @@ namespace FP.Core {
             }
 
             /// <summary>
-            /// Performs an implicit conversion from <see cref="FP.Collections.Immutable.Result&lt;T&gt;.Failure"/> to <see cref="System.Exception"/>.
+            /// Performs an implicit conversion from <see cref="Result{T}.Failure"/> to <see cref="System.Exception"/>.
             /// </summary>
             /// <param name="failure">The failure.</param>
             /// <returns>The exception of the failure.</returns>
@@ -276,7 +276,7 @@ namespace FP.Core {
             }
 
             /// <summary>
-            /// Performs an implicit conversion from <see cref="FP.Collections.Immutable.Result&lt;T&gt;.Success"/> to <see cref="T"/>.
+            /// Performs an implicit conversion from <see cref="Result{T}.Success"/> to <see cref="T"/>.
             /// </summary>
             /// <param name="success">The success.</param>
             /// <returns>The value.</returns>
