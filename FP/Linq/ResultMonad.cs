@@ -24,7 +24,7 @@ namespace FP.Linq {
     /// </summary>
     public static class ResultMonad {
         public static Result<T> Where<T>(this Result<T> result, Func<T, bool> function) {
-            return result.Match(function, x => false) ? result : Result.Failure<T>("Unsuitable result");
+            return result.Match(function, x => false) ? result : Result.Failure<T>("Filtered out");
         }
 
         public static Result<T2> Select<T1, T2>(this Result<T1> result, Func<T1, T2> function) {
@@ -36,7 +36,7 @@ namespace FP.Linq {
         }
 
         public static Result<T2> SelectMany<T1, T2>(this Result<T1> result, Func<T1, Result<T2>> function) {
-            return result.MatchS(function, Result.Failure<T2>);
+            return result.Match(function, Result.Failure<T2>);
         }
     }
 }

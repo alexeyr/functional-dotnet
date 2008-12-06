@@ -63,5 +63,18 @@ namespace FP.Core {
         public static Continuation<T, R> Map<T, R>(this Continuation<T, R> continuation, Func<R, R> func) {
             return comp => func(continuation(comp));
         }
+
+        ///<summary>
+        /// Call with current continuation.
+        ///</summary>
+        ///<param name="func"></param>
+        ///<typeparam name="T1"></typeparam>
+        ///<typeparam name="T2"></typeparam>
+        ///<typeparam name="R"></typeparam>
+        ///<returns></returns>
+        public static Continuation<T1, R> CallCC<T1, T2, R>(
+            this Func<Func<T1, Continuation<T2, R>>, Continuation<T1, R>> func) {
+            return c => func(x => y => c(x)).Run(c);
+        }
     }
 }
