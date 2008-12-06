@@ -51,6 +51,18 @@
     <Compile Include="Collections\Immutable\Vector.cs" />
     <Compile Include="Collections\IReversibleEnumerable.cs" />
     <Compile Include="Collections\ISplittable.cs" />
+    <Compile Include="Core\Combinators\Combinators.cs" />
+    <Compile Include="Core\CPS\ActionCPS.cs" />
+    <Compile Include="Core\CPS\ActionFailureException.cs" />
+    <Compile Include="Core\CPS\Cont.cs" />
+    <Compile Include="Core\CPS\Actions.cs" />
+    <Compile Include="Future\Concurrent.cs" />
+    <Compile Include="Future\CyclicFutureException.cs" />
+    <Compile Include="Future\EventArgs.cs" />
+    <Compile Include="Future\Future.cs" />
+    <Compile Include="Future\Lazy.cs" />
+    <Compile Include="Future\Promise.cs" />
+    <Compile Include="Future\PromiseAlreadyFulfilledException.cs" />
     <Compile Include="Text\ArrayCharSequence.cs" />
     <Compile Include="Text\ArrayRope.cs" />
     <Compile Include="Text\FTRope.cs" />
@@ -133,7 +145,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
+      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
