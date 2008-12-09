@@ -82,5 +82,15 @@ namespace FP.Future {
         public override string ToString() {
             return ToStringHelper("Lazy");
         }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="FP.Future.Future&lt;T&gt;"/> to <see cref="T"/>.
+        /// </summary>
+        /// <param name="lazy">The lazy value.</param>
+        /// <returns>The result of forcing this lazy value.</returns>
+        /// NOTE: Should this be implicit for all futures? I am not sure.
+        public static implicit operator T(Lazy<T> lazy) {
+            return lazy.Await();
+        }
     }
 }
