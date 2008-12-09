@@ -81,15 +81,6 @@ namespace FP.Future {
         public abstract bool IsLazy { get; }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="FP.Future.Future&lt;T&gt;"/> to <see cref="T"/>.
-        /// </summary>
-        /// <param name="future">The future.</param>
-        /// <returns>The result of <see cref="Await"/>ing this future.</returns>
-        public static implicit operator T (Future<T> future) {
-            return future.Await();
-        }
-
-        /// <summary>
         /// Occurs when the result of a future is determined.
         /// </summary>
         public event EventHandler<FutureDeterminedArgs<T>> Determined;
