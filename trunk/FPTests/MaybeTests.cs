@@ -46,7 +46,7 @@ namespace FPTests {
         }
 
         [PexMethod]
-        public void Maybe_NullsShouldPropagateInQueries(int x) {
+        public void Maybe_NothingShouldPropagateInQueries(int x) {
             var query = from x1 in Maybe.Just(x)
                         from y1 in Maybe<int>.Nothing
                         select x1 + y1;

@@ -82,9 +82,6 @@
     <Compile Include="MaybeTests.Maybe_DefaultOperatorReturnsTheFirstJustValue.g.cs">
       <DependentUpon>MaybeTests.cs</DependentUpon>
     </Compile>
-    <Compile Include="MaybeTests.Maybe_NullsShouldPropagateInQueries.g.cs">
-      <DependentUpon>MaybeTests.cs</DependentUpon>
-    </Compile>
     <Compile Include="MaybeTests.Maybe_QueriesShouldWork.g.cs">
       <DependentUpon>MaybeTests.cs</DependentUpon>
     </Compile>
