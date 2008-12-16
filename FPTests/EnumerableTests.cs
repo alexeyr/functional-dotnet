@@ -61,20 +61,6 @@ namespace FPTests {
             Assert2.SequenceEqual(new[] { 1, 3, 6, 10 }, new[] { 1, 2, 3, 4 }.ScanLeft((x, y) => x + y));
         }
 
-        [PexMethod]
-        public void TopTest([PexAssumeNotNull] int[] arr, int count) {
-            PexAssume.IsTrue(count >= 0);
-            PexAssume.IsTrue(count + 1 > 0);
-            Assert2.SequenceEqual(arr.Where(x => x % 5 == 0).SortDescending().Take(count), arr.Top(count, x => x % 5 == 0));
-        }
-
-        [PexMethod]
-        public void BottomTest([PexAssumeNotNull] int[] arr, int count) {
-            PexAssume.IsTrue(count >= 0);
-            PexAssume.IsTrue(count + 1 > 0);
-            Assert2.SequenceEqual(arr.Where(x => x % 5 == 0).Sort().Take(count), arr.Bottom(count, x => x % 5 == 0));
-        }
-
         [Fact]
         public void SortAscendingTest([PexAssumeNotNull] int[] arr) {
             Assert2.SequenceEqual(arr.OrderBy(x => x), arr.Sort());
