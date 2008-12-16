@@ -275,7 +275,7 @@ namespace <#= NamespaceName #>
     return builder.ToString(); 
   }
 
-  private static string NewLine(bool condution) {
-    return condution ? Environment.NewLine : String.Empty;
+  private static string NewLine(bool condition) {
+    return condition ? Environment.NewLine : String.Empty;
   }
 #>

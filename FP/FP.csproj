@@ -97,7 +97,6 @@
     </Compile>
     <Compile Include="Core\Unit.cs" />
     <Compile Include="Collections\Mutable\Heap.cs" />
-    <Compile Include="Collections\Mutable\PriorityQueue.cs" />
     <Compile Include="Core\Comparers.cs" />
     <Compile Include="Core\Continuations.cs" />
     <Compile Include="Core\EmptySequenceException.cs" />
