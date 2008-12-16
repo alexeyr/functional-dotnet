@@ -190,7 +190,7 @@ namespace <#= NamespaceName #>
 <#+ 
   private const string TupleClassName = "Tuple";
   private const int MinParametersCount = 2;
-  private const int MaxParametersCount = 4;
+  private const int MaxParametersCount = 5;
   private const int MaxValueParametersCount = 3;
   private const string NamespaceName = "FP.Core";
   private const string TypeNamePrefix = "T";
