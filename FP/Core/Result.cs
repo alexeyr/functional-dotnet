@@ -1,4 +1,18 @@
-﻿#region License
+﻿/*
+* Result.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2008 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
+#region License
 /*
 * Result.cs is part of functional-dotnet project
 * 
@@ -16,7 +30,6 @@
 #endregion
 
 using System;
-using FP.Core;
 
 namespace FP.Core {
     /// <summary>
@@ -77,18 +90,7 @@ namespace FP.Core {
     /// <seealso cref="Result"/>
     public abstract class Result<T> {
         private Result() {}
-        /// <summary>
-        /// Case analysis on results.
-        /// </summary>
-        /// <param name="onSuccess">The action to do if the result is a success.</param>
-        /// <param name="onFailure">The action to do if the result is a failure.</param>
-        public abstract void MatchS(Action<T> onSuccess, Action<string> onFailure);
-        /// <summary>
-        /// Case analysis on results.
-        /// </summary>
-        /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
-        /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
-        public abstract R MatchS<R>(Func<T, R> onSuccess, Func<string, R> onFailure);
+
         /// <summary>
         /// Case analysis on results.
         /// </summary>
@@ -147,7 +149,7 @@ namespace FP.Core {
             /// Gets the reason.
             /// </summary>
             /// <value>The reason.</value>
-            public string Reason { get; private set; }
+            public string Reason { get { return Exception.Message; } }
 
             /// <summary>
             /// Gets the exception.
@@ -168,7 +170,6 @@ namespace FP.Core {
             /// </summary>
             /// <param name="reason">The reason.</param>
             public Failure(string reason) {
-                Reason = reason;
                 Exception = new Exception(reason);
             }
 
@@ -177,17 +178,7 @@ namespace FP.Core {
             /// </summary>
             /// <param name="exception">The exception.</param>
             public Failure(Exception exception) {
-                Reason = exception.Message;
                 Exception = exception;
-            }
-
-            /// <summary>
-            /// Performs an implicit conversion from <see cref="Result{T}.Failure"/> to <see cref="System.String"/>.
-            /// </summary>
-            /// <param name="failure">The failure.</param>
-            /// <returns>The reason of the failure.</returns>
-            public static implicit operator string(Failure failure) {
-                return failure.Reason;
             }
 
             /// <summary>
@@ -207,24 +198,6 @@ namespace FP.Core {
             /// </returns>
             public override string ToString() {
                 return Reason;
-            }
-
-            /// <summary>
-            /// Case analysis on results.
-            /// </summary>
-            /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
-            /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
-            public override R MatchS<R>(Func<T, R> onSuccess, Func<string, R> onFailure) {
-                return onFailure(Reason);
-            }
-
-            /// <summary>
-            /// Case analysis on results.
-            /// </summary>
-            /// <param name="onSuccess">The action to do if the result is a success.</param>
-            /// <param name="onFailure">The action to do if the result is a failure.</param>
-            public override void MatchS(Action<T> onSuccess, Action<string> onFailure) {
-                onFailure(Reason);
             }
 
             /// <summary>
@@ -282,24 +255,6 @@ namespace FP.Core {
             /// <returns>The value.</returns>
             public static implicit operator T(Success success) {
                 return success.Value;
-            }
-
-            /// <summary>
-            /// Case analysis on results.
-            /// </summary>
-            /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
-            /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
-            public override R MatchS<R>(Func<T, R> onSuccess, Func<string, R> onFailure) {
-                return onSuccess(Value);
-            }
-
-            /// <summary>
-            /// Case analysis on results.
-            /// </summary>
-            /// <param name="onSuccess">The action to do if the result is a success.</param>
-            /// <param name="onFailure">The action to do if the result is a failure.</param>
-            public override void MatchS(Action<T> onSuccess, Action<string> onFailure) {
-                onSuccess(Value);
             }
 
             /// <summary>
