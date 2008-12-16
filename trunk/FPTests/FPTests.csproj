@@ -58,17 +58,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EnumerableTests.BottomTest.g.cs">
-      <DependentUpon>EnumerableTests.cs</DependentUpon>
-    </Compile>
     <Compile Include="EnumerableTests.cs" />
     <Compile Include="EnumerableTests.SortAscendingTest.g.cs">
       <DependentUpon>EnumerableTests.cs</DependentUpon>
     </Compile>
     <Compile Include="EnumerableTests.SortDescendingTest.g.cs">
-      <DependentUpon>EnumerableTests.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EnumerableTests.TopTest.g.cs">
       <DependentUpon>EnumerableTests.cs</DependentUpon>
     </Compile>
     <Compile Include="OrdSequenceTests.cs" />
