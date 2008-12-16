@@ -73,6 +73,13 @@ namespace <#= NamespaceName #>
       return <#= TupleClassName #>.ToString(provider, <#= Join(PropertyName, types) #>);
     }
 
+    public R Match<R>(Func<<#= Join(TypeName, types) #>, R> func) {
+      return func(<#= Join(PropertyName, types) #>);
+    }
+
+    public void Match(Action<<#= Join(TypeName, types) #>> action) {
+      action(<#= Join(PropertyName, types) #>);
+    }
     #endregion Methods
 
     #region Overrides
@@ -183,7 +190,7 @@ namespace <#= NamespaceName #>
 <#+ 
   private const string TupleClassName = "Tuple";
   private const int MinParametersCount = 2;
-  private const int MaxParametersCount = 7;
+  private const int MaxParametersCount = 4;
   private const int MaxValueParametersCount = 3;
   private const string NamespaceName = "FP.Core";
   private const string TypeNamePrefix = "T";
