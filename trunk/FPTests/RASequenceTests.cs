@@ -30,7 +30,7 @@ namespace FPTests {
             Assert2.SequenceEqual(arr, RandomAccessSequence.FromEnumerable(arr));
         }
 
-        [Fact]
+        [PexMethod]
         [PexGenericArguments(new[] { typeof(int) })]
         public void Test_Append<T>([PexAssumeNotNull] T[] arr) {
             var seq = RandomAccessSequence<T>.Empty;
@@ -39,7 +39,7 @@ namespace FPTests {
             Assert2.SequenceEqual(arr, seq);
         }
 
-        [Fact]
+        [PexMethod]
         [PexGenericArguments(new[] { typeof(int) })]
         public void Test_Prepend<T>([PexAssumeNotNull] T[] arr) {
             var seq = RandomAccessSequence<T>.Empty;
