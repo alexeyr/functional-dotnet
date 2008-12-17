@@ -61,12 +61,12 @@ namespace FPTests {
             Assert2.SequenceEqual(new[] { 1, 3, 6, 10 }, new[] { 1, 2, 3, 4 }.ScanLeft((x, y) => x + y));
         }
 
-        [Fact]
+        [PexMethod]
         public void SortAscendingTest([PexAssumeNotNull] int[] arr) {
             Assert2.SequenceEqual(arr.OrderBy(x => x), arr.Sort());
         }
 
-        [Fact]
+        [PexMethod]
         public void SortDescendingTest([PexAssumeNotNull] int[] arr) {
             Assert2.SequenceEqual(arr.OrderByDescending(x => x), arr.SortDescending());
         }
