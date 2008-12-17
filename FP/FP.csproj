@@ -103,7 +103,7 @@
     <Compile Include="Core\Enumerables2.cs" />
     <Compile Include="Core\Enumerators.cs" />
     <Compile Include="Core\Functions.cs" />
-    <Compile Include="Core\Maybe.cs" />
+    <Compile Include="Core\Optional.cs" />
     <Compile Include="Core\Ints.cs" />
     <Compile Include="Linq\ContinuationMonad.cs" />
     <Compile Include="Linq\MaybeMonad.cs" />
@@ -143,7 +143,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
+      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

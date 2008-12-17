@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 /*
 * Either.cs is part of functional-dotnet project
 * 
@@ -42,7 +42,7 @@ namespace FP.Core {
     /// When differentiating a correct value from an error, the convention is to use Right for the correct value.
     /// </summary>
     /// <seealso cref="Result{T}"/>
-    /// <seealso cref="Maybe{T}"/>
+    /// <seealso cref="Optional{T}"/>
     /// <typeparam name="L">The left type.</typeparam>
     /// <typeparam name="R">The right type.</typeparam>
     [Serializable]
