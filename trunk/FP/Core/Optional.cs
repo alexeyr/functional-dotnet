@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-* Maybe.cs is part of functional-dotnet project
+* Optional.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
 * All rights reserved.
@@ -27,10 +27,10 @@ using FP.HaskellNames;
 namespace FP.Core {
 
     /// <summary>
-    /// A convenience static class to provide static methods for <see cref="Maybe{T}"/> and
+    /// A convenience static class to provide static methods for <see cref="Optional{T}"/> and
     /// <see cref="Nullable{T}"/>.
     /// </summary>
-    public static class Maybe {
+    public static class Optional {
         /// <summary>
         /// Return a wrapper around the specified non-null object.
         /// </summary>
@@ -38,86 +38,86 @@ namespace FP.Core {
         /// <param name="t">The object.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">if <paramref name="t"/> is <c>null</c>.</exception>
-        public static Maybe<T> Just<T>(T t) {
+        public static Optional<T> Some<T>(T t) {
             if (t == null)
                 throw new ArgumentNullException();
             else
-                return new Maybe<T>(t);
+                return new Optional<T>(t);
         }
 
         /// <summary>
-        /// Returns <see cref="Maybe{T}.Nothing"/>.
+        /// Returns <see cref="Optional{T}.None"/>.
         /// </summary>
-        public static Maybe<T> Nothing<T>() {
-            return Maybe<T>.Nothing;
+        public static Optional<T> None<T>() {
+            return Optional<T>.None;
         }
 
         /// <summary>
         /// Converts a sequence to maybe.
         /// </summary>
         /// <param name="sequence">The sequence.</param>
-        /// <returns><c>Nothing</c> if <paramref name="sequence"/> is empty;
-        /// <c>Just(sequence.Item1())</c> otherwise.</returns>
-        public static Maybe<T> ToMaybe<T>(this IEnumerable<T> sequence) {
+        /// <returns><c>None</c> if <paramref name="sequence"/> is empty;
+        /// <c>Some(sequence.Item1())</c> otherwise.</returns>
+        public static Optional<T> ToMaybe<T>(this IEnumerable<T> sequence) {
             using (var enumerator = sequence.GetEnumerator()) {
                 if (enumerator.MoveNext())
-                    return Just(enumerator.Current);
+                    return Some(enumerator.Current);
                 else
-                    return Nothing<T>();
+                    return None<T>();
             }
         }
 
         /// <summary>
-        /// Converts <see cref="Nullable{T}"/> to <see cref="Maybe{T}"/>.
+        /// Converts <see cref="Nullable{T}"/> to <see cref="Optional{T}"/>.
         /// </summary>
         /// <param name="nullable">The nullable.</param>
-        /// <returns><c>Nothing</c> if <paramref name="nullable"/> doesn't have a value;
-        /// <c>Just(nullable.Value)</c> otherwise.</returns>
-        public static Maybe<T> ToMaybe<T>(this T? nullable) where T : struct {
-            return nullable.HasValue ? Just(nullable.Value) : Nothing<T>();
+        /// <returns><c>None</c> if <paramref name="nullable"/> doesn't have a value;
+        /// <c>Some(nullable.Value)</c> otherwise.</returns>
+        public static Optional<T> ToMaybe<T>(this T? nullable) where T : struct {
+            return nullable.HasValue ? Some(nullable.Value) : None<T>();
         }
 
         /// <summary>
-        /// Converts <see cref="Maybe{T}"/> to <see cref="Nullable{T}"/>.
+        /// Converts <see cref="Optional{T}"/> to <see cref="Nullable{T}"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="maybe">The maybe.</param>
-        /// <returns><c>null</c> if <paramref name="maybe"/> is <c>Nothing</c>;
-        /// <c>maybe.Value</c> otherwise.</returns>
-        public static T? ToNullable<T>(this Maybe<T> maybe) where T : struct {
-            return maybe.MapOrElse(x => x, null);
+        /// <param name="optional">The maybe.</param>
+        /// <returns><c>null</c> if <paramref name="optional"/> is <c>None</c>;
+        /// <c>optional.Value</c> otherwise.</returns>
+        public static T? ToNullable<T>(this Optional<T> optional) where T : struct {
+            return optional.MapOrElse(x => x, null);
         }
 
         /// <summary>
-        /// An explicit conversion from <typeparamref name="T"/> to <see cref="Maybe{T}"/>.
+        /// An explicit conversion from <typeparamref name="T"/> to <see cref="Optional{T}"/>.
         /// Works the same as the implicit cast.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value">The value to convert.</param>
         /// <returns></returns>
-        public static Maybe<T> FromValue<T>(T value) {
+        public static Optional<T> FromValue<T>(T value) {
             return value;
         }
 
         /// <summary>
-        /// An explicit conversion from <typeparamref name="T"/> to <see cref="Maybe{T}"/>.
+        /// An explicit conversion from <typeparamref name="T"/> to <see cref="Optional{T}"/>.
         /// Works the same as the implicit cast.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value">The value to convert.</param>
         /// <returns></returns>
-        public static Maybe<T> Wrap<T>(T value) {
+        public static Optional<T> Wrap<T>(T value) {
             return value;
         }
 
         /// <summary>
-        /// Flattens the specified maybe.
+        /// Flattens the specified optional.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="maybe">The maybe.</param>
+        /// <param name="optional">The maybe.</param>
         /// <returns></returns>
-        public static Maybe<T> Flatten<T>(this Maybe<Maybe<T>> maybe) {
-            return maybe.Map(m => m.Value);
+        public static Optional<T> Flatten<T>(this Optional<Optional<T>> optional) {
+            return optional.Map(m => m.Value);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace FP.Core {
         /// </summary>
         /// <param name="sequence">The sequence.</param>
         /// <returns></returns>
-        public static IEnumerable<T> SelectValues<T>(this IEnumerable<Maybe<T>> sequence) {
+        public static IEnumerable<T> SelectValues<T>(this IEnumerable<Optional<T>> sequence) {
             foreach (var maybe in sequence)
                 if (maybe.HasValue)
                     yield return maybe.Value;
@@ -151,7 +151,7 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <param name="function">The function.</param>
         /// <returns></returns>
-        public static IEnumerable<R> MapMaybe<T, R>(this IEnumerable<T> sequence, Func<T, Maybe<R>> function) {
+        public static IEnumerable<R> MapMaybe<T, R>(this IEnumerable<T> sequence, Func<T, Optional<R>> function) {
             return sequence.Map(function).SelectValues();
         }
 
@@ -175,9 +175,9 @@ namespace FP.Core {
         /// </summary>
         /// <typeparam name="T">The return type of the function.</typeparam>
         /// <param name="function">The function.</param>
-        /// <returns><see cref="Maybe{T}.Nothing"/> if there were exceptions or the function returns <c>null</c>;
-        /// <c>Just(function())</c> otherwise.</returns>
-        public static Maybe<T> Try<T>(this Func<T> function) {
+        /// <returns><see cref="Optional{T}.None"/> if there were exceptions or the function returns <c>null</c>;
+        /// <c>Some(function())</c> otherwise.</returns>
+        public static Optional<T> Try<T>(this Func<T> function) {
             return function.Try<T, Exception>();
         }
 
@@ -187,14 +187,14 @@ namespace FP.Core {
         /// <typeparam name="T">The return type of the function.</typeparam>
         /// <typeparam name="E">The type of exceptions to catch.</typeparam>
         /// <param name="function">The function.</param>
-        /// <returns><see cref="Maybe{T}.Nothing"/> if there were exceptions or the function returns <c>null</c>;
-        /// <c>Just(function())</c> otherwise.</returns>
-        public static Maybe<T> Try<T, E>(this Func<T> function) where E : Exception {
+        /// <returns><see cref="Optional{T}.None"/> if there were exceptions or the function returns <c>null</c>;
+        /// <c>Some(function())</c> otherwise.</returns>
+        public static Optional<T> Try<T, E>(this Func<T> function) where E : Exception {
             try {
-                return new Maybe<T>(function());
+                return new Optional<T>(function());
             }
             catch (E) {
-                return new Maybe<T>();
+                return new Optional<T>();
             }
         }
 
@@ -202,327 +202,327 @@ namespace FP.Core {
         /// <summary>
         /// Creates a new Uri using the specified String instance and a <see cref="UriKind"/>.
         /// </summary>
-        public static Maybe<Uri> CreateUri(string uriString, UriKind uriKind) {
+        public static Optional<Uri> CreateUri(string uriString, UriKind uriKind) {
             Uri uri;
-            return Uri.TryCreate(uriString, uriKind, out uri) ? uri : Nothing<Uri>();
+            return Uri.TryCreate(uriString, uriKind, out uri) ? uri : None<Uri>();
         }
 
         /// <summary>
         /// Creates a new Uri using the specified base and relative String instances.
         /// </summary>
-        public static Maybe<Uri> CreateUri(Uri baseUri, string relativeUri) {
+        public static Optional<Uri> CreateUri(Uri baseUri, string relativeUri) {
             Uri uri;
-            return Uri.TryCreate(baseUri, relativeUri, out uri) ? uri : Nothing<Uri>();
+            return Uri.TryCreate(baseUri, relativeUri, out uri) ? uri : None<Uri>();
         }
 
         /// <summary>
         /// Creates a new Uri using the specified base and relative Uri instances.
         /// </summary>
-        public static Maybe<Uri> CreateUri(Uri baseUri, Uri relativeUri) {
+        public static Optional<Uri> CreateUri(Uri baseUri, Uri relativeUri) {
             Uri uri;
-            return Uri.TryCreate(baseUri, relativeUri, out uri) ? uri : Nothing<Uri>();
+            return Uri.TryCreate(baseUri, relativeUri, out uri) ? uri : None<Uri>();
         }
 
         /// <summary>
         /// Retrieves the value corresponding to the specified key.
         /// </summary>
         /// <remarks>This method doesn't distinguish between cases when the value is <c>null</c>
-        /// and when the dictionary doesn't contain the key. Both cases return <c>Nothing</c>.</remarks>
-        public static Maybe<TValue> GetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key) {
+        /// and when the dictionary doesn't contain the key. Both cases return <c>None</c>.</remarks>
+        public static Optional<TValue> GetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key) {
             TValue value;
-            return dictionary.TryGetValue(key, out value) ? value : Nothing<TValue>();
+            return dictionary.TryGetValue(key, out value) ? value : None<TValue>();
         }
 
         /// <summary>
         /// Retrieves a value corresponding to the supplied key from this <see cref="DbConnectionStringBuilder"/>.
         /// </summary>
-        public static Maybe<object> GetValue(this DbConnectionStringBuilder connectionStringBuilder, string keyword) {
+        public static Optional<object> GetValue(this DbConnectionStringBuilder connectionStringBuilder, string keyword) {
             object value;
-            return connectionStringBuilder.TryGetValue(keyword, out value) ? FromValue(value) : Nothing<object>();
+            return connectionStringBuilder.TryGetValue(keyword, out value) ? FromValue(value) : None<object>();
         }
 
         ///<summary>
-        ///Contains static methods for parsing strings which return <see cref="Maybe{T}"/>.
+        ///Contains static methods for parsing strings which return <see cref="Optional{T}"/>.
         ///</summary>
         public static class Parse {
             /// <summary>
             /// Parses a string which represents an <see cref="int"/>.
             /// </summary>
-            public static Maybe<int> Int(string s) {
+            public static Optional<int> Int(string s) {
                 int i;
-                return int.TryParse(s, out i) ? i : Nothing<int>();
+                return int.TryParse(s, out i) ? i : None<int>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="int"/>.
             /// </summary>
-            public static Maybe<int> Int(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<int> Int(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 int i;
-                return int.TryParse(s, styles, formatProvider, out i) ? i : Nothing<int>();
+                return int.TryParse(s, styles, formatProvider, out i) ? i : None<int>();
             }
 
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
-            public static Maybe<DateTime> DateTime(string s) {
+            public static Optional<DateTime> DateTime(string s) {
                 DateTime dateTime;
-                return System.DateTime.TryParse(s, out dateTime) ? dateTime : Nothing<DateTime>();
+                return System.DateTime.TryParse(s, out dateTime) ? dateTime : None<DateTime>();
             }
 
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
-            public static Maybe<DateTime> DateTime(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static Optional<DateTime> DateTime(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTime dateTime;
-                return System.DateTime.TryParse(s, formatProvider, styles, out dateTime) ? dateTime : Nothing<DateTime>();
+                return System.DateTime.TryParse(s, formatProvider, styles, out dateTime) ? dateTime : None<DateTime>();
             }
 
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
-            public static Maybe<DateTimeOffset> DateTimeOffset(string s) {
+            public static Optional<DateTimeOffset> DateTimeOffset(string s) {
                 DateTimeOffset offset;
-                return System.DateTimeOffset.TryParse(s, out offset) ? offset : Nothing<DateTimeOffset>();
+                return System.DateTimeOffset.TryParse(s, out offset) ? offset : None<DateTimeOffset>();
             }
 
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
-            public static Maybe<DateTimeOffset> DateTimeOffset(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static Optional<DateTimeOffset> DateTimeOffset(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTimeOffset offset;
-                return System.DateTimeOffset.TryParse(s, formatProvider, styles, out offset) ? offset : Nothing<DateTimeOffset>();
+                return System.DateTimeOffset.TryParse(s, formatProvider, styles, out offset) ? offset : None<DateTimeOffset>();
             }
 
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
-            public static Maybe<DateTime> ExactDateTime(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static Optional<DateTime> ExactDateTime(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTime dateTime;
-                return System.DateTime.TryParseExact(s, format, formatProvider, styles, out dateTime) ? dateTime : Nothing<DateTime>();
+                return System.DateTime.TryParseExact(s, format, formatProvider, styles, out dateTime) ? dateTime : None<DateTime>();
             }
 
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
-            public static Maybe<DateTime> ExactDateTime(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static Optional<DateTime> ExactDateTime(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTime dateTime;
-                return System.DateTime.TryParseExact(s, formats, formatProvider, styles, out dateTime) ? dateTime : Nothing<DateTime>();
+                return System.DateTime.TryParseExact(s, formats, formatProvider, styles, out dateTime) ? dateTime : None<DateTime>();
             }
 
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
-            public static Maybe<DateTimeOffset> ExactDateTimeOffset(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static Optional<DateTimeOffset> ExactDateTimeOffset(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTimeOffset offset;
-                return System.DateTimeOffset.TryParseExact(s, format, formatProvider, styles, out offset) ? offset : Nothing<DateTimeOffset>();
+                return System.DateTimeOffset.TryParseExact(s, format, formatProvider, styles, out offset) ? offset : None<DateTimeOffset>();
             }
 
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
-            public static Maybe<DateTimeOffset> ExactDateTimeOffset(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static Optional<DateTimeOffset> ExactDateTimeOffset(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
                 DateTimeOffset offset;
-                return System.DateTimeOffset.TryParseExact(s, formats, formatProvider, styles, out offset) ? offset : Nothing<DateTimeOffset>();
+                return System.DateTimeOffset.TryParseExact(s, formats, formatProvider, styles, out offset) ? offset : None<DateTimeOffset>();
             }
 
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.TimeSpan"/>.
             /// </summary>
-            public static Maybe<TimeSpan> TimeSpan(string s) {
+            public static Optional<TimeSpan> TimeSpan(string s) {
                 TimeSpan offset;
-                return System.TimeSpan.TryParse(s, out offset) ? offset : Nothing<TimeSpan>();
+                return System.TimeSpan.TryParse(s, out offset) ? offset : None<TimeSpan>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="int"/>.
             /// </summary>
-            public static Maybe<bool> Bool(string s) {
+            public static Optional<bool> Bool(string s) {
                 bool b;
-                return bool.TryParse(s, out b) ? b : Nothing<bool>();
+                return bool.TryParse(s, out b) ? b : None<bool>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="int"/>.
             /// </summary>
-            public static Maybe<char> Char(string s) {
+            public static Optional<char> Char(string s) {
                 char c;
-                return char.TryParse(s, out c) ? c : Nothing<char>();
+                return char.TryParse(s, out c) ? c : None<char>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="byte"/>.
             /// </summary>
-            public static Maybe<byte> Byte(string s) {
+            public static Optional<byte> Byte(string s) {
                 byte b;
-                return byte.TryParse(s, out b) ? b : Nothing<byte>();
+                return byte.TryParse(s, out b) ? b : None<byte>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="byte"/>.
             /// </summary>
-            public static Maybe<byte> Byte(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<byte> Byte(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 byte b;
-                return byte.TryParse(s, styles, formatProvider, out b) ? b : Nothing<byte>();
+                return byte.TryParse(s, styles, formatProvider, out b) ? b : None<byte>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="decimal"/>.
             /// </summary>
-            public static Maybe<decimal> Decimal(string s) {
+            public static Optional<decimal> Decimal(string s) {
                 decimal d;
-                return decimal.TryParse(s, out d) ? d : Nothing<decimal>();
+                return decimal.TryParse(s, out d) ? d : None<decimal>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="decimal"/>.
             /// </summary>
-            public static Maybe<decimal> Decimal(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<decimal> Decimal(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 decimal d;
-                return decimal.TryParse(s, styles, formatProvider, out d) ? d : Nothing<decimal>();
+                return decimal.TryParse(s, styles, formatProvider, out d) ? d : None<decimal>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="double"/>.
             /// </summary>
-            public static Maybe<double> Double(string s) {
+            public static Optional<double> Double(string s) {
                 double d;
-                return double.TryParse(s, out d) ? d : Nothing<double>();
+                return double.TryParse(s, out d) ? d : None<double>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="double"/>.
             /// </summary>
-            public static Maybe<double> Double(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<double> Double(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 double d;
-                return double.TryParse(s, styles, formatProvider, out d) ? d : Nothing<double>();
+                return double.TryParse(s, styles, formatProvider, out d) ? d : None<double>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="short"/>.
             /// </summary>
-            public static Maybe<short> Short(string s) {
+            public static Optional<short> Short(string s) {
                 short s1;
-                return short.TryParse(s, out s1) ? s1 : Nothing<short>();
+                return short.TryParse(s, out s1) ? s1 : None<short>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="short"/>.
             /// </summary>
-            public static Maybe<short> Short(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<short> Short(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 short s1;
-                return short.TryParse(s, styles, formatProvider, out s1) ? s1 : Nothing<short>();
+                return short.TryParse(s, styles, formatProvider, out s1) ? s1 : None<short>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="long"/>.
             /// </summary>
-            public static Maybe<long> Long(string s) {
+            public static Optional<long> Long(string s) {
                 long l;
-                return long.TryParse(s, out l) ? l : Nothing<long>();
+                return long.TryParse(s, out l) ? l : None<long>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="long"/>.
             /// </summary>
-            public static Maybe<long> Long(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<long> Long(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 long l;
-                return long.TryParse(s, styles, formatProvider, out l) ? l : Nothing<long>();
+                return long.TryParse(s, styles, formatProvider, out l) ? l : None<long>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="sbyte"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static Maybe<sbyte> SByte(string s) {
+            public static Optional<sbyte> SByte(string s) {
                 sbyte s1;
-                return sbyte.TryParse(s, out s1) ? s1 : Nothing<sbyte>();
+                return sbyte.TryParse(s, out s1) ? s1 : None<sbyte>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="sbyte"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static Maybe<sbyte> SByte(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<sbyte> SByte(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 sbyte s1;
-                return sbyte.TryParse(s, styles, formatProvider, out s1) ? s1 : Nothing<sbyte>();
+                return sbyte.TryParse(s, styles, formatProvider, out s1) ? s1 : None<sbyte>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="float"/>.
             /// </summary>
-            public static Maybe<float> Float(string s) {
+            public static Optional<float> Float(string s) {
                 float f;
-                return float.TryParse(s, out f) ? f : Nothing<float>();
+                return float.TryParse(s, out f) ? f : None<float>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="float"/>.
             /// </summary>
-            public static Maybe<float> Float(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<float> Float(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 float f;
-                return float.TryParse(s, styles, formatProvider, out f) ? f : Nothing<float>();
+                return float.TryParse(s, styles, formatProvider, out f) ? f : None<float>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="ushort"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static Maybe<ushort> UShort(string s) {
+            public static Optional<ushort> UShort(string s) {
                 ushort u;
-                return ushort.TryParse(s, out u) ? u : Nothing<ushort>();
+                return ushort.TryParse(s, out u) ? u : None<ushort>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="ushort"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static Maybe<ushort> UShort(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<ushort> UShort(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 ushort u;
-                return ushort.TryParse(s, styles, formatProvider, out u) ? u : Nothing<ushort>();
+                return ushort.TryParse(s, styles, formatProvider, out u) ? u : None<ushort>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="uint"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static Maybe<uint> UInt(string s) {
+            public static Optional<uint> UInt(string s) {
                 uint u;
-                return uint.TryParse(s, out u) ? u : Nothing<uint>();
+                return uint.TryParse(s, out u) ? u : None<uint>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="uint"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static Maybe<uint> UInt(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<uint> UInt(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 uint u;
-                return uint.TryParse(s, styles, formatProvider, out u) ? u : Nothing<uint>();
+                return uint.TryParse(s, styles, formatProvider, out u) ? u : None<uint>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="ulong"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static Maybe<ulong> ULong(string s) {
+            public static Optional<ulong> ULong(string s) {
                 ulong u;
-                return ulong.TryParse(s, out u) ? u : Nothing<ulong>();
+                return ulong.TryParse(s, out u) ? u : None<ulong>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="ulong"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static Maybe<ulong> ULong(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static Optional<ulong> ULong(string s, NumberStyles styles, IFormatProvider formatProvider) {
                 ulong u;
-                return ulong.TryParse(s, styles, formatProvider, out u) ? u : Nothing<ulong>();
+                return ulong.TryParse(s, styles, formatProvider, out u) ? u : None<ulong>();
             }
 
             /// <summary>
             /// Parses a string which represents an <see cref="ulong"/>.
             /// </summary>
-            public static Maybe<IPAddress> IPAddress(string s) {
+            public static Optional<IPAddress> IPAddress(string s) {
                 IPAddress address;
-                return System.Net.IPAddress.TryParse(s, out address) ? address : Nothing<IPAddress>();
+                return System.Net.IPAddress.TryParse(s, out address) ? address : None<IPAddress>();
             }            
         }
 
@@ -543,7 +543,7 @@ namespace FP.Core {
     /// </remarks>
     /// <seealso cref="Nullable{T}"/>
     [Serializable]
-    public struct Maybe<T> : IEnumerable<T>, IComparable<Maybe<T>>, IEquatable<Maybe<T>> {
+    public struct Optional<T> : IEnumerable<T>, IComparable<Optional<T>>, IEquatable<Optional<T>> {
         private readonly bool _hasValue;
         private readonly T _value;
 
@@ -556,7 +556,7 @@ namespace FP.Core {
             if (_hasValue)
                 return _value;
             else
-                throw new InvalidOperationException("Maybe<T> doesn't have a value.");
+                throw new InvalidOperationException("Optional<T> doesn't have a value.");
         } }
 
         /// <summary>
@@ -592,13 +592,13 @@ namespace FP.Core {
         /// <summary>
         /// Represents absence of value.
         /// </summary>
-        public static readonly Maybe<T> Nothing = new Maybe<T>();
+        public static readonly Optional<T> None = new Optional<T>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Maybe&lt;T&gt;"/> struct.
+        /// Initializes a new instance of the <see cref="Optional{T}"/> struct.
         /// </summary>
         /// <param name="value">The value.</param>
-        public Maybe(T value) {
+        public Optional(T value) {
             if (value != null) {
                 _hasValue = true;
                 _value = value;
@@ -644,8 +644,8 @@ namespace FP.Core {
         ///// Similar to the <c>??<\c> operator.
         ///// </summary>
         ///// <seealso cref="ValueOrElse"/>
-        ///// <example><c>Nothing | 5 == 5.</c></example>
-        //public static T operator |(Maybe<T> maybe, T @default) {
+        ///// <example><c>None | 5 == 5.</c></example>
+        //public static T operator |(Optional<T> maybe, T @default) {
         //    return maybe._hasValue ? maybe.Value : @default;
         //}
 
@@ -653,27 +653,27 @@ namespace FP.Core {
         /// Similar to the <c>??<\c> operator.
         /// </summary>
         /// <seealso cref="ValueOrElse"/>
-        /// <example><c>Nothing || Just(3) || Just(5) == Just(3).</c></example>
-        public static Maybe<T> operator |(Maybe<T> maybe, Maybe<T> @default) {
-            return maybe._hasValue ? maybe : @default;
+        /// <example><c>None || Some(3) || Some(5) == Some(3).</c></example>
+        public static Optional<T> operator |(Optional<T> optional, Optional<T> @default) {
+            return optional._hasValue ? optional : @default;
         }
 
         /// <summary>
         /// Implements the operator true.
         /// </summary>
-        /// <param name="maybe">The maybe.</param>
-        /// <returns><c>true</c> if <paramref name="maybe"/> has a value.</returns>
-        public static bool operator true(Maybe<T> maybe) {
-            return maybe._hasValue;
+        /// <param name="optional">The maybe.</param>
+        /// <returns><c>true</c> if <paramref name="optional"/> has a value.</returns>
+        public static bool operator true(Optional<T> optional) {
+            return optional._hasValue;
         }
 
         /// <summary>
         /// Implements the operator false.
         /// </summary>
-        /// <param name="maybe">The maybe.</param>
-        /// <returns><c>true</c> if <paramref name="maybe"/> doesn't have a value.</returns>
-        public static bool operator false(Maybe<T> maybe) {
-            return !maybe._hasValue;
+        /// <param name="optional">The maybe.</param>
+        /// <returns><c>true</c> if <paramref name="optional"/> doesn't have a value.</returns>
+        public static bool operator false(Optional<T> optional) {
+            return !optional._hasValue;
         }
 
         /// <summary>
@@ -698,38 +698,38 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// If the current instance has a value, calls <paramref name="function"/> on it and returns <c>Just</c> the result.
-        /// Otherwise returns <c>Nothing</c>.
+        /// If the current instance has a value, calls <paramref name="function"/> on it and returns <c>Some</c> the result.
+        /// Otherwise returns <c>None</c>.
         /// </summary>
         /// <typeparam name="R"></typeparam>
         /// <param name="function">The function.</param>
         /// <returns></returns>
-        public Maybe<R> Map<R>(Func<T, R> function) {
-            return HasValue ? Maybe.Just(function(_value)) : Maybe<R>.Nothing;
+        public Optional<R> Map<R>(Func<T, R> function) {
+            return HasValue ? Optional.Some(function(_value)) : Optional<R>.None;
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="T"/> to <see cref="FP.Collections.Immutable.Maybe{T}"/>.
+        /// Performs an implicit conversion from <see cref="T"/> to <see cref="Optional{T}"/>.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <returns><c>Just(value)</c> if value is not null; <c>Nothing</c> otherwise.</returns>
+        /// <returns><c>Some(value)</c> if value is not null; <c>None</c> otherwise.</returns>
         /// <remarks>It is implicit by parallel with <see cref="Nullable{T}"/>.</remarks>
-        public static implicit operator Maybe<T>(T value) {
-            return new Maybe<T>(value);
+        public static implicit operator Optional<T>(T value) {
+            return new Optional<T>(value);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="FP.Collections.Immutable.Maybe{T}"/> to <see cref="T"/>.
+        /// Performs an explicit conversion from <see cref="Optional{T}"/> to <see cref="T"/>.
         /// </summary>
-        /// <param name="maybe">The maybe.</param>
+        /// <param name="optional">The maybe.</param>
         /// <returns><see cref="Value"/> if it exists; <c>default(T)</c> otherwise.</returns>
-        public static explicit operator T(Maybe<T> maybe) {
-            return maybe.ValueOrElse(default(T));
+        public static explicit operator T(Optional<T> optional) {
+            return optional.ValueOrElse(default(T));
         }
         
         ///<summary>
-        ///Compares the current object with another object of the same type. <c>Nothing</c> is considered
-        ///to be less than all <c>Just(value)</c>; if both objects have values, they are compared.
+        ///Compares the current object with another object of the same type. <c>None</c> is considered
+        ///to be less than all <c>Some(value)</c>; if both objects have values, they are compared.
         ///</summary>
         ///
         ///<returns>
@@ -738,8 +738,8 @@ namespace FP.Core {
         ///</returns>
         ///
         ///<param name="other">An object to compare with this object.</param>
-        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IComparable{T}"/>. Null is considered to be less than <c>Nothing</c>.</remarks>
-        public int CompareTo(Maybe<T> other) {
+        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IComparable{T}"/>. Null is considered to be less than <c>None</c>.</remarks>
+        public int CompareTo(Optional<T> other) {
             return HasValue
                        ? (other.HasValue
                               ? Comparer<T>.Default.Compare(_value, other._value)
@@ -753,7 +753,7 @@ namespace FP.Core {
         /// <param name="one">The one.</param>
         /// <param name="other">The other.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator==(Maybe<T> one, Maybe<T> other) {
+        public static bool operator==(Optional<T> one, Optional<T> other) {
             return one.Equals(other);
         }
 
@@ -763,7 +763,7 @@ namespace FP.Core {
         /// <param name="one">The one.</param>
         /// <param name="other">The other.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(Maybe<T> one, Maybe<T> other) {
+        public static bool operator !=(Optional<T> one, Optional<T> other) {
             return !(one == other);
         }
 
@@ -777,7 +777,7 @@ namespace FP.Core {
         ///
         ///<param name="other">An object to compare with this object.</param>
         /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IEquatable{T}"/>.</remarks>
-        public bool Equals(Maybe<T> other) {
+        public bool Equals(Optional<T> other) {
             return HasValue
                        ? other.HasValue && _value.Equals(other._value)
                        : !other.HasValue;
@@ -791,8 +791,8 @@ namespace FP.Core {
         /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
         /// </returns>
         public override bool Equals(object obj) {
-            if (!(obj is Maybe<T>)) return false;
-            return Equals((Maybe<T>) obj);
+            if (!(obj is Optional<T>)) return false;
+            return Equals((Optional<T>) obj);
         }
 
         /// <summary>

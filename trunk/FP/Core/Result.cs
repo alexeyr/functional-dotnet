@@ -85,7 +85,7 @@ namespace FP.Core {
     /// or a <see cref="Failure"/>.
     /// </summary>
     /// <seealso cref="Either{L,R}"/>
-    /// <seealso cref="Maybe{T}"/>
+    /// <seealso cref="Optional{T}"/>
     /// <typeparam name="T">The type of the result.</typeparam>
     /// <seealso cref="Result"/>
     public abstract class Result<T> {
@@ -104,10 +104,10 @@ namespace FP.Core {
         /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
         public abstract R Match<R>(Func<T, R> onSuccess, Func<Exception, R> onFailure);
         /// <summary>
-        /// Converts the result to <see cref="Maybe{T}"/>.
+        /// Converts the result to <see cref="Optional{T}"/>.
         /// </summary>
         /// <returns></returns>
-        public abstract Maybe<T> ToMaybe();
+        public abstract Optional<T> ToMaybe();
 
         /// <summary>
         /// Gets the value, if the result is a success; throws an exception otherwise.
@@ -220,11 +220,11 @@ namespace FP.Core {
             }
 
             /// <summary>
-            /// Converts the result to <see cref="Maybe{T}"/>.
+            /// Converts the result to <see cref="Optional{T}"/>.
             /// </summary>
             /// <returns></returns>
-            public override Maybe<T> ToMaybe() {
-                return Maybe<T>.Nothing;
+            public override Optional<T> ToMaybe() {
+                return Optional<T>.None;
             }
         }
 
@@ -277,11 +277,11 @@ namespace FP.Core {
             }
 
             /// <summary>
-            /// Converts the result to <see cref="Maybe{T}"/>.
+            /// Converts the result to <see cref="Optional{T}"/>.
             /// </summary>
             /// <returns></returns>
-            public override Maybe<T> ToMaybe() {
-                return Maybe.Just(Value);
+            public override Optional<T> ToMaybe() {
+                return Optional.Some(Value);
             }
         }
     }

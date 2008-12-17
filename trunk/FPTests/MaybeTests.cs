@@ -25,54 +25,54 @@ namespace FPTests {
     public partial class MaybeTests {
         [Fact]
         public void Maybe_NullShouldConvertToNothing() {
-            Maybe<string> m = (string)null;
-            Assert.Equal(m, Maybe.Nothing<string>());
+            Optional<string> m = (string)null;
+            Assert.Equal(m, Optional.None<string>());
             Assert.False(m.HasValue);
         }
 
         [PexMethod]
         public void Maybe_ValueShouldConvertToSomething([PexAssumeNotNull] object o) {
-            Maybe<object> m = o;
+            Optional<object> m = o;
             Assert.True(m.HasValue);
             Assert.Equal(m.Value, o);
         }
 
         [PexMethod]
         public void Maybe_QueriesShouldWork(int x, int y) {
-            var query = from x1 in Maybe.Just(x)
-                        from y1 in Maybe.Just(y)
+            var query = from x1 in Optional.Some(x)
+                        from y1 in Optional.Some(y)
                         select x1 + y1;
             Assert.Equal(query.Value, x + y);
         }
 
         [PexMethod]
         public void Maybe_NothingShouldPropagateInQueries(int x) {
-            var query = from x1 in Maybe.Just(x)
-                        from y1 in Maybe<int>.Nothing
+            var query = from x1 in Optional.Some(x)
+                        from y1 in Optional<int>.None
                         select x1 + y1;
             Assert.False(query.HasValue);
         }
 
         [PexMethod]
-        public void Maybe_DefaultOperatorReturnsTheFirstJustValue (int x, Maybe<int> my) {
-            Assert.Equal(Maybe.Just(x) || my, Maybe.Just(x));
+        public void Maybe_DefaultOperatorReturnsTheFirstFoundValue (int x, Optional<int> my) {
+            Assert.Equal(Optional.Some(x) || my, Optional.Some(x));
         }
 
         [PexMethod]
         public void Maybe_DefaultOperatorCausesConversions(int x, int y) {
-            Assert.Equal(Maybe<int>.Nothing || x || y, Maybe.Just(x));
+            Assert.Equal(Optional<int>.None || x || y, Optional.Some(x));
         }
 
         [PexMethod]
-        public void Maybe_DefaultOperatorIgnoresNothingAsFirstArgument(Maybe<int> mx) {
-            Assert.Equal(Maybe<int>.Nothing || mx, mx);
+        public void Maybe_DefaultOperatorIgnoresNothingAsFirstArgument(Optional<int> mx) {
+            Assert.Equal(Optional<int>.None || mx, mx);
         }
 
         [Fact]
         public void Maybe_TryCatchesExceptions() {
             int zero = 0;
-            Assert.Equal(Maybe<int>.Nothing, Maybe.Try(() => 1 / zero));
-            Assert.Equal(Maybe<int>.Nothing, Maybe.Try<int, DivideByZeroException>(() => 1 / zero));
+            Assert.Equal(Optional<int>.None, Optional.Try(() => 1 / zero));
+            Assert.Equal(Optional<int>.None, Optional.Try<int, DivideByZeroException>(() => 1 / zero));
         }
     }
 }

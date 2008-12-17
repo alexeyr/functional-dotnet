@@ -1412,7 +1412,7 @@ namespace FP.Core {
 
         #region MaybeEnumerable
 
-        /// <summary>Returns the first element in a sequence, or <see cref="Maybe{T}.Nothing"/>
+        /// <summary>Returns the first element in a sequence, or <see cref="Optional{T}.None"/>
         /// if there is no such element.</summary>
         /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
         /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
@@ -1420,11 +1420,11 @@ namespace FP.Core {
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
         /// <remarks>Replaces <see cref="Enumerable.FirstOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
-        public static Maybe<T> MaybeFirst<T>(this IEnumerable<T> sequence) {
+        public static Optional<T> MaybeFirst<T>(this IEnumerable<T> sequence) {
             return MaybeFirst(sequence, x => true);
         }
 
-        /// <summary>Returns the first element in a sequence that satisfies a specified condition, or <see cref="Maybe{T}.Nothing"/>
+        /// <summary>Returns the first element in a sequence that satisfies a specified condition, or <see cref="Optional{T}.None"/>
         /// if there is no such element.</summary>
         /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
         /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
@@ -1433,11 +1433,11 @@ namespace FP.Core {
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.</exception>
         /// <remarks>Replaces <see cref="Enumerable.FirstOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
-        public static Maybe<T> MaybeFirst<T>(this IEnumerable<T> sequence, Func<T, bool> predicate) {
-            return Maybe.Try<T, InvalidOperationException>(() => sequence.First(predicate));
+        public static Optional<T> MaybeFirst<T>(this IEnumerable<T> sequence, Func<T, bool> predicate) {
+            return Optional.Try<T, InvalidOperationException>(() => sequence.First(predicate));
         }
 
-        /// <summary>Returns the first element in a sequence, or <see cref="Maybe{T}.Nothing"/>
+        /// <summary>Returns the first element in a sequence, or <see cref="Optional{T}.None"/>
         /// if there is no such element.</summary>
         /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
         /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
@@ -1445,11 +1445,11 @@ namespace FP.Core {
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
         /// <remarks>Replaces <see cref="Enumerable.LastOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
-        public static Maybe<T> MaybeLast<T>(this IEnumerable<T> sequence) {
+        public static Optional<T> MaybeLast<T>(this IEnumerable<T> sequence) {
             return MaybeLast(sequence, x => true);
         }
 
-        /// <summary>Returns the first element in a sequence that satisfies a specified condition, or <see cref="Maybe{T}.Nothing"/>
+        /// <summary>Returns the first element in a sequence that satisfies a specified condition, or <see cref="Optional{T}.None"/>
         /// if there is no such element.</summary>
         /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
         /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
@@ -1458,11 +1458,11 @@ namespace FP.Core {
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.</exception>
         /// <remarks>Replaces <see cref="Enumerable.LastOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
-        public static Maybe<T> MaybeLast<T>(this IEnumerable<T> sequence, Func<T, bool> predicate) {
-            return Maybe.Try<T, InvalidOperationException>(() => sequence.Last(predicate));
+        public static Optional<T> MaybeLast<T>(this IEnumerable<T> sequence, Func<T, bool> predicate) {
+            return Optional.Try<T, InvalidOperationException>(() => sequence.Last(predicate));
         }
 
-        /// <summary>Returns the first element in a sequence, or <see cref="Maybe{T}.Nothing"/>
+        /// <summary>Returns the first element in a sequence, or <see cref="Optional{T}.None"/>
         /// if there is no such element.</summary>
         /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
         /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
@@ -1470,11 +1470,11 @@ namespace FP.Core {
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
         /// <remarks>Replaces <see cref="Enumerable.SingleOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
-        public static Maybe<T> MaybeSingle<T>(this IEnumerable<T> sequence) {
+        public static Optional<T> MaybeSingle<T>(this IEnumerable<T> sequence) {
             return MaybeSingle(sequence, x => true);
         }
 
-        /// <summary>Returns the first element in a sequence that satisfies a specified condition, or <see cref="Maybe{T}.Nothing"/>
+        /// <summary>Returns the first element in a sequence that satisfies a specified condition, or <see cref="Optional{T}.None"/>
         /// if there is no such element.</summary>
         /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
         /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
@@ -1483,8 +1483,8 @@ namespace FP.Core {
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.</exception>
         /// <remarks>Replaces <see cref="Enumerable.SingleOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
-        public static Maybe<T> MaybeSingle<T>(this IEnumerable<T> sequence, Func<T, bool> predicate) {
-            return Maybe.Try<T, InvalidOperationException>(() => sequence.Single(predicate));
+        public static Optional<T> MaybeSingle<T>(this IEnumerable<T> sequence, Func<T, bool> predicate) {
+            return Optional.Try<T, InvalidOperationException>(() => sequence.Single(predicate));
         }
 
         /// <summary>
@@ -1497,9 +1497,9 @@ namespace FP.Core {
         /// <paramref name="predicate"/> within <paramref name="sequence"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="predicate"/>
         /// are null.</exception>
-        public static Maybe<T> MaybeFind<T>(this IEnumerable<T> sequence,
+        public static Optional<T> MaybeFind<T>(this IEnumerable<T> sequence,
                                        Func<T, bool> predicate) {
-            return Maybe.Try<T, NotFoundException>(() => sequence.Find(predicate));
+            return Optional.Try<T, NotFoundException>(() => sequence.Find(predicate));
         }
 
         /// <summary>
@@ -1512,9 +1512,9 @@ namespace FP.Core {
         /// <paramref name="element"/> within <paramref name="sequence"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="element"/>
         /// are null.</exception>
-        public static Maybe<T> MaybeFind<T>(this IEnumerable<T> sequence,
+        public static Optional<T> MaybeFind<T>(this IEnumerable<T> sequence,
                                        T element) {
-            return Maybe.Try<T, NotFoundException>(() => sequence.Find(element));
+            return Optional.Try<T, NotFoundException>(() => sequence.Find(element));
         }
 
         /// <summary>
@@ -1527,9 +1527,9 @@ namespace FP.Core {
         /// <paramref name="predicate"/> within <paramref name="sequence"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="predicate"/>
         /// are null.</exception>
-        public static Maybe<int> MaybeFindIndex<T>(this IEnumerable<T> sequence,
+        public static Optional<int> MaybeFindIndex<T>(this IEnumerable<T> sequence,
                                        Func<T, bool> predicate) {
-            return Maybe.Try<int, NotFoundException>(() => sequence.FindIndex(predicate));
+            return Optional.Try<int, NotFoundException>(() => sequence.FindIndex(predicate));
         }
 
         /// <summary>
@@ -1542,20 +1542,20 @@ namespace FP.Core {
         /// <paramref name="element"/> within <paramref name="sequence"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="element"/>
         /// are null.</exception>
-        public static Maybe<int> MaybeFindIndex<T>(this IEnumerable<T> sequence,
+        public static Optional<int> MaybeFindIndex<T>(this IEnumerable<T> sequence,
                                        T element) {
-            return Maybe.Try<int, NotFoundException>(() => sequence.FindIndex(element));
+            return Optional.Try<int, NotFoundException>(() => sequence.FindIndex(element));
         }
 
-        /// <summary>Returns the element at a specified index in a sequence or <see cref="Maybe{T}.Nothing"/> if the index is out of range.</summary>
-        /// <returns><see cref="Maybe{T}.Nothing"/> if the index is outside the bounds of the source sequence; otherwise, the element at the specified position in the source sequence.</returns>
+        /// <summary>Returns the element at a specified index in a sequence or <see cref="Optional{T}.None"/> if the index is out of range.</summary>
+        /// <returns><see cref="Optional{T}.None"/> if the index is outside the bounds of the source sequence; otherwise, the element at the specified position in the source sequence.</returns>
         /// <param name="sequence">An <see cref="IEnumerable{T}" /> to return an element from.</param>
         /// <param name="index">The zero-based index of the element to retrieve.</param>
         /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
         /// <exception cref="ArgumentNullException"><paramref name="sequence" /> is null.</exception>
-        public static Maybe<T> MaybeElementAt<T>(this IEnumerable<T> sequence,
+        public static Optional<T> MaybeElementAt<T>(this IEnumerable<T> sequence,
                                        int index) {
-            return Maybe.Try<T, ArgumentOutOfRangeException>(() => sequence.ElementAt(index));
+            return Optional.Try<T, ArgumentOutOfRangeException>(() => sequence.ElementAt(index));
         }
         #endregion
     }

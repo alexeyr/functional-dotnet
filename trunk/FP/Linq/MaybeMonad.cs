@@ -20,23 +20,23 @@ using FP.Core;
 
 namespace FP.Linq {
     /// <summary>
-    /// Implements query pattern on <see cref="Maybe{T}"/>. Makes <see cref="Maybe{T}"/> a monad.
+    /// Implements query pattern on <see cref="Optional{T}"/>. Makes <see cref="Optional{T}"/> a monad.
     /// </summary>
     public static class MaybeMonad {
-        public static Maybe<T> Where<T>(this Maybe<T> maybe, Func<T, bool> function) {
-            return maybe.MapOrElse(function, false) ? maybe : Maybe<T>.Nothing;
+        public static Optional<T> Where<T>(this Optional<T> optional, Func<T, bool> function) {
+            return optional.MapOrElse(function, false) ? optional : Optional<T>.None;
         }
 
-        public static Maybe<T2> Select<T1, T2>(this Maybe<T1> maybe, Func<T1, T2> function) {
-            return maybe.Map(function);
+        public static Optional<T2> Select<T1, T2>(this Optional<T1> optional, Func<T1, T2> function) {
+            return optional.Map(function);
         }
 
-        public static Maybe<T3> SelectMany<T1, T2, T3>(this Maybe<T1> maybe, Func<T1, Maybe<T2>> function, Func<T1, T2, T3> combiner) {
-            return maybe.SelectMany(x => function(x).Select(y => combiner(x, y)));
+        public static Optional<T3> SelectMany<T1, T2, T3>(this Optional<T1> optional, Func<T1, Optional<T2>> function, Func<T1, T2, T3> combiner) {
+            return optional.SelectMany(x => function(x).Select(y => combiner(x, y)));
         }
 
-        public static Maybe<T2> SelectMany<T1, T2>(this Maybe<T1> maybe, Func<T1, Maybe<T2>> function) {
-            return maybe.MapOrElse(function, Maybe<T2>.Nothing);
+        public static Optional<T2> SelectMany<T1, T2>(this Optional<T1> optional, Func<T1, Optional<T2>> function) {
+            return optional.MapOrElse(function, Optional<T2>.None);
         }
     }
 }
