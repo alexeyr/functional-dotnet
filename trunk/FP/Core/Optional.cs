@@ -58,7 +58,7 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <returns><c>None</c> if <paramref name="sequence"/> is empty;
         /// <c>Some(sequence.Item1())</c> otherwise.</returns>
-        public static Optional<T> ToMaybe<T>(this IEnumerable<T> sequence) {
+        public static Optional<T> ToOptional<T>(this IEnumerable<T> sequence) {
             using (var enumerator = sequence.GetEnumerator()) {
                 if (enumerator.MoveNext())
                     return Some(enumerator.Current);
@@ -73,7 +73,7 @@ namespace FP.Core {
         /// <param name="nullable">The nullable.</param>
         /// <returns><c>None</c> if <paramref name="nullable"/> doesn't have a value;
         /// <c>Some(nullable.Value)</c> otherwise.</returns>
-        public static Optional<T> ToMaybe<T>(this T? nullable) where T : struct {
+        public static Optional<T> ToOptional<T>(this T? nullable) where T : struct {
             return nullable.HasValue ? Some(nullable.Value) : None<T>();
         }
 
@@ -137,7 +137,7 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <returns></returns>
         public static IEnumerable<T> SelectValues<T>(this IEnumerable<T?> sequence) where T : struct {
-            return sequence.Map(x => x.ToMaybe()).SelectValues();
+            return sequence.Map(x => x.ToOptional()).SelectValues();
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <param name="function">The function.</param>
         /// <returns></returns>
-        public static IEnumerable<R> MapMaybe<T, R>(this IEnumerable<T> sequence, Func<T, Optional<R>> function) {
+        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence, Func<T, Optional<R>> function) {
             return sequence.Map(function).SelectValues();
         }
 
@@ -166,7 +166,7 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <param name="function">The function.</param>
         /// <returns></returns>
-        public static IEnumerable<R> MapMaybe<T, R>(this IEnumerable<T> sequence, Func<T, R?> function) where R : struct {
+        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence, Func<T, R?> function) where R : struct {
             return sequence.Map(function).SelectValues();
         }
 
@@ -200,7 +200,8 @@ namespace FP.Core {
 
 #region Tries -- The versions of "Try..." methods from the framework
         /// <summary>
-        /// Creates a new Uri using the specified String instance and a <see cref="UriKind"/>.
+        /// Creates a new Uri using the specified String instance and a 
+        /// <see cref="UriKind"/>.
         /// </summary>
         public static Optional<Uri> CreateUri(string uriString, UriKind uriKind) {
             Uri uri;
