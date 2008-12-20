@@ -23,6 +23,7 @@ namespace FP.Core.CPS {
     public class Cont<T> {
         public readonly Action<T> Ok;
         public readonly Action<Exception> Fail;
+
         public Cont(Action<T> ok, Action<Exception> fail) {
             Ok = ok;
             Fail = fail;

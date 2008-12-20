@@ -19,7 +19,6 @@ using Xunit;
 
 namespace FPTests {
     public class SwitchTests {
-
         [Fact]
         public void SwitchExpr_Should_HaveNoResultWithoutACorrectCase() {
             var aSwitch = Switch.ExprOn<int, int>(10)
@@ -69,7 +68,7 @@ namespace FPTests {
                 Switch.ExprOn<IEnumerable<char>, string>("aaa")
                     .Case<string>(x => "x is a string")
                     .Case<char[]>(x => "x is an array")
-                    .Default(x => "default"), 
+                    .Default(x => "default"),
                 "x is a string");
 
             Assert.Equal(

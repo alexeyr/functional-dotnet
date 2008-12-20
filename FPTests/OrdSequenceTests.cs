@@ -62,7 +62,9 @@ namespace FPTests {
 
         [Fact]
         public void Test_FromOrderedEnumerable() {
-            Assert2.SequenceEqual(_testDataSorted, OrderedSequence.FromOrderedEnumerable(_testDataSorted, int.MinValue));
+            Assert2.SequenceEqual(_testDataSorted,
+                                  OrderedSequence.FromOrderedEnumerable(_testDataSorted,
+                                                                        int.MinValue));
         }
 
         [Fact]
@@ -92,9 +94,7 @@ namespace FPTests {
         [Fact]
         public void Test_Indexing() {
             Assert.Equal(N, _seq.Count);
-            for (int i = 0; i < N; i++) {
-                Assert.Equal(_testDataSorted[i], _seq[i].Item2);
-            }
+            for (int i = 0; i < N; i++) Assert.Equal(_testDataSorted[i], _seq[i].Item2);
         }
     }
 }

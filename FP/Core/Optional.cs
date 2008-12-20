@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using FP.HaskellNames;
 
 // ReSharper disable RedundantIfElseBlock
+
 namespace FP.Core {
     /// <summary>
     /// This struct represents an optional value, like <see cref="Nullable{T}"/>, but
@@ -40,12 +41,14 @@ namespace FP.Core {
         /// </summary>
         /// <value>The value.</value>
         /// <exception cref="InvalidOperationException"><see cref="HasValue"/> is <c>false</c>.</exception>
-        public T Value { get {
-            if (HasValue)
-                return _value;
-            else
-                throw new InvalidOperationException("Optional<T> doesn't have a value.");
-        } }
+        public T Value {
+            get {
+                if (HasValue)
+                    return _value;
+                else
+                    throw new InvalidOperationException("Optional<T> doesn't have a value.");
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether this instance has value.
@@ -74,7 +77,7 @@ namespace FP.Core {
         ///</returns>
         ///<filterpriority>2</filterpriority>
         IEnumerator IEnumerable.GetEnumerator() {
-            return ((IEnumerable<T>)this).GetEnumerator();
+            return ((IEnumerable<T>) this).GetEnumerator();
         }
 
         /// <summary>
@@ -199,7 +202,7 @@ namespace FP.Core {
         public static explicit operator T(Optional<T> optional) {
             return optional.ValueOrElse(default(T));
         }
-        
+
         ///<summary>
         ///Compares the current object with another object of the same type. <c>None</c> is considered
         ///to be less than all <c>Some(value)</c>; if both objects have values, they are compared.
@@ -226,7 +229,7 @@ namespace FP.Core {
         /// <param name="one">The one.</param>
         /// <param name="other">The other.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator==(Optional<T> one, Optional<T> other) {
+        public static bool operator ==(Optional<T> one, Optional<T> other) {
             return one.Equals(other);
         }
 
@@ -275,7 +278,7 @@ namespace FP.Core {
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
         public override int GetHashCode() {
-            return 29*typeof(T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
+            return 29 * typeof (T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
         }
     }
 
@@ -340,9 +343,10 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <returns></returns>
         public static IEnumerable<T> SelectValues<T>(this IEnumerable<Optional<T>> sequence) {
-            foreach (var maybe in sequence)
+            foreach (var maybe in sequence) {
                 if (maybe.HasValue)
                     yield return maybe.Value;
+            }
         }
 
         /// <summary>
@@ -356,7 +360,8 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <param name="function">The function.</param>
         /// <returns></returns>
-        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence, Func<T, Optional<R>> function) {
+        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence,
+                                                   Func<T, Optional<R>> function) {
             return SelectValues(sequence.Map(function));
         }
 
@@ -389,4 +394,5 @@ namespace FP.Core {
         }
     }
 }
+
 // ReSharper restore RedundantIfElseBlock

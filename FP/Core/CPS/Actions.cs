@@ -29,7 +29,7 @@ namespace FP.Core.CPS {
         ///<typeparam name="T"></typeparam>
         public static T Run<T>(this ActionCPS<T> action) {
             return action.RunR().Match(
-                x => x, 
+                x => x,
                 e => { throw new ActionFailureException(e); });
         }
 
@@ -43,8 +43,8 @@ namespace FP.Core.CPS {
             Result<T> result = null;
             try {
                 action(new Cont<T>(
-                    t => { result = Result.Success(t); },
-                    e => { result = Result.Failure<T>(e); }));
+                           t => { result = Result.Success(t); },
+                           e => { result = Result.Failure<T>(e); }));
                 return result;
             }
             catch (Exception e) {
@@ -84,15 +84,16 @@ namespace FP.Core.CPS {
         ///<param name="timeSpan">How long to sleep.</param>
         public static ActionCPS<bool> TrueAfter(TimeSpan timeSpan) {
             return cont => {
-                Thread.Sleep(timeSpan);
-                cont.Ok(true);
-            };
+                       Thread.Sleep(timeSpan);
+                       cont.Ok(true);
+                   };
         }
 
-        public static ActionCPS<T2> Then<T1, T2>(this ActionCPS<T1> first, Func<T1, ActionCPS<T2>> second) {
+        public static ActionCPS<T2> Then<T1, T2>(this ActionCPS<T1> first,
+                                                 Func<T1, ActionCPS<T2>> second) {
             return cont => first(new Cont<T1>(
-                t1 => second(t1)(cont), 
-                e => cont.Fail(e)));
+                                     t1 => second(t1)(cont),
+                                     e => cont.Fail(e)));
         }
 
         ///<summary>
@@ -101,10 +102,11 @@ namespace FP.Core.CPS {
         ///</summary>
         ///<param name="action">The action to try.</param>
         ///<param name="rescue">The action to call if <paramref name="action"/> fails.</param>
-        public static ActionCPS<T> WithRescue<T>(this ActionCPS<T> action, Func<Exception, ActionCPS<T>> rescue) {
+        public static ActionCPS<T> WithRescue<T>(this ActionCPS<T> action,
+                                                 Func<Exception, ActionCPS<T>> rescue) {
             return cont => action.RunR().Match(
-                t => cont.Ok(t), 
-                e => rescue(e)(cont));
+                               t => cont.Ok(t),
+                               e => rescue(e)(cont));
         }
 
         ///<summary>
@@ -126,7 +128,8 @@ namespace FP.Core.CPS {
         ///fails.</param>
         ///<typeparam name="T"></typeparam>
         ///<returns></returns>
-        public static ActionCPS<T> OrElse<T>(this ActionCPS<T> action, ActionCPS<T> ifFirstActionFails) {
+        public static ActionCPS<T> OrElse<T>(this ActionCPS<T> action,
+                                             ActionCPS<T> ifFirstActionFails) {
             return action.WithRescue(e => ifFirstActionFails);
         }
 

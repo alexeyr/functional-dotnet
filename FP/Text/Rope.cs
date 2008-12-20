@@ -51,8 +51,9 @@ namespace FP.Text {
 /* 27 */514229, /* 28 */832040, /* 29 */1346269, /* 30 */2178309,
 /* 31 */3524578, /* 32 */5702887, /* 33 */9227465, /* 34 */14930352,
 /* 35 */24157817, /* 36 */39088169, /* 37 */63245986, /* 38 */102334155,
-/* 39 */165580141, /* 40 */267914296, /* 41 */433494437, /* 42 */701408733, 
-/* 43 */1134903170, /* 44 */1836311903, /* 45 */ int.MaxValue};
+/* 39 */165580141, /* 40 */267914296, /* 41 */433494437, /* 42 */701408733,
+/* 43 */1134903170, /* 44 */1836311903, /* 45 */ int.MaxValue
+                                                                              };
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -89,7 +90,9 @@ namespace FP.Text {
         /// </summary>
         /// <param name="destination">The destination array.</param>
         /// <param name="destinationIndex">The index in the destination array.</param>
-        public abstract void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex, int count);
+        public abstract void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex,
+                                    int count);
+
         /// <summary>
         /// Returns the substring.
         /// </summary>
@@ -103,9 +106,8 @@ namespace FP.Text {
             if (IsEmpty)
                 return other;
             var otherFlat = other as FlatRope<TChar>;
-            if (otherFlat != null && IsRightMostChildFlatAndShort && otherFlat.Length <= MaxShortSize) {
-                return ConcatShort(otherFlat);
-            } // if (otherFlat)
+            if (otherFlat != null && IsRightMostChildFlatAndShort &&
+                otherFlat.Length <= MaxShortSize) return ConcatShort(otherFlat);
             return ConcatAndRebalanceIfNeeded(other);
         }
 
@@ -118,15 +120,19 @@ namespace FP.Text {
         }
 
         internal abstract Rope<TChar> ConcatShort(FlatRope<TChar> otherFlat);
+
         /// <summary>
         /// Gets the depth of the rope (0 for the flat ropes).
         /// </summary>
         /// <value>The depth.</value>
         protected internal abstract byte Depth { get; }
+
         protected internal abstract bool IsRightMostChildFlatAndShort { get; }
         protected internal abstract bool IsBalanced { get; }
 
-        public bool IsEmpty { get { return Length == 0; } }
+        public bool IsEmpty {
+            get { return Length == 0; }
+        }
 
         public abstract Rope<TChar> Rebalance();
     }

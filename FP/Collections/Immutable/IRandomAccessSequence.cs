@@ -21,7 +21,8 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
     /// <typeparam name="TSequence">Type of the sequence.</typeparam>
-    public interface IRandomAccessSequence<T, TSequence> : IRandomAccessSequenceRead<T, TSequence> where TSequence : IRandomAccessSequence<T, TSequence> {
+    public interface IRandomAccessSequence<T, TSequence> : IRandomAccessSequenceRead<T, TSequence>
+        where TSequence : IRandomAccessSequence<T, TSequence> {
         /// <summary>
         /// Updates the element at <paramref name="index"/> using <paramref name="function"/>.
         /// </summary>
@@ -32,7 +33,7 @@ namespace FP.Collections.Immutable {
         /// Equivalent to <code>SetAt(index, function(this[index])), but faster.</code>
         /// </remarks>
         TSequence UpdateAt(int index, Func<T, T> function);
-    } // interface IRandomAccessSequence`2
+        } // interface IRandomAccessSequence`2
 
     public static class RandomAccessSequences {
         /// <summary>
@@ -48,7 +49,8 @@ namespace FP.Collections.Immutable {
         /// and all other elements have the same value as in the original sequence.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
-        public static TSequence SetAt<T, TSequence>(this TSequence sequence, int index, T newValue) where TSequence : IRandomAccessSequence<T, TSequence> {
+        public static TSequence SetAt<T, TSequence>(this TSequence sequence, int index, T newValue)
+            where TSequence : IRandomAccessSequence<T, TSequence> {
             return sequence.UpdateAt(index, _ => newValue);
         }
     }

@@ -23,7 +23,7 @@ namespace FP.Core {
         ///<summary>
         ///Constructs a <see cref="Either{L,R}.Left"/>.
         ///</summary>
-        public static Either<L, R>.Left Left<L,R>(L value) {
+        public static Either<L, R>.Left Left<L, R>(L value) {
             return new Either<L, R>.Left(value);
         }
 
@@ -50,12 +50,14 @@ namespace FP.Core {
         /// </summary>
         /// <value><c>true</c> if this instance is a <see cref="Right"/>; otherwise, <c>false</c>.</value>
         public abstract bool IsRight { get; }
+
         /// <summary>
         /// Case analysis.
         /// </summary>
         /// <param name="onLeft">Action to do if this is a <see cref="Left"/>.</param>
         /// <param name="onRight">Action to do if this is a <see cref="Right"/>.</param>
         public abstract void Match(Action<L> onLeft, Action<R> onRight);
+
         /// <summary>
         /// Case analysis.
         /// </summary>
@@ -68,6 +70,7 @@ namespace FP.Core {
         /// </summary>
         /// <exception cref="InvalidOperationException"><see cref="Either{L,R}.IsRight"/> is true.</exception>
         public abstract L LeftValue { get; }
+
         /// <summary>
         /// Gets the right value.
         /// </summary>
@@ -129,7 +132,7 @@ namespace FP.Core {
         /// <param name="leftValue">The left value.</param>
         /// <returns><see cref="Left"/> with value <paramref name="leftValue"/>.</returns>
         [CLSCompliant(false)]
-        public static implicit operator Either<L,R>(L leftValue) {
+        public static implicit operator Either<L, R>(L leftValue) {
             return new Left(leftValue);
         }
 
@@ -147,7 +150,7 @@ namespace FP.Core {
         /// Represents a value of the type <typeparamref name="L"/>.
         /// </summary>
         [Serializable]
-        public sealed class Left : Either<L,R>, IEquatable<Left> {
+        public sealed class Left : Either<L, R>, IEquatable<Left> {
             private readonly L _value;
 
             /// <summary>

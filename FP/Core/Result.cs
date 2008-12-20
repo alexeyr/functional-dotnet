@@ -81,12 +81,14 @@ namespace FP.Core {
         /// <param name="onSuccess">The action to do if the result is a success.</param>
         /// <param name="onFailure">The action to do if the result is a failure.</param>
         public abstract void Match(Action<T> onSuccess, Action<Exception> onFailure);
+
         /// <summary>
         /// Case analysis on results.
         /// </summary>
         /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
         /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
         public abstract R Match<R>(Func<T, R> onSuccess, Func<Exception, R> onFailure);
+
         /// <summary>
         /// Converts the result to <see cref="Optional{T}"/>.
         /// </summary>
@@ -116,6 +118,7 @@ namespace FP.Core {
         public static bool operator false(Result<T> result) {
             return result is Failure;
         }
+
         /// <summary>
         /// Implements the operator true.
         /// </summary>
@@ -133,7 +136,9 @@ namespace FP.Core {
             /// Gets the reason.
             /// </summary>
             /// <value>The reason.</value>
-            public string Reason { get { return Exception.Message; } }
+            public string Reason {
+                get { return Exception.Message; }
+            }
 
             /// <summary>
             /// Gets the exception.
@@ -190,7 +195,7 @@ namespace FP.Core {
             /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
             /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
             public override R Match<R>(Func<T, R> onSuccess,
-                                          Func<Exception, R> onFailure) {
+                                       Func<Exception, R> onFailure) {
                 return onFailure(Exception);
             }
 
@@ -220,7 +225,9 @@ namespace FP.Core {
             /// Gets the value.
             /// </summary>
             /// <value>The value.</value>
-            public override T Value { get { return _value; } }
+            public override T Value {
+                get { return _value; }
+            }
 
             private readonly T _value;
 
@@ -247,7 +254,7 @@ namespace FP.Core {
             /// <param name="onSuccess">The function to evaluate if the result is a success.</param>
             /// <param name="onFailure">The function to evaluate if the result is a failure.</param>
             public override R Match<R>(Func<T, R> onSuccess,
-                                          Func<Exception, R> onFailure) {
+                                       Func<Exception, R> onFailure) {
                 return onSuccess(Value);
             }
 

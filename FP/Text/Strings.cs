@@ -33,7 +33,6 @@ namespace FP.Text {
     /// See also the Remarks for <see cref="Enumerable"/>.
     /// </remarks>
     public static class Strings {
-
         /// <summary>
         /// Determines whether the string is null or empty. This is merely <c>string.IsNullOrEmpty(s)</c>
         /// as an extension method.
@@ -82,7 +81,7 @@ namespace FP.Text {
             var sb = new StringBuilder();
             char lastChar = '\0';
             foreach (char c in charSequence) {
-                if (c != '\n') 
+                if (c != '\n')
                     sb.Append(c);
                 else {
                     if (lastChar == '\r')
@@ -92,9 +91,7 @@ namespace FP.Text {
                 }
                 lastChar = c;
             }
-            if (lastChar != '\n') {
-                yield return sb.ToString();
-            }
+            if (lastChar != '\n') yield return sb.ToString();
 
             //lines			:: String -> [String]
             //lines ""		=  []
@@ -149,9 +146,7 @@ namespace FP.Text {
             bool lastCharWasWhiteSpace = true;
 
             foreach (char c in charSequence) {
-                if (!char.IsWhiteSpace(c)) {
-                    sb.Append(c);
-                }
+                if (!char.IsWhiteSpace(c)) sb.Append(c);
                 else {
                     if (!lastCharWasWhiteSpace) {
                         yield return sb.ToString();

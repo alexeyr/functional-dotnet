@@ -22,11 +22,10 @@ using Microsoft.Pex.Framework;
 
 namespace FPTests {
     public partial class EnumerableTests {
-
         [Fact]
         public void TailShouldThrowOnEmptySeq() {
             var emptyList = Enumerable.Empty<int>();
-            Assert.Throws(typeof(EmptySequenceException), () => emptyList.Tail().FirstOrDefault());
+            Assert.Throws(typeof (EmptySequenceException), () => emptyList.Tail().FirstOrDefault());
         }
 
         [Fact]
@@ -41,7 +40,8 @@ namespace FPTests {
 
         [Fact]
         public void IntercalateTest() {
-            Assert.Equal("a,b,c,d,e", new[] {"a","b","c","d","e"}.Intercalate(",").ToStringProper());
+            Assert.Equal("a,b,c,d,e",
+                         new[] {"a", "b", "c", "d", "e"}.Intercalate(",").ToStringProper());
         }
 
         [Fact]
@@ -51,12 +51,13 @@ namespace FPTests {
 
         [Fact]
         public void FoldRightTest2() {
-            Assert.Equal(-2, new[] { 1, 2, 3, 4 }.FoldRight((x, y) => x - y, 0)); //1 - (2 - (3 - (4 - 0))
+            Assert.Equal(-2, new[] {1, 2, 3, 4}.FoldRight((x, y) => x - y, 0));
+                //1 - (2 - (3 - (4 - 0))
         }
 
         [Fact]
         public void ScanLeftTest() {
-            Assert2.SequenceEqual(new[] { 1, 3, 6, 10 }, new[] { 1, 2, 3, 4 }.ScanLeft((x, y) => x + y));
+            Assert2.SequenceEqual(new[] {1, 3, 6, 10}, new[] {1, 2, 3, 4}.ScanLeft((x, y) => x + y));
         }
 
         [PexMethod]

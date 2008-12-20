@@ -71,7 +71,9 @@ namespace FP.Text {
         /// Gets the string represented by this sequence.
         /// </summary>
         /// <value>The string.</value>
-        public string String { get { return _string; } }
+        public string String {
+            get { return _string; }
+        }
 
         public override string ToString() {
             return String;

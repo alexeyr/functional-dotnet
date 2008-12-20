@@ -21,7 +21,8 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T">The type of elements.</typeparam>
     /// <typeparam name="TSequence">The type of the sequence.</typeparam>
-    public interface IRandomAccessSequenceRead<T, TSequence> : ICollection<T> where TSequence : IRandomAccessSequenceRead<T, TSequence> {
+    public interface IRandomAccessSequenceRead<T, TSequence> : ICollection<T>
+        where TSequence : IRandomAccessSequenceRead<T, TSequence> {
         /// <summary>
         /// Returns a subsequence starting at <paramref name="startIndex"/> and consisting of <paramref name="count"/> elements.
         /// </summary>
@@ -35,6 +36,5 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         T this[int index] { get; }
-
-    }
+        }
 }

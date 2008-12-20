@@ -26,11 +26,13 @@ namespace FP.Text {
         /// Gets the length of the sequence.
         /// </summary>
         int Length { get; }
+
         /// <summary>
         /// Gets the <paramref name="index"/>-th <see cref="TChar"/> in the sequence.
         /// Should be quick constant time.
         /// </summary>
         TChar this[int index] { get; }
+
         /// <summary>
         /// Copies the sequence to <paramref name="destination"/>, starting at <paramref name="destinationIndex"/>.
         /// </summary>
@@ -42,7 +44,8 @@ namespace FP.Text {
     }
 
     public static class CharSequences {
-        public static void CopyTo<TChar, TSequence>(this TSequence sequence, TChar[] destination, int destinationIndex)
+        public static void CopyTo<TChar, TSequence>(this TSequence sequence, TChar[] destination,
+                                                    int destinationIndex)
             where TSequence : ICharSequence<TChar> {
             sequence.CopyTo(0, destination, destinationIndex, sequence.Length);
         }

@@ -88,9 +88,12 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// The product of two monoids.
         /// </summary>
-        public static Monoid<Tuple<T1, T2>> Product<T1, T2>(this Monoid<T1> monoid1, Monoid<T2> monoid2) {
+        public static Monoid<Tuple<T1, T2>> Product<T1, T2>(this Monoid<T1> monoid1,
+                                                            Monoid<T2> monoid2) {
             return new Monoid<Tuple<T1, T2>>(Pair.New(monoid1.Zero, monoid2.Zero),
-                (p1, p2) => Pair.New(monoid1.Plus(p1.Item1, p2.Item1), monoid2.Plus(p1.Item2, p2.Item2)));
+                                             (p1, p2) =>
+                                             Pair.New(monoid1.Plus(p1.Item1, p2.Item1),
+                                                      monoid2.Plus(p1.Item2, p2.Item2)));
         }
 
         /// <summary>

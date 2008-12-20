@@ -41,7 +41,7 @@ namespace FP.Text {
             _child1 = rope1;
             _child2 = rope2;
             _length = _child1.Length + _child2.Length;
-            _depth = (byte)(Math.Max(_child1.Depth, _child2.Depth) + 1);
+            _depth = (byte) (Math.Max(_child1.Depth, _child2.Depth) + 1);
             _isBalanced = (_length >= MinLength[_depth]);
         }
 
@@ -72,9 +72,7 @@ namespace FP.Text {
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or
         /// greater or equal to <see cref="Rope{TChar}.Length"/>.</exception>
         public override TChar this[int index] {
-            get {
-                return index < SplitIndex ? _child1[index] : _child2[index - SplitIndex];
-            }
+            get { return index < SplitIndex ? _child1[index] : _child2[index - SplitIndex]; }
         }
 
         /// <summary>
@@ -82,7 +80,8 @@ namespace FP.Text {
         /// </summary>
         /// <param name="destination">The destination array.</param>
         /// <param name="destinationIndex">The index in the destination array.</param>
-        public override void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex, int count) {
+        public override void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex,
+                                    int count) {
             if (sourceIndex < SplitIndex) {
                 int count1 = SplitIndex - sourceIndex;
                 if (count <= count1) {
@@ -150,9 +149,7 @@ namespace FP.Text {
             Rope<TChar> result = null;
             foreach (var rope in forest)
                 result = rope.Concat(result);
-            if (result.Depth > MaxRopeDepth) {
-                throw new ArgumentException("The rope is too long.");
-            }
+            if (result.Depth > MaxRopeDepth) throw new ArgumentException("The rope is too long.");
             return result;
         }
 

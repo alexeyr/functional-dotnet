@@ -32,6 +32,7 @@ namespace FP.HaskellNames {
     /// </remarks>
     public static class Enumerables2 {
         #region Basic Functions
+
         /// <summary>
         /// Yields <paramref name="element"/> first, then all elements of <paramref name="sequence"/>.
         /// </summary>
@@ -135,7 +136,8 @@ namespace FP.HaskellNames {
         /// <remarks>
         /// An alternate name for <see cref="Enumerable.Aggregate{TSource,TAccumulate}"/>.
         /// </remarks>
-        public static TAcc FoldLeft<T, TAcc>(this IEnumerable<T> sequence, Func<TAcc, T, TAcc> func, TAcc initialAcc) {
+        public static TAcc FoldLeft<T, TAcc>(this IEnumerable<T> sequence, Func<TAcc, T, TAcc> func,
+                                             TAcc initialAcc) {
             return sequence.Aggregate(initialAcc, func);
         }
 

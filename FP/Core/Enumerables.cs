@@ -127,9 +127,7 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <param name="action">The action.</param>
         public static void ForEach<T>(this IEnumerable<T> sequence, Action<T> action) {
-            foreach (var t in sequence) {
-                action(t);
-            }
+            foreach (var t in sequence) action(t);
         }
 
         #endregion
@@ -198,7 +196,8 @@ namespace FP.Core {
         /// This method currently isn't fully lazy; it has to construct each column fully before yielding it.
         /// </remarks>
         [Obsolete("No variance in generics, so it's very inconvenient to use.")]
-        public static IEnumerable<IEnumerable<T>> Transpose<T>(this IEnumerable<IEnumerable<T>> sequence) {
+        public static IEnumerable<IEnumerable<T>> Transpose<T>(
+            this IEnumerable<IEnumerable<T>> sequence) {
             var enumerators = sequence.Map(seq => seq.GetEnumerator());
             var currentColumn = new List<T>();
             while (true) {
@@ -242,7 +241,8 @@ namespace FP.Core {
         /// Unlike Haskell, <paramref name="func"/> usually won't be lazy, so this
         /// should not be used for associative <paramref name="func"/>.
         /// </remarks>
-        public static TAcc FoldRight<T, TAcc>(this IEnumerable<T> sequence, Func<T, TAcc, TAcc> func, TAcc initialAcc) {
+        public static TAcc FoldRight<T, TAcc>(this IEnumerable<T> sequence, Func<T, TAcc, TAcc> func,
+                                              TAcc initialAcc) {
             return sequence.Reverse().Aggregate(initialAcc, func.Flip());
 
             //foldr            :: (a -> b -> b) -> b -> [a] -> b
@@ -284,9 +284,10 @@ namespace FP.Core {
         /// <returns></returns>
         public static IEnumerable<T> Concat<T>(
             this IEnumerable<IEnumerable<T>> sequences) {
-            foreach (var sequence in sequences)
+            foreach (var sequence in sequences) {
                 foreach (T t in sequence)
                     yield return t;
+            }
 
             //concat :: [[a]] -> [a]
             //concat = foldr (++) []
@@ -357,9 +358,10 @@ namespace FP.Core {
             if (source == null)
                 throw new ArgumentNullException("source");
             decimal num = 1M;
-            foreach (var nullable in source)
+            foreach (var nullable in source) {
                 if (nullable.HasValue)
                     num *= nullable.GetValueOrDefault();
+            }
             return num;
         }
 
@@ -383,9 +385,7 @@ namespace FP.Core {
         /// <exception cref="ArgumentNullException"> <paramref name="source" /> is null.</exception>
         /// <exception cref="OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
         public static int Product(this IEnumerable<int> source) {
-            if (source == null) {
-                throw new ArgumentNullException("source");
-            }
+            if (source == null) throw new ArgumentNullException("source");
             int num = 1;
             foreach (int num2 in source)
                 num *= num2;
@@ -415,9 +415,10 @@ namespace FP.Core {
             if (source == null)
                 throw new ArgumentNullException("source");
             double num = 1.0;
-            foreach (var nullable in source)
+            foreach (var nullable in source) {
                 if (nullable.HasValue)
                     num *= nullable.GetValueOrDefault();
+            }
             return num;
         }
 
@@ -428,15 +429,10 @@ namespace FP.Core {
         /// <paramref name="source" /> is null.</exception>
         /// <exception cref="OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
         public static int? Product(this IEnumerable<int?> source) {
-            if (source == null) {
-                throw new ArgumentNullException("source");
-            }
+            if (source == null) throw new ArgumentNullException("source");
             int num = 1;
-            foreach (var nullable in source) {
-                if (nullable.HasValue) {
-                    num *= nullable.GetValueOrDefault();
-                }
-            }
+            foreach (var nullable in source)
+                if (nullable.HasValue) num *= nullable.GetValueOrDefault();
             return num;
         }
 
@@ -450,9 +446,10 @@ namespace FP.Core {
             if (source == null)
                 throw new ArgumentNullException("source");
             long num = 1L;
-            foreach (var nullable in source)
+            foreach (var nullable in source) {
                 if (nullable.HasValue)
                     num *= nullable.GetValueOrDefault();
+            }
             return num;
         }
 
@@ -465,10 +462,11 @@ namespace FP.Core {
             if (source == null)
                 throw new ArgumentNullException("source");
             double num = 1.0;
-            foreach (var nullable in source)
+            foreach (var nullable in source) {
                 if (nullable.HasValue)
                     num *= nullable.GetValueOrDefault();
-            return (float)num;
+            }
+            return (float) num;
         }
 
         /// <summary>Computes the product of a sequence of <see cref="T:System.Single" /> values.</summary>
@@ -482,7 +480,7 @@ namespace FP.Core {
             double num = 1.0;
             foreach (float num2 in source)
                 num *= num2;
-            return (float)num;
+            return (float) num;
         }
 
         /// <summary>Returns the maximum value in a generic sequence according to <paramref name="comparer"/>.</summary>
@@ -501,7 +499,8 @@ namespace FP.Core {
                 if (default(T) == null) {
                     while (enumerator.MoveNext()) {
                         T current = enumerator.Current;
-                        if (current != null && (max == null || comparer.Compare(max, current) < 0)) max = current;
+                        if (current != null && (max == null || comparer.Compare(max, current) < 0))
+                            max = current;
                     }
                     return max;
                 }
@@ -695,9 +694,10 @@ namespace FP.Core {
             this IEnumerable<T> sequence) {
             if (sequence.IsEmpty())
                 throw new EmptySequenceException("cycle");
-            while (true)
+            while (true) {
                 foreach (T t in sequence)
                     yield return t;
+            }
 
             //cycle    :: [a] -> [a]
             //cycle [] = error "Prelude.cycle: empty list"
@@ -758,7 +758,8 @@ namespace FP.Core {
         /// <param name="keyComparer">The key comparer.</param>
         /// <returns></returns>
         public static IEnumerable<IGrouping<TKey, T>> Runs<TKey, T>(
-            this IEnumerable<T> sequence, Func<T, TKey> keySelector, IEqualityComparer<TKey> keyComparer) {
+            this IEnumerable<T> sequence, Func<T, TKey> keySelector,
+            IEqualityComparer<TKey> keyComparer) {
             TKey currentKey = default(TKey);
             bool theFirstElement = true;
             var run = new List<T>();
@@ -919,9 +920,10 @@ namespace FP.Core {
                 throw new ArgumentNullException("sequence");
             if (predicate == null)
                 throw new ArgumentNullException("predicate");
-            foreach (T t in sequence)
+            foreach (T t in sequence) {
                 if (predicate(t))
                     return t;
+            }
             throw new NotFoundException();
             //
             //find		:: (a -> Bool) -> [a] -> Maybe a
@@ -1168,10 +1170,11 @@ namespace FP.Core {
                 IEnumerator<T2> enumerator2 =
                     sequence2.GetEnumerator()) {
                 while (enumerator1.MoveNext() &&
-                       enumerator2.MoveNext())
+                       enumerator2.MoveNext()) {
                     yield return
                         function(enumerator1.Current,
                                  enumerator2.Current);
+                }
             }
             //
             //zipWith :: (a->b->c) -> [a]->[b]->[c]
@@ -1204,11 +1207,12 @@ namespace FP.Core {
                     sequence3.GetEnumerator()) {
                 while (enumerator1.MoveNext() &&
                        enumerator2.MoveNext() &&
-                       enumerator3.MoveNext())
+                       enumerator3.MoveNext()) {
                     yield return
                         function(enumerator1.Current,
                                  enumerator2.Current,
                                  enumerator3.Current);
+                }
             }
             //
             //zipWith3                :: (a->b->c->d) -> [a]->[b]->[c]->[d]
@@ -1247,12 +1251,13 @@ namespace FP.Core {
                 while (enumerator1.MoveNext() &&
                        enumerator2.MoveNext() &&
                        enumerator3.MoveNext() &&
-                       enumerator4.MoveNext())
+                       enumerator4.MoveNext()) {
                     yield return
                         function(enumerator1.Current,
                                  enumerator2.Current,
                                  enumerator3.Current,
                                  enumerator4.Current);
+                }
             }
         }
 
@@ -1284,7 +1289,8 @@ namespace FP.Core {
         /// forall IEnumerable{T} seq. seq.SequenceEquals(seq.UnZip().Item1.Zip(seq.Unzip().Item2))
         /// </code>
         /// </summary>
-        public static Tuple<IEnumerable<T1>, IEnumerable<T2>> UnZip<T1, T2>(this IEnumerable<Tuple<T1, T2>> sequence) {
+        public static Tuple<IEnumerable<T1>, IEnumerable<T2>> UnZip<T1, T2>(
+            this IEnumerable<Tuple<T1, T2>> sequence) {
             var ll = sequence.ToLazyList();
             return Pair.New(ll.UnZip1(), ll.UnZip2());
         }
@@ -1340,7 +1346,7 @@ namespace FP.Core {
         /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
-        public static IOrderedEnumerable<T> Sort<T> (
+        public static IOrderedEnumerable<T> Sort<T>(
             this IEnumerable<T> sequence) where T : IComparable<T> {
             return sequence.Sort(Comparer<T>.Default);
         }
@@ -1379,6 +1385,7 @@ namespace FP.Core {
             this IEnumerable<T> sequence, IComparer<T> comparer) {
             return sequence.OrderByDescending(x => x, comparer);
         }
+
         #endregion
 
         #region Generalized functions
@@ -1430,7 +1437,8 @@ namespace FP.Core {
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.</exception>
         /// <remarks>Replaces <see cref="Enumerable.FirstOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
-        public static Optional<T> MaybeFirst<T>(this IEnumerable<T> sequence, Func<T, bool> predicate) {
+        public static Optional<T> MaybeFirst<T>(this IEnumerable<T> sequence,
+                                                Func<T, bool> predicate) {
             return Optional.Try<T, InvalidOperationException>(() => sequence.First(predicate));
         }
 
@@ -1480,7 +1488,8 @@ namespace FP.Core {
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.</exception>
         /// <remarks>Replaces <see cref="Enumerable.SingleOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
-        public static Optional<T> MaybeSingle<T>(this IEnumerable<T> sequence, Func<T, bool> predicate) {
+        public static Optional<T> MaybeSingle<T>(this IEnumerable<T> sequence,
+                                                 Func<T, bool> predicate) {
             return Optional.Try<T, InvalidOperationException>(() => sequence.Single(predicate));
         }
 
@@ -1495,7 +1504,7 @@ namespace FP.Core {
         /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="predicate"/>
         /// are null.</exception>
         public static Optional<T> MaybeFind<T>(this IEnumerable<T> sequence,
-                                       Func<T, bool> predicate) {
+                                               Func<T, bool> predicate) {
             return Optional.Try<T, NotFoundException>(() => sequence.Find(predicate));
         }
 
@@ -1510,7 +1519,7 @@ namespace FP.Core {
         /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="element"/>
         /// are null.</exception>
         public static Optional<T> MaybeFind<T>(this IEnumerable<T> sequence,
-                                       T element) {
+                                               T element) {
             return Optional.Try<T, NotFoundException>(() => sequence.Find(element));
         }
 
@@ -1525,7 +1534,7 @@ namespace FP.Core {
         /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="predicate"/>
         /// are null.</exception>
         public static Optional<int> MaybeFindIndex<T>(this IEnumerable<T> sequence,
-                                       Func<T, bool> predicate) {
+                                                      Func<T, bool> predicate) {
             return Optional.Try<int, NotFoundException>(() => sequence.FindIndex(predicate));
         }
 
@@ -1540,7 +1549,7 @@ namespace FP.Core {
         /// <exception cref="ArgumentNullException"><paramref name="sequence"/> or <paramref name="element"/>
         /// are null.</exception>
         public static Optional<int> MaybeFindIndex<T>(this IEnumerable<T> sequence,
-                                       T element) {
+                                                      T element) {
             return Optional.Try<int, NotFoundException>(() => sequence.FindIndex(element));
         }
 
@@ -1551,9 +1560,10 @@ namespace FP.Core {
         /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
         /// <exception cref="ArgumentNullException"><paramref name="sequence" /> is null.</exception>
         public static Optional<T> MaybeElementAt<T>(this IEnumerable<T> sequence,
-                                       int index) {
+                                                    int index) {
             return Optional.Try<T, ArgumentOutOfRangeException>(() => sequence.ElementAt(index));
         }
+
         #endregion
     }
 }

@@ -90,7 +90,9 @@ namespace FP.Collections.Immutable {
             Vector<T> currentVector = this;
             var vectorStack = new Stack<Vector<T>>();
             var digitStack = new Stack<int>();
-            for (int currentIndex = 0, lastDigit = 0; currentIndex < _count; currentIndex++, lastDigit++) {
+            for (int currentIndex = 0, lastDigit = 0;
+                 currentIndex < _count;
+                 currentIndex++, lastDigit++) {
                 if (lastDigit == BRANCHING) {
                     int numZeroDigits = 0;
                     while (digitStack.Count > 0 && lastDigit == BRANCHING) {
@@ -103,7 +105,7 @@ namespace FP.Collections.Immutable {
                         vectorStack.Push(this);
                         if (lastDigit == BRANCHING) {
                             numZeroDigits++;
-                            lastDigit = 1;               
+                            lastDigit = 1;
                         }
                     }
                     currentVector = vectorStack.Peek();
@@ -126,7 +128,9 @@ namespace FP.Collections.Immutable {
             //            for (int i = 0; i < _count; i++)
             //                yield return this[i]; 
             var digitStack = new Stack<int>();
-            for (int currentIndex = 0, lastDigit = 0; currentIndex < _count; currentIndex++, lastDigit++) {
+            for (int currentIndex = 0, lastDigit = 0;
+                 currentIndex < _count;
+                 currentIndex++, lastDigit++) {
                 if (lastDigit == BRANCHING) {
                     int numZeroDigits = 1;
                     while (digitStack.Count > 0 && lastDigit == BRANCHING) {
@@ -134,17 +138,13 @@ namespace FP.Collections.Immutable {
                         lastDigit++;
                         numZeroDigits++;
                     }
-                    if (digitStack.Count == 0) {
-                        lastDigit = 1;
-                    }
+                    if (digitStack.Count == 0) lastDigit = 1;
                     digitStack.Push(lastDigit);
                     lastDigit = 0;
-                    for (int i = 0; i < numZeroDigits - 1; i++) {
-                        digitStack.Push(lastDigit);
-                    }
+                    for (int i = 0; i < numZeroDigits - 1; i++) digitStack.Push(lastDigit);
                 }
                 yield return lastDigit;
-            }            
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -203,9 +203,7 @@ namespace FP.Collections.Immutable {
 
         private static IEnumerable<int> Digits(int number, int @base) {
             var list = new List<int>(5);
-            if (number == 0) {
-                return new[] {0};
-            }
+            if (number == 0) return new[] {0};
             while (number > 0) {
                 list.Add(number % @base);
                 number /= @base;

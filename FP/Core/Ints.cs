@@ -97,10 +97,8 @@ namespace FP.Core {
         /// </summary>
         /// <param name="self">The number of times.</param>
         /// <param name="action">The action.</param>
-        public static void Times (this int self, Action action) {
-            for (int i = 0; i < self; i++) {
-                action();
-            }
+        public static void Times(this int self, Action action) {
+            for (int i = 0; i < self; i++) action();
         }
     }
 }

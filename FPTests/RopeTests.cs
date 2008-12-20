@@ -18,7 +18,7 @@ using Microsoft.Pex.Framework;
 using Xunit;
 
 namespace FPTests {
-    [PexClass(typeof(Rope<>))]
+    [PexClass(typeof (Rope<>))]
     public partial class RopeTests {
         [PexMethod]
         public void Test_Creation([PexAssumeNotNull] string[] strings) {
@@ -33,7 +33,8 @@ namespace FPTests {
         }
 
         [PexMethod]
-        public void Test_Concat([PexAssumeNotNull] Rope<char> rope1, [PexAssumeNotNull] Rope<char> rope2) {
+        public void Test_Concat([PexAssumeNotNull] Rope<char> rope1,
+                                [PexAssumeNotNull] Rope<char> rope2) {
             Assert.Equal(rope1.AsString() + rope2.AsString(), rope1.Concat(rope2).AsString());
         }
 

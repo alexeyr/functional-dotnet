@@ -51,26 +51,38 @@ namespace FP.Future {
         /// Gets a value indicating whether this future is failed.
         /// </summary>
         /// <value><c>true</c> if this instance is failed; otherwise, <c>false</c>.</value>
-        public bool IsFailed { get { return Status == Future.Status.Failed; } }
+        public bool IsFailed {
+            get { return Status == Future.Status.Failed; }
+        }
+
         /// <summary>
         /// Gets a value indicating whether this future is successful.
         /// </summary>
         /// <value>
         /// <c>true</c> if this future is successful; otherwise, <c>false</c>.
         /// </value>
-        public bool IsSuccessful { get { return Status == Future.Status.Successful; } }
+        public bool IsSuccessful {
+            get { return Status == Future.Status.Successful; }
+        }
+
         /// <summary>
         /// Gets a value indicating whether this future doesn't have a result yet.
         /// </summary>
         /// <value><c>true</c> if this future doesn't have a result yet; otherwise, <c>false</c>.</value>
-        public bool IsFuture { get { return Status == Future.Status.Future; } }
+        public bool IsFuture {
+            get { return Status == Future.Status.Future; }
+        }
+
         /// <summary>
         /// Gets a value indicating whether this instance has a result (is successful or failed).
         /// </summary>
         /// <value>
         /// <c>true</c> if this instance has a result; otherwise, <c>false</c>.
         /// </value>
-        public bool HasResult { get { return !IsFuture; } }
+        public bool HasResult {
+            get { return !IsFuture; }
+        }
+
         /// <summary>
         /// Gets a value indicating whether this future is lazy (and not forced yet).
         /// </summary>
@@ -98,11 +110,11 @@ namespace FP.Future {
             return ToStringHelper("Future");
         }
 
-        internal protected string ToStringHelper(string futureType) {
+        protected internal string ToStringHelper(string futureType) {
             return string.Format("{0}({1})", futureType,
                                  (HasResult
                                       ? Result.Match(v => v.ToString(),
-                                                       ex => ex.ToString())
+                                                     ex => ex.ToString())
                                       : "?"));
         }
     }
@@ -123,7 +135,8 @@ namespace FP.Future {
         /// <param name="future2">The second future.</param>
         /// <returns></returns>
         /// <remarks>This method does not force lazy futures.</remarks>
-        public static Either<Result<T1>, Result<T2>> AwaitEither<T1, T2>(Future<T1> future1, Future<T2> future2) {
+        public static Either<Result<T1>, Result<T2>> AwaitEither<T1, T2>(Future<T1> future1,
+                                                                         Future<T2> future2) {
             using (var resetEvent = new ManualResetEvent(false)) {
                 EventHandler<FutureDeterminedArgs<T1>> endWait1 = delegate { resetEvent.Set(); };
                 EventHandler<FutureDeterminedArgs<T2>> endWait2 = delegate { resetEvent.Set(); };
@@ -136,7 +149,7 @@ namespace FP.Future {
             }
             if (future1.HasResult)
                 return Either.Left<Result<T1>, Result<T2>>(future1.Result);
-            else 
+            else
                 return Either.Right<Result<T1>, Result<T2>>(future2.Result);
         }
 
