@@ -1,8 +1,4 @@
-﻿// Author of the template: _FRED_
-// Modified by Alexey Romanov
-
-#region License
-/*
+﻿/*
 * Switch.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -16,7 +12,9 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
+
+// Author of the template: _FRED_
+// Modified by Alexey Romanov
 
 using System;
 using System.Collections.Generic;

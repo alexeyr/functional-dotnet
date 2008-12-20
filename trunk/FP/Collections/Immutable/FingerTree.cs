@@ -1,4 +1,3 @@
-#region License
 /*
 * FingerTree.cs is part of functional-dotnet project
 * 
@@ -13,7 +12,6 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
 using System;
 using System.Collections;
@@ -25,6 +23,7 @@ using FP.HaskellNames;
 
 //TODO: performance test
 
+// ReSharper disable RedundantThisQualifier
 namespace FP.Collections.Immutable {
     /// <summary>
     /// A finger tree (see Ralf Hinze and Ross Paterson, "Finger trees: a simple general-purpose data structure", Journal of Functional Programming 16:2 (2006) pp 197-217)
@@ -828,12 +827,14 @@ namespace FP.Collections.Immutable {
                 if (rightTree.IsSingle) {
                     return this.AppendRange(middleList) | rightTree.Head;
                 }
+                // ReSharper disable PossibleNullReferenceException
                 var rightDeep = rightTree as Deep;
                 return MakeDeep(_left,
                                 () => _Middle.App3(
                                           Nodes(_right.Concat(middleList).Concat(rightDeep._left)),
                                           rightDeep._Middle),
                                 rightDeep._right);
+                // ReSharper restore PossibleNullReferenceException
             }
 
             private IEnumerable<FTNode<T, V>> Nodes(IEnumerable<T> elements) {
@@ -1121,4 +1122,5 @@ namespace FP.Collections.Immutable {
 
         internal abstract bool Invariant { get; }
         }
+    // ReSharper restore RedundantThisQualifier
 }

@@ -1,5 +1,4 @@
-﻿#region License
-/*
+﻿/*
 * IImmutableList.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -13,11 +12,8 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
-
 
 using System;
-using System.Collections.Generic;
 using FP.Core;
 
 namespace FP.Collections.Immutable {
@@ -33,12 +29,14 @@ namespace FP.Collections.Immutable {
         /// <value>The head of the list.</value>
         /// <exception cref="EmptySequenceException">if the current list <see cref="ICollection{T}.IsEmpty"/>.</exception>
         T Head { get; }
+
         /// <summary>
         /// Gets the "tail" (all elements but the first) of the list.
         /// </summary>
         /// <value>The tail of the list.</value>
         /// <exception cref="EmptySequenceException">if the list <see cref="ICollection{T}.IsEmpty"/>.</exception>
         TList Tail { get; }
+
         /// <summary>
         /// Prepends a new head.
         /// </summary>
@@ -61,7 +59,8 @@ namespace FP.Collections.Immutable {
         /// <param name="ifEmpty">The action to do if the list is empty.</param>
         /// <param name="ifNotEmpty">The action to do if the list is not empty.</param>
         public static void Match<T, TList>(
-            this TList list, Action ifEmpty, Action<T, TList> ifNotEmpty) where TList : IList<T, TList> {
+            this TList list, Action ifEmpty, Action<T, TList> ifNotEmpty)
+            where TList : IList<T, TList> {
             if (list.IsEmpty)
                 ifEmpty();
             else

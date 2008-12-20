@@ -1,7 +1,4 @@
-﻿// Author of the template: _FRED_
-// Modified by Alexey Romanov
-
-<#@ template language="C#v3.5" #>
+﻿<#@ template language="C#v3.5" #>
 <#@ output extension=".cs" #>
 <#@ assembly name="System.dll" #>
 <#@ assembly name="System.Core.dll" #>
@@ -9,7 +6,6 @@
 <#@ import namespace="System.Diagnostics" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
-#region License
 /*
 * Switch.cs is part of functional-dotnet project
 * 
@@ -24,7 +20,9 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
+
+// Author of the template: _FRED_
+// Modified by Alexey Romanov
 
 using System;
 using System.Collections.Generic;

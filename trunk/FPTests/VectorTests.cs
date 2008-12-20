@@ -1,4 +1,3 @@
-#region License
 /*
 * VectorTests.cs is part of functional-dotnet project
 * 
@@ -13,8 +12,7 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
-using System;
+
 using FP.Collections.Immutable;
 using Xunit;
 using XunitExtensions;

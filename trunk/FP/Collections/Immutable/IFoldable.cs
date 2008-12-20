@@ -1,4 +1,3 @@
-#region License
 /*
 * IFoldable.cs is part of functional-dotnet project
 * 
@@ -13,7 +12,6 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
 using System;
 

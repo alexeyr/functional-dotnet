@@ -1,4 +1,3 @@
-#region License
 /*
 * ICatenable.cs is part of functional-dotnet project
 * 
@@ -13,7 +12,7 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
+
 namespace FP.Collections.Immutable {
     /// <summary>
     /// Represents a collection which can be concatenated with <typeparamref name="TCollection"/>
@@ -35,5 +34,5 @@ namespace FP.Collections.Immutable {
     /// returning a <typeparamref name="TCollection"/> as the result.
     /// </summary>
     /// <typeparam name="TCollection">The type of the collection to concatenate and the result collection.</typeparam>
-    public interface ICatenable<TCollection> : ICatenable<TCollection, TCollection> { }
+    public interface ICatenable<TCollection> : ICatenable<TCollection, TCollection> {}
 }

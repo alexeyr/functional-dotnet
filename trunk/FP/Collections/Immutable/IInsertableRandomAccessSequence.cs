@@ -1,3 +1,17 @@
+/*
+* IInsertableRandomAccessSequence.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2008 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
 using System;
 using System.Collections.Generic;
 
@@ -7,7 +21,9 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSequence">The type of the RA deque.</typeparam>
-    public interface IInsertableRandomAccessSequence<T, TSequence> : IRandomAccessSequence<T, TSequence>, IDeque<T, TSequence> where TSequence : IInsertableRandomAccessSequence<T, TSequence> {
+    public interface IInsertableRandomAccessSequence<T, TSequence> :
+        IRandomAccessSequence<T, TSequence>, IDeque<T, TSequence>
+        where TSequence : IInsertableRandomAccessSequence<T, TSequence> {
         /// <summary>
         /// Inserts <paramref name="newValue"/> at <paramref name="index"/>.
         /// </summary>
@@ -42,5 +58,5 @@ namespace FP.Collections.Immutable {
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or 
         /// <paramref name="length"/> is out of range.</exception>
         TSequence RemoveRangeAt(int startIndex, int length);
-    }
+        }
 }

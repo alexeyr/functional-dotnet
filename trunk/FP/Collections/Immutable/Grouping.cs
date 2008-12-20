@@ -1,4 +1,3 @@
-﻿#region License
 /*
 * Grouping.cs is part of functional-dotnet project
 * 
@@ -13,7 +12,6 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
 using System.Collections;
 using System.Collections.Generic;
@@ -33,6 +31,7 @@ namespace FP.Collections.Immutable {
 
         private readonly List<E> _elements;
         private readonly K _key;
+
         ///<summary>
         ///Returns an enumerator that iterates through a collection.
         ///</summary>

@@ -1,4 +1,3 @@
-#region License
 /*
 * FingerTreeHelpers.cs is part of functional-dotnet project
 * 
@@ -13,11 +12,9 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
 using System;
 using System.Collections.Generic;
-using FP.HaskellNames;
 using System.Linq;
 
 namespace FP.Collections.Immutable {
@@ -31,7 +28,8 @@ namespace FP.Collections.Immutable {
         /// <typeparam name="T">The type of the elements of the tree.</typeparam>
         /// <typeparam name="V">The type of the measure values.</typeparam>
         /// <param name="measureMonoid">The measure monoid.</param>
-        public static FingerTree<T, V>.Empty Empty<T, V>(Monoid<V> measureMonoid) where T : IMeasured<V> {
+        public static FingerTree<T, V>.Empty Empty<T, V>(Monoid<V> measureMonoid)
+            where T : IMeasured<V> {
             return new FingerTree<T, V>.Empty(measureMonoid);
         }
 
@@ -42,8 +40,10 @@ namespace FP.Collections.Immutable {
         /// <typeparam name="V">The type of the measure values.</typeparam>
         /// <param name="item">The item.</param>
         /// <param name="measureMonoid">The measure monoid.</param>
-        public static FingerTree<T, V>.Single Single<T, V>(T item, Monoid<V> measureMonoid) where T : IMeasured<V> {
-            return new FingerTree<T, V>.Single(item, measureMonoid, new FingerTree<T, V>.Empty(measureMonoid));
+        public static FingerTree<T, V>.Single Single<T, V>(T item, Monoid<V> measureMonoid)
+            where T : IMeasured<V> {
+            return new FingerTree<T, V>.Single(item, measureMonoid,
+                                               new FingerTree<T, V>.Empty(measureMonoid));
         }
 
         /// <summary>
@@ -53,11 +53,15 @@ namespace FP.Collections.Immutable {
         /// <typeparam name="V">The type of the measure values.</typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <param name="measureMonoid">The measure monoid.</param>
-        public static FingerTree<T, V> FromEnumerable<T,V>(IEnumerable<T> sequence, Monoid<V> measureMonoid) where T : IMeasured<V> {
+        public static FingerTree<T, V> FromEnumerable<T, V>(IEnumerable<T> sequence,
+                                                            Monoid<V> measureMonoid)
+            where T : IMeasured<V> {
             return Empty<T, V>(measureMonoid).AppendRange(sequence);
         }
 
-        internal static Split<T, T[]> SplitArray<T, V>(this T[] array, Monoid<V> monoid, Func<V, bool> pred, V init) where T : IMeasured<V> {
+        internal static Split<T, T[]> SplitArray<T, V>(this T[] array, Monoid<V> monoid,
+                                                       Func<V, bool> pred, V init)
+            where T : IMeasured<V> {
             if (array.Length == 1) {
                 var empty = new T[0];
                 return new Split<T, T[]>(empty, array[0], empty);
@@ -78,7 +82,8 @@ namespace FP.Collections.Immutable {
             return new Split<T, T[]>(left.ToArray(), array[array.Length - 1], new T[0]);
         }
 
-        internal static V SumMeasures<V, T>(this IEnumerable<T> sequence, Monoid<V> monoid, V init) where T : IMeasured<V> {
+        internal static V SumMeasures<V, T>(this IEnumerable<T> sequence, Monoid<V> monoid, V init)
+            where T : IMeasured<V> {
             V total = init;
             foreach (var t in sequence)
                 total = monoid.Plus(total, t.Measure);
