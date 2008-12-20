@@ -22,10 +22,11 @@ using Xunit;
 using Microsoft.Pex.Framework;
 
 namespace FPTests {
+    [PexClass(typeof(Optional<>))]
     public partial class MaybeTests {
         [Fact]
         public void Maybe_NullShouldConvertToNothing() {
-            Optional<string> m = (string)null;
+            var m = OptionalNotNull.Wrap<string>(null);
             Assert.Equal(m, Optional.None<string>());
             Assert.False(m.HasValue);
         }

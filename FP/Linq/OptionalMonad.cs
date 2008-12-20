@@ -1,6 +1,5 @@
-﻿#region License
-/*
-* MaybeMonad.cs is part of functional-dotnet project
+﻿/*
+* OptionalMonad.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
 * All rights reserved.
@@ -13,7 +12,6 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
 using System;
 using FP.Core;
@@ -22,7 +20,7 @@ namespace FP.Linq {
     /// <summary>
     /// Implements query pattern on <see cref="Optional{T}"/>. Makes <see cref="Optional{T}"/> a monad.
     /// </summary>
-    public static class MaybeMonad {
+    public static class OptionalMonad {
         public static Optional<T> Where<T>(this Optional<T> optional, Func<T, bool> function) {
             return optional.MapOrElse(function, false) ? optional : Optional<T>.None;
         }
