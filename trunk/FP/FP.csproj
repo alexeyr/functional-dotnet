@@ -112,7 +112,6 @@
     <Compile Include="Core\NotFoundException.cs" />
     <Compile Include="Core\Pair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\Quadruple.cs" />
     <Compile Include="Text\Ropes.cs" />
     <Compile Include="Text\StringCharSequence.cs" />
     <Compile Include="Text\StringRope.cs" />

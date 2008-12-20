@@ -1119,7 +1119,7 @@ namespace FP.Core {
         /// <param name="sequence3">The third sequence.</param>
         /// <param name="sequence4">The fourth sequence.</param>
         /// <returns></returns>
-        public static IEnumerable<Quadruple<T1, T2, T3, T4>>
+        public static IEnumerable<Tuple<T1, T2, T3, T4>>
             Zip<T1, T2, T3, T4>(this IEnumerable<T1> sequence1,
                                 IEnumerable<T2> sequence2,
                                 IEnumerable<T3> sequence3,
@@ -1141,10 +1141,10 @@ namespace FP.Core {
                        enumerator3.MoveNext() &&
                        enumerator4.MoveNext()) {
                     yield return
-                        Quadruple.New(enumerator1.Current,
-                                      enumerator2.Current,
-                                      enumerator3.Current,
-                                      enumerator4.Current);
+                        Tuple.New(enumerator1.Current,
+                                  enumerator2.Current,
+                                  enumerator3.Current,
+                                  enumerator4.Current);
                 }
             }
             //
