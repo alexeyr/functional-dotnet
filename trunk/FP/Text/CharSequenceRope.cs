@@ -28,9 +28,9 @@ namespace FP.Text {
     /// <remarks>If you plan to use this class with a specific type of character sequences, it may be convenient to 
     /// create a subclass.</remarks>
     [Serializable]
-    public class CharSequenceRope<TChar, TSequence> : FlatRope<TChar> where TSequence : ICharSequence<TChar> {
-        [CLSCompliant(false)]
-        protected readonly TSequence _charSequence;
+    public class CharSequenceRope<TChar, TSequence> : FlatRope<TChar>
+        where TSequence : ICharSequence<TChar> {
+        [CLSCompliant(false)] protected readonly TSequence _charSequence;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharSequenceRope{TChar,TSequence}"/> class.
@@ -61,7 +61,8 @@ namespace FP.Text {
             }
         }
 
-        public override sealed void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex, int count) {
+        public override sealed void CopyTo(int sourceIndex, TChar[] destination,
+                                           int destinationIndex, int count) {
             _charSequence.CopyTo(sourceIndex, destination, destinationIndex, count);
         }
 
@@ -76,5 +77,5 @@ namespace FP.Text {
             }
             return new SubstringRope<TChar, TSequence>(_charSequence, startIndex, length);
         }
-    }
+        }
 }

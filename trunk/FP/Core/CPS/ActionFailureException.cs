@@ -12,7 +12,7 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-	
+
 using System;
 
 namespace FP.Core.CPS {
@@ -24,25 +24,27 @@ namespace FP.Core.CPS {
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionFailureException"/> class.
         /// </summary>
-        public ActionFailureException() : base() { }
+        public ActionFailureException() : base() {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionFailureException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="innerException">The inner exception.</param>
-        public ActionFailureException(string message, Exception innerException) : base(message, innerException) { }
+        public ActionFailureException(string message, Exception innerException)
+            : base(message, innerException) {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionFailureException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public ActionFailureException(string message) : base(message) { }
+        public ActionFailureException(string message) : base(message) {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionFailureException"/> class.
         /// </summary>
         /// <param name="innerException">The inner exception.</param>
-        public ActionFailureException(Exception innerException) : base(innerException.Message, innerException) { }
+        public ActionFailureException(Exception innerException)
+            : base(innerException.Message, innerException) {}
     } // class ActionFailureException
 } // namespace FP.Core.CPS

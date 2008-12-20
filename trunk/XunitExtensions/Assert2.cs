@@ -43,7 +43,8 @@ namespace XunitExtensions {
         /// <param name="actual">The second sequence.</param>
         /// <param name="comparer">The comparer.</param>
         /// <exception cref="SequenceEqualException">If the sequences turn out not to be equal.</exception>
-        public static void SequenceEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual, IComparer<T> comparer) {
+        public static void SequenceEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual,
+                                            IComparer<T> comparer) {
             SequenceEqual(expected, actual, comparer.ToEqualityComparer());
         }
 
@@ -54,7 +55,8 @@ namespace XunitExtensions {
         /// <param name="actual">The second sequence.</param>
         /// <param name="equalityComparer">The equality comparer.</param>
         /// <exception cref="SequenceEqualException">If the sequences turn out not to be equal.</exception>
-        public static void SequenceEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual, IEqualityComparer<T> equalityComparer) {
+        public static void SequenceEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual,
+                                            IEqualityComparer<T> equalityComparer) {
             int i = 0;
             using (var enum1 = expected.GetEnumerator())
             using (var enum2 = actual.GetEnumerator()) {
@@ -80,8 +82,10 @@ namespace XunitExtensions {
         /// <param name="seq1">The first sequence.</param>
         /// <param name="actual">The second sequence.</param>
         /// <exception cref="Xunit.TrueException">Thrown if the sequences do not have same elements.</exception>
-        public static void SequenceEquivalent<T>(IEnumerable<T> seq1, IEnumerable<T> actual) where T : IComparable<T> {
-            Assert.True(seq1.OrderBy(x => x).SequenceEqual(actual.OrderBy(x => x)), "Sequences do not have the same elements");
+        public static void SequenceEquivalent<T>(IEnumerable<T> seq1, IEnumerable<T> actual)
+            where T : IComparable<T> {
+            Assert.True(seq1.OrderBy(x => x).SequenceEqual(actual.OrderBy(x => x)),
+                        "Sequences do not have the same elements");
         }
 
         /// <summary>
@@ -122,15 +126,17 @@ namespace XunitExtensions {
         /// <param name="subset">The subset.</param>
         /// <param name="superset">The superset.</param>
         /// <exception cref="SubsetException">Thrown if <paramref name="subset"/> is not a subset of <paramref name="superset"/>.</exception>
-        public static void IsSubsetOf<T>(IEnumerable<T> subset, IEnumerable<T> superset) where T : IComparable<T> {
+        public static void IsSubsetOf<T>(IEnumerable<T> subset, IEnumerable<T> superset)
+            where T : IComparable<T> {
             var sortedSubset = subset.OrderBy(x => x);
             var sortedSuperset = superset.OrderBy(x => x);
             using (var enumerator = sortedSuperset.GetEnumerator()) {
                 enumerator.MoveNext();
                 foreach (var t in sortedSubset) {
-                    while (enumerator.Current.CompareTo(t) < 0)
+                    while (enumerator.Current.CompareTo(t) < 0) {
                         if (!enumerator.MoveNext())
                             throw new SubsetException();
+                    }
                     if (enumerator.Current.CompareTo(t) > 0)
                         throw new SubsetException();
                 }

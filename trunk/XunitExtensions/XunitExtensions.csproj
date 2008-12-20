@@ -54,7 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assert2.cs" />
-    <Compile Include="AssertionExtensionMethods.cs" />
     <Compile Include="ComparerConversions.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

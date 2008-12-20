@@ -29,7 +29,8 @@ namespace FP.Collections.Immutable {
     /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
     public struct RandomAccessSequence<T> :
-        IEquatable<RandomAccessSequence<T>>, IInsertableRandomAccessSequence<T, RandomAccessSequence<T>>,
+        IEquatable<RandomAccessSequence<T>>,
+        IInsertableRandomAccessSequence<T, RandomAccessSequence<T>>,
         IReversible<RandomAccessSequence<T>>, ICatenable<RandomAccessSequence<T>>,
         ISplittable<RandomAccessSequence<T>> {
         private static readonly RandomAccessSequence<T> _emptyInstance =

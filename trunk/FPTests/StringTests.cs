@@ -20,7 +20,6 @@ using Xunit;
 
 namespace FPTests {
     public partial class StringTests {
-        
         [Fact]
         public void Test_EmptyStringContainsNoWords() {
             Assert.Empty("".Words());
@@ -29,7 +28,7 @@ namespace FPTests {
         [Fact]
         public void Test_WordsShouldIncludePunctuationAndIgnoreExtraWhitespace() {
             Assert.True("This, \r\n  is  a \t test.".Words().SequenceEqual(
-                            new[] { "This,", "is", "a", "test." }));
+                            new[] {"This,", "is", "a", "test."}));
         }
 
         [Fact]
@@ -38,7 +37,7 @@ namespace FPTests {
             Assert.Equal((new List<string>()).UnLinesAsString(), "");
         }
 
-        [Fact] 
+        [Fact]
         public void Test_Lines_ShouldWorkWithAllLineEndings() {
             Assert.True("This,   is \r\n a \t\n test.".Lines().
                             SequenceEqual(new[] {"This,   is ", " a \t", " test."}));
@@ -52,8 +51,8 @@ namespace FPTests {
 
         [Fact]
         public void Test_UnLines() {
-            Assert.Equal(new[] { "This,", "is", "a", "test." }.UnLinesAsString(),
-@"This,
+            Assert.Equal(new[] {"This,", "is", "a", "test."}.UnLinesAsString(),
+                         @"This,
 is
 a
 test.");

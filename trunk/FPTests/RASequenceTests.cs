@@ -25,14 +25,14 @@ namespace FPTests {
         private readonly RandomAccessSequence<int> _empty = RandomAccessSequence.Empty<int>();
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_Creation<T>([PexAssumeNotNull] T[] arr) {
             var seq = RandomAccessSequence.FromEnumerable(arr);
             PexAssume.IsTrue(seq.Invariant);
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_IsEmptyWorksCorrectly<T>(T[] arr) {
             Assert.True(_empty.IsEmpty);
             PexAssume.IsNotNullOrEmpty(arr);
@@ -40,13 +40,13 @@ namespace FPTests {
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_Enumerate<T>([PexAssumeNotNull] T[] arr) {
             Assert2.SequenceEqual(arr, RandomAccessSequence.FromEnumerable(arr));
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_Append<T>([PexAssumeNotNull] T[] arr) {
             var seq = RandomAccessSequence<T>.Empty;
             foreach (var i in arr)
@@ -55,7 +55,7 @@ namespace FPTests {
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_Prepend<T>([PexAssumeNotNull] T[] arr) {
             var seq = RandomAccessSequence<T>.Empty;
             foreach (var i in arr)
@@ -64,7 +64,7 @@ namespace FPTests {
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] {typeof(int)})]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_SplitAt<T>([PexAssumeNotNull] T[] arr, int i) {
             var seq = RandomAccessSequence.FromEnumerable(arr);
             PexAssume.IsTrue(i >= 0);
@@ -75,7 +75,7 @@ namespace FPTests {
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_Indexing<T>([PexAssumeNotNull] T[] arr, int i) {
             var seq = RandomAccessSequence.FromEnumerable(arr);
             PexAssume.IsTrue(i >= 0);
@@ -84,7 +84,7 @@ namespace FPTests {
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_SetAt<T>([PexAssumeNotNull] T[] arr, int i, T newValue) {
             var seq = RandomAccessSequence.FromEnumerable(arr);
             PexAssume.IsTrue(i >= 0);
@@ -109,7 +109,7 @@ namespace FPTests {
         }
 
         [PexMethod(MaxBranches = 20000)]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_HeadAndTailOfNonEmptySequence<T>([PexAssumeNotNull] T[] arr) {
             PexAssume.IsNotNullOrEmpty(arr);
             var seq0 = RandomAccessSequence.FromEnumerable(arr);
@@ -129,7 +129,7 @@ namespace FPTests {
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_ConcatWithEmpty<T>([PexAssumeNotNull] T[] arr) {
             var seq = RandomAccessSequence.FromEnumerable(arr);
             Assert2.SequenceEqual(seq.Concat(Enumerable.Empty<T>()), seq);
@@ -137,7 +137,7 @@ namespace FPTests {
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_Concat<T>([PexAssumeNotNull] T[] arr1, [PexAssumeNotNull] T[] arr2) {
             var seq1 = RandomAccessSequence.FromEnumerable(arr1);
             var seq2 = RandomAccessSequence.FromEnumerable(arr2);
@@ -147,7 +147,7 @@ namespace FPTests {
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_InsertAt<T>([PexAssumeNotNull] T[] arr, int i, T newValue) {
             var seq = RandomAccessSequence.FromEnumerable(arr);
             PexAssume.IsTrue(i >= 0);
@@ -161,7 +161,7 @@ namespace FPTests {
         }
 
         [PexMethod]
-        [PexGenericArguments(new[] { typeof(int) })]
+        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_Reverse<T>([PexAssumeNotNull] T[] arr) {
             var seq = RandomAccessSequence.FromEnumerable(arr);
             Assert2.SequenceEqual(seq.AsEnumerable().Reverse(), seq.Reverse());

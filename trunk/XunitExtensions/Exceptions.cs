@@ -27,8 +27,8 @@ namespace XunitExtensions {
         /// <param name="expected">The expected.</param>
         /// <param name="actual">The actual.</param>
         public SequenceEqualException(int index, object expected, object actual) :
-            base(string.Format("Sequences are different at index {0}: expected {1} but was {2}", 
-            index, expected, actual)) {}
+            base(string.Format("Sequences are different at index {0}: expected {1} but was {2}",
+                               index, expected, actual)) {}
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ namespace XunitExtensions {
         /// Initializes a new instance of the <see cref="SequenceEquivalentException"/> class.
         /// </summary>
         public SequenceEquivalentException() :
-            base("Sequences do not have same elements") { }
+            base("Sequences do not have same elements") {}
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ namespace XunitExtensions {
         /// Initializes a new instance of the <see cref="SubsetException"/> class.
         /// </summary>
         public SubsetException() :
-            base("One sequence is not a subset of another") { }
+            base("One sequence is not a subset of another") {}
     }
 
     /// <summary>

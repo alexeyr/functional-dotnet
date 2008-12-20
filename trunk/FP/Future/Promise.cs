@@ -145,12 +145,14 @@ namespace FP.Future {
         /// <value>The result.</value>
         public override Result<T> Result {
             get {
-                if (!_isFulfilled)
+                if (!_isFulfilled) {
                     using (var resetEvent = new ManualResetEvent(false)) {
-                        EventHandler<PromiseFulfilledArgs<T>> endWait = (sender, e) => resetEvent.Set();
+                        EventHandler<PromiseFulfilledArgs<T>> endWait =
+                            (sender, e) => resetEvent.Set();
                         Fulfilled += endWait;
                         resetEvent.WaitOne();
                     }
+                }
                 if (_result == null) {
                     _result = _future.Result;
                     _future = null;
@@ -193,5 +195,4 @@ namespace FP.Future {
                        : ToStringHelper("Promise");
         }
     }
-
 }

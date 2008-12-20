@@ -21,7 +21,7 @@ namespace FP.Text {
     /// </summary>
     [Serializable]
     public sealed class ArrayRope<TChar> : CharSequenceRope<TChar, ArrayCharSequence<TChar>> {
-        public ArrayRope(TChar[] array) : base(new ArrayCharSequence<TChar>(array)) { }
+        public ArrayRope(TChar[] array) : base(new ArrayCharSequence<TChar>(array)) {}
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="FP.Text.StringRope"/>.

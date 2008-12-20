@@ -19,7 +19,7 @@ using XunitExtensions;
 using Microsoft.Pex.Framework;
 
 namespace FPTests {
-    [PexClass(typeof(Vector<>))]
+    [PexClass(typeof (Vector<>))]
     public partial class VectorTests {
         [PexMethod]
         public void Test_InfiniteBounds(int i) {
@@ -28,8 +28,8 @@ namespace FPTests {
             Assert.Equal(null, Vector<object>.Empty[i]);
         }
 
-        [PexGenericArguments(typeof(int))]
-        [PexGenericArguments(typeof(object))]
+        [PexGenericArguments(typeof (int))]
+        [PexGenericArguments(typeof (object))]
         [PexMethod(MaxBranches = 2000)]
         public void Test_SingleElementVector<T>(int i, T value) {
             PexAssume.IsTrue(i >= 0);
@@ -50,8 +50,8 @@ namespace FPTests {
                 Assert.Equal(vector[j], vector2[j]);
         } // ReplaceSingleElement(i, j)
 
-        [PexGenericArguments(typeof(int))]
-        [PexGenericArguments(typeof(object))]
+        [PexGenericArguments(typeof (int))]
+        [PexGenericArguments(typeof (object))]
         [PexMethod(MaxBranches = 4000)]
         public void Test_StoreManyElements<T>([PexAssumeNotNull] T[] array) {
             PexAssume.IsNotNull(array);

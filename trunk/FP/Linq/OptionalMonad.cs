@@ -29,11 +29,14 @@ namespace FP.Linq {
             return optional.Map(function);
         }
 
-        public static Optional<T3> SelectMany<T1, T2, T3>(this Optional<T1> optional, Func<T1, Optional<T2>> function, Func<T1, T2, T3> combiner) {
+        public static Optional<T3> SelectMany<T1, T2, T3>(this Optional<T1> optional,
+                                                          Func<T1, Optional<T2>> function,
+                                                          Func<T1, T2, T3> combiner) {
             return optional.SelectMany(x => function(x).Select(y => combiner(x, y)));
         }
 
-        public static Optional<T2> SelectMany<T1, T2>(this Optional<T1> optional, Func<T1, Optional<T2>> function) {
+        public static Optional<T2> SelectMany<T1, T2>(this Optional<T1> optional,
+                                                      Func<T1, Optional<T2>> function) {
             return optional.MapOrElse(function, Optional<T2>.None);
         }
     }

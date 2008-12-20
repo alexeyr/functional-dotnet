@@ -24,6 +24,7 @@ using FP.HaskellNames;
 //TODO: performance test
 
 // ReSharper disable RedundantThisQualifier
+
 namespace FP.Collections.Immutable {
     /// <summary>
     /// A finger tree (see Ralf Hinze and Ross Paterson, "Finger trees: a simple general-purpose data structure", Journal of Functional Programming 16:2 (2006) pp 197-217)
@@ -35,8 +36,9 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="V"></typeparam>
-    public abstract class FingerTree<T, V> : IList<T, FingerTree<T,V>>, 
-        IMeasured<V>, IFoldable<T>, ICatenable<FingerTree<T,V>> where T : IMeasured<V> {
+    public abstract class FingerTree<T, V> : IList<T, FingerTree<T, V>>,
+                                             IMeasured<V>, IFoldable<T>,
+                                             ICatenable<FingerTree<T, V>> where T : IMeasured<V> {
         /// <summary>
         /// The monoid to be used to combine the measures of values.
         /// </summary>
@@ -74,9 +76,7 @@ namespace FP.Collections.Immutable {
         private FingerTree<FTNode<T, V>, V>.Empty _emptyInstanceNested;
 
         internal Empty EmptyInstance {
-            get {
-                return _emptyInstance ?? (_emptyInstance = new Empty(MeasureMonoid));
-            }
+            get { return _emptyInstance ?? (_emptyInstance = new Empty(MeasureMonoid)); }
         }
 
         internal FingerTree<FTNode<T, V>, V>.Empty EmptyInstanceNested {
@@ -119,14 +119,14 @@ namespace FP.Collections.Immutable {
         }
 
         internal FingerTree<T, V> DeepL(T[] left, Func<FingerTree<FTNode<T, V>, V>>
-                                            middleSuspended, T[] right) {
+                                                      middleSuspended, T[] right) {
             if (left.Length != 0)
                 return MakeDeep(left, middleSuspended, right);
             return DeepL(left, middleSuspended(), right);
         }
 
         internal FingerTree<T, V> DeepR(T[] left, Func<FingerTree<FTNode<T, V>, V>>
-                                            middleSuspended, T[] right) {
+                                                      middleSuspended, T[] right) {
             if (right.Length != 0)
                 return MakeDeep(left, middleSuspended, right);
             return DeepR(left, middleSuspended(), right);
@@ -269,7 +269,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Prepends <paramref name="item"/> to <paramref name="tree"/>.
         /// </summary>
-        public static FingerTree<T, V> operator |(T item, FingerTree<T,V> tree) {
+        public static FingerTree<T, V> operator |(T item, FingerTree<T, V> tree) {
             return tree.Prepend(item);
         }
 
@@ -283,7 +283,7 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Concatenates <paramref name="tree1"/> and <paramref name="tree2"/>.
         /// </summary>
-        public static FingerTree<T, V> operator +(FingerTree<T,V> tree1, FingerTree<T, V> tree2) {
+        public static FingerTree<T, V> operator +(FingerTree<T, V> tree1, FingerTree<T, V> tree2) {
             return tree1.Concat(tree2);
         }
 
@@ -571,9 +571,7 @@ namespace FP.Collections.Immutable {
 
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
-                if (rightTree.IsEmpty) {
-                    return this.AppendRange(middleList);
-                }
+                if (rightTree.IsEmpty) return this.AppendRange(middleList);
                 return Value | rightTree.PrependRange(middleList);
             }
 
@@ -787,7 +785,8 @@ namespace FP.Collections.Immutable {
             /// </returns>
             public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
                 Func<FTNode<T, V>, A, A> binOp1 = (n, a) => n.FoldRight(binOp, a);
-                return _left.FoldRight(binOp, _Middle.FoldRight(binOp1, _right.FoldRight(binOp,initial)));
+                return _left.FoldRight(binOp,
+                                       _Middle.FoldRight(binOp1, _right.FoldRight(binOp, initial)));
             }
 
             /// <summary>
@@ -801,7 +800,8 @@ namespace FP.Collections.Immutable {
             /// </returns>
             public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
                 Func<A, FTNode<T, V>, A> binOp1 = (a, n) => n.FoldLeft(binOp, a);
-                return _right.FoldLeft(binOp, _Middle.FoldLeft(binOp1, _left.FoldLeft(binOp, initial)));
+                return _right.FoldLeft(binOp,
+                                       _Middle.FoldLeft(binOp1, _left.FoldLeft(binOp, initial)));
             }
 
             /// <summary>
@@ -821,12 +821,8 @@ namespace FP.Collections.Immutable {
 
             protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
                                                      FingerTree<T, V> rightTree) {
-                if (rightTree.IsEmpty) {
-                    return this.AppendRange(middleList);
-                }
-                if (rightTree.IsSingle) {
-                    return this.AppendRange(middleList) | rightTree.Head;
-                }
+                if (rightTree.IsEmpty) return this.AppendRange(middleList);
+                if (rightTree.IsSingle) return this.AppendRange(middleList) | rightTree.Head;
                 // ReSharper disable PossibleNullReferenceException
                 var rightDeep = rightTree as Deep;
                 return MakeDeep(_left,
@@ -877,7 +873,7 @@ namespace FP.Collections.Immutable {
             /// <returns>The resulting list.</returns>
             public override FingerTree<T, V> Prepend(T newHead) {
                 if (_left.Length != 4) {
-                    T[] newLeft = Enumerables2.Cons(newHead,_left).ToArray();
+                    T[] newLeft = Enumerables2.Cons(newHead, _left).ToArray();
                     //return (_middleSuspended == null) ?
                     //    makeDeep(newLeft, _middle, _right) :
                     //    makeDeep(newLeft, _middleSuspended, _right);
@@ -885,7 +881,8 @@ namespace FP.Collections.Immutable {
                     //see page 7 of the paper
                 }
                 return MakeDeep(new[] {newHead, _left[0]},
-                                new FTNode<T, V>.Node3(_left[1], _left[2], _left[3], MeasureMonoid) | _Middle,
+                                new FTNode<T, V>.Node3(_left[1], _left[2], _left[3], MeasureMonoid) |
+                                _Middle,
                                 _right);
             }
 
@@ -905,7 +902,7 @@ namespace FP.Collections.Immutable {
                 }
                 return MakeDeep(_left,
                                 _Middle | new FTNode<T, V>.Node3(_right[0], _right[1], _right[2],
-                                                                      MeasureMonoid),
+                                                                 MeasureMonoid),
                                 new[] {_right[3], newLast});
             }
 
@@ -917,9 +914,12 @@ namespace FP.Collections.Immutable {
             public override IEnumerator<T> GetEnumerator() {
                 foreach (var t in _left)
                     yield return t;
-                foreach (var node in _Middle.AsEnumerable()) //CompilerBug: doesn't compile without AsEnumerable!
+                foreach (var node in _Middle.AsEnumerable())
+                    //CompilerBug: doesn't compile without AsEnumerable!
+                {
                     foreach (var t in node)
                         yield return t;
+                }
                 foreach (var t in _right)
                     yield return t;
             }
@@ -1006,7 +1006,8 @@ namespace FP.Collections.Immutable {
                 V totalMiddle = MeasureMonoid.Plus(totalLeft, _Middle.Measure);
                 if (predicate(totalMiddle)) {
                     var splitMiddle = _middle.SplitTree(predicate, totalLeft);
-                    V totalLeftAndMiddleLeft = MeasureMonoid.Plus(totalLeft, splitMiddle.Left.Measure);
+                    V totalLeftAndMiddleLeft = MeasureMonoid.Plus(totalLeft,
+                                                                  splitMiddle.Left.Measure);
                     var splitMiddleMiddle = splitMiddle.Middle.ToArray().
                         SplitArray(MeasureMonoid, predicate, totalLeftAndMiddleLeft);
                     var newLeft = DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left);
@@ -1014,15 +1015,37 @@ namespace FP.Collections.Immutable {
                     return new Split<T, FingerTree<T, V>>(newLeft, splitMiddleMiddle.Middle,
                                                           newRight);
                 }
-                {
-                    var splitRight = _right.SplitArray(MeasureMonoid, predicate, totalMiddle);
-                    var newLeft = _middleSuspended == null
-                                      ? DeepR(_left, _middle, splitRight.Left)
-                                      : DeepR(_left, _middleSuspended, splitRight.Left);
-                    return new Split<T, FingerTree<T, V>>(newLeft, splitRight.Middle,
-                                                          FingerTree.FromEnumerable(
-                                                              splitRight.Right, MeasureMonoid));
-                }
+                                                                       {
+                                                                           var splitRight =
+                                                                               _right.SplitArray(
+                                                                                   MeasureMonoid,
+                                                                                   predicate,
+                                                                                   totalMiddle);
+                                                                           var newLeft =
+                                                                               _middleSuspended ==
+                                                                               null
+                                                                                   ? DeepR(_left,
+                                                                                           _middle,
+                                                                                           splitRight
+                                                                                               .Left)
+                                                                                   : DeepR(_left,
+                                                                                           _middleSuspended,
+                                                                                           splitRight
+                                                                                               .Left);
+                                                                           return
+                                                                               new Split
+                                                                                   <T,
+                                                                                       FingerTree
+                                                                                           <T, V>>(
+                                                                                   newLeft,
+                                                                                   splitRight.Middle,
+                                                                                   FingerTree.
+                                                                                       FromEnumerable
+                                                                                       (
+                                                                                       splitRight.
+                                                                                           Right,
+                                                                                       MeasureMonoid));
+                                                                       }
             }
 
             /// <summary>
@@ -1038,7 +1061,8 @@ namespace FP.Collections.Immutable {
                 // _left.CopyTo(newRight, 0);
                 // Array.Reverse(newLeft);
                 // Array.Reverse(newRight);
-                return MakeDeep(newLeft, () => _Middle.ReverseTree(node => node.Reverse(f)), newRight);
+                return MakeDeep(newLeft, () => _Middle.ReverseTree(node => node.Reverse(f)),
+                                newRight);
             }
 
             internal override bool Invariant {
@@ -1090,10 +1114,10 @@ namespace FP.Collections.Immutable {
             public override int GetHashCode() {
                 unchecked {
                     int result = _measure.GetHashCode();
-                    result = (result*397) ^ (_left.GetHashCode());
-                    result = (result*397) ^ (_right.GetHashCode());
-                    result = (result*397) ^ (_middle != null ? _middle.GetHashCode() : 0);
-                    result = (result*397) ^
+                    result = (result * 397) ^ (_left.GetHashCode());
+                    result = (result * 397) ^ (_right.GetHashCode());
+                    result = (result * 397) ^ (_middle != null ? _middle.GetHashCode() : 0);
+                    result = (result * 397) ^
                              (_middleSuspended != null ? _middleSuspended.GetHashCode() : 0);
                     return result;
                 }
@@ -1121,6 +1145,7 @@ namespace FP.Collections.Immutable {
         }
 
         internal abstract bool Invariant { get; }
-        }
+                                             }
+
     // ReSharper restore RedundantThisQualifier
 }

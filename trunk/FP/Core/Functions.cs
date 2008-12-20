@@ -127,7 +127,7 @@ namespace FP.Core {
         /// Does nothing.
         /// </summary>
         public static readonly Action DoNothing = () => { };
-        
+
         /// <summary>
         /// The identity function.
         /// </summary>
@@ -150,7 +150,8 @@ namespace FP.Core {
         /// </summary>
         /// <param name="func">The function which takes three parameters.</param>
         /// <returns>The same function which takes parameters separately.</returns>
-        public static Func<T1, T2, Func<T3, TR>> Curry<T1, T2, T3, TR>(this Func<T1, T2, T3, TR> func) {
+        public static Func<T1, T2, Func<T3, TR>> Curry<T1, T2, T3, TR>(
+            this Func<T1, T2, T3, TR> func) {
             return (x, y) => z => func(x, y, z);
         }
 
@@ -168,7 +169,8 @@ namespace FP.Core {
         /// </summary>
         /// <param name="func">The function which takes three parameters separately.</param>
         /// <returns>The same function which takes parameters together.</returns>
-        public static Func<T1, T2, T3, TR> Uncurry<T1, T2, T3, TR>(this Func<T1, T2, Func<T3, TR>> func) {
+        public static Func<T1, T2, T3, TR> Uncurry<T1, T2, T3, TR>(
+            this Func<T1, T2, Func<T3, TR>> func) {
             return (x, y, z) => func(x, y)(z);
         }
 

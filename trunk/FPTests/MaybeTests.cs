@@ -20,7 +20,7 @@ using Xunit;
 using Microsoft.Pex.Framework;
 
 namespace FPTests {
-    [PexClass(typeof(Optional<>))]
+    [PexClass(typeof (Optional<>))]
     public partial class MaybeTests {
         [Fact]
         public void Maybe_NullShouldConvertToNothing() {
@@ -53,7 +53,7 @@ namespace FPTests {
         }
 
         [PexMethod]
-        public void Maybe_DefaultOperatorReturnsTheFirstFoundValue (int x, Optional<int> my) {
+        public void Maybe_DefaultOperatorReturnsTheFirstFoundValue(int x, Optional<int> my) {
             Assert.Equal(Optional.Some(x) || my, Optional.Some(x));
         }
 
@@ -71,7 +71,8 @@ namespace FPTests {
         public void Maybe_TryCatchesExceptions() {
             int zero = 0;
             Assert.Equal(Optional<int>.None, Optional.Try(() => 1 / zero));
-            Assert.Equal(Optional<int>.None, Optional.Try<int, DivideByZeroException>(() => 1 / zero));
+            Assert.Equal(Optional<int>.None,
+                         Optional.Try<int, DivideByZeroException>(() => 1 / zero));
         }
     }
 }

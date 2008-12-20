@@ -58,7 +58,8 @@ namespace FP.Core {
         /// <param name="continuation">The continuation.</param>
         /// <param name="func">The function.</param>
         /// <returns></returns>
-        public static Continuation<T, R> Map<T, R>(this Continuation<T, R> continuation, Func<R, R> func) {
+        public static Continuation<T, R> Map<T, R>(this Continuation<T, R> continuation,
+                                                   Func<R, R> func) {
             return comp => func(continuation(comp));
         }
 

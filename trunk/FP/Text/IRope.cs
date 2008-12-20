@@ -16,13 +16,15 @@
 using FP.Collections.Immutable;
 
 namespace FP.Text {
-    public interface IRope<TChar, TRope> : ICharSequence<TChar>, ICatenable<TRope> where TRope : IRope<TChar, TRope> {
+    public interface IRope<TChar, TRope> : ICharSequence<TChar>, ICatenable<TRope>
+        where TRope : IRope<TChar, TRope> {
         /// <summary>
         /// Returns the substring.
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="length">The length.</param>
         TRope SubString(int startIndex, int length);
+
         bool IsEmpty { get; }
-    }
+        }
 }

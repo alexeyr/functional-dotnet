@@ -31,7 +31,7 @@ namespace FP.Collections.Immutable {
         /// <param name="list">The tail.</param>
         /// <returns>A list starting with <paramref name="t"/> and continuing with
         /// <paramref name="list"/>.</returns>
-        public static TList Cons<T, TList>(this T t, TList list) where TList : IList<T, TList>  {
+        public static TList Cons<T, TList>(this T t, TList list) where TList : IList<T, TList> {
             return list.Prepend(t);
         }
 
@@ -61,7 +61,8 @@ namespace FP.Collections.Immutable {
         /// <returns>An <typeparamref name="TList"/> that contains the elements from the input sequence starting at the first element in the linear series that does not pass the test specified by <paramref name="predicate" />.</returns>
         /// <param name="list">An <typeparamref name="TList"/> to return elements from.</param>
         /// <param name="predicate">A function to test each element for a condition.</param>
-        public static TList SkipWhile<T, TList>(this TList list, Func<T, bool> predicate) where TList : IList<T, TList> {
+        public static TList SkipWhile<T, TList>(this TList list, Func<T, bool> predicate)
+            where TList : IList<T, TList> {
             while (!list.IsEmpty && predicate(list.Head))
                 list = list.Tail;
             return list;
@@ -71,7 +72,8 @@ namespace FP.Collections.Immutable {
         /// <returns>An <typeparamref name="TList"/> that contains the elements from the input sequence starting at the first element in the linear series that does not pass the test specified by <paramref name="predicate" />.</returns>
         /// <param name="list">An <typeparamref name="TList"/> to return elements from.</param>
         /// <param name="predicate">A function to test each element for a condition; the second parameter of the function represents the index of the source element..</param>
-        public static TList SkipWhile<T, TList>(this TList list, Func<T, int, bool> predicate) where TList : IList<T, TList> {
+        public static TList SkipWhile<T, TList>(this TList list, Func<T, int, bool> predicate)
+            where TList : IList<T, TList> {
             int index = 0;
             while (!list.IsEmpty && predicate(list.Head, index)) {
                 list = list.Tail;

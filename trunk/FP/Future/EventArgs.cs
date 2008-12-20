@@ -26,11 +26,13 @@ namespace FP.Future {
         /// </summary>
         /// <value>The result of the promise, if the promise has been fulfilled completely; <c>null</c> otherwise.</value>
         public Result<T> Result { get; private set; }
+
         /// <summary>
         /// Gets the future representing the result of the promise, if the promise has not been fulfilled completely.
         /// </summary>
         /// <value>The future representing the result of the promise, if the promise has not been fulfilled completely; <c>null</c> otherwise.</value>
         public Future<T> Future { get; private set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the promise has been fulfilled completely.
         /// </summary>

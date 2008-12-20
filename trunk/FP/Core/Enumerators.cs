@@ -71,7 +71,8 @@ namespace FP.Core {
         /// <summary>Advances a enumerator as long as a specified condition is true and returns elements read along the way.</summary>
         /// <param name="enumerator">An <see cref="IEnumerator{T}" /> to return elements from.</param>
         /// <param name="predicate">A function to test each element for a condition.</param>
-        public static IEnumerable<T> TakeWhile<T>(this IEnumerator<T> enumerator, Func<T, bool> predicate) {
+        public static IEnumerable<T> TakeWhile<T>(this IEnumerator<T> enumerator,
+                                                  Func<T, bool> predicate) {
             while (predicate(enumerator.Current)) {
                 yield return enumerator.Current;
                 enumerator.MoveNext();
@@ -81,7 +82,8 @@ namespace FP.Core {
         /// <summary>Advances a enumerator as long as a specified condition is true and returns elements read along the way.</summary>
         /// <param name="enumerator">An <see cref="IEnumerator{T}" /> to return elements from.</param>
         /// <param name="predicate">A function to test each element for a condition; the second parameter of the function represents the index of the source element.</param>
-        public static IEnumerable<T> TakeWhile<T>(this IEnumerator<T> enumerator, Func<T, int, bool> predicate) {
+        public static IEnumerable<T> TakeWhile<T>(this IEnumerator<T> enumerator,
+                                                  Func<T, int, bool> predicate) {
             int index = 0;
             while (predicate(enumerator.Current, index)) {
                 yield return enumerator.Current;

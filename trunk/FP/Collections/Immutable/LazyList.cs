@@ -26,9 +26,10 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class LazyList<T> : IList<T, LazyList<T>> {
-        LazyList<T> _tail;
-        readonly T _head;
-        IEnumerator<T> _enumerator;
+        private LazyList<T> _tail;
+        private readonly T _head;
+        private IEnumerator<T> _enumerator;
+
         /// <summary>
         /// The empty list.
         /// </summary>
@@ -150,7 +151,7 @@ namespace FP.Collections.Immutable {
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public class EmptyList : LazyList<T> {
-            internal EmptyList() : base(default(T), (LazyList<T>)null) { }
+            internal EmptyList() : base(default(T), (LazyList<T>) null) {}
 
             /// <summary>
             /// Gets the "head" (first element) of the list.

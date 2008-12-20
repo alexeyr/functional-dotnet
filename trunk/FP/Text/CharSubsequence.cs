@@ -18,7 +18,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace FP.Text {
-    public struct CharSubsequence<TChar, TSequence> : ICharSequence<TChar> where TSequence : ICharSequence<TChar> {
+    public struct CharSubsequence<TChar, TSequence> : ICharSequence<TChar>
+        where TSequence : ICharSequence<TChar> {
         //TODO: cache data
         //TODO: Patricia trie
         private readonly TSequence _sequence;
@@ -93,5 +94,5 @@ namespace FP.Text {
                 throw new ArgumentOutOfRangeException("count");
             _sequence.CopyTo(_offset + sourceIndex, destination, destinationIndex, count);
         }
-    }
+        }
 }

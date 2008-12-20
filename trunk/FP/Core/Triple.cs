@@ -29,7 +29,7 @@ namespace FP.Core {
         /// <param name="second">The second element of the tuple.</param>
         /// <param name="third">The third element of the tuple.</param>
         /// <returns></returns>
-        public static Tuple<T1,T2,T3> New<T1, T2, T3>(T1 first, T2 second, T3 third) {
+        public static Tuple<T1, T2, T3> New<T1, T2, T3>(T1 first, T2 second, T3 third) {
             return new Tuple<T1, T2, T3>(first, second, third);
         }
     } // class Triple

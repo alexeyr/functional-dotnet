@@ -181,8 +181,7 @@ namespace FP.Core {
         /// </summary>
         /// <param name="action">The action to do in this case.</param>
         public Switch<TNew, S> Case<TNew>(Action<TNew> action)
-            where TNew : S
-        {
+            where TNew : S {
             return Case(x => true, action);
         }
 
@@ -253,9 +252,10 @@ namespace FP.Core {
         /// <typeparam name="TNew">The type of the new value.</typeparam>
         /// <param name="action">The action to do.</param>
         public void Default<TNew>(Action<TNew> action) where TNew : S {
-            if (_object is TNew)
+            if (_object is TNew) {
                 new Switch<TNew, S>((TNew) _object, _object).Default(
                     action);
+            }
         }
     }
 

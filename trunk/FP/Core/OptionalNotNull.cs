@@ -34,7 +34,8 @@ namespace FP.Core {
     /// </remarks>
     /// <seealso cref="Nullable{T}"/>
     [Serializable]
-    public struct OptionalNotNull<T> : IEnumerable<T>, IComparable<OptionalNotNull<T>>, IEquatable<OptionalNotNull<T>> {
+    public struct OptionalNotNull<T> : IEnumerable<T>, IComparable<OptionalNotNull<T>>,
+                                       IEquatable<OptionalNotNull<T>> {
         private readonly bool _hasValue;
         private readonly T _value;
 
@@ -43,18 +44,22 @@ namespace FP.Core {
         /// </summary>
         /// <value>The value.</value>
         /// <exception cref="InvalidOperationException"><see cref="HasValue"/> is <c>false</c>.</exception>
-        public T Value { get {
-            if (_hasValue)
-                return _value;
-            else
-                throw new InvalidOperationException("OptionalNotNull<T> doesn't have a value.");
-        } }
+        public T Value {
+            get {
+                if (_hasValue)
+                    return _value;
+                else
+                    throw new InvalidOperationException("OptionalNotNull<T> doesn't have a value.");
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether this instance has value.
         /// </summary>
         /// <value><c>true</c> if this instance has value; otherwise, <c>false</c>.</value>
-        public bool HasValue { get { return _hasValue; } }
+        public bool HasValue {
+            get { return _hasValue; }
+        }
 
         ///<summary>
         ///Returns an enumerator that iterates through the collection.
@@ -77,7 +82,7 @@ namespace FP.Core {
         ///</returns>
         ///<filterpriority>2</filterpriority>
         IEnumerator IEnumerable.GetEnumerator() {
-            return ((IEnumerable<T>)this).GetEnumerator();
+            return ((IEnumerable<T>) this).GetEnumerator();
         }
 
         /// <summary>
@@ -130,7 +135,7 @@ namespace FP.Core {
         public T ValueOrElse(T @default) {
             return HasValue ? _value : @default;
         }
-        
+
         /// <summary>
         /// Similar to the <c>??<\c> operator.
         /// </summary>
@@ -145,7 +150,8 @@ namespace FP.Core {
         /// </summary>
         /// <seealso cref="ValueOrElse"/>
         /// <example><c>None || Some(3) || Some(5) == Some(3).</c></example>
-        public static OptionalNotNull<T> operator |(OptionalNotNull<T> optional, OptionalNotNull<T> @default) {
+        public static OptionalNotNull<T> operator |(
+            OptionalNotNull<T> optional, OptionalNotNull<T> @default) {
             return optional._hasValue ? optional : @default;
         }
 
@@ -217,7 +223,7 @@ namespace FP.Core {
         /// <returns><c>Some(optional)</c> if <paramref name="optional"/> is not null; 
         /// <c>None</c> otherwise.</returns>
         /// <remarks>It is implicit by parallel with <see cref="Nullable{T}"/>.</remarks>
-            public static explicit operator OptionalNotNull<T>(Optional<T> optional) {
+        public static explicit operator OptionalNotNull<T>(Optional<T> optional) {
             return optional.MapOrElse(x => new OptionalNotNull<T>(x), None);
         }
 
@@ -256,7 +262,7 @@ namespace FP.Core {
         /// <param name="one">The one.</param>
         /// <param name="other">The other.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator==(OptionalNotNull<T> one, OptionalNotNull<T> other) {
+        public static bool operator ==(OptionalNotNull<T> one, OptionalNotNull<T> other) {
             return one.Equals(other);
         }
 
@@ -305,9 +311,9 @@ namespace FP.Core {
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
         public override int GetHashCode() {
-            return 29*typeof(T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
+            return 29 * typeof (T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
         }
-    }
+                                       }
 
     /// <summary>
     /// A convenience static class to provide static methods for <see cref="Optional{T}"/> and
@@ -362,7 +368,8 @@ namespace FP.Core {
         /// <typeparam name="T"></typeparam>
         /// <param name="optional">The maybe.</param>
         /// <returns></returns>
-        public static OptionalNotNull<T> Flatten<T>(this OptionalNotNull<OptionalNotNull<T>> optional) {
+        public static OptionalNotNull<T> Flatten<T>(
+            this OptionalNotNull<OptionalNotNull<T>> optional) {
             return optional.MapOrElse(m => m, OptionalNotNull<T>.None);
         }
 
@@ -372,9 +379,10 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <returns></returns>
         public static IEnumerable<T> SelectValues<T>(this IEnumerable<OptionalNotNull<T>> sequence) {
-            foreach (var maybe in sequence)
+            foreach (var maybe in sequence) {
                 if (maybe.HasValue)
                     yield return maybe.Value;
+            }
         }
 
         /// <summary>
@@ -397,7 +405,8 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <param name="function">The function.</param>
         /// <returns></returns>
-        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence, Func<T, OptionalNotNull<R>> function) {
+        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence,
+                                                   Func<T, OptionalNotNull<R>> function) {
             return SelectValues(sequence.Map(function));
         }
 
@@ -412,11 +421,13 @@ namespace FP.Core {
         /// <param name="sequence">The sequence.</param>
         /// <param name="function">The function.</param>
         /// <returns></returns>
-        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence, Func<T, R?> function) where R : struct {
+        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence,
+                                                   Func<T, R?> function) where R : struct {
             return SelectValues(sequence.Map(function));
         }
 
         #region Tries -- The versions of "Try..." methods from the framework
+
         /// <summary>
         /// Creates a new Uri using the specified String instance and a 
         /// <see cref="UriKind"/>.
@@ -445,7 +456,8 @@ namespace FP.Core {
         /// <summary>
         /// Retrieves a value corresponding to the supplied key from this <see cref="DbConnectionStringBuilder"/>.
         /// </summary>
-        public static OptionalNotNull<object> GetValue(this DbConnectionStringBuilder connectionStringBuilder, string keyword) {
+        public static OptionalNotNull<object> GetValue(
+            this DbConnectionStringBuilder connectionStringBuilder, string keyword) {
             object value;
             return connectionStringBuilder.TryGetValue(keyword, out value)
                        ? Wrap(value)
@@ -467,7 +479,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="int"/>.
             /// </summary>
-            public static OptionalNotNull<int> Int(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<int> Int(string s, NumberStyles styles,
+                                                   IFormatProvider formatProvider) {
                 int result;
                 return int.TryParse(s, styles, formatProvider, out result)
                            ? Wrap(result)
@@ -487,7 +500,9 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
-            public static OptionalNotNull<DateTime> DateTime(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static OptionalNotNull<DateTime> DateTime(string s,
+                                                             IFormatProvider formatProvider,
+                                                             DateTimeStyles styles) {
                 DateTime result;
                 return System.DateTime.TryParse(s, formatProvider, styles, out result)
                            ? Wrap(result)
@@ -507,7 +522,10 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
-            public static OptionalNotNull<DateTimeOffset> DateTimeOffset(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static OptionalNotNull<DateTimeOffset> DateTimeOffset(string s,
+                                                                         IFormatProvider
+                                                                             formatProvider,
+                                                                         DateTimeStyles styles) {
                 DateTimeOffset result;
                 return System.DateTimeOffset.TryParse(s, formatProvider, styles, out result)
                            ? Wrap(result)
@@ -517,7 +535,9 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
-            public static OptionalNotNull<DateTime> ExactDateTime(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static OptionalNotNull<DateTime> ExactDateTime(string s, string format,
+                                                                  IFormatProvider formatProvider,
+                                                                  DateTimeStyles styles) {
                 DateTime result;
                 return System.DateTime.TryParseExact(s, format, formatProvider, styles, out result)
                            ? Wrap(result)
@@ -527,7 +547,9 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTime"/>.
             /// </summary>
-            public static OptionalNotNull<DateTime> ExactDateTime(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static OptionalNotNull<DateTime> ExactDateTime(string s, string[] formats,
+                                                                  IFormatProvider formatProvider,
+                                                                  DateTimeStyles styles) {
                 DateTime result;
                 return System.DateTime.TryParseExact(s, formats, formatProvider, styles,
                                                      out result)
@@ -538,7 +560,11 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
-            public static OptionalNotNull<DateTimeOffset> ExactDateTimeOffset(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static OptionalNotNull<DateTimeOffset> ExactDateTimeOffset(string s,
+                                                                              string format,
+                                                                              IFormatProvider
+                                                                                  formatProvider,
+                                                                              DateTimeStyles styles) {
                 DateTimeOffset result;
                 return System.DateTimeOffset.TryParseExact(s, format, formatProvider, styles,
                                                            out result)
@@ -549,7 +575,11 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
             /// </summary>
-            public static OptionalNotNull<DateTimeOffset> ExactDateTimeOffset(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
+            public static OptionalNotNull<DateTimeOffset> ExactDateTimeOffset(string s,
+                                                                              string[] formats,
+                                                                              IFormatProvider
+                                                                                  formatProvider,
+                                                                              DateTimeStyles styles) {
                 DateTimeOffset result;
                 return System.DateTimeOffset.TryParseExact(s, formats, formatProvider, styles,
                                                            out result)
@@ -594,7 +624,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="byte"/>.
             /// </summary>
-            public static OptionalNotNull<byte> Byte(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<byte> Byte(string s, NumberStyles styles,
+                                                     IFormatProvider formatProvider) {
                 byte result;
                 return byte.TryParse(s, styles, formatProvider, out result)
                            ? Wrap(result)
@@ -612,7 +643,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="decimal"/>.
             /// </summary>
-            public static OptionalNotNull<decimal> Decimal(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<decimal> Decimal(string s, NumberStyles styles,
+                                                           IFormatProvider formatProvider) {
                 decimal result;
                 return decimal.TryParse(s, styles, formatProvider, out result)
                            ? Wrap(result)
@@ -630,7 +662,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="double"/>.
             /// </summary>
-            public static OptionalNotNull<double> Double(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<double> Double(string s, NumberStyles styles,
+                                                         IFormatProvider formatProvider) {
                 double result;
                 return double.TryParse(s, styles, formatProvider, out result)
                            ? Wrap(result)
@@ -648,7 +681,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="short"/>.
             /// </summary>
-            public static OptionalNotNull<short> Short(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<short> Short(string s, NumberStyles styles,
+                                                       IFormatProvider formatProvider) {
                 short result;
                 return short.TryParse(s, styles, formatProvider, out result)
                            ? Wrap(result)
@@ -666,9 +700,12 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="long"/>.
             /// </summary>
-            public static OptionalNotNull<long> Long(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<long> Long(string s, NumberStyles styles,
+                                                     IFormatProvider formatProvider) {
                 long result;
-                return long.TryParse(s, styles, formatProvider, out result) ? Wrap(result) : None<long>();
+                return long.TryParse(s, styles, formatProvider, out result)
+                           ? Wrap(result)
+                           : None<long>();
             }
 
             /// <summary>
@@ -684,7 +721,8 @@ namespace FP.Core {
             /// Parses a string which represents an <see cref="sbyte"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static OptionalNotNull<sbyte> SByte(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<sbyte> SByte(string s, NumberStyles styles,
+                                                       IFormatProvider formatProvider) {
                 sbyte result;
                 return sbyte.TryParse(s, styles, formatProvider, out result)
                            ? Wrap(result)
@@ -702,7 +740,8 @@ namespace FP.Core {
             /// <summary>
             /// Parses a string which represents an <see cref="float"/>.
             /// </summary>
-            public static OptionalNotNull<float> Float(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<float> Float(string s, NumberStyles styles,
+                                                       IFormatProvider formatProvider) {
                 float result;
                 return float.TryParse(s, styles, formatProvider, out result)
                            ? Wrap(result)
@@ -722,7 +761,8 @@ namespace FP.Core {
             /// Parses a string which represents an <see cref="ushort"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static OptionalNotNull<ushort> UShort(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<ushort> UShort(string s, NumberStyles styles,
+                                                         IFormatProvider formatProvider) {
                 ushort result;
                 return ushort.TryParse(s, styles, formatProvider, out result)
                            ? Wrap(result)
@@ -742,7 +782,8 @@ namespace FP.Core {
             /// Parses a string which represents an <see cref="uint"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static OptionalNotNull<uint> UInt(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<uint> UInt(string s, NumberStyles styles,
+                                                     IFormatProvider formatProvider) {
                 uint result;
                 return uint.TryParse(s, styles, formatProvider, out result)
                            ? Wrap(result)
@@ -762,7 +803,8 @@ namespace FP.Core {
             /// Parses a string which represents an <see cref="ulong"/>.
             /// </summary>
             [CLSCompliant(false)]
-            public static OptionalNotNull<ulong> ULong(string s, NumberStyles styles, IFormatProvider formatProvider) {
+            public static OptionalNotNull<ulong> ULong(string s, NumberStyles styles,
+                                                       IFormatProvider formatProvider) {
                 ulong result;
                 return ulong.TryParse(s, styles, formatProvider, out result)
                            ? Wrap(result)
@@ -777,8 +819,9 @@ namespace FP.Core {
                 return System.Net.IPAddress.TryParse(s, out result)
                            ? Wrap(result)
                            : None<IPAddress>();
-            }            
+            }
         }
+
         #endregion
     }
 }
