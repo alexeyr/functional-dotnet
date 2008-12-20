@@ -1,5 +1,4 @@
-﻿#region License
-/*
+﻿/*
 * Optional.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -13,525 +12,14 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Globalization;
-using System.Net;
 using FP.HaskellNames;
 
 // ReSharper disable RedundantIfElseBlock
 namespace FP.Core {
-
-    /// <summary>
-    /// A convenience static class to provide static methods for <see cref="Optional{T}"/> and
-    /// <see cref="Nullable{T}"/>.
-    /// </summary>
-    public static class Optional {
-        /// <summary>
-        /// Return a wrapper around the specified non-null object.
-        /// </summary>
-        /// <typeparam name="T">Type of the object.</typeparam>
-        /// <param name="t">The object.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">if <paramref name="t"/> is <c>null</c>.</exception>
-        public static Optional<T> Some<T>(T t) {
-            if (t == null)
-                throw new ArgumentNullException();
-            else
-                return new Optional<T>(t);
-        }
-
-        /// <summary>
-        /// Returns <see cref="Optional{T}.None"/>.
-        /// </summary>
-        public static Optional<T> None<T>() {
-            return Optional<T>.None;
-        }
-
-        /// <summary>
-        /// Converts a sequence to maybe.
-        /// </summary>
-        /// <param name="sequence">The sequence.</param>
-        /// <returns><c>None</c> if <paramref name="sequence"/> is empty;
-        /// <c>Some(sequence.Item1())</c> otherwise.</returns>
-        public static Optional<T> ToOptional<T>(this IEnumerable<T> sequence) {
-            using (var enumerator = sequence.GetEnumerator()) {
-                if (enumerator.MoveNext())
-                    return Some(enumerator.Current);
-                else
-                    return None<T>();
-            }
-        }
-
-        /// <summary>
-        /// Converts <see cref="Nullable{T}"/> to <see cref="Optional{T}"/>.
-        /// </summary>
-        /// <param name="nullable">The nullable.</param>
-        /// <returns><c>None</c> if <paramref name="nullable"/> doesn't have a value;
-        /// <c>Some(nullable.Value)</c> otherwise.</returns>
-        public static Optional<T> ToOptional<T>(this T? nullable) where T : struct {
-            return nullable.HasValue ? Some(nullable.Value) : None<T>();
-        }
-
-        /// <summary>
-        /// Converts <see cref="Optional{T}"/> to <see cref="Nullable{T}"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="optional">The maybe.</param>
-        /// <returns><c>null</c> if <paramref name="optional"/> is <c>None</c>;
-        /// <c>optional.Value</c> otherwise.</returns>
-        public static T? ToNullable<T>(this Optional<T> optional) where T : struct {
-            return optional.MapOrElse(x => x, null);
-        }
-
-        /// <summary>
-        /// An explicit conversion from <typeparamref name="T"/> to <see cref="Optional{T}"/>.
-        /// Works the same as the implicit cast.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value">The value to convert.</param>
-        /// <returns></returns>
-        public static Optional<T> FromValue<T>(T value) {
-            return value;
-        }
-
-        /// <summary>
-        /// An explicit conversion from <typeparamref name="T"/> to <see cref="Optional{T}"/>.
-        /// Works the same as the implicit cast.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value">The value to convert.</param>
-        /// <returns></returns>
-        public static Optional<T> Wrap<T>(T value) {
-            return value;
-        }
-
-        /// <summary>
-        /// Flattens the specified optional.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="optional">The maybe.</param>
-        /// <returns></returns>
-        public static Optional<T> Flatten<T>(this Optional<Optional<T>> optional) {
-            return optional.Map(m => m.Value);
-        }
-
-        /// <summary>
-        /// Selects the values of elements which have them.
-        /// </summary>
-        /// <param name="sequence">The sequence.</param>
-        /// <returns></returns>
-        public static IEnumerable<T> SelectValues<T>(this IEnumerable<Optional<T>> sequence) {
-            foreach (var maybe in sequence)
-                if (maybe.HasValue)
-                    yield return maybe.Value;
-        }
-
-        /// <summary>
-        /// Selects the values of elements which have them.
-        /// </summary>
-        /// <param name="sequence">The sequence.</param>
-        /// <returns></returns>
-        public static IEnumerable<T> SelectValues<T>(this IEnumerable<T?> sequence) where T : struct {
-            return sequence.Map(x => x.ToOptional()).SelectValues();
-        }
-
-        /// <summary>
-        /// A version of <see cref="Enumerables2.Map{T,TR}"/> which can throw away elements.
-        /// In particular, if <c>function(x)</c> doesn't have a value for an element <c>x</c> of 
-        /// the <paramref name="sequence"/>, no element is included in the result; if it has value <c>y</c>,
-        /// <c>y</c> is included in the list.
-        /// </summary>
-        /// <typeparam name="T">Type of elements of the sequence.</typeparam>
-        /// <typeparam name="R">Type of elements of the resulting sequence.</typeparam>
-        /// <param name="sequence">The sequence.</param>
-        /// <param name="function">The function.</param>
-        /// <returns></returns>
-        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence, Func<T, Optional<R>> function) {
-            return sequence.Map(function).SelectValues();
-        }
-
-        /// <summary>
-        /// A version of <see cref="Enumerables2.Map{T,TR}"/> which can throw away elements.
-        /// In particular, if <c>function(x)</c> doesn't have a value for an element <c>x</c> of 
-        /// the <paramref name="sequence"/>, no element is included in the result; if it has value <c>y</c>,
-        /// <c>y</c> is included in the list.
-        /// </summary>
-        /// <typeparam name="T">Type of elements of the sequence.</typeparam>
-        /// <typeparam name="R">Type of elements of the resulting sequence.</typeparam>
-        /// <param name="sequence">The sequence.</param>
-        /// <param name="function">The function.</param>
-        /// <returns></returns>
-        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence, Func<T, R?> function) where R : struct {
-            return sequence.Map(function).SelectValues();
-        }
-
-        /// <summary>
-        /// Tries the specified function.
-        /// </summary>
-        /// <typeparam name="T">The return type of the function.</typeparam>
-        /// <param name="function">The function.</param>
-        /// <returns><see cref="Optional{T}.None"/> if there were exceptions or the function returns <c>null</c>;
-        /// <c>Some(function())</c> otherwise.</returns>
-        public static Optional<T> Try<T>(this Func<T> function) {
-            return function.Try<T, Exception>();
-        }
-
-        /// <summary>
-        /// Tries the specified function, catching only exceptions of type <typeparam name="E"/>.
-        /// </summary>
-        /// <typeparam name="T">The return type of the function.</typeparam>
-        /// <typeparam name="E">The type of exceptions to catch.</typeparam>
-        /// <param name="function">The function.</param>
-        /// <returns><see cref="Optional{T}.None"/> if there were exceptions or the function returns <c>null</c>;
-        /// <c>Some(function())</c> otherwise.</returns>
-        public static Optional<T> Try<T, E>(this Func<T> function) where E : Exception {
-            try {
-                return new Optional<T>(function());
-            }
-            catch (E) {
-                return new Optional<T>();
-            }
-        }
-
-#region Tries -- The versions of "Try..." methods from the framework
-        /// <summary>
-        /// Creates a new Uri using the specified String instance and a 
-        /// <see cref="UriKind"/>.
-        /// </summary>
-        public static Optional<Uri> CreateUri(string uriString, UriKind uriKind) {
-            Uri uri;
-            return Uri.TryCreate(uriString, uriKind, out uri) ? uri : None<Uri>();
-        }
-
-        /// <summary>
-        /// Creates a new Uri using the specified base and relative String instances.
-        /// </summary>
-        public static Optional<Uri> CreateUri(Uri baseUri, string relativeUri) {
-            Uri uri;
-            return Uri.TryCreate(baseUri, relativeUri, out uri) ? uri : None<Uri>();
-        }
-
-        /// <summary>
-        /// Creates a new Uri using the specified base and relative Uri instances.
-        /// </summary>
-        public static Optional<Uri> CreateUri(Uri baseUri, Uri relativeUri) {
-            Uri uri;
-            return Uri.TryCreate(baseUri, relativeUri, out uri) ? uri : None<Uri>();
-        }
-
-        /// <summary>
-        /// Retrieves the value corresponding to the specified key.
-        /// </summary>
-        /// <remarks>This method doesn't distinguish between cases when the value is <c>null</c>
-        /// and when the dictionary doesn't contain the key. Both cases return <c>None</c>.</remarks>
-        public static Optional<TValue> GetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key) {
-            TValue value;
-            return dictionary.TryGetValue(key, out value) ? value : None<TValue>();
-        }
-
-        /// <summary>
-        /// Retrieves a value corresponding to the supplied key from this <see cref="DbConnectionStringBuilder"/>.
-        /// </summary>
-        public static Optional<object> GetValue(this DbConnectionStringBuilder connectionStringBuilder, string keyword) {
-            object value;
-            return connectionStringBuilder.TryGetValue(keyword, out value) ? FromValue(value) : None<object>();
-        }
-
-        ///<summary>
-        ///Contains static methods for parsing strings which return <see cref="Optional{T}"/>.
-        ///</summary>
-        public static class Parse {
-            /// <summary>
-            /// Parses a string which represents an <see cref="int"/>.
-            /// </summary>
-            public static Optional<int> Int(string s) {
-                int i;
-                return int.TryParse(s, out i) ? i : None<int>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="int"/>.
-            /// </summary>
-            public static Optional<int> Int(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                int i;
-                return int.TryParse(s, styles, formatProvider, out i) ? i : None<int>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents a <see cref="T:System.DateTime"/>.
-            /// </summary>
-            public static Optional<DateTime> DateTime(string s) {
-                DateTime dateTime;
-                return System.DateTime.TryParse(s, out dateTime) ? dateTime : None<DateTime>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents a <see cref="T:System.DateTime"/>.
-            /// </summary>
-            public static Optional<DateTime> DateTime(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
-                DateTime dateTime;
-                return System.DateTime.TryParse(s, formatProvider, styles, out dateTime) ? dateTime : None<DateTime>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
-            /// </summary>
-            public static Optional<DateTimeOffset> DateTimeOffset(string s) {
-                DateTimeOffset offset;
-                return System.DateTimeOffset.TryParse(s, out offset) ? offset : None<DateTimeOffset>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
-            /// </summary>
-            public static Optional<DateTimeOffset> DateTimeOffset(string s, IFormatProvider formatProvider, DateTimeStyles styles) {
-                DateTimeOffset offset;
-                return System.DateTimeOffset.TryParse(s, formatProvider, styles, out offset) ? offset : None<DateTimeOffset>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents a <see cref="T:System.DateTime"/>.
-            /// </summary>
-            public static Optional<DateTime> ExactDateTime(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
-                DateTime dateTime;
-                return System.DateTime.TryParseExact(s, format, formatProvider, styles, out dateTime) ? dateTime : None<DateTime>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents a <see cref="T:System.DateTime"/>.
-            /// </summary>
-            public static Optional<DateTime> ExactDateTime(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
-                DateTime dateTime;
-                return System.DateTime.TryParseExact(s, formats, formatProvider, styles, out dateTime) ? dateTime : None<DateTime>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
-            /// </summary>
-            public static Optional<DateTimeOffset> ExactDateTimeOffset(string s, string format, IFormatProvider formatProvider, DateTimeStyles styles) {
-                DateTimeOffset offset;
-                return System.DateTimeOffset.TryParseExact(s, format, formatProvider, styles, out offset) ? offset : None<DateTimeOffset>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents a <see cref="T:System.DateTimeOffset"/>.
-            /// </summary>
-            public static Optional<DateTimeOffset> ExactDateTimeOffset(string s, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles) {
-                DateTimeOffset offset;
-                return System.DateTimeOffset.TryParseExact(s, formats, formatProvider, styles, out offset) ? offset : None<DateTimeOffset>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents a <see cref="T:System.TimeSpan"/>.
-            /// </summary>
-            public static Optional<TimeSpan> TimeSpan(string s) {
-                TimeSpan offset;
-                return System.TimeSpan.TryParse(s, out offset) ? offset : None<TimeSpan>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="int"/>.
-            /// </summary>
-            public static Optional<bool> Bool(string s) {
-                bool b;
-                return bool.TryParse(s, out b) ? b : None<bool>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="int"/>.
-            /// </summary>
-            public static Optional<char> Char(string s) {
-                char c;
-                return char.TryParse(s, out c) ? c : None<char>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="byte"/>.
-            /// </summary>
-            public static Optional<byte> Byte(string s) {
-                byte b;
-                return byte.TryParse(s, out b) ? b : None<byte>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="byte"/>.
-            /// </summary>
-            public static Optional<byte> Byte(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                byte b;
-                return byte.TryParse(s, styles, formatProvider, out b) ? b : None<byte>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="decimal"/>.
-            /// </summary>
-            public static Optional<decimal> Decimal(string s) {
-                decimal d;
-                return decimal.TryParse(s, out d) ? d : None<decimal>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="decimal"/>.
-            /// </summary>
-            public static Optional<decimal> Decimal(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                decimal d;
-                return decimal.TryParse(s, styles, formatProvider, out d) ? d : None<decimal>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="double"/>.
-            /// </summary>
-            public static Optional<double> Double(string s) {
-                double d;
-                return double.TryParse(s, out d) ? d : None<double>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="double"/>.
-            /// </summary>
-            public static Optional<double> Double(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                double d;
-                return double.TryParse(s, styles, formatProvider, out d) ? d : None<double>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="short"/>.
-            /// </summary>
-            public static Optional<short> Short(string s) {
-                short s1;
-                return short.TryParse(s, out s1) ? s1 : None<short>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="short"/>.
-            /// </summary>
-            public static Optional<short> Short(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                short s1;
-                return short.TryParse(s, styles, formatProvider, out s1) ? s1 : None<short>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="long"/>.
-            /// </summary>
-            public static Optional<long> Long(string s) {
-                long l;
-                return long.TryParse(s, out l) ? l : None<long>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="long"/>.
-            /// </summary>
-            public static Optional<long> Long(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                long l;
-                return long.TryParse(s, styles, formatProvider, out l) ? l : None<long>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="sbyte"/>.
-            /// </summary>
-            [CLSCompliant(false)]
-            public static Optional<sbyte> SByte(string s) {
-                sbyte s1;
-                return sbyte.TryParse(s, out s1) ? s1 : None<sbyte>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="sbyte"/>.
-            /// </summary>
-            [CLSCompliant(false)]
-            public static Optional<sbyte> SByte(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                sbyte s1;
-                return sbyte.TryParse(s, styles, formatProvider, out s1) ? s1 : None<sbyte>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="float"/>.
-            /// </summary>
-            public static Optional<float> Float(string s) {
-                float f;
-                return float.TryParse(s, out f) ? f : None<float>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="float"/>.
-            /// </summary>
-            public static Optional<float> Float(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                float f;
-                return float.TryParse(s, styles, formatProvider, out f) ? f : None<float>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="ushort"/>.
-            /// </summary>
-            [CLSCompliant(false)]
-            public static Optional<ushort> UShort(string s) {
-                ushort u;
-                return ushort.TryParse(s, out u) ? u : None<ushort>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="ushort"/>.
-            /// </summary>
-            [CLSCompliant(false)]
-            public static Optional<ushort> UShort(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                ushort u;
-                return ushort.TryParse(s, styles, formatProvider, out u) ? u : None<ushort>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="uint"/>.
-            /// </summary>
-            [CLSCompliant(false)]
-            public static Optional<uint> UInt(string s) {
-                uint u;
-                return uint.TryParse(s, out u) ? u : None<uint>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="uint"/>.
-            /// </summary>
-            [CLSCompliant(false)]
-            public static Optional<uint> UInt(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                uint u;
-                return uint.TryParse(s, styles, formatProvider, out u) ? u : None<uint>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="ulong"/>.
-            /// </summary>
-            [CLSCompliant(false)]
-            public static Optional<ulong> ULong(string s) {
-                ulong u;
-                return ulong.TryParse(s, out u) ? u : None<ulong>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="ulong"/>.
-            /// </summary>
-            [CLSCompliant(false)]
-            public static Optional<ulong> ULong(string s, NumberStyles styles, IFormatProvider formatProvider) {
-                ulong u;
-                return ulong.TryParse(s, styles, formatProvider, out u) ? u : None<ulong>();
-            }
-
-            /// <summary>
-            /// Parses a string which represents an <see cref="ulong"/>.
-            /// </summary>
-            public static Optional<IPAddress> IPAddress(string s) {
-                IPAddress address;
-                return System.Net.IPAddress.TryParse(s, out address) ? address : None<IPAddress>();
-            }            
-        }
-
-
-
-#endregion
-    }
-
     /// <summary>
     /// This struct represents an optional value, like <see cref="Nullable{T}"/>, but
     /// works with reference types as well. Also known as <c>Option</c> in ML/F#/Scala.
@@ -545,7 +33,6 @@ namespace FP.Core {
     /// <seealso cref="Nullable{T}"/>
     [Serializable]
     public struct Optional<T> : IEnumerable<T>, IComparable<Optional<T>>, IEquatable<Optional<T>> {
-        private readonly bool _hasValue;
         private readonly T _value;
 
         /// <summary>
@@ -554,7 +41,7 @@ namespace FP.Core {
         /// <value>The value.</value>
         /// <exception cref="InvalidOperationException"><see cref="HasValue"/> is <c>false</c>.</exception>
         public T Value { get {
-            if (_hasValue)
+            if (HasValue)
                 return _value;
             else
                 throw new InvalidOperationException("Optional<T> doesn't have a value.");
@@ -564,7 +51,7 @@ namespace FP.Core {
         /// Gets a value indicating whether this instance has value.
         /// </summary>
         /// <value><c>true</c> if this instance has value; otherwise, <c>false</c>.</value>
-        public bool HasValue { get { return _hasValue; } }
+        public bool HasValue { get; private set; }
 
         ///<summary>
         ///Returns an enumerator that iterates through the collection.
@@ -575,7 +62,7 @@ namespace FP.Core {
         ///</returns>
         ///<filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator() {
-            if (_hasValue)
+            if (HasValue)
                 yield return _value;
         }
 
@@ -599,16 +86,10 @@ namespace FP.Core {
         /// Initializes a new instance of the <see cref="Optional{T}"/> struct.
         /// </summary>
         /// <param name="value">The value.</param>
-        public Optional(T value) {
-            if (value != null) {
-                _hasValue = true;
-                _value = value;
-            }
-            else {
-                _hasValue = false;
-                _value = default(T);
-            }
-        }
+        public Optional(T value) : this() {
+            HasValue = true;
+            _value = value;
+        } // Optional(value)
 
         /// <summary>
         /// If the current instance has a value, do <paramref name="action"/> with it.
@@ -639,42 +120,6 @@ namespace FP.Core {
         /// <returns></returns>
         public T ValueOrElse(T @default) {
             return HasValue ? _value : @default;
-        }
-        
-        ///// <summary>
-        ///// Similar to the <c>??<\c> operator.
-        ///// </summary>
-        ///// <seealso cref="ValueOrElse"/>
-        ///// <example><c>None | 5 == 5.</c></example>
-        //public static T operator |(Optional<T> maybe, T @default) {
-        //    return maybe._hasValue ? maybe.Value : @default;
-        //}
-
-        /// <summary>
-        /// Similar to the <c>??<\c> operator.
-        /// </summary>
-        /// <seealso cref="ValueOrElse"/>
-        /// <example><c>None || Some(3) || Some(5) == Some(3).</c></example>
-        public static Optional<T> operator |(Optional<T> optional, Optional<T> @default) {
-            return optional._hasValue ? optional : @default;
-        }
-
-        /// <summary>
-        /// Implements the operator true.
-        /// </summary>
-        /// <param name="optional">The maybe.</param>
-        /// <returns><c>true</c> if <paramref name="optional"/> has a value.</returns>
-        public static bool operator true(Optional<T> optional) {
-            return optional._hasValue;
-        }
-
-        /// <summary>
-        /// Implements the operator false.
-        /// </summary>
-        /// <param name="optional">The maybe.</param>
-        /// <returns><c>true</c> if <paramref name="optional"/> doesn't have a value.</returns>
-        public static bool operator false(Optional<T> optional) {
-            return !optional._hasValue;
         }
 
         /// <summary>
@@ -707,6 +152,33 @@ namespace FP.Core {
         /// <returns></returns>
         public Optional<R> Map<R>(Func<T, R> function) {
             return HasValue ? Optional.Some(function(_value)) : Optional<R>.None;
+        }
+
+        /// <summary>
+        /// Similar to the <c>??<\c> operator.
+        /// </summary>
+        /// <seealso cref="ValueOrElse"/>
+        /// <example><c>None || Some(3) || Some(5) == Some(3).</c></example>
+        public static Optional<T> operator |(Optional<T> optional, Optional<T> @default) {
+            return optional.HasValue ? optional : @default;
+        }
+
+        /// <summary>
+        /// Implements the operator true.
+        /// </summary>
+        /// <param name="optional">The maybe.</param>
+        /// <returns><c>true</c> if <paramref name="optional"/> has a value.</returns>
+        public static bool operator true(Optional<T> optional) {
+            return optional.HasValue;
+        }
+
+        /// <summary>
+        /// Implements the operator false.
+        /// </summary>
+        /// <param name="optional">The maybe.</param>
+        /// <returns><c>true</c> if <paramref name="optional"/> doesn't have a value.</returns>
+        public static bool operator false(Optional<T> optional) {
+            return !optional.HasValue;
         }
 
         /// <summary>
@@ -804,6 +276,116 @@ namespace FP.Core {
         /// </returns>
         public override int GetHashCode() {
             return 29*typeof(T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
+        }
+    }
+
+    /// <summary>
+    /// A convenience static class to provide static methods for <see cref="Optional{T}"/> and
+    /// <see cref="Nullable{T}"/>.
+    /// </summary>
+    public static class Optional {
+        /// <summary>
+        /// Return a wrapper around the specified object.
+        /// </summary>
+        /// <typeparam name="T">Type of the object.</typeparam>
+        /// <param name="t">The object.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">if <paramref name="t"/> is <c>null</c>.</exception>
+        public static Optional<T> Some<T>(T t) {
+            return new Optional<T>(t);
+        }
+
+        /// <summary>
+        /// Returns <see cref="Optional{T}.None"/>.
+        /// </summary>
+        public static Optional<T> None<T>() {
+            return Optional<T>.None;
+        }
+
+        /// <summary>
+        /// Converts a sequence to maybe.
+        /// </summary>
+        /// <param name="sequence">The sequence.</param>
+        /// <returns><c>None</c> if <paramref name="sequence"/> is empty;
+        /// <c>Some(sequence.Item1())</c> otherwise.</returns>
+        public static Optional<T> ToOptional<T>(this IEnumerable<T> sequence) {
+            using (var enumerator = sequence.GetEnumerator())
+                return enumerator.MoveNext() ? Some(enumerator.Current) : None<T>();
+        }
+
+        /// <summary>
+        /// Converts <see cref="Optional{T}"/> to <see cref="Nullable{T}"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="optional">The maybe.</param>
+        /// <returns><c>null</c> if <paramref name="optional"/> is <c>None</c>;
+        /// <c>optional.Value</c> otherwise.</returns>
+        public static T? ToNullable<T>(this Optional<T> optional) where T : struct {
+            return optional.MapOrElse(x => x, null);
+        }
+
+        /// <summary>
+        /// Flattens the specified optional.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="optional">The maybe.</param>
+        /// <returns></returns>
+        public static Optional<T> Flatten<T>(this Optional<Optional<T>> optional) {
+            return optional.Map(m => m.Value);
+        }
+
+        /// <summary>
+        /// Selects the values of elements which have them.
+        /// </summary>
+        /// <param name="sequence">The sequence.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> SelectValues<T>(this IEnumerable<Optional<T>> sequence) {
+            foreach (var maybe in sequence)
+                if (maybe.HasValue)
+                    yield return maybe.Value;
+        }
+
+        /// <summary>
+        /// A version of <see cref="Enumerables2.Map{T,TR}"/> which can throw away elements.
+        /// In particular, if <c>function(x)</c> doesn't have a value for an element <c>x</c> of 
+        /// the <paramref name="sequence"/>, no element is included in the result; if it has value <c>y</c>,
+        /// <c>y</c> is included in the list.
+        /// </summary>
+        /// <typeparam name="T">Type of elements of the sequence.</typeparam>
+        /// <typeparam name="R">Type of elements of the resulting sequence.</typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="function">The function.</param>
+        /// <returns></returns>
+        public static IEnumerable<R> MapSome<T, R>(this IEnumerable<T> sequence, Func<T, Optional<R>> function) {
+            return SelectValues(sequence.Map(function));
+        }
+
+        /// <summary>
+        /// Tries the specified function.
+        /// </summary>
+        /// <typeparam name="T">The return type of the function.</typeparam>
+        /// <param name="function">The function.</param>
+        /// <returns><see cref="Optional{T}.None"/> if there were exceptions or the function returns <c>null</c>;
+        /// <c>Some(function())</c> otherwise.</returns>
+        public static Optional<T> Try<T>(this Func<T> function) {
+            return Try<T, Exception>(function);
+        }
+
+        /// <summary>
+        /// Tries the specified function, catching only exceptions of type <typeparam name="E"/>.
+        /// </summary>
+        /// <typeparam name="T">The return type of the function.</typeparam>
+        /// <typeparam name="E">The type of exceptions to catch.</typeparam>
+        /// <param name="function">The function.</param>
+        /// <returns><see cref="Optional{T}.None"/> if there were exceptions or the function returns <c>null</c>;
+        /// <c>Some(function())</c> otherwise.</returns>
+        public static Optional<T> Try<T, E>(this Func<T> function) where E : Exception {
+            try {
+                return Some(function());
+            }
+            catch (E) {
+                return None<T>();
+            }
         }
     }
 }

@@ -38,9 +38,9 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Looks up the specified key.
         /// </summary>
-        /// <value><see cref="Maybe.Just{T}"/><c>(value)</c> if the dictionary contains the specified key 
-        /// and associates <c>value</c> to it and <see cref="Maybe.Nothing{T}"/> otherwise.</value>
-        Maybe<TValue> this[TKey key] { get; }
+        /// <value><see cref="Optional.Some{T}"/><c>(value)</c> if the dictionary contains the specified key 
+        /// and associates <c>value</c> to it and <see cref="Optional.None{T}"/> otherwise.</value>
+        Optional<TValue> this[TKey key] { get; }
         /// <summary>
         /// Adds the specified key with the specified value.
         /// </summary>

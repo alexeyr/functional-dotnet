@@ -107,7 +107,7 @@ namespace FP.Core {
         /// Converts the result to <see cref="Optional{T}"/>.
         /// </summary>
         /// <returns></returns>
-        public abstract Optional<T> ToMaybe();
+        public abstract Optional<T> ToOptional();
 
         /// <summary>
         /// Gets the value, if the result is a success; throws an exception otherwise.
@@ -223,7 +223,7 @@ namespace FP.Core {
             /// Converts the result to <see cref="Optional{T}"/>.
             /// </summary>
             /// <returns></returns>
-            public override Optional<T> ToMaybe() {
+            public override Optional<T> ToOptional() {
                 return Optional<T>.None;
             }
         }
@@ -280,7 +280,7 @@ namespace FP.Core {
             /// Converts the result to <see cref="Optional{T}"/>.
             /// </summary>
             /// <returns></returns>
-            public override Optional<T> ToMaybe() {
+            public override Optional<T> ToOptional() {
                 return Optional.Some(Value);
             }
         }
