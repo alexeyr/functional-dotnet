@@ -1,5 +1,4 @@
-﻿#region License
-/*
+﻿/*
 * LazyList.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -13,7 +12,6 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
 // Code adapted from http://blogs.msdn.com/wesdyer/archive/2007/02/12/why-all-of-the-love-for-lists.aspx
 

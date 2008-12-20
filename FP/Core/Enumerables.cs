@@ -1,5 +1,4 @@
-﻿#region License
-/*
+﻿/*
 * Enumerables.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -13,13 +12,11 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using FP.Collections.Immutable;
-using FP.Core;
 using FP.HaskellNames;
 
 namespace FP.Core {

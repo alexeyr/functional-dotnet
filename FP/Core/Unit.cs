@@ -1,5 +1,4 @@
-﻿#region License
-/*
+﻿/*
 * Unit.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -13,13 +12,14 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
-namespace FP.Collections.Immutable {
+namespace FP.Core {
     /// <summary>
     /// A type with a single value.
     /// </summary>
     public enum Unit {
         Unit
     }
-} // namespace FP.Collections.Immutable
+}
+
+// namespace FP.Collections.Immutable

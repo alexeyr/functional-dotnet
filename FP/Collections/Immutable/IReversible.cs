@@ -1,4 +1,3 @@
-#region License
 /*
 * IReversible.cs is part of functional-dotnet project
 * 
@@ -13,7 +12,7 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
+
 namespace FP.Collections.Immutable {
     /// <summary>
     /// Represents a collection which can be reversed efficiently.

@@ -1,4 +1,3 @@
-﻿#region License
 /*
 * FingerTreeNode.cs is part of functional-dotnet project
 * 
@@ -13,7 +12,6 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
 using System;
 using System.Collections;
@@ -26,7 +24,8 @@ namespace FP.Collections.Immutable {
     /// </summary>
     /// <typeparam name="T">Type of the elements in the node.</typeparam>
     /// <typeparam name="V">Type of the weight monoid.</typeparam>
-    internal abstract class FTNode<T, V> : IMeasured<V>, IEnumerable<T>, IFoldable<T> where T : IMeasured<V> {
+    internal abstract class FTNode<T, V> : IMeasured<V>, IEnumerable<T>, IFoldable<T>
+        where T : IMeasured<V> {
         private FTNode() {}
 
         public abstract A FoldRight<A>(Func<T, A, A> binOp, A initial);
@@ -45,6 +44,7 @@ namespace FP.Collections.Immutable {
         ///</returns>
         ///<filterpriority>1</filterpriority>
         public abstract IEnumerator<T> GetEnumerator();
+
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
@@ -56,9 +56,9 @@ namespace FP.Collections.Immutable {
         internal class Node2 : FTNode<T, V>, IEquatable<Node2> {
             public readonly T Item1;
             public readonly T Item2;
+
             public Node2(T item1, T item2, Monoid<V> monoid) :
-                this(item1, item2, monoid.Plus(item1.Measure, item2.Measure)){
-            }
+                this(item1, item2, monoid.Plus(item1.Measure, item2.Measure)) {}
 
             internal Node2(T item1, T item2, V measure) {
                 Item1 = item1;
@@ -132,7 +132,7 @@ namespace FP.Collections.Immutable {
             /// <filterpriority>2</filterpriority>
             public override int GetHashCode() {
                 unchecked {
-                    return (Item1.GetHashCode()*397) ^ Item2.GetHashCode();
+                    return (Item1.GetHashCode() * 397) ^ Item2.GetHashCode();
                 }
             }
 
@@ -153,8 +153,11 @@ namespace FP.Collections.Immutable {
             public readonly T Item1;
             public readonly T Item2;
             public readonly T Item3;
+
             public Node3(T item1, T item2, T item3, Monoid<V> monoid) :
-                this(item1, item2, item3, monoid.Plus(monoid.Plus(item1.Measure, item2.Measure), item3.Measure)) {}
+                this(
+                item1, item2, item3,
+                monoid.Plus(monoid.Plus(item1.Measure, item2.Measure), item3.Measure)) {}
 
             internal Node3(T item1, T item2, T item3, V measure) {
                 Item1 = item1;
@@ -203,7 +206,8 @@ namespace FP.Collections.Immutable {
             public bool Equals(Node3 other) {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
-                return Equals(other.Item1, Item1) && Equals(other.Item2, Item2) && Equals(other.Item3, Item3);
+                return Equals(other.Item1, Item1) && Equals(other.Item2, Item2) &&
+                       Equals(other.Item3, Item3);
             }
 
             /// <summary>
@@ -231,8 +235,8 @@ namespace FP.Collections.Immutable {
             public override int GetHashCode() {
                 unchecked {
                     int result = Item1.GetHashCode();
-                    result = (result*397) ^ Item2.GetHashCode();
-                    result = (result*397) ^ Item3.GetHashCode();
+                    result = (result * 397) ^ Item2.GetHashCode();
+                    result = (result * 397) ^ Item3.GetHashCode();
                     return result;
                 }
             }
@@ -245,5 +249,5 @@ namespace FP.Collections.Immutable {
                 return !Equals(left, right);
             }
         }
-    }
+        }
 }

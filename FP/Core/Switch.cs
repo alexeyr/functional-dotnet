@@ -1,5 +1,4 @@
-﻿#region License
-/*
+﻿/*
 * Switch.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -13,7 +12,6 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-#endregion
 
 // Adapted from http://community.bartdesmet.net/blogs/bart/archive/2008/03/30/a-functional-c-type-switch.aspx
 
