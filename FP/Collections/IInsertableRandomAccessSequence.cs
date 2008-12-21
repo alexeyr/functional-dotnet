@@ -15,7 +15,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// Represents a <see cref="IRandomAccessSequence{T,TSequence}"/> where new elements can be inserted or removed.
     /// </summary>

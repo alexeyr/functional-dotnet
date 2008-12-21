@@ -13,7 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-using FP.Collections.Immutable;
+using FP.Collections;
 
 namespace FP.Text {
     /// <summary>

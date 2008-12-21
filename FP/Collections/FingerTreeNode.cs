@@ -18,7 +18,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// A node in the middle section of a deep finger tree.
     /// </summary>

@@ -15,7 +15,7 @@
 
 using FP.Core;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// An immutable double-ended queue.
     /// </summary>

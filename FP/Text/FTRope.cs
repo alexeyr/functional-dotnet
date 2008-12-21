@@ -15,7 +15,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using FP.Collections.Immutable;
+using FP.Collections;
 
 namespace FP.Text {
     /// <summary>

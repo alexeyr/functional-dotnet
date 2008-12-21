@@ -15,7 +15,7 @@
 
 using System;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// A read interface for random access sequences.
     /// </summary>

@@ -16,7 +16,7 @@
 using System;
 using FP.Core;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// Represents an immutable list of values.
     /// </summary>

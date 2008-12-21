@@ -25,7 +25,7 @@ using FP.HaskellNames;
 
 // ReSharper disable RedundantThisQualifier
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// A finger tree (see Ralf Hinze and Ross Paterson, "Finger trees: a simple general-purpose data structure", Journal of Functional Programming 16:2 (2006) pp 197-217)
     /// Usable for adding and removing elements at both ends (the deque operations), concatenation, 

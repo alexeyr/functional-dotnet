@@ -13,7 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// Represents a collection which can be concatenated with <typeparamref name="TCollection"/>
     /// returning a <typeparamref name="TResultCollection"/> as the result.
