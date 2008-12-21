@@ -165,15 +165,15 @@ namespace FP.Future {
         /// Gets the status of the future.
         /// </summary>
         /// <value>The status.</value>
-        public override Future.Status Status {
+        public override Status Status {
             get {
                 return _isFulfilled
                            ? (_result != null
                                   ? _result.Match(
-                                        s => FP.Future.Future.Status.Successful,
-                                        f => FP.Future.Future.Status.Failed)
+                                        s => Status.Successful,
+                                        f => Status.Failed)
                                   : _future.Status)
-                           : FP.Future.Future.Status.Future;
+                           : Status.Future;
             }
         }
 
