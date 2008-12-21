@@ -240,12 +240,23 @@ namespace FP.Core {
             }
 
             /// <summary>
-            /// Performs an implicit conversion from <see cref="Result{T}.Success"/> to <see cref="T"/>.
+            /// Performs an implicit conversion from <see cref="Result{T}.Success"/> to 
+            /// <see cref="T"/>.
             /// </summary>
             /// <param name="success">The success.</param>
             /// <returns>The value.</returns>
             public static implicit operator T(Success success) {
                 return success.Value;
+            }
+
+            /// <summary>
+            /// Performs an implicit conversion from <see cref="T"/> to 
+            /// <see cref="Result{T}.Success"/>.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            /// <returns>The success with value <paramref name="value"/>.</returns>
+            public static implicit operator Success(T value) {
+                return new Success(value);
             }
 
             /// <summary>

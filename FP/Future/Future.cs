@@ -29,7 +29,7 @@ namespace FP.Future {
         /// Requests the result of the future. If the result isn't yet available, blocks the thread
         /// until it is obtained.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The value of the result of this future.</returns>
         public T Await() {
             return Result.Value;
         }
@@ -45,24 +45,14 @@ namespace FP.Future {
         /// Gets the status of the future.
         /// </summary>
         /// <value>The status.</value>
-        public abstract Status Status { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this future is failed.
-        /// </summary>
-        /// <value><c>true</c> if this instance is failed; otherwise, <c>false</c>.</value>
-        public bool IsFailed {
-            get { return Status == Status.Failed; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this future is successful.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this future is successful; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsSuccessful {
-            get { return Status == Status.Successful; }
+        public virtual Status Status {
+            get {
+                return HasResult
+                           ? Result.Match(
+                                 s => Status.Successful,
+                                 f => Status.Failed)
+                           : Status.Future;
+            }
         }
 
         /// <summary>
@@ -70,7 +60,7 @@ namespace FP.Future {
         /// </summary>
         /// <value><c>true</c> if this future doesn't have a result yet; otherwise, <c>false</c>.</value>
         public bool IsFuture {
-            get { return Status == Status.Future; }
+            get { return !HasResult; }
         }
 
         /// <summary>
@@ -79,9 +69,7 @@ namespace FP.Future {
         /// <value>
         /// <c>true</c> if this instance has a result; otherwise, <c>false</c>.
         /// </value>
-        public bool HasResult {
-            get { return !IsFuture; }
-        }
+        public abstract bool HasResult { get; }
 
         /// <summary>
         /// Gets a value indicating whether this future is lazy (and not forced yet).
@@ -97,10 +85,9 @@ namespace FP.Future {
         /// <summary>
         /// Called to raise <see cref="Determined"/>.
         /// </summary>
-        /// <param name="result">The result.</param>
-        protected void OnDetermined(Result<T> result) {
+        protected void OnDetermined() {
             if (Determined != null)
-                Determined(this, new FutureDeterminedArgs<T>(result));
+                Determined(this, new FutureDeterminedArgs<T>(Result));
         }
 
         /// <summary>
@@ -176,7 +163,7 @@ namespace FP.Future {
         }
 
         /// <summary>
-        /// Creates a future which calculates <paramref name="calculation"/> on the thread when its result 
+        /// Creates a future which calculates <paramref name="calculation"/> on the calling thread when its result 
         /// is requested and immediately returns it.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -184,6 +171,10 @@ namespace FP.Future {
         /// <returns></returns>
         public static Lazy<T> Lazy<T>(Func<T> calculation) {
             return new Lazy<T>(calculation);
+        }
+
+        public static Ready<T> Ready<T>(Result<T> result) {
+            return new Ready<T>(result);
         }
     }
 }
