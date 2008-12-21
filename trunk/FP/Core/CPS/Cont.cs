@@ -21,9 +21,20 @@ namespace FP.Core.CPS {
     ///</summary>
     ///<typeparam name="T"></typeparam>
     public class Cont<T> {
+        /// <summary>
+        /// What to do when successful.
+        /// </summary>
         public readonly Action<T> Ok;
+        /// <summary>
+        /// What to do in case of failure.
+        /// </summary>
         public readonly Action<Exception> Fail;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cont{T}"/> class.
+        /// </summary>
+        /// <param name="ok">The action in case of success.</param>
+        /// <param name="fail">The action in case of failure.</param>
         public Cont(Action<T> ok, Action<Exception> fail) {
             Ok = ok;
             Fail = fail;

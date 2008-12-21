@@ -78,8 +78,10 @@ namespace FP.Text {
         /// <summary>
         /// Copies the rope to <paramref name="destination"/>, starting at <paramref name="destinationIndex"/>.
         /// </summary>
+        /// <param name="sourceIndex">The starting index to copy.</param>
         /// <param name="destination">The destination array.</param>
         /// <param name="destinationIndex">The index in the destination array.</param>
+        /// <param name="count">The number of elements to copy.</param>
         public override void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex,
                                     int count) {
             if (sourceIndex < SplitIndex) {
@@ -122,7 +124,7 @@ namespace FP.Text {
         }
 
         protected internal override bool IsRightMostChildFlatAndShort {
-            get { return _child2.Length < MaxShortSize && _child2 is FlatRope<TChar>; }
+            get { return _child2.Length < MAX_SHORT_SIZE && _child2 is FlatRope<TChar>; }
         }
 
         protected internal override bool IsBalanced {
@@ -144,12 +146,13 @@ namespace FP.Text {
         public override Rope<TChar> Rebalance() {
             if (IsBalanced)
                 return this;
-            var forest = new Rope<TChar>[MaxRopeDepth + 1];
+            var forest = new Rope<TChar>[MAX_ROPE_DEPTH + 1];
             AddToForest(this, forest);
             Rope<TChar> result = null;
             foreach (var rope in forest)
                 result = rope.Concat(result);
-            if (result.Depth > MaxRopeDepth) throw new ArgumentException("The rope is too long.");
+            //TODO: check that result can't be null
+            if (result.Depth > MAX_ROPE_DEPTH) throw new ArgumentException("The rope is too long.");
             return result;
         }
 
@@ -177,7 +180,7 @@ namespace FP.Text {
                     tempRope = forest[i].Concat(tempRope);
                     forest[i] = null;
                 }
-                if (i == MaxRopeDepth || tempRope.Length < MinLength[i + 1]) {
+                if (i == MAX_ROPE_DEPTH || tempRope.Length < MinLength[i + 1]) {
                     forest[i] = tempRope;
                     return;
                 }

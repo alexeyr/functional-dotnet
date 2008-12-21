@@ -645,6 +645,7 @@ namespace FP.Core {
 
         //TODO: MapAccumLeft, MapAccumRight
 
+        // ReSharper disable FunctionNeverReturns
         /// <summary>
         /// Iterates the specified function, starting with the specified value.
         /// In Haskell notation:
@@ -666,6 +667,7 @@ namespace FP.Core {
             //iterate :: (a -> a) -> a -> [a]
             //iterate f x =  x : iterate f (f x)
         }
+        // ReSharper restore FunctionNeverReturns
 
         /// <summary>
         /// Repeats the specified value the specified number of times.
@@ -1388,10 +1390,6 @@ namespace FP.Core {
 
         #endregion
 
-        #region Generalized functions
-
-        #endregion
-
         #region Lazy lists
 
         /// <summary>
@@ -1416,78 +1414,117 @@ namespace FP.Core {
 
         #region MaybeEnumerable
 
-        /// <summary>Returns the first element in a sequence, or <see cref="Optional{T}.None"/>
-        /// if there is no such element.</summary>
-        /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
-        /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
-        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
+        /// <summary>Returns the first element in a sequence, or 
+        /// <see cref="Optional{T}.None"/>if there is no such element.</summary>
+        /// <returns>The first element in the sequence that passes the test in the
+        /// specified predicate function.</returns>
+        /// <param name="sequence">An 
+        /// <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element
+        /// from.</param>
+        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.
+        /// </typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
-        /// <remarks>Replaces <see cref="Enumerable.FirstOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
+        /// <remarks>Replaces 
+        /// <see cref="Enumerable.FirstOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
         public static Optional<T> MaybeFirst<T>(this IEnumerable<T> sequence) {
             return MaybeFirst(sequence, x => true);
         }
 
-        /// <summary>Returns the first element in a sequence that satisfies a specified condition, or <see cref="Optional{T}.None"/>
-        /// if there is no such element.</summary>
-        /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
-        /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
-        /// <param name="predicate">A function to test each element for a condition.</param>
-        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
+        /// <summary>Returns the first element in a sequence that satisfies a specified
+        /// condition, or <see cref="Optional{T}.None"/>if there is no such element.
+        /// </summary>
+        /// <returns>The first element in the sequence that passes the test in the
+        /// specified predicate function.</returns>
+        /// <param name="sequence">An 
+        /// <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element
+        /// from.</param>
+        /// <param name="predicate">A function to test each element for a condition.
+        /// </param>
+        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.
+        /// </typeparam>
         /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.</exception>
-        /// <remarks>Replaces <see cref="Enumerable.FirstOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
+        /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.
+        /// </exception>
+        /// <remarks>Replaces 
+        /// <see cref="Enumerable.FirstOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
         public static Optional<T> MaybeFirst<T>(this IEnumerable<T> sequence,
                                                 Func<T, bool> predicate) {
             return Optional.Try<T, InvalidOperationException>(() => sequence.First(predicate));
         }
 
-        /// <summary>Returns the first element in a sequence, or <see cref="Optional{T}.None"/>
-        /// if there is no such element.</summary>
-        /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
-        /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
-        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
+        /// <summary>Returns the first element in a sequence, or 
+        /// <see cref="Optional{T}.None"/>if there is no such element.</summary>
+        /// <returns>The first element in the sequence that passes the test in the
+        /// specified predicate function.</returns>
+        /// <param name="sequence">An 
+        /// <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element
+        /// from.</param>
+        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.
+        /// </typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
-        /// <remarks>Replaces <see cref="Enumerable.LastOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
+        /// <remarks>Replaces 
+        /// <see cref="Enumerable.LastOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
         public static Optional<T> MaybeLast<T>(this IEnumerable<T> sequence) {
             return MaybeLast(sequence, x => true);
         }
 
-        /// <summary>Returns the first element in a sequence that satisfies a specified condition, or <see cref="Optional{T}.None"/>
-        /// if there is no such element.</summary>
-        /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
-        /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
-        /// <param name="predicate">A function to test each element for a condition.</param>
-        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
+        /// <summary>Returns the first element in a sequence that satisfies a specified
+        /// condition, or <see cref="Optional{T}.None"/>if there is no such element.
+        /// </summary>
+        /// <returns>The first element in the sequence that passes the test in the
+        /// specified predicate function.</returns>
+        /// <param name="sequence">An 
+        /// <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element
+        /// from.</param>
+        /// <param name="predicate">A function to test each element for a condition.
+        /// </param>
+        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.
+        /// </typeparam>
         /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.</exception>
-        /// <remarks>Replaces <see cref="Enumerable.LastOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
+        /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.
+        /// </exception>
+        /// <remarks>Replaces 
+        /// <see cref="Enumerable.LastOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
         public static Optional<T> MaybeLast<T>(this IEnumerable<T> sequence, Func<T, bool> predicate) {
             return Optional.Try<T, InvalidOperationException>(() => sequence.Last(predicate));
         }
 
-        /// <summary>Returns the first element in a sequence, or <see cref="Optional{T}.None"/>
-        /// if there is no such element.</summary>
-        /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
-        /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
-        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
+        /// <summary>Returns the first element in a sequence, or 
+        /// <see cref="Optional{T}.None"/>if there is no such element.</summary>
+        /// <returns>The first element in the sequence that passes the test in the
+        /// specified predicate function.</returns>
+        /// <param name="sequence">An 
+        /// <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element
+        /// from.</param>
+        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.
+        /// </typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="sequence" /> is null.</exception>
-        /// <remarks>Replaces <see cref="Enumerable.SingleOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
+        /// <remarks>Replaces 
+        /// <see cref="Enumerable.SingleOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
         public static Optional<T> MaybeSingle<T>(this IEnumerable<T> sequence) {
             return MaybeSingle(sequence, x => true);
         }
 
-        /// <summary>Returns the first element in a sequence that satisfies a specified condition, or <see cref="Optional{T}.None"/>
-        /// if there is no such element.</summary>
-        /// <returns>The first element in the sequence that passes the test in the specified predicate function.</returns>
-        /// <param name="sequence">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element from.</param>
-        /// <param name="predicate">A function to test each element for a condition.</param>
-        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.</typeparam>
+        /// <summary>Returns the first element in a sequence that satisfies a specified
+        /// condition, or <see cref="Optional{T}.None"/>if there is no such element.
+        /// </summary>
+        /// <returns>The first element in the sequence that passes the test in the
+        /// specified predicate function.</returns>
+        /// <param name="sequence">An 
+        /// <see cref="T:System.Collections.Generic.IEnumerable`1" /> to return an element
+        /// from.</param>
+        /// <param name="predicate">A function to test each element for a condition.
+        /// </param>
+        /// <typeparam name="T">The type of the elements of <paramref name="sequence" />.
+        /// </typeparam>
         /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.</exception>
-        /// <remarks>Replaces <see cref="Enumerable.SingleOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
+        /// <paramref name="sequence" /> or <paramref name="predicate" /> is null.
+        /// </exception>
+        /// <remarks>Replaces 
+        /// <see cref="Enumerable.SingleOrDefault(IEnumerable{T},Func{T,bool})"/></remarks>
         public static Optional<T> MaybeSingle<T>(this IEnumerable<T> sequence,
                                                  Func<T, bool> predicate) {
             return Optional.Try<T, InvalidOperationException>(() => sequence.Single(predicate));

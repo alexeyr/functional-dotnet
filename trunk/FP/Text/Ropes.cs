@@ -18,10 +18,20 @@ namespace FP.Text {
     /// Utility class for Ropes.
     /// </summary>
     public static class Ropes {
+        /// <summary>
+        /// Converts a string to a rope.
+        /// </summary>
+        /// <param name="s">The string.</param>
+        /// <returns>The rope holding <paramref name="s"/>.</returns>
         public static StringRope ToRope(this string s) {
             return new StringRope(s);
         } // ToRope()
 
+        /// <summary>
+        /// Converts an array to a rope.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <returns>The rope holding <paramref name="array"/>.</returns>
         public static ArrayRope<TChar> ToRope<TChar>(this TChar[] array) {
             return new ArrayRope<TChar>(array);
         } // ToRope(, array)

@@ -21,6 +21,10 @@ namespace FP.Text {
     /// </summary>
     [Serializable]
     public sealed class ArrayRope<TChar> : CharSequenceRope<TChar, ArrayCharSequence<TChar>> {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArrayRope&lt;TChar&gt;"/> class.
+        /// </summary>
+        /// <param name="array">The array.</param>
         public ArrayRope(TChar[] array) : base(new ArrayCharSequence<TChar>(array)) {}
 
         /// <summary>

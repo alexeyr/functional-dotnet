@@ -18,6 +18,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace FP.Text {
+    /// <summary>
+    /// Represents a subsequence of a character sequence.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the char.</typeparam>
+    /// <typeparam name="TSequence">The type of the sequence.</typeparam>
     public struct CharSubsequence<TChar, TSequence> : ICharSequence<TChar>
         where TSequence : ICharSequence<TChar> {
         //TODO: cache data
@@ -26,6 +31,13 @@ namespace FP.Text {
         private readonly int _offset;
         private readonly int _length;
 
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="CharSubsequence&lt;TChar, TSequence&gt;"/> struct.
+        /// </summary>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="length">The length.</param>
         public CharSubsequence(TSequence sequence, int offset, int length) {
             if (offset < 0)
                 throw new ArgumentOutOfRangeException("offset");
@@ -36,6 +48,13 @@ namespace FP.Text {
             _length = length;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="CharSubsequence&lt;TChar, TSequence&gt;"/> struct.
+        /// </summary>
+        /// <param name="subsequence">The subsequence.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="length">The length.</param>
         public CharSubsequence(CharSubsequence<TChar, TSequence> subsequence, int offset, int length) {
             if (offset < 0)
                 throw new ArgumentOutOfRangeException("offset");

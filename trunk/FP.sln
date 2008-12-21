@@ -49,7 +49,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		HeaderCommentSolution = /*$LineBreak$* %file% is part of functional-dotnet project$LineBreak$* $LineBreak$* Copyright (c) %years% Alexey Romanov$LineBreak$* All rights reserved.$LineBreak$*$LineBreak$* This source file is available under The New BSD License.$LineBreak$* See license.txt file for more information.$LineBreak$* $LineBreak$* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND $LineBreak$* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, $LineBreak$* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF $LineBreak$* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.$LineBreak$*/
 		AddHeaderCommentSolution = True
+		HeaderCommentSolution = /*$LineBreak$* %file% is part of functional-dotnet project$LineBreak$* $LineBreak$* Copyright (c) %years% Alexey Romanov$LineBreak$* All rights reserved.$LineBreak$*$LineBreak$* This source file is available under The New BSD License.$LineBreak$* See license.txt file for more information.$LineBreak$* $LineBreak$* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND $LineBreak$* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, $LineBreak$* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF $LineBreak$* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.$LineBreak$*/
 	EndGlobalSection
 EndGlobal

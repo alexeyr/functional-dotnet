@@ -30,6 +30,9 @@ namespace FP.Collections.Immutable {
     public sealed class Vector<T> : IRandomAccessSequence<T, Vector<T>> {
         private const int BRANCHING = 32;
         private static readonly Vector<T>[] _emptyArray = new Vector<T>[0];
+        /// <summary>
+        /// Empty vector instance.
+        /// </summary>
         public static readonly Vector<T> Empty = new Vector<T>(default(T), 0, _emptyArray);
         private static readonly Vector<T> _default = new Vector<T>(default(T), 1, _emptyArray);
 
@@ -75,6 +78,12 @@ namespace FP.Collections.Immutable {
             return new Vector<T>(_data, Math.Max(_count, Number(path) + 1), newBranches);
         }
 
+        /// <summary>
+        /// Appends the specified new value.
+        /// </summary>
+        /// <param name="newValue">The new value.</param>
+        /// <returns>The new vector which contains all elements of this instance and 
+        /// <paramref name="newValue"/>.</returns>
         public Vector<T> Append(T newValue) {
             return UpdateAt(_count + 1, _ => newValue);
         }
@@ -83,7 +92,8 @@ namespace FP.Collections.Immutable {
         ///Returns an enumerator that iterates through the collection.
         ///</summary>
         ///<returns>
-        ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+        ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to
+        ///iterate through the collection.
         ///</returns>
         ///<filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator() {
@@ -123,10 +133,12 @@ namespace FP.Collections.Immutable {
             }
         }
 
-        public IEnumerable<int> CheckIntsEnumerated() {
-            //            //TODO: More effective
-            //            for (int i = 0; i < _count; i++)
-            //                yield return this[i]; 
+        //TODO: delete?
+        /// <summary>
+        /// Checks the ints enumerated.
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<int> CheckIntsEnumerated() {
             var digitStack = new Stack<int>();
             for (int currentIndex = 0, lastDigit = 0;
                  currentIndex < _count;
@@ -167,10 +179,20 @@ namespace FP.Collections.Immutable {
             get { return _count == 0; }
         }
 
+        /// <summary>
+        /// Returns a subsequence starting at <paramref name="startIndex"/> and consisting of <paramref name="count"/> elements.
+        /// </summary>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
         public Vector<T> Subsequence(int startIndex, int count) {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Gets the <see cref="T"/> at the specified index.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public T this[int index] {
             get {
                 if (index < 0)
@@ -226,7 +248,16 @@ namespace FP.Collections.Immutable {
         }
     }
 
+    /// <summary>
+    /// Utility class for instantiating vectors.
+    /// </summary>
     public static class Vector {
+        /// <summary>
+        /// Creates a new vector containing the specified elements.
+        /// </summary>
+        /// <typeparam name="T">The type of elements.</typeparam>
+        /// <param name="ts">The elements.</param>
+        /// <returns>The vector containing the specified elements.</returns>
         public static Vector<T> New<T>(IEnumerable<T> ts) {
             var vector = Vector<T>.Empty;
             int i = 0;
@@ -235,6 +266,12 @@ namespace FP.Collections.Immutable {
             return vector;
         }
 
+        /// <summary>
+        /// Creates a new vector containing the specified elements.
+        /// </summary>
+        /// <typeparam name="T">The type of elements.</typeparam>
+        /// <param name="ts">The elements.</param>
+        /// <returns>The vector containing the specified elements.</returns>
         public static Vector<T> New<T>(params T[] ts) {
             return New(ts.AsEnumerable());
         }

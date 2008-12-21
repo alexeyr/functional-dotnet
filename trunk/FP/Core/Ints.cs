@@ -21,7 +21,8 @@ namespace FP.Core {
     /// Static methods for generating sequences of <see cref="int"/>s and other convenience methods.
     /// </summary>
     public static class Ints {
-        /// <summary>Generates a sequence of integral numbers starting with a specified number.</summary>
+        /// <summary>Generates a sequence of integral numbers starting with a specified
+        /// number.</summary>
         /// <returns>An <see cref="IEnumerable{int}"/> that contains a range of sequential 
         /// integral numbers up to <see cref="int.MaxValue"/>.</returns>
         /// <param name="start">The value of the first integer in the sequence.</param>

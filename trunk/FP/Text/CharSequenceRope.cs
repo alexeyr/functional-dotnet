@@ -69,7 +69,7 @@ namespace FP.Text {
         public override Rope<TChar> SubString(int startIndex, int length) {
             if (startIndex == 0 && length == Length)
                 return this;
-            if (length <= MaxShortSize) {
+            if (length <= MAX_SHORT_SIZE) {
                 var array = new TChar[length];
                 _charSequence.CopyTo(startIndex, array, 0, length);
                 return

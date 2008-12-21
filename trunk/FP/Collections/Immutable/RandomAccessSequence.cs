@@ -332,10 +332,22 @@ namespace FP.Collections.Immutable {
             return new RandomAccessSequence<T>(split.Left + split.Right);
         }
 
+        /// <summary>
+        /// Prepends a sequence.
+        /// </summary>
+        /// <param name="ts">The sequence of elements to prepend.</param>
+        /// <returns>The new random access sequence consisting of elements of <paramref name="ts"/>
+        /// and this random access sequence.</returns>
         public RandomAccessSequence<T> PrependRange(IEnumerable<T> ts) {
             return new RandomAccessSequence<T>(_ft.PrependRange(ts.Map(t => new Element(t))));
         }
 
+        /// <summary>
+        /// Appends a sequence.
+        /// </summary>
+        /// <param name="ts">The sequence of elements to prepend.</param>
+        /// <returns>The new random access sequence consisting of
+        /// this random access sequence and elements of <paramref name="ts"/>.</returns>
         public RandomAccessSequence<T> AppendRange(IEnumerable<T> ts) {
             return new RandomAccessSequence<T>(_ft.AppendRange(ts.Map(t => new Element(t))));
         }

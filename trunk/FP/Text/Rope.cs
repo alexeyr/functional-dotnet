@@ -35,14 +35,14 @@ namespace FP.Text {
         /// <summary>
         /// This is the maximum size for the flat rope to be considered "short".
         /// </summary>
-        protected const int MaxShortSize = 25;
+        protected const int MAX_SHORT_SIZE = 25;
 
         /// <summary>
         /// The maximum depth a tree can reach before being rebalanced.
         /// </summary>
-        protected const int MaxRopeDepth = 45;
+        protected const int MAX_ROPE_DEPTH = 45;
 
-        protected static readonly int[] MinLength = new int[MaxRopeDepth + 1] {
+        protected static readonly int[] MinLength = new int[MAX_ROPE_DEPTH + 1] {
 /* 0 */1, /* 1 */2, /* 2 */3, /* 3 */5, /* 4 */8, /* 5 */13, /* 6 */21,
 /* 7 */34, /* 8 */55, /* 9 */89, /* 10 */144, /* 11 */233, /* 12 */377,
 /* 13 */610, /* 14 */987, /* 15 */1597, /* 16 */2584, /* 17 */4181,
@@ -81,15 +81,18 @@ namespace FP.Text {
         /// <summary>
         /// Gets the <paramref name="index"/>-th <see cref="TChar"/> in the sequence.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or
-        /// greater or equal to <see cref="Length"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less
+        /// than 0 or greater or equal to <see cref="Length"/>.</exception>
         public abstract TChar this[int index] { get; }
 
         /// <summary>
-        /// Copies the rope to <paramref name="destination"/>, starting at <paramref name="destinationIndex"/>.
+        /// Copies the part of the rope starting with <paramref name="sourceIndex"/> to 
+        /// <paramref name="destination"/>, starting at <paramref name="destinationIndex"/>.
         /// </summary>
+        /// <param name="sourceIndex">The index from which copying starts.</param>
         /// <param name="destination">The destination array.</param>
         /// <param name="destinationIndex">The index in the destination array.</param>
+        /// <param name="count">The number of chars to copy.</param>
         public abstract void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex,
                                     int count);
 
@@ -107,14 +110,14 @@ namespace FP.Text {
                 return other;
             var otherFlat = other as FlatRope<TChar>;
             if (otherFlat != null && IsRightMostChildFlatAndShort &&
-                otherFlat.Length <= MaxShortSize) return ConcatShort(otherFlat);
+                otherFlat.Length <= MAX_SHORT_SIZE) return ConcatShort(otherFlat);
             return ConcatAndRebalanceIfNeeded(other);
         }
 
         private Rope<TChar> ConcatAndRebalanceIfNeeded(Rope<TChar> other) {
             var result = new ConcatRope<TChar>(this, other);
             byte depth = result.Depth;
-            return depth > MaxRopeDepth || (depth > 20 && result.Length < MinLength[3 * depth / 4])
+            return depth > MAX_ROPE_DEPTH || (depth > 20 && result.Length < MinLength[3 * depth / 4])
                        ? result.Rebalance()
                        : result;
         }
@@ -134,6 +137,10 @@ namespace FP.Text {
             get { return Length == 0; }
         }
 
+        /// <summary>
+        /// Rebalances this instance.
+        /// </summary>
+        /// <returns></returns>
         public abstract Rope<TChar> Rebalance();
     }
 }

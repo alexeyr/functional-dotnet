@@ -89,6 +89,14 @@ namespace FP.Core.CPS {
                    };
         }
 
+        /// <summary>
+        /// Do <paramref name="first"/>; if it succeeds then do <paramref name="second"/>.
+        /// </summary>
+        /// <typeparam name="T1">The type of the <paramref name="first"/> action.</typeparam>
+        /// <typeparam name="T2">The type of the <paramref name="second"/> action.</typeparam>
+        /// <param name="first">The first action.</param>
+        /// <param name="second">The second action.</param>
+        /// <returns>The combined action</returns>
         public static ActionCPS<T2> Then<T1, T2>(this ActionCPS<T1> first,
                                                  Func<T1, ActionCPS<T2>> second) {
             return cont => first(new Cont<T1>(

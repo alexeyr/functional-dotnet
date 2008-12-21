@@ -41,7 +41,7 @@ namespace FP.Text {
         }
 
         protected internal override sealed bool IsRightMostChildFlatAndShort {
-            get { return Length < MaxShortSize; }
+            get { return Length < MAX_SHORT_SIZE; }
         }
 
         protected internal override sealed bool IsBalanced {

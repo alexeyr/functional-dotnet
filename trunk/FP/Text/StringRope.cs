@@ -21,6 +21,10 @@ namespace FP.Text {
     /// </summary>
     [Serializable]
     public sealed class StringRope : CharSequenceRope<char, StringCharSequence> {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringRope"/> class.
+        /// </summary>
+        /// <param name="s">The string.</param>
         public StringRope(string s) : base(new StringCharSequence(s)) {}
 
         public override string ToString() {
