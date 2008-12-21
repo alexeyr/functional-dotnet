@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using FP.Collections;
 using FP.HaskellNames;
 
 // ReSharper disable RedundantIfElseBlock
@@ -33,7 +34,11 @@ namespace FP.Core {
     /// </remarks>
     /// <seealso cref="Nullable{T}"/>
     [Serializable]
-    public struct Optional<T> : IEnumerable<T>, IComparable<Optional<T>>, IEquatable<Optional<T>> {
+    public struct Optional<T> : IEnumerable<T>, IComparable<Optional<T>>, IEquatable<Optional<T>>,
+        IFoldable<T> {
+        /// <summary>
+        /// _value
+        /// </summary>
         private readonly T _value;
 
         /// <summary>
@@ -48,13 +53,13 @@ namespace FP.Core {
                 else
                     throw new InvalidOperationException("Optional<T> doesn't have a value.");
             }
-        }
+        } // Value
 
         /// <summary>
         /// Gets a value indicating whether this instance has value.
         /// </summary>
         /// <value><c>true</c> if this instance has value; otherwise, <c>false</c>.</value>
-        public bool HasValue { get; private set; }
+        public bool HasValue { get; private set; } // HasValue
 
         ///<summary>
         ///Returns an enumerator that iterates through the collection.
@@ -67,7 +72,7 @@ namespace FP.Core {
         public IEnumerator<T> GetEnumerator() {
             if (HasValue)
                 yield return _value;
-        }
+        } // GetEnumerator()
 
         ///<summary>
         ///Returns an enumerator that iterates through a collection.
@@ -77,21 +82,24 @@ namespace FP.Core {
         ///</returns>
         ///<filterpriority>2</filterpriority>
         IEnumerator IEnumerable.GetEnumerator() {
-            return ((IEnumerable<T>) this).GetEnumerator();
-        }
+            return ((IEnumerable<T>)this).GetEnumerator();
+        } // IEnumerable.GetEnumerator()
 
         /// <summary>
         /// Represents absence of value.
         /// </summary>
-// ReSharper disable RedundantDefaultFieldInitializer
+        /// <summary>
+        /// ReSharper disable RedundantDefaultFieldInitializer
+        /// </summary>
         public static readonly Optional<T> None = new Optional<T>();
-// ReSharper restore RedundantDefaultFieldInitializer
+        // ReSharper restore RedundantDefaultFieldInitializer
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Optional{T}"/> struct.
         /// </summary>
         /// <param name="value">The value.</param>
-        public Optional(T value) : this() {
+        public Optional(T value)
+            : this() {
             HasValue = true;
             _value = value;
         } // Optional(value)
@@ -102,7 +110,7 @@ namespace FP.Core {
         /// <param name="action">The action to try.</param>
         public void Do(Action<T> action) {
             DoOrElse(action, Functions.DoNothing);
-        }
+        } // Do(action)
 
         /// <summary>
         /// If the current instance has a value, do <paramref name="action"/> with it.
@@ -115,39 +123,59 @@ namespace FP.Core {
                 action(_value);
             else
                 defaultAction();
-        }
+        } // DoOrElse(action, defaultAction)
 
         /// <summary>
         /// If the current instance has a value, return it.
-        /// Otherwise return <paramref name="default"/>.
+        /// Otherwise return <paramref name="defaultValue"/>.
         /// </summary>
-        /// <param name="default">The default value.</param>
+        /// <param name="defaultValue">The default value.</param>
         /// <returns></returns>
-        public T ValueOrElse(T @default) {
-            return HasValue ? _value : @default;
-        }
+        public T ValueOrElse(T defaultValue) {
+            return HasValue ? _value : defaultValue;
+        } // ValueOrElse(defaultValue)
 
         /// <summary>
         /// If the current instance has a value, calls <paramref name="function"/> on it and returns the result.
-        /// Otherwise returns <paramref name="default"/>.
+        /// Otherwise returns <paramref name="defaultResult"/>.
         /// </summary>
         /// <param name="function">The function to call.</param>
-        /// <param name="default">The default result.</param>
-        public R MapOrElse<R>(Func<T, R> function, R @default) {
-            return HasValue ? function(_value) : @default;
-        }
+        /// <param name="defaultResult">The default result.</param>
+        public R MapOrElse<R>(Func<T, R> function, R defaultResult) {
+            return HasValue ? function(_value) : defaultResult;
+        } // MapOrElse(, function, defaultResult)
 
         /// <summary>
         /// If the current instance has a value, calls <paramref name="function"/> on it
-        /// and returns the result. Otherwise calculates <paramref name="default"/> and
+        /// and returns the result. Otherwise calculates <paramref name="defaultResult"/> and
         /// returns it. This is the deferred version of
         /// <see cref="MapOrElse(Func{T,R},R)"/>.
         /// </summary>
         /// <param name="function">The function to call.</param>
-        /// <param name="default">The default result.</param>
-        public R MapOrElse<R>(Func<T, R> function, Func<R> @default) {
-            return HasValue ? function(_value) : @default();
-        }
+        /// <param name="defaultResult">The function which calculates default result.</param>
+        public R MapOrElse<R>(Func<T, R> function, Func<R> defaultResult) {
+            return HasValue ? function(_value) : defaultResult();
+        } // MapOrElse(, function, defaultResult)
+
+        /// <summary>
+        /// Maps the partial function.
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="function">The function to map.</param>
+        /// <returns><c>None</c> if </returns>
+        public Optional<R> MapPartial<R>(Func<T, Optional<R>> function) {
+            return MapOrElse(function, Optional<R>.None);
+        } // MapPartial(, function)
+
+        /// <summary>
+        /// Maps the partial function.
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="function">The function to map.</param>
+        /// <returns><c>None</c> if </returns>
+        public OptionalNotNull<R> MapPartial<R>(Func<T, OptionalNotNull<R>> function) {
+            return MapOrElse(function, OptionalNotNull<R>.None);
+        } // MapPartial(, function)
 
         /// <summary>
         /// If the current instance has a value, calls <paramref name="function"/> on it and returns <c>Some</c> the result.
@@ -158,7 +186,7 @@ namespace FP.Core {
         /// <returns></returns>
         public Optional<R> Map<R>(Func<T, R> function) {
             return HasValue ? Optional.Some(function(_value)) : Optional<R>.None;
-        }
+        } // Map(, function)
 
         /// <summary>
         /// Similar to the <c>??<\c> operator.
@@ -167,7 +195,7 @@ namespace FP.Core {
         /// <example><c>None || Some(3) || Some(5) == Some(3).</c></example>
         public static Optional<T> operator |(Optional<T> optional, Optional<T> @default) {
             return optional.HasValue ? optional : @default;
-        }
+        } // op_BitwiseOr(optional, @default)
 
         /// <summary>
         /// Implements the operator true.
@@ -176,7 +204,7 @@ namespace FP.Core {
         /// <returns><c>true</c> if <paramref name="optional"/> has a value.</returns>
         public static bool operator true(Optional<T> optional) {
             return optional.HasValue;
-        }
+        } // op_True(optional)
 
         /// <summary>
         /// Implements the operator false.
@@ -185,7 +213,7 @@ namespace FP.Core {
         /// <returns><c>true</c> if <paramref name="optional"/> doesn't have a value.</returns>
         public static bool operator false(Optional<T> optional) {
             return !optional.HasValue;
-        }
+        } // op_False(optional)
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="T"/> to <see cref="Optional{T}"/>.
@@ -195,7 +223,7 @@ namespace FP.Core {
         /// <remarks>It is implicit by parallel with <see cref="Nullable{T}"/>.</remarks>
         public static implicit operator Optional<T>(T value) {
             return new Optional<T>(value);
-        }
+        } // op_Implicit(value)
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="Optional{T}"/> to <see cref="T"/>.
@@ -204,27 +232,32 @@ namespace FP.Core {
         /// <returns><see cref="Value"/> if it exists; <c>default(T)</c> otherwise.</returns>
         public static explicit operator T(Optional<T> optional) {
             return optional.ValueOrElse(default(T));
-        }
+        } // op_Explicit(optional)
 
         ///<summary>
-        ///Compares the current object with another object of the same type. <c>None</c> is considered
-        ///to be less than all <c>Some(value)</c>; if both objects have values, they are compared.
+        ///Compares the current object with another object of the same type. <c>None</c> is
+        ///considered to be less than all <c>Some(value)</c>; if both objects have values,
+        ///they are compared.
         ///</summary>
         ///
         ///<returns>
-        ///A 32-bit signed integer that indicates the relative order of the objects being compared. 
-        /// The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />. 
+        ///A 32-bit signed integer that indicates the relative order of the objects being
+        ///compared.  The return value has the following meanings: Value Meaning Less than
+        ///zero This object is less than the <paramref name="other" /> parameter.Zero This
+        ///object is equal to <paramref name="other" />. Greater than zero This object is
+        ///greater than <paramref name="other" />. 
         ///</returns>
         ///
         ///<param name="other">An object to compare with this object.</param>
-        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IComparable{T}"/>. Null is considered to be less than <c>None</c>.</remarks>
+        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IComparable{T}"/>.
+        /// Null is considered to be less than <c>None</c>.</remarks>
         public int CompareTo(Optional<T> other) {
             return HasValue
                        ? (other.HasValue
                               ? Comparer<T>.Default.Compare(_value, other._value)
                               : 1)
                        : (other.HasValue ? -1 : 0);
-        }
+        } // CompareTo(other)
 
         /// <summary>
         /// Implements the equality operator. Calls <see cref="Equals(Optional{T})"/>.
@@ -234,7 +267,7 @@ namespace FP.Core {
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(Optional<T> one, Optional<T> other) {
             return one.Equals(other);
-        }
+        } // op_Equality(one, other)
 
         /// <summary>
         /// Implements the operator !=.
@@ -244,35 +277,37 @@ namespace FP.Core {
         /// <returns>The result of the operator.</returns>
         public static bool operator !=(Optional<T> one, Optional<T> other) {
             return !(one == other);
-        }
+        } // op_Inequality(one, other)
 
         ///<summary>
-        ///Indicates whether the current object is equal to another object of the same type.
+        ///Indicates whether the current object is equal to another object of the same
+        ///type.
         ///</summary>
-        ///
         ///<returns>
-        ///true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        ///<c>true</c> if the current object is equal to the <paramref name="other" />
+        ///parameter; otherwise, <c>false</c>.
         ///</returns>
-        ///
         ///<param name="other">An object to compare with this object.</param>
-        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IEquatable{T}"/>.</remarks>
+        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IEquatable{T}"/>.
+        /// </remarks>
         public bool Equals(Optional<T> other) {
             return HasValue
                        ? other.HasValue && _value.Equals(other._value)
                        : !other.HasValue;
-        }
+        } // Equals(other)
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="obj">Another object to compare to.</param>
         /// <returns>
-        /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
+        /// true if <paramref name="obj"/> and this instance are the same type and
+        /// represent the same value; otherwise, false.
         /// </returns>
         public override bool Equals(object obj) {
             if (!(obj is Optional<T>)) return false;
-            return Equals((Optional<T>) obj);
-        }
+            return Equals((Optional<T>)obj);
+        } // Equals(obj)
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -281,13 +316,39 @@ namespace FP.Core {
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
         public override int GetHashCode() {
-            return 29 * typeof (T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
-        }
-    }
+            return 29 * typeof(T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
+        } // GetHashCode()
+
+        /// <summary>
+        /// Folds this optional value from the left.
+        /// </summary>
+        /// <typeparam name="TAcc">The type of the result.</typeparam>
+        /// <param name="binOp">The binary operation.</param>
+        /// <param name="initial">The initial value.</param>
+        /// <returns><paramref name="binOp"/>(<paramref name="initial"/>, 
+        /// <see cref="Value"/>) if this optional has a value; 
+        /// <paramref name="initial"/> otherwise.</returns>
+        public TAcc FoldLeft<TAcc>(Func<TAcc, T, TAcc> binOp, TAcc initial) {
+            return HasValue ? binOp(initial, _value) : initial;
+        } // FoldLeft(, binOp, initial)
+
+        /// <summary>
+        /// Folds this optional value from the right.
+        /// </summary>
+        /// <typeparam name="TAcc">The type of the result.</typeparam>
+        /// <param name="binOp">The binary operation.</param>
+        /// <param name="initial">The initial value.</param>
+        /// <returns><paramref name="binOp"/>(<see cref="Value"/>, 
+        /// <paramref name="initial"/>) if this optional has a value; 
+        /// <paramref name="initial"/> otherwise.</returns>
+        public TAcc FoldRight<TAcc>(Func<T, TAcc, TAcc> binOp, TAcc initial) {
+            return HasValue ? binOp(_value, initial) : initial;
+        } // FoldRight(, binOp, initial)
+    } // struct Optional
 
     /// <summary>
-    /// A convenience static class to provide static methods for <see cref="Optional{T}"/> and
-    /// <see cref="Nullable{T}"/>.
+    /// A convenience static class to provide static methods for 
+    /// <see cref="Optional{T}"/> and <see cref="Nullable{T}"/>.
     /// </summary>
     public static class Optional {
         /// <summary>
@@ -296,7 +357,8 @@ namespace FP.Core {
         /// <typeparam name="T">Type of the object.</typeparam>
         /// <param name="t">The object.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">if <paramref name="t"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">if <paramref name="t"/> is <c>null</c>.
+        /// </exception>
         public static Optional<T> Some<T>(T t) {
             return new Optional<T>(t);
         }
@@ -331,7 +393,7 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// Flattens the specified optional.
+        /// Flattens the specified optional value.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="optional">The maybe.</param>
@@ -353,9 +415,10 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// A version of <see cref="Enumerables2.Map{T,TR}"/> which can throw away elements.
-        /// In particular, if <c>function(x)</c> doesn't have a value for an element <c>x</c> of 
-        /// the <paramref name="sequence"/>, no element is included in the result; if it has value <c>y</c>,
+        /// A version of <see cref="Enumerables2.Map{T,TR}"/> which can throw away
+        /// elements. In particular, if <c>function(x)</c> doesn't have a value for an
+        /// element <c>x</c> of  the <paramref name="sequence"/>, no element is included in
+        /// the result; if it has value <c>y</c>,
         /// <c>y</c> is included in the list.
         /// </summary>
         /// <typeparam name="T">Type of elements of the sequence.</typeparam>
@@ -373,19 +436,22 @@ namespace FP.Core {
         /// </summary>
         /// <typeparam name="T">The return type of the function.</typeparam>
         /// <param name="function">The function.</param>
-        /// <returns><see cref="Optional{T}.None"/> if there were exceptions or the function returns <c>null</c>;
+        /// <returns><see cref="Optional{T}.None"/> if there were exceptions or the
+        /// function returns <c>null</c>;
         /// <c>Some(function())</c> otherwise.</returns>
         public static Optional<T> Try<T>(this Func<T> function) {
             return Try<T, Exception>(function);
         }
 
         /// <summary>
-        /// Tries the specified function, catching only exceptions of type <typeparam name="E"/>.
+        /// Tries the specified function, catching only exceptions of type 
+        /// <typeparam name="E"/>.
         /// </summary>
         /// <typeparam name="T">The return type of the function.</typeparam>
         /// <typeparam name="E">The type of exceptions to catch.</typeparam>
         /// <param name="function">The function.</param>
-        /// <returns><see cref="Optional{T}.None"/> if there were exceptions or the function returns <c>null</c>;
+        /// <returns><see cref="Optional{T}.None"/> if there were exceptions or the
+        /// function returns <c>null</c>;
         /// <c>Some(function())</c> otherwise.</returns>
         public static Optional<T> Try<T, E>(this Func<T> function) where E : Exception {
             try {
