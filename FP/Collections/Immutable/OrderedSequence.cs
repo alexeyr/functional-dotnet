@@ -161,9 +161,11 @@ namespace FP.Collections.Immutable {
             return MakeOrderedSequence(MergeTrees(_ft, otherSequence._ft));
         }
 
+        // ReSharper disable SuggestBaseTypeForParameter
         private FingerTree<Element, Tuple<K, int>> MergeTrees(
             FingerTree<Element, Tuple<K, int>> ft1,
             FingerTree<Element, Tuple<K, int>> ft2) {
+            // ReSharper restore SuggestBaseTypeForParameter
             if (ft2.IsEmpty)
                 return ft1;
             var comparer = _comparer;
@@ -263,11 +265,12 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// Gets the <see cref="Pair{T1,T2}"/> at the specified index.
+        /// Gets the <see cref="Tuple{T1,T2}"/> at the specified index.
         /// </summary>
-        /// <remarks><c>this[0]</c> is the element with the smallest key, <c>this[Count - 1]</c> is the
-        /// element with the greatest key.</remarks>
-        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
+        /// <remarks><c>this[0]</c> is the element with the smallest key, 
+        /// <c>this[Count - 1]</c> is the element with the greatest key.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.
+        /// </exception>
         public Tuple<K, T> this[int index] {
             get {
                 if (index < 0 || index >= Count)
@@ -278,13 +281,16 @@ namespace FP.Collections.Immutable {
         }
 
         /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
+        /// Indicates whether the current object is equal to another object of the same
+        /// type.
         /// </summary>
         /// <returns>
-        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// true if the current object is equal to the <paramref name="other" /> parameter;
+        /// otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        /// <remarks>It is possible to have two unequal sequences with the same elements and comparers.</remarks>
+        /// <remarks>It is possible to have two unequal sequences with the same elements
+        /// and comparers.</remarks>
         public bool Equals(OrderedSequence<K, T> other) {
             return Equals(other._comparer, _comparer) &&
                    Equals(other._ft, _ft);
@@ -313,10 +319,22 @@ namespace FP.Collections.Immutable {
             return _ft.GetHashCode();
         }
 
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left sequence.</param>
+        /// <param name="right">The right sequence.</param>
+        /// <returns>Whether the sequences are equal.</returns>
         public static bool operator ==(OrderedSequence<K, T> left, OrderedSequence<K, T> right) {
             return left.Equals(right);
         }
 
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The left sequence.</param>
+        /// <param name="right">The right sequence.</param>
+        /// <returns>Whether the sequences are not equal.</returns>
         public static bool operator !=(OrderedSequence<K, T> left, OrderedSequence<K, T> right) {
             return !left.Equals(right);
         }

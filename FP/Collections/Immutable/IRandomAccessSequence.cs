@@ -35,6 +35,9 @@ namespace FP.Collections.Immutable {
         TSequence UpdateAt(int index, Func<T, T> function);
         } // interface IRandomAccessSequence`2
 
+    /// <summary>
+    /// Utility class for all random access sequences.
+    /// </summary>
     public static class RandomAccessSequences {
         /// <summary>
         /// Replaces the <see cref="T"/> at the specified index with the specified value.

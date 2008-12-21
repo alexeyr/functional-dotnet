@@ -36,7 +36,6 @@ namespace FP.Core {
     [Serializable]
     public struct OptionalNotNull<T> : IEnumerable<T>, IComparable<OptionalNotNull<T>>,
                                        IEquatable<OptionalNotNull<T>> {
-        private readonly bool _hasValue;
         private readonly T _value;
 
         /// <summary>
@@ -46,10 +45,9 @@ namespace FP.Core {
         /// <exception cref="InvalidOperationException"><see cref="HasValue"/> is <c>false</c>.</exception>
         public T Value {
             get {
-                if (_hasValue)
+                if (HasValue)
                     return _value;
-                else
-                    throw new InvalidOperationException("OptionalNotNull<T> doesn't have a value.");
+                throw new InvalidOperationException("OptionalNotNull<T> doesn't have a value.");
             }
         }
 
@@ -57,9 +55,7 @@ namespace FP.Core {
         /// Gets a value indicating whether this instance has value.
         /// </summary>
         /// <value><c>true</c> if this instance has value; otherwise, <c>false</c>.</value>
-        public bool HasValue {
-            get { return _hasValue; }
-        }
+        public bool HasValue { get; private set; }
 
         ///<summary>
         ///Returns an enumerator that iterates through the collection.
@@ -70,7 +66,7 @@ namespace FP.Core {
         ///</returns>
         ///<filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator() {
-            if (_hasValue)
+            if (HasValue)
                 yield return _value;
         }
 
@@ -88,19 +84,23 @@ namespace FP.Core {
         /// <summary>
         /// Represents absence of value.
         /// </summary>
+// ReSharper disable RedundantDefaultFieldInitializer
         public static readonly OptionalNotNull<T> None = new OptionalNotNull<T>();
+// ReSharper restore RedundantDefaultFieldInitializer
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionalNotNull{T}"/> struct.
         /// </summary>
         /// <param name="value">The value.</param>
-        public OptionalNotNull(T value) {
+        public OptionalNotNull(T value) : this() {
+// ReSharper disable CompareNonConstrainedGenericWithNull
             if (value != null) {
-                _hasValue = true;
+// ReSharper restore CompareNonConstrainedGenericWithNull
+                HasValue = true;
                 _value = value;
             }
             else {
-                _hasValue = false;
+                HasValue = false;
                 _value = default(T);
             }
         }
@@ -142,7 +142,7 @@ namespace FP.Core {
         /// <seealso cref="ValueOrElse"/>
         /// <example><c>None | 5 == 5.</c></example>
         public static T operator |(OptionalNotNull<T> optional, T @default) {
-            return optional._hasValue ? optional.Value : @default;
+            return optional.HasValue ? optional.Value : @default;
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace FP.Core {
         /// <example><c>None || Some(3) || Some(5) == Some(3).</c></example>
         public static OptionalNotNull<T> operator |(
             OptionalNotNull<T> optional, OptionalNotNull<T> @default) {
-            return optional._hasValue ? optional : @default;
+            return optional.HasValue ? optional : @default;
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace FP.Core {
         /// <param name="optional">The maybe.</param>
         /// <returns><c>true</c> if <paramref name="optional"/> has a value.</returns>
         public static bool operator true(OptionalNotNull<T> optional) {
-            return optional._hasValue;
+            return optional.HasValue;
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace FP.Core {
         /// <param name="optional">The maybe.</param>
         /// <returns><c>true</c> if <paramref name="optional"/> doesn't have a value.</returns>
         public static bool operator false(OptionalNotNull<T> optional) {
-            return !optional._hasValue;
+            return !optional.HasValue;
         }
 
         //TODO: delete?
@@ -186,8 +186,9 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// If the current instance has a value, calls <paramref name="function"/> on it and returns the result.
-        /// Otherwise calculates <paramref name="default"/> and returns it. This is the lazy version of
+        /// If the current instance has a value, calls <paramref name="function"/> on it
+        /// and returns the result. Otherwise calculates <paramref name="default"/> and
+        /// returns it. This is the lazy version of
         /// <see cref="MapOrElse(Func{T,R},R)"/>.
         /// </summary>
         /// <param name="function">The function to call.</param>
@@ -257,7 +258,7 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// Implements the equality operator. Calls <see cref="Equals"/>.
+        /// Implements the equality operator. Calls <see cref="Equals(OptionalNotNull{T})"/>.
         /// </summary>
         /// <param name="one">The one.</param>
         /// <param name="other">The other.</param>
@@ -328,10 +329,11 @@ namespace FP.Core {
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">if <paramref name="t"/> is <c>null</c>.</exception>
         public static OptionalNotNull<T> Some<T>(T t) {
+// ReSharper disable CompareNonConstrainedGenericWithNull
             if (t == null)
+// ReSharper restore CompareNonConstrainedGenericWithNull
                 throw new ArgumentNullException();
-            else
-                return new OptionalNotNull<T>(t);
+            return new OptionalNotNull<T>(t);
         }
 
         /// <summary>

@@ -24,6 +24,10 @@ namespace FP.Text {
     public struct ArrayCharSequence<TChar> : ICharSequence<TChar> {
         private readonly TChar[] _array;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArrayCharSequence{TChar}"/> struct.
+        /// </summary>
+        /// <param name="array">The array.</param>
         public ArrayCharSequence(TChar[] array) {
             _array = array;
         }

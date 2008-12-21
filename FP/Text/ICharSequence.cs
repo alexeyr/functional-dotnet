@@ -43,21 +43,44 @@ namespace FP.Text {
         void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex, int count);
     }
 
+    /// <summary>
+    /// Utility class with extension methods for <see cref="ICharSequence{TChar}"/>
+    /// </summary>
     public static class CharSequences {
+        /// <summary>
+        /// Copies the given <paramref name="sequence"/> to <paramref name="destination"/>.
+        /// </summary>
+        /// <typeparam name="TChar">The type of the char.</typeparam>
+        /// <typeparam name="TSequence">The type of the sequence.</typeparam>
+        /// <param name="sequence">The sequence to be copied.</param>
+        /// <param name="destination">The destination array.</param>
+        /// <param name="destinationIndex">Index of the destination array where the copy
+        /// will start.</param>
         public static void CopyTo<TChar, TSequence>(this TSequence sequence, TChar[] destination,
                                                     int destinationIndex)
             where TSequence : ICharSequence<TChar> {
             sequence.CopyTo(0, destination, destinationIndex, sequence.Length);
         }
 
+        /// <summary>
+        /// Converts the <paramref name="sequence"/> to an array.
+        /// </summary>
+        /// <typeparam name="TChar">The type of the char.</typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <returns>The array with the same elements as <paramref name="sequence"/>.</returns>
         public static TChar[] ToArray<TChar>(this ICharSequence<TChar> sequence) {
             var array = new TChar[sequence.Length];
             sequence.CopyTo(array, 0);
             return array;
         }
 
-        public static string AsString(this ICharSequence<char> sequenñe) {
-            return new string(sequenñe.ToArray());
+        /// <summary>
+        /// Converts the <paramref name="sequence"/> to a string.
+        /// </summary>
+        /// <param name="sequence">The sequence.</param>
+        /// <returns>The string with the same characters as <paramref name="sequence"/>.</returns>
+        public static string AsString(this ICharSequence<char> sequence) {
+            return new string(sequence.ToArray());
         }
     }
 }

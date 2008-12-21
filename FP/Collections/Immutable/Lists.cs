@@ -26,7 +26,9 @@ namespace FP.Collections.Immutable {
         /// <summary>
         /// Conses <paramref name="t"/> to <paramref name="list"/>.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Type of <paramref name="t"/></typeparam>
+        /// <typeparam name="TList">Type of <paramref name="list"/>. Must be a list of 
+        /// <paramref name="t"/>.</typeparam>
         /// <param name="t">The head.</param>
         /// <param name="list">The tail.</param>
         /// <returns>A list starting with <paramref name="t"/> and continuing with

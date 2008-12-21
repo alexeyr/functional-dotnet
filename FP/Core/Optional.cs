@@ -83,7 +83,9 @@ namespace FP.Core {
         /// <summary>
         /// Represents absence of value.
         /// </summary>
+// ReSharper disable RedundantDefaultFieldInitializer
         public static readonly Optional<T> None = new Optional<T>();
+// ReSharper restore RedundantDefaultFieldInitializer
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Optional{T}"/> struct.
@@ -136,8 +138,9 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// If the current instance has a value, calls <paramref name="function"/> on it and returns the result.
-        /// Otherwise calculates <paramref name="default"/> and returns it. This is the deferred version of
+        /// If the current instance has a value, calls <paramref name="function"/> on it
+        /// and returns the result. Otherwise calculates <paramref name="default"/> and
+        /// returns it. This is the deferred version of
         /// <see cref="MapOrElse(Func{T,R},R)"/>.
         /// </summary>
         /// <param name="function">The function to call.</param>
@@ -224,7 +227,7 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// Implements the equality operator. Calls <see cref="Equals"/>.
+        /// Implements the equality operator. Calls <see cref="Equals(Optional{T})"/>.
         /// </summary>
         /// <param name="one">The one.</param>
         /// <param name="other">The other.</param>

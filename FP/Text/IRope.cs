@@ -16,6 +16,11 @@
 using FP.Collections.Immutable;
 
 namespace FP.Text {
+    /// <summary>
+    /// An interface for large strings.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the char.</typeparam>
+    /// <typeparam name="TRope">The type of the rope.</typeparam>
     public interface IRope<TChar, TRope> : ICharSequence<TChar>, ICatenable<TRope>
         where TRope : IRope<TChar, TRope> {
         /// <summary>
@@ -25,6 +30,10 @@ namespace FP.Text {
         /// <param name="length">The length.</param>
         TRope SubString(int startIndex, int length);
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is empty.
+        /// </summary>
+        /// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
         bool IsEmpty { get; }
         }
 }

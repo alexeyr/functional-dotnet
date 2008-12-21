@@ -24,7 +24,7 @@ namespace FP.Core.CPS {
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionFailureException"/> class.
         /// </summary>
-        public ActionFailureException() : base() {}
+        public ActionFailureException() {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionFailureException"/> class.

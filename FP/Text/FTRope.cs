@@ -23,7 +23,7 @@ namespace FP.Text {
     /// An amortized running time is given for each operation, with <i>n</i> referring to the length 
     /// of the sequence and <i>i</i> being the integral index used by some operations. 
     /// </summary>
-    /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
+    /// <typeparam name="TChar">Type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
     public struct FTRope<TChar> : IRope<TChar, FTRope<TChar>> {
         private readonly FingerTree<FlatRope<TChar>, int> _ft;

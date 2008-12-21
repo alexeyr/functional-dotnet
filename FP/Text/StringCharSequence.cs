@@ -18,11 +18,16 @@ using System.Collections.Generic;
 
 namespace FP.Text {
     /// <summary>
-    /// An adapter for <see cref="string"/> to the <see cref="CharSubsequence{TChar,TSequence}"/> interface.
+    /// An adapter for <see cref="string"/> to the 
+    /// <see cref="CharSubsequence{TChar,TSequence}"/> interface.
     /// </summary>
     public struct StringCharSequence : ICharSequence<char> {
         private readonly string _string;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringCharSequence"/> struct.
+        /// </summary>
+        /// <param name="s">The string.</param>
         public StringCharSequence(string s) {
             _string = s;
         }
