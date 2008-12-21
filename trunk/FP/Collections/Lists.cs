@@ -17,7 +17,7 @@ using System;
 using System.Linq;
 using FP.Core;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// More specific versions of some methods from <see cref="Enumerables"/> and
     /// <see cref="Enumerable"/>

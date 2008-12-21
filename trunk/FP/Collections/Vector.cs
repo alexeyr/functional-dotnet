@@ -22,7 +22,7 @@ using System.Collections;
 using System.Collections.Generic;
 using FP.Core;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// A vector (nearly array-like sequence). Implemented as a 32-nary trie.
     /// </summary>

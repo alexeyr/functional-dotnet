@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using FP.Core;
 using FP.HaskellNames;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// A finger-tree-based priority queue.
     /// </summary>

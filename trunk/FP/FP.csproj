@@ -43,12 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\Immutable\ICatenable.cs" />
-    <Compile Include="Collections\Immutable\ICollection.cs" />
-    <Compile Include="Collections\Immutable\IInsertableRandomAccessSequence.cs" />
-    <Compile Include="Collections\Immutable\IRandomAccessSequence.cs" />
-    <Compile Include="Collections\Immutable\IReversible.cs" />
-    <Compile Include="Collections\Immutable\Vector.cs" />
+    <Compile Include="Collections\ICatenable.cs" />
+    <Compile Include="Collections\ICollection.cs" />
+    <Compile Include="Collections\IInsertableRandomAccessSequence.cs" />
+    <Compile Include="Collections\IRandomAccessSequence.cs" />
+    <Compile Include="Collections\IReversible.cs" />
+    <Compile Include="Collections\Vector.cs" />
     <Compile Include="Collections\IReversibleEnumerable.cs" />
     <Compile Include="Collections\ISplittable.cs" />
     <Compile Include="Core\Combinators\Combinators.cs" />
@@ -67,8 +67,8 @@
     <Compile Include="Text\ArrayCharSequence.cs" />
     <Compile Include="Text\ArrayRope.cs" />
     <Compile Include="Text\FTRope.cs" />
-    <Compile Include="Collections\Immutable\IDeque.cs" />
-    <Compile Include="Collections\Immutable\IRandomAccessSequenceRead.cs" />
+    <Compile Include="Collections\IDeque.cs" />
+    <Compile Include="Collections\IRandomAccessSequenceRead.cs" />
     <Compile Include="Text\ConcatRope.cs" />
     <Compile Include="Text\CharSequenceRope.cs" />
     <Compile Include="Text\ICharSequence.cs" />
@@ -76,21 +76,21 @@
     <Compile Include="Text\IRope.cs" />
     <Compile Include="Text\Rope.cs" />
     <Compile Include="Core\Either.cs" />
-    <Compile Include="Collections\Immutable\FingerTreeHelpers.cs" />
-    <Compile Include="Collections\Immutable\FingerTree.cs" />
-    <Compile Include="Collections\Immutable\FingerTreeNode.cs" />
-    <Compile Include="Collections\Immutable\Grouping.cs" />
-    <Compile Include="Collections\Immutable\IFoldable.cs" />
-    <Compile Include="Collections\Immutable\IDictionary.cs" />
-    <Compile Include="Collections\Immutable\IList.cs" />
-    <Compile Include="Collections\Immutable\IMeasured.cs" />
-    <Compile Include="Collections\Immutable\LazyList.cs" />
-    <Compile Include="Collections\Immutable\Lists.cs" />
-    <Compile Include="Collections\Immutable\Monoid.cs" />
-    <Compile Include="Collections\Immutable\OrderedSequence.cs" />
-    <Compile Include="Collections\Immutable\PriorityQueue.cs" />
+    <Compile Include="Collections\FingerTreeHelpers.cs" />
+    <Compile Include="Collections\FingerTree.cs" />
+    <Compile Include="Collections\FingerTreeNode.cs" />
+    <Compile Include="Collections\Grouping.cs" />
+    <Compile Include="Collections\IFoldable.cs" />
+    <Compile Include="Collections\IDictionary.cs" />
+    <Compile Include="Collections\IList.cs" />
+    <Compile Include="Collections\IMeasured.cs" />
+    <Compile Include="Collections\LazyList.cs" />
+    <Compile Include="Collections\Lists.cs" />
+    <Compile Include="Collections\Monoid.cs" />
+    <Compile Include="Collections\OrderedSequence.cs" />
+    <Compile Include="Collections\PriorityQueue.cs" />
     <Compile Include="Core\Result.cs" />
-    <Compile Include="Collections\Immutable\RandomAccessSequence.cs" />
+    <Compile Include="Collections\RandomAccessSequence.cs" />
     <Compile Include="Core\Tuple.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -133,6 +133,9 @@
   <ItemGroup>
     <Content Include="License.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Collections\Immutable\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -143,7 +146,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
+      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

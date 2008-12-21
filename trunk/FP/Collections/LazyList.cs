@@ -19,7 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using FP.Core;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     //TODO: Test lazy lists!
     /// <summary>
     /// A lazy singly linked list which allows saving the state of enumerators.

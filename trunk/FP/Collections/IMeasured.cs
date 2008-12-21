@@ -1,5 +1,5 @@
 /*
-* ICollection.cs is part of functional-dotnet project
+* IMeasured.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
 * All rights reserved.
@@ -13,18 +13,16 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-using System.Collections.Generic;
-
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
-    /// Represents a collection.
+    /// The type implementing the interface can be measured by elements of the type <typeparamref name="V"/>.
     /// </summary>
-    /// <typeparam name="T">The type of elements.</typeparam>
-    public interface ICollection<T> : IEnumerable<T> {
+    /// <typeparam name="V"></typeparam>
+    public interface IMeasured<V> {
         /// <summary>
-        /// Gets a value indicating whether this collection is empty.
+        /// Gets the measure of the object.
         /// </summary>
-        /// <value><c>true</c>.</value>
-        bool IsEmpty { get; }
-    }
-}
+        /// <value>The measure.</value>
+        V Measure { get; }
+    } // interface IMeasured
+} // namespace FP.Collections.Immutable

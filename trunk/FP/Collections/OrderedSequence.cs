@@ -20,7 +20,7 @@ using System.Diagnostics;
 using FP.Core;
 using FP.HaskellNames;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// A finger-tree-based ordered (by keys) sequence.
     /// </summary>

@@ -20,7 +20,7 @@ using System.Diagnostics;
 using FP.Core;
 using FP.HaskellNames;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// A finger-tree-based random access sequence.
     /// An amortized running time is given for each operation, with <i>n</i> referring to the length 

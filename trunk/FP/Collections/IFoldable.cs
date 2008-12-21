@@ -15,7 +15,7 @@
 
 using System;
 
-namespace FP.Collections.Immutable {
+namespace FP.Collections {
     /// <summary>
     /// Any structure which can be folded into a summary value.
     /// </summary>

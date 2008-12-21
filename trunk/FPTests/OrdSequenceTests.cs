@@ -17,7 +17,7 @@ namespace FPTests {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using FP.Collections.Immutable;
+    using FP.Collections;
     using Xunit;
     using XunitExtensions;
 
