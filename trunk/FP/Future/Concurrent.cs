@@ -24,7 +24,7 @@ namespace FP.Future {
     /// <typeparam name="T"></typeparam>
     public class Concurrent<T> : Future<T> {
         private Result<T> _result;
-        private readonly Thread _thread;
+        private Thread _thread;
 
         /// <summary>
         /// Initializes a new instance of a <see cref="Concurrent{T}"/> <see cref="Future{T}"/>.
@@ -33,7 +33,7 @@ namespace FP.Future {
         public Concurrent(Func<T> calculation) {
             _thread = new Thread(() => {
                                      _result = Core.Result.Try(calculation);
-                                     OnDetermined(_result);
+                                     OnDetermined();
                                  });
             _thread.Start();
         }
@@ -45,24 +45,22 @@ namespace FP.Future {
         /// <value>The result.</value>
         public override Result<T> Result {
             get {
-                if (!_thread.IsAlive)
+                if (_thread != null && _thread.IsAlive) {
                     _thread.Join();
+                    _thread = null;
+                }
                 return _result;
             }
         }
 
         /// <summary>
-        /// Gets the status of the future.
+        /// Gets a value indicating whether this instance has a result (is successful or failed).
         /// </summary>
-        /// <value>The status.</value>
-        public override Status Status {
-            get {
-                return _thread.IsAlive
-                           ? Status.Future
-                           : _result.Match(
-                                 s => Status.Successful,
-                                 f => Status.Failed);
-            }
+        /// <value>
+        /// <c>true</c> if this instance has a result; otherwise, <c>false</c>.
+        /// </value>
+        public override bool HasResult {
+            get { return _result != null; }
         }
 
         /// <summary>

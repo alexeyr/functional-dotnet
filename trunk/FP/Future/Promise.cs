@@ -14,6 +14,7 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using FP.Core;
 
@@ -22,9 +23,14 @@ namespace FP.Future {
     /// Represents a <see cref="Future{T}"/> for which the result can be set externally.
     /// </summary>
     public class Promise<T> : Future<T> {
-        private Result<T> _result;
+        /// <summary>
+        /// Returns a new <see cref="Promise{T}"/> which can be fulfilled later.
+        /// </summary>
+        public Promise() {
+            _future = null;
+        }
+
         private Future<T> _future;
-        private bool _isFulfilled;
 
         ///<summary>
         ///A future which has the same result as the promise.
@@ -38,6 +44,11 @@ namespace FP.Future {
         }
 
         /// <summary>
+        /// Is fulfilled
+        /// </summary>
+        public bool IsFulfilled { get { return _future != null; } } // IsFulfilled
+
+        /// <summary>
         /// Occurs when the promise is fulfilled (possibly by another future).
         /// </summary>
         public event EventHandler<PromiseFulfilledArgs<T>> Fulfilled;
@@ -45,27 +56,23 @@ namespace FP.Future {
         /// <summary>
         /// Called when the promise is fulfilled with a final result.
         /// </summary>
-        protected void OnCompletelyFulfilled() {
-            _isFulfilled = true;
+        protected void OnFulfilled() {
             if (Fulfilled != null)
-                Fulfilled(this, new PromiseFulfilledArgs<T>(true, _result, null));
-            OnDetermined(_result);
+                Fulfilled(this, new PromiseFulfilledArgs<T>(_future));
+            if (!_future.HasResult)
+                _future.Determined += delegate { OnDetermined(); };
+            else
+                OnDetermined();
         }
 
         /// <summary>
-        /// Called when the promise is fulfilled with another future.
+        /// Fulfills the promise with the specified result.
         /// </summary>
-        protected void OnFutureFulfilled() {
-            if (!_future.HasResult) {
-                _isFulfilled = true;
-                if (Fulfilled != null)
-                    Fulfilled(this, new PromiseFulfilledArgs<T>(false, null, _future));
-            }
-            else {
-                _result = _future.Result;
-                _future = null;
-                OnCompletelyFulfilled();
-            }
+        /// <param name="result">The result.</param>
+        /// <exception cref="PromiseAlreadyFulfilledException">if the promise has already
+        /// been fulfilled or failed.</exception>
+        public void Fulfill(Result<T> result) {
+            Fulfill(new Ready<T>(result));
         }
 
         /// <summary>
@@ -75,11 +82,7 @@ namespace FP.Future {
         /// <exception cref="PromiseAlreadyFulfilledException">if the promise has already
         /// been fulfilled or failed.</exception>
         public void Fulfill(T value) {
-            lock (this) {
-                if (_isFulfilled) throw new PromiseAlreadyFulfilledException();
-                _result = Core.Result.Success(value);
-                OnCompletelyFulfilled();
-            }
+            Fulfill((Result<T>) Core.Result.Success(value));
         }
 
         /// <summary>
@@ -91,36 +94,11 @@ namespace FP.Future {
         /// <exception cref="CyclicFutureException">if the future is this promise.</exception>
         public void Fulfill(Future<T> future) {
             lock (this) {
-                if (_isFulfilled) throw new PromiseAlreadyFulfilledException();
-                if (future == this) throw new CyclicFutureException();
+                if (IsFulfilled) throw new PromiseAlreadyFulfilledException();
                 var promise = future as Promise<T>;
                 if (promise != null && promise.Future == this) throw new CyclicFutureException();
-                if (future.HasResult) {
-                    _result = future.Result;
-                    OnCompletelyFulfilled();
-                }
-                else {
-                    _future = future;
-                    _future.Determined += (sender, args) => {
-                                              _result = args.Result;
-                                              _future = null;
-                                          };
-                    OnFutureFulfilled();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Fulfills the promise with the specified result.
-        /// </summary>
-        /// <param name="result">The result.</param>
-        /// <exception cref="PromiseAlreadyFulfilledException">if the promise has already
-        /// been fulfilled or failed.</exception>
-        public void Fulfill(Result<T> result) {
-            lock (this) {
-                if (_isFulfilled) throw new PromiseAlreadyFulfilledException();
-                _result = result;
-                OnCompletelyFulfilled();
+                _future = future;
+                OnFulfilled();
             }
         }
 
@@ -131,21 +109,17 @@ namespace FP.Future {
         /// <exception cref="PromiseAlreadyFulfilledException">if the promise has already
         /// been fulfilled or failed.</exception>
         public void Fail(Exception e) {
-            lock (this) {
-                if (_isFulfilled) throw new PromiseAlreadyFulfilledException();
-                _result = Core.Result.Failure<T>(e);
-                OnCompletelyFulfilled();
-            }
+            Fulfill(Core.Result.Failure<T>(e));
         }
 
         /// <summary>
         /// Gets the result of the future, whether it is failed or determined. If the result isn't 
-        /// available yet, blocks the thread until it is obtained.
+        /// available yet, blocks the calling thread until it is obtained.
         /// </summary>
         /// <value>The result.</value>
         public override Result<T> Result {
             get {
-                if (!_isFulfilled) {
+                if (_future == null) {
                     using (var resetEvent = new ManualResetEvent(false)) {
                         EventHandler<PromiseFulfilledArgs<T>> endWait =
                             (sender, e) => resetEvent.Set();
@@ -153,11 +127,8 @@ namespace FP.Future {
                         resetEvent.WaitOne();
                     }
                 }
-                if (_result == null) {
-                    _result = _future.Result;
-                    _future = null;
-                }
-                return _result;
+                Debug.Assert(_future != null);
+                return _future.Result;
             }
         }
 
@@ -167,32 +138,40 @@ namespace FP.Future {
         /// <value>The status.</value>
         public override Status Status {
             get {
-                return _isFulfilled
-                           ? (_result != null
-                                  ? _result.Match(
-                                        s => Status.Successful,
-                                        f => Status.Failed)
-                                  : _future.Status)
+                return IsFulfilled
+                           ? _future.Status
                            : Status.Future;
             }
         }
 
         /// <summary>
-        /// Gets a value indicating whether this future is lazy (and not forced yet).
+        /// Gets a value indicating whether this instance has a result (is successful or failed).
         /// </summary>
-        /// <value><c>true</c> if the promise has been fulfilled with a lazy future; otherwise, <c>false</c>.</value>
-        public override bool IsLazy {
-            get { return (_future != null && _future.IsLazy); }
+        /// <value>
+        /// <c>true</c> if this instance has a result; otherwise, <c>false</c>.
+        /// </value>
+        public override bool HasResult {
+            get { return IsFulfilled && _future.HasResult; }
         }
 
         /// <summary>
-        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="Future{T}"/>.
+        /// Gets a value indicating whether this future is lazy (and not forced yet).
+        /// </summary>
+        /// <value><c>true</c> if the promise has been fulfilled with a lazy future;
+        /// otherwise, <c>false</c>.</value>
+        public override bool IsLazy {
+            get { return IsFulfilled && _future.IsLazy; }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current 
+        /// <see cref="Future{T}"/>.
         /// </summary>
         /// <returns></returns>
         public override string ToString() {
-            return _future != null
-                       ? string.Format("Promise({0})", _future)
-                       : ToStringHelper("Promise");
+            return _future == null
+                       ? ToStringHelper("Promise")
+                       : string.Format("Promise({0})", _future);
         }
     }
 }

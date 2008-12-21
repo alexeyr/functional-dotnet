@@ -60,17 +60,13 @@ namespace FP.Future {
         }
 
         /// <summary>
-        /// Gets the status of the future.
+        /// Gets a value indicating whether this instance has a result (is successful or failed).
         /// </summary>
-        /// <value>The status.</value>
-        public override Status Status {
-            get {
-                return _hasResult
-                           ? _result.Match(
-                                 s => Status.Successful,
-                                 f => Status.Failed)
-                           : Status.Future;
-            }
+        /// <value>
+        /// <c>true</c> if this instance has a result; otherwise, <c>false</c>.
+        /// </value>
+        public override bool HasResult {
+            get { return _hasResult; }
         }
 
         /// <summary>
@@ -86,7 +82,6 @@ namespace FP.Future {
         /// </summary>
         /// <param name="lazy">The lazy value.</param>
         /// <returns>The result of forcing this lazy value.</returns>
-        /// NOTE: Should this be implicit for all futures? I am not sure.
         public static implicit operator T(Lazy<T> lazy) {
             return lazy.Await();
         }
