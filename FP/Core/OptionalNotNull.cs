@@ -198,6 +198,26 @@ namespace FP.Core {
         }
 
         /// <summary>
+        /// Maps the partial function.
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="function">The function to map.</param>
+        /// <returns><c>None</c> if </returns>
+        public Optional<R> MapPartial<R>(Func<T, Optional<R>> function) {
+            return MapOrElse(function, Optional<R>.None);
+        } // MapPartial(, function)
+
+        /// <summary>
+        /// Maps the partial function.
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="function">The function to map.</param>
+        /// <returns><c>None</c> if </returns>
+        public OptionalNotNull<R> MapPartial<R>(Func<T, OptionalNotNull<R>> function) {
+            return MapOrElse(function, OptionalNotNull<R>.None);
+        } // MapPartial(, function)
+
+        /// <summary>
         /// Performs an explicit conversion from <see cref="T"/> to <see cref="OptionalNotNull{T}"/>.
         /// </summary>
         /// <param name="value">The value.</param>
