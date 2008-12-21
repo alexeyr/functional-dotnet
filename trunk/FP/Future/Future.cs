@@ -21,7 +21,7 @@ namespace FP.Future {
     /// <summary>
     /// Represents a placeholder for a result of type <typeparamref name="T"/>. Once the computation 
     /// delivers a result, the associated future is replaced with the result value. 
-    /// That value may be a future on its own.
+    /// That value may itself be a future.
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
     public abstract class Future<T> {
@@ -45,14 +45,14 @@ namespace FP.Future {
         /// Gets the status of the future.
         /// </summary>
         /// <value>The status.</value>
-        public abstract Future.Status Status { get; }
+        public abstract Status Status { get; }
 
         /// <summary>
         /// Gets a value indicating whether this future is failed.
         /// </summary>
         /// <value><c>true</c> if this instance is failed; otherwise, <c>false</c>.</value>
         public bool IsFailed {
-            get { return Status == Future.Status.Failed; }
+            get { return Status == Status.Failed; }
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace FP.Future {
         /// <c>true</c> if this future is successful; otherwise, <c>false</c>.
         /// </value>
         public bool IsSuccessful {
-            get { return Status == Future.Status.Successful; }
+            get { return Status == Status.Successful; }
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace FP.Future {
         /// </summary>
         /// <value><c>true</c> if this future doesn't have a result yet; otherwise, <c>false</c>.</value>
         public bool IsFuture {
-            get { return Status == Future.Status.Future; }
+            get { return Status == Status.Future; }
         }
 
         /// <summary>
@@ -123,8 +123,6 @@ namespace FP.Future {
     /// Static convenience methods for working with <see cref="Future{T}"/>.
     /// </summary>
     public static class Future {
-        //public static readonly int PollingInterval = 10;
-
         /// <summary>
         /// Blocks until one of two futures produces a result. Wraps the result into an <see cref="Either{L,R}"/>
         /// and returns. If both futures have produced a result already, the first future is preferred.
@@ -186,24 +184,6 @@ namespace FP.Future {
         /// <returns></returns>
         public static Lazy<T> Lazy<T>(Func<T> calculation) {
             return new Lazy<T>(calculation);
-        }
-
-        /// <summary>
-        /// Possible statuses of <see cref="Future{T}"/>.
-        /// </summary>
-        public enum Status {
-            /// <summary>
-            /// Doesn't have a result yet.
-            /// </summary>
-            Future,
-            /// <summary>
-            /// Computation has failed.
-            /// </summary>
-            Failed,
-            /// <summary>
-            /// Computation has succeded.
-            /// </summary>
-            Successful
         }
     }
 }

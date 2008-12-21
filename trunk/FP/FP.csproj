@@ -64,6 +64,7 @@
     <Compile Include="Future\Lazy.cs" />
     <Compile Include="Future\Promise.cs" />
     <Compile Include="Future\PromiseAlreadyFulfilledException.cs" />
+    <Compile Include="Future\Status.cs" />
     <Compile Include="Text\ArrayCharSequence.cs" />
     <Compile Include="Text\ArrayRope.cs" />
     <Compile Include="Text\FTRope.cs" />

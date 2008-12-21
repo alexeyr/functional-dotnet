@@ -55,13 +55,13 @@ namespace FP.Future {
         /// Gets the status of the future.
         /// </summary>
         /// <value>The status.</value>
-        public override Future.Status Status {
+        public override Status Status {
             get {
                 return _thread.IsAlive
-                           ? Future.Status.Future
+                           ? Status.Future
                            : _result.Match(
-                                 s => Future.Status.Successful,
-                                 f => Future.Status.Failed);
+                                 s => Status.Successful,
+                                 f => Status.Failed);
             }
         }
 
