@@ -21,7 +21,7 @@ namespace FP.Future {
             get { return _result; }
         }
 
-        public override bool HasResult {
+        public override bool IsCompleted {
             get { return true; }
         }
 

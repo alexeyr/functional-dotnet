@@ -25,7 +25,7 @@ namespace FP.Future {
         /// Gets the result of the promise, if the promise has been fulfilled completely.
         /// </summary>
         /// <value>The result of the promise, if the promise has been fulfilled completely; <c>null</c> otherwise.</value>
-        public Result<T> Result { get { return Future.HasResult ? Future.Result : null; } }
+        public Result<T> Result { get { return Future.IsCompleted ? Future.Result : null; } }
 
         /// <summary>
         /// Gets the future representing the result of the promise, if the promise has not been fulfilled completely.
@@ -39,7 +39,7 @@ namespace FP.Future {
         /// <value>
         /// <c>true</c> if the promise has been fulfilled completely; otherwise, <c>false</c>.
         /// </value>
-        public bool IsComplete { get { return Future.HasResult; } }
+        public bool IsComplete { get { return Future.IsCompleted; } }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PromiseFulfilledArgs&lt;T&gt;"/> class.

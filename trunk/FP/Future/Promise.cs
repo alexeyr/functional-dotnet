@@ -59,7 +59,7 @@ namespace FP.Future {
         protected void OnFulfilled() {
             if (Fulfilled != null)
                 Fulfilled(this, new PromiseFulfilledArgs<T>(_future));
-            if (!_future.HasResult)
+            if (!_future.IsCompleted)
                 _future.Determined += delegate { OnDetermined(); };
             else
                 OnDetermined();
@@ -150,8 +150,8 @@ namespace FP.Future {
         /// <value>
         /// <c>true</c> if this instance has a result; otherwise, <c>false</c>.
         /// </value>
-        public override bool HasResult {
-            get { return IsFulfilled && _future.HasResult; }
+        public override bool IsCompleted {
+            get { return IsFulfilled && _future.IsCompleted; }
         }
 
         /// <summary>
