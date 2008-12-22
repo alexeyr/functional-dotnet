@@ -23,7 +23,7 @@ namespace FP.Future {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Lazy<T> : Future<T> {
-        private bool _hasResult;
+        private bool _isCompleted;
         private Result<T> _result;
         private Func<T> _calculation;
 
@@ -40,7 +40,7 @@ namespace FP.Future {
         /// </summary>
         /// <value><c>true</c> if this future is not forced yet; otherwise, <c>false</c>.</value>
         public override bool IsLazy {
-            get { return !_hasResult; }
+            get { return !_isCompleted; }
         }
 
         /// <summary>
@@ -50,9 +50,9 @@ namespace FP.Future {
         /// <value>The result.</value>
         public override Result<T> Result {
             get {
-                if (!_hasResult) {
+                if (!_isCompleted) {
                     _result = Core.Result.Try(_calculation);
-                    _hasResult = true;
+                    _isCompleted = true;
                     _calculation = null;
                 }
                 return _result;
@@ -65,8 +65,8 @@ namespace FP.Future {
         /// <value>
         /// <c>true</c> if this instance has a result; otherwise, <c>false</c>.
         /// </value>
-        public override bool HasResult {
-            get { return _hasResult; }
+        public override bool IsCompleted {
+            get { return _isCompleted; }
         }
 
         /// <summary>

@@ -59,7 +59,7 @@ namespace FP.Future {
         /// <value>
         /// <c>true</c> if this instance has a result; otherwise, <c>false</c>.
         /// </value>
-        public override bool HasResult {
+        public override bool IsCompleted {
             get { return _result != null; }
         }
 

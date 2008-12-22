@@ -47,7 +47,7 @@ namespace FP.Future {
         /// <value>The status.</value>
         public virtual Status Status {
             get {
-                return HasResult
+                return IsCompleted
                            ? Result.Match(
                                  s => Status.Successful,
                                  f => Status.Failed)
@@ -56,20 +56,12 @@ namespace FP.Future {
         }
 
         /// <summary>
-        /// Gets a value indicating whether this future doesn't have a result yet.
-        /// </summary>
-        /// <value><c>true</c> if this future doesn't have a result yet; otherwise, <c>false</c>.</value>
-        public bool IsFuture {
-            get { return !HasResult; }
-        }
-
-        /// <summary>
         /// Gets a value indicating whether this instance has a result (is successful or failed).
         /// </summary>
         /// <value>
         /// <c>true</c> if this instance has a result; otherwise, <c>false</c>.
         /// </value>
-        public abstract bool HasResult { get; }
+        public abstract bool IsCompleted { get; }
 
         /// <summary>
         /// Gets a value indicating whether this future is lazy (and not forced yet).
@@ -99,7 +91,7 @@ namespace FP.Future {
 
         protected internal string ToStringHelper(string futureType) {
             return string.Format("{0}({1})", futureType,
-                                 (HasResult
+                                 (IsCompleted
                                       ? Result.Match(v => v.ToString(),
                                                      ex => ex.ToString())
                                       : "?"));
@@ -127,12 +119,12 @@ namespace FP.Future {
                 EventHandler<FutureDeterminedArgs<T2>> endWait2 = delegate { resetEvent.Set(); };
                 future1.Determined += endWait1;
                 future2.Determined += endWait2;
-                if (future1.IsFuture && future2.IsFuture)
+                if (!future1.IsCompleted && !future2.IsCompleted)
                     resetEvent.WaitOne();
                 future1.Determined -= endWait1;
                 future2.Determined -= endWait2;
             }
-            if (future1.HasResult)
+            if (future1.IsCompleted)
                 return Either.Left<Result<T1>, Result<T2>>(future1.Result);
             else
                 return Either.Right<Result<T1>, Result<T2>>(future2.Result);
