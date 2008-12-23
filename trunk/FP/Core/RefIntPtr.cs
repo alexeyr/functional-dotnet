@@ -5,7 +5,7 @@ namespace FP.Core {
     /// <summary>
     /// Type of mutable references to (immutable) objects.
     /// </summary>
-    public class RefIntPtr : Ref<IntPtr> {
+    internal class RefIntPtr : Ref<IntPtr> {
         /// <summary>
         /// Creates a reference with the specified initial value.
         /// </summary>

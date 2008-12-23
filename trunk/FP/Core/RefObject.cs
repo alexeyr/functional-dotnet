@@ -6,7 +6,7 @@ namespace FP.Core {
     /// Type of mutable references to (immutable) objects.
     /// </summary>
     /// <typeparam name="T">The type of values.</typeparam>
-    public class RefObject<T> : Ref<T> where T : class {
+    internal class RefObject<T> : Ref<T> where T : class {
         /// <summary>
         /// Creates a reference with the specified initial value.
         /// </summary>

@@ -5,7 +5,7 @@ namespace FP.Core {
     /// <summary>
     /// Type of mutable references to <see cref="double"/>.
     /// </summary>
-    public class RefDouble : Ref<double> {
+    internal class RefDouble : Ref<double> {
         /// <summary>
         /// Creates a reference with the specified initial value.
         /// </summary>

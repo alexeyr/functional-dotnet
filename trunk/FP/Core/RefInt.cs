@@ -5,7 +5,7 @@ namespace FP.Core {
     /// <summary>
     /// Type of mutable references to <see cref="int"/>s.
     /// </summary>
-    public class RefInt : Ref<int> {
+    internal class RefInt : Ref<int> {
         /// <summary>
         /// Creates a reference with the specified initial value.
         /// </summary>

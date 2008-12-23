@@ -5,7 +5,7 @@ namespace FP.Core {
     /// <summary>
     /// Type of mutable references to <see cref="long"/>.
     /// </summary>
-    public class RefLong : Ref<long> {
+    internal class RefLong : Ref<long> {
         /// <summary>
         /// Creates a reference with the specified initial value.
         /// </summary>
