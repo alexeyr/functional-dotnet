@@ -82,10 +82,6 @@ namespace FP.Core {
             return Tuple.New(oldValue, newValue);
         }
 
-        public bool Equals(Ref<T> other) {
-            return ReferenceEquals(this, other);
-        }
-
         /// <summary>
         /// Validates the specified value.
         /// </summary>

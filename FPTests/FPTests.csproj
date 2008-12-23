@@ -121,6 +121,7 @@
     <Compile Include="RASequenceTests.Test_SplitAt.g.cs">
       <DependentUpon>RASequenceTests.cs</DependentUpon>
     </Compile>
+    <Compile Include="RefTests.cs" />
     <Compile Include="RopeTests.cs" />
     <Compile Include="RopeTests.Test_Creation.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>

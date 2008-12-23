@@ -5,7 +5,7 @@ namespace FP.Core {
     /// <summary>
     /// Type of mutable references to <see cref="float"/>.
     /// </summary>
-    public class RefFloat : Ref<float> {
+    internal class RefFloat : Ref<float> {
         /// <summary>
         /// Creates a reference with the specified initial value.
         /// </summary>

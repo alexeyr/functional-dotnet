@@ -12,7 +12,7 @@ namespace FP.Core {
     /// Similar to Alice ML's/OCaml's ref type and Clojure's atom type.</remarks>
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IRef<T> : IEquatable<Ref<T>> {
+    public interface IRef<T> {
         /// <summary>
         /// Value of the reference.
         /// </summary>
