@@ -36,6 +36,9 @@ namespace FP.Core {
     [Serializable]
     public struct OptionalNotNull<T> : IEnumerable<T>, IComparable<OptionalNotNull<T>>,
                                        IEquatable<OptionalNotNull<T>> {
+        /// <summary>
+        /// _value
+        /// </summary>
         private readonly T _value;
 
         /// <summary>
@@ -49,13 +52,13 @@ namespace FP.Core {
                     return _value;
                 throw new InvalidOperationException("OptionalNotNull<T> doesn't have a value.");
             }
-        }
+        } // Value
 
         /// <summary>
         /// Gets a value indicating whether this instance has value.
         /// </summary>
         /// <value><c>true</c> if this instance has value; otherwise, <c>false</c>.</value>
-        public bool HasValue { get; private set; }
+        public bool HasValue { get; private set; } // HasValue
 
         ///<summary>
         ///Returns an enumerator that iterates through the collection.
@@ -68,7 +71,7 @@ namespace FP.Core {
         public IEnumerator<T> GetEnumerator() {
             if (HasValue)
                 yield return _value;
-        }
+        } // GetEnumerator()
 
         ///<summary>
         ///Returns an enumerator that iterates through a collection.
@@ -78,24 +81,27 @@ namespace FP.Core {
         ///</returns>
         ///<filterpriority>2</filterpriority>
         IEnumerator IEnumerable.GetEnumerator() {
-            return ((IEnumerable<T>) this).GetEnumerator();
-        }
+            return ((IEnumerable<T>)this).GetEnumerator();
+        } // IEnumerable.GetEnumerator()
 
         /// <summary>
         /// Represents absence of value.
         /// </summary>
-// ReSharper disable RedundantDefaultFieldInitializer
+        /// <summary>
+        /// ReSharper disable RedundantDefaultFieldInitializer
+        /// </summary>
         public static readonly OptionalNotNull<T> None = new OptionalNotNull<T>();
-// ReSharper restore RedundantDefaultFieldInitializer
+        // ReSharper restore RedundantDefaultFieldInitializer
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionalNotNull{T}"/> struct.
         /// </summary>
         /// <param name="value">The value.</param>
-        public OptionalNotNull(T value) : this() {
-// ReSharper disable CompareNonConstrainedGenericWithNull
+        public OptionalNotNull(T value)
+            : this() {
+            // ReSharper disable CompareNonConstrainedGenericWithNull
             if (value != null) {
-// ReSharper restore CompareNonConstrainedGenericWithNull
+                // ReSharper restore CompareNonConstrainedGenericWithNull
                 HasValue = true;
                 _value = value;
             }
@@ -103,7 +109,7 @@ namespace FP.Core {
                 HasValue = false;
                 _value = default(T);
             }
-        }
+        } // OptionalNotNull(value)
 
         /// <summary>
         /// If the current instance has a value, do <paramref name="action"/> with it.
@@ -111,7 +117,7 @@ namespace FP.Core {
         /// <param name="action">The action to try.</param>
         public void Do(Action<T> action) {
             DoOrElse(action, Functions.DoNothing);
-        }
+        } // Do(action)
 
         /// <summary>
         /// If the current instance has a value, do <paramref name="action"/> with it.
@@ -124,7 +130,7 @@ namespace FP.Core {
                 action(_value);
             else
                 defaultAction();
-        }
+        } // DoOrElse(action, defaultAction)
 
         /// <summary>
         /// If the current instance has a value, return it.
@@ -134,7 +140,27 @@ namespace FP.Core {
         /// <returns></returns>
         public T ValueOrElse(T @default) {
             return HasValue ? _value : @default;
-        }
+        } // ValueOrElse(@default)
+
+        /// <summary>
+        /// If this optional has a value, returns itself; else evaluates 
+        /// <paramref name="@default"/> and returns the result.
+        /// </summary>
+        /// <param name="default">The @default.</param>
+        /// <returns></returns>
+        public OptionalNotNull<T> OrElse(Func<OptionalNotNull<T>> @default) {
+            return HasValue ? this : @default();
+        } // OrElse(@default)
+
+        /// <summary>
+        /// If this optional has a value, returns itself; else returns 
+        /// <paramref name="@default"/>.
+        /// </summary>
+        /// <param name="default">The @default.</param>
+        /// <returns></returns>
+        public OptionalNotNull<T> OrElse(OptionalNotNull<T> @default) {
+            return HasValue ? this : @default;
+        } // OrElse(@default)
 
         /// <summary>
         /// Similar to the <c>??<\c> operator.
@@ -143,7 +169,7 @@ namespace FP.Core {
         /// <example><c>None | 5 == 5.</c></example>
         public static T operator |(OptionalNotNull<T> optional, T @default) {
             return optional.HasValue ? optional.Value : @default;
-        }
+        } // op_BitwiseOr(optional, @default)
 
         /// <summary>
         /// Similar to the <c>??<\c> operator.
@@ -153,7 +179,7 @@ namespace FP.Core {
         public static OptionalNotNull<T> operator |(
             OptionalNotNull<T> optional, OptionalNotNull<T> @default) {
             return optional.HasValue ? optional : @default;
-        }
+        } // op_BitwiseOr(optional, @default)
 
         /// <summary>
         /// Implements the operator true.
@@ -162,7 +188,7 @@ namespace FP.Core {
         /// <returns><c>true</c> if <paramref name="optional"/> has a value.</returns>
         public static bool operator true(OptionalNotNull<T> optional) {
             return optional.HasValue;
-        }
+        } // op_True(optional)
 
         /// <summary>
         /// Implements the operator false.
@@ -171,7 +197,7 @@ namespace FP.Core {
         /// <returns><c>true</c> if <paramref name="optional"/> doesn't have a value.</returns>
         public static bool operator false(OptionalNotNull<T> optional) {
             return !optional.HasValue;
-        }
+        } // op_False(optional)
 
         //TODO: delete?
 
@@ -183,7 +209,7 @@ namespace FP.Core {
         /// <param name="default">The default result.</param>
         public R MapOrElse<R>(Func<T, R> function, R @default) {
             return HasValue ? function(_value) : @default;
-        }
+        } // MapOrElse(, function, @default)
 
         /// <summary>
         /// If the current instance has a value, calls <paramref name="function"/> on it
@@ -195,7 +221,7 @@ namespace FP.Core {
         /// <param name="default">The default result.</param>
         public R MapOrElse<R>(Func<T, R> function, Func<R> @default) {
             return HasValue ? function(_value) : @default();
-        }
+        } // MapOrElse(, function, @default)
 
         /// <summary>
         /// Maps the partial function.
@@ -225,7 +251,7 @@ namespace FP.Core {
         /// <remarks>It is implicit by parallel with <see cref="Nullable{T}"/>.</remarks>
         public static explicit operator OptionalNotNull<T>(T value) {
             return new OptionalNotNull<T>(value);
-        }
+        } // op_Explicit(value)
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="OptionalNotNull{T}"/> to <see cref="T"/>.
@@ -234,7 +260,7 @@ namespace FP.Core {
         /// <returns><see cref="Value"/> if it exists; <c>default(T)</c> otherwise.</returns>
         public static explicit operator T(OptionalNotNull<T> optional) {
             return optional.ValueOrElse(default(T));
-        }
+        } // op_Explicit(optional)
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="T"/> to 
@@ -246,7 +272,7 @@ namespace FP.Core {
         /// <remarks>It is implicit by parallel with <see cref="Nullable{T}"/>.</remarks>
         public static explicit operator OptionalNotNull<T>(Optional<T> optional) {
             return optional.MapOrElse(x => new OptionalNotNull<T>(x), None);
-        }
+        } // op_Explicit(optional)
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="OptionalNotNull{T}"/> to <see cref="T"/>.
@@ -255,7 +281,7 @@ namespace FP.Core {
         /// <returns><see cref="Value"/> if it exists; <c>default(T)</c> otherwise.</returns>
         public static implicit operator Optional<T>(OptionalNotNull<T> optional) {
             return optional.MapOrElse(t => t, Optional<T>.None);
-        }
+        } // op_Implicit(optional)
 
         ///<summary>
         ///Compares the current object with another object of the same type. <c>None</c> is considered
@@ -275,7 +301,7 @@ namespace FP.Core {
                               ? Comparer<T>.Default.Compare(_value, other._value)
                               : 1)
                        : (other.HasValue ? -1 : 0);
-        }
+        } // CompareTo(other)
 
         /// <summary>
         /// Implements the equality operator. Calls <see cref="Equals(OptionalNotNull{T})"/>.
@@ -285,7 +311,7 @@ namespace FP.Core {
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(OptionalNotNull<T> one, OptionalNotNull<T> other) {
             return one.Equals(other);
-        }
+        } // op_Equality(one, other)
 
         /// <summary>
         /// Implements the operator !=.
@@ -295,7 +321,7 @@ namespace FP.Core {
         /// <returns>The result of the operator.</returns>
         public static bool operator !=(OptionalNotNull<T> one, OptionalNotNull<T> other) {
             return !(one == other);
-        }
+        } // op_Inequality(one, other)
 
         ///<summary>
         ///Indicates whether the current object is equal to another object of the same type.
@@ -311,7 +337,7 @@ namespace FP.Core {
             return HasValue
                        ? other.HasValue && _value.Equals(other._value)
                        : !other.HasValue;
-        }
+        } // Equals(other)
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
@@ -322,8 +348,8 @@ namespace FP.Core {
         /// </returns>
         public override bool Equals(object obj) {
             if (!(obj is OptionalNotNull<T>)) return false;
-            return Equals((OptionalNotNull<T>) obj);
-        }
+            return Equals((OptionalNotNull<T>)obj);
+        } // Equals(obj)
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -332,9 +358,9 @@ namespace FP.Core {
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
         public override int GetHashCode() {
-            return 29 * typeof (T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
-        }
-                                       }
+            return 29 * typeof(T).GetHashCode() + MapOrElse(v => v.GetHashCode(), 0);
+        } // GetHashCode()
+    } // struct OptionalNotNull
 
     /// <summary>
     /// A convenience static class to provide static methods for <see cref="Optional{T}"/> and
