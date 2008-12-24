@@ -189,6 +189,47 @@ namespace FP.Core {
         } // Map(, function)
 
         /// <summary>
+        /// If this optional has a value, returns itself; else evaluates 
+        /// <paramref name="@default"/> and returns the result.
+        /// </summary>
+        /// <param name="default">The @default.</param>
+        /// <returns></returns>
+        public Optional<T> OrElse(Func<Optional<T>> @default) {
+            return HasValue ? this : @default();
+        }
+
+        /// <summary>
+        /// If this optional has a value, returns itself; else returns 
+        /// <paramref name="@default"/>.
+        /// </summary>
+        /// <param name="default">The @default.</param>
+        /// <returns></returns>
+        public Optional<T> OrElse(Optional<T> @default) {
+            return HasValue ? this : @default;
+        }
+
+        /// <summary>
+        /// Asserts the value is not null.
+        /// </summary>
+        /// <returns><c>Some(Value)</c> if this optional has a value and this value is not
+        /// <c>null</c>; <c>None</c> if this optional doesn't have a value.</returns>
+        /// <exception cref="InvalidOperationException">when the value exists and is 
+        /// <c>null</c>.</exception>
+        public OptionalNotNull<T> AssertNotNull() {
+            // ReSharper disable CompareNonConstrainedGenericWithNull
+            if (HasValue)
+                if (Value == null) {
+                    throw new InvalidOperationException("Value can't be null",
+                                                        new ArgumentNullException("Value"));
+                }
+                else
+                    return OptionalNotNull.Some(Value);
+            else
+                return OptionalNotNull.None<T>();
+            // ReSharper restore CompareNonConstrainedGenericWithNull
+        }
+
+        /// <summary>
         /// Similar to the <c>??<\c> operator.
         /// </summary>
         /// <seealso cref="ValueOrElse"/>
