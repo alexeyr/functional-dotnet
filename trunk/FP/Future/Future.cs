@@ -112,7 +112,7 @@ namespace FP.Future {
         /// <param name="future2">The second future.</param>
         /// <returns></returns>
         /// <remarks>This method does not force lazy futures.</remarks>
-        public static Either<Result<T1>, Result<T2>> AwaitEither<T1, T2>(Future<T1> future1,
+        public static Result<Either<T1, T2>> AwaitEither<T1, T2>(Future<T1> future1,
                                                                          Future<T2> future2) {
             using (var resetEvent = new ManualResetEvent(false)) {
                 EventHandler<FutureDeterminedArgs<T1>> endWait1 = delegate { resetEvent.Set(); };
@@ -124,10 +124,17 @@ namespace FP.Future {
                 future1.Determined -= endWait1;
                 future2.Determined -= endWait2;
             }
-            if (future1.IsCompleted)
-                return Either.Left<Result<T1>, Result<T2>>(future1.Result);
-            else
-                return Either.Right<Result<T1>, Result<T2>>(future2.Result);
+            return future1.IsCompleted
+                       ? future1.Result.Match(t1 =>
+                                                (Result<Either<T1, T2>>)
+                                                Result.Success<Either<T1, T2>>(
+                                                    Either.Left<T1, T2>(t1)),
+                                                Result.Failure<Either<T1, T2>>)
+                       : future2.Result.Match(t2 =>
+                                                (Result<Either<T1, T2>>)
+                                                Result.Success<Either<T1, T2>>(
+                                                    Either.Right<T1, T2>(t2)),
+                                                Result.Failure<Either<T1, T2>>);
         }
 
         /// <summary>
@@ -149,7 +156,7 @@ namespace FP.Future {
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="calculation">The calculation.</param>
-        /// <returns></returns>
+        /// <returns>The created concurrent future.</returns>
         public static Concurrent<T> Spawn<T>(Func<T> calculation) {
             return new Concurrent<T>(calculation);
         }
@@ -160,13 +167,19 @@ namespace FP.Future {
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="calculation">The calculation.</param>
-        /// <returns></returns>
+        /// <returns>The created lazy future.</returns>
         public static Lazy<T> Lazy<T>(Func<T> calculation) {
             return new Lazy<T>(calculation);
         }
 
-        public static Ready<T> Ready<T>(Result<T> result) {
-            return new Ready<T>(result);
+        /// <summary>
+        /// Creates a "future" which already holds the specified result and returns it.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="result">The result.</param>
+        /// <returns>The created ready future.</returns>
+        public static Lazy<T> Ready<T>(Result<T> result) {
+            return new Lazy<T>(result);
         }
     }
 }
