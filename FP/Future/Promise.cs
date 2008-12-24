@@ -72,7 +72,7 @@ namespace FP.Future {
         /// <exception cref="PromiseAlreadyFulfilledException">if the promise has already
         /// been fulfilled or failed.</exception>
         public void Fulfill(Result<T> result) {
-            Fulfill(new Ready<T>(result));
+            Fulfill(new Lazy<T>(result));
         }
 
         /// <summary>
