@@ -33,15 +33,16 @@ namespace FP.Core {
             //[start..]
         }
 
-        /// <summary>Generates a sequence of integral numbers starting with a specified number
-        /// with a specified step.</summary>
-        /// <returns>An <see cref="IEnumerable{int}"/> that contains a range of 
-        /// integral numbers up to <see cref="int.MaxValue"/> or down to
+        /// <summary>Generates a sequence of integral numbers starting with a specified
+        /// number with a specified step.</summary>
+        /// <returns>An <see cref="IEnumerable{int}"/> that contains a range of integral
+        /// numbers up to <see cref="int.MaxValue"/> or down to
         /// <see cref="int.MinValue"/>.</returns>
         /// <param name="start">The value of the first integer in the sequence.</param>
         /// <param name="step">The difference between two consequent elements of the
         /// sequence.</param>
-        /// <exception cref="ArgumentException">if <paramref name="step"/> equals 0.</exception>
+        /// <exception cref="ArgumentException">if <paramref name="step"/> equals 0.
+        /// </exception>
         public static IEnumerable<int> From(int start, int step) {
             if (step == 0)
                 throw new ArgumentException();

@@ -311,8 +311,7 @@ namespace FP.Collections {
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> InsertAt(int index, T newValue) {
-            if (index < 0 || index >= Count)
-                throw new ArgumentOutOfRangeException("index");
+            Requires.That.IsIndexInRange(this, index, "index");
             var ftSplit = _ft.Split(i => i > index);
             return
                 new RandomAccessSequence<T>((ftSplit.Item1 | new Element(newValue)) + ftSplit.Item2);
@@ -325,8 +324,7 @@ namespace FP.Collections {
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> RemoveAt(int index) {
-            if (index < 0 || index >= Count)
-                throw new ArgumentOutOfRangeException("index");
+            Requires.That.IsIndexInRange(this, index, "index");
             var split = _ft.SplitTree(i => i > index, 0);
             return new RandomAccessSequence<T>(split.Left + split.Right);
         }
@@ -359,8 +357,7 @@ namespace FP.Collections {
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> InsertRangeAt(int index, IEnumerable<T> ts) {
-            if (index < 0 || index >= Count)
-                throw new ArgumentOutOfRangeException("index");
+            Requires.That.IsIndexInRange(this, index, "index");
             var ftSplit = _ft.Split(i => i > index);
             return
                 new RandomAccessSequence<T>(
@@ -368,26 +365,26 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Removes <paramref name="length"/> elements, starting at index <paramref name="startIndex"/>.
+        /// Removes <paramref name="count"/> elements, starting at index <paramref name="startIndex"/>.
         /// </summary>
         /// <param name="startIndex">The index of the first element to remove.</param>
-        /// <param name="length">The number of elements to remove.</param>
+        /// <param name="count">The number of elements to remove.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or 
-        /// <paramref name="length"/> is out of range.</exception>
-        public RandomAccessSequence<T> RemoveRangeAt(int startIndex, int length) {
-            if (startIndex < 0 || startIndex >= Count)
-                throw new ArgumentOutOfRangeException("startIndex");
-            if (startIndex + length > Count)
-                throw new ArgumentOutOfRangeException("length");
+        /// <paramref name="count"/> is out of range.</exception>
+        public RandomAccessSequence<T> RemoveRangeAt(int startIndex, int count) {
+            Requires.That
+                .IsIndexInRange(this, startIndex, "startIndex")
+                .IsIndexInRange(this, startIndex + count, "startIndex + count")
+                .Check();
             //is special casing this needed?
-//            if (length == 0)
+//            if (count == 0)
 //                return this;
 //            if (startIndex == 0)
-//                return Skip(length);
-//            if (startIndex + length == Count)
+//                return Skip(count);
+//            if (startIndex + count == Count)
 //                return Take(startIndex);
             var split1 = _ft.Split(i => i >= startIndex);
-            var split2 = split1.Item2.Split(i => i >= length);
+            var split2 = split1.Item2.Split(i => i >= count);
             return new RandomAccessSequence<T>(split1.Item1 + split2.Item2);
         }
 
