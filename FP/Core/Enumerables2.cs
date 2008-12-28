@@ -1,4 +1,4 @@
-﻿/*
+/*
 * Enumerables2.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using FP.Core;
+using FP.Validation;
 
 namespace FP.HaskellNames {
     /// <summary>
@@ -55,13 +55,13 @@ namespace FP.HaskellNames {
         /// <remarks>
         /// An alternate name for <see cref="Enumerable.First(IEnumerable{T})"/>.
         /// </remarks>
-        /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
+        /// <exception cref="EmptyEnumerableException">If the sequence is empty.</exception>
         public static T Head<T>(this IEnumerable<T> sequence) {
             try {
                 return sequence.First();
             }
             catch (InvalidOperationException e) {
-                throw new EmptySequenceException("head", e);
+                throw new EmptyEnumerableException("head", e);
             }
 
             //head                    :: [a] -> a

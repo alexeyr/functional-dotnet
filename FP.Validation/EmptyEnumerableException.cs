@@ -1,5 +1,5 @@
 ﻿/*
-* EmptySequenceException.cs is part of functional-dotnet project
+* EmptyEnumerableException.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
 * All rights reserved.
@@ -15,29 +15,29 @@
 
 using System;
 
-namespace FP.Core {
+namespace FP.Validation {
     /// <summary>
     /// Thrown by the methods which require their argument to be non-empty
     /// when called on an empty sequence.
     /// </summary>
-    public class EmptySequenceException : ArgumentException {
+    public class EmptyEnumerableException : ArgumentException {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EmptySequenceException"/> class.
+        /// Initializes a new instance of the <see cref="EmptyEnumerableException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="innerException">The inner exception.</param>
-        public EmptySequenceException(string message, Exception innerException)
+        public EmptyEnumerableException(string message, Exception innerException)
             : base(message, innerException) {}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EmptySequenceException"/> class.
+        /// Initializes a new instance of the <see cref="EmptyEnumerableException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public EmptySequenceException(string message) : base(message) {}
+        public EmptyEnumerableException(string message) : base(message) {}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EmptySequenceException"/> class.
+        /// Initializes a new instance of the <see cref="EmptyEnumerableException"/> class.
         /// </summary>
-        public EmptySequenceException() {}
+        public EmptyEnumerableException() {}
     }
 }

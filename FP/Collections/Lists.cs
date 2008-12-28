@@ -1,4 +1,4 @@
-﻿/*
+/*
 * Lists.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -16,6 +16,7 @@
 using System;
 using System.Linq;
 using FP.Core;
+using FP.Validation;
 
 namespace FP.Collections {
     /// <summary>
@@ -41,7 +42,7 @@ namespace FP.Collections {
         /// Gets the "head" (first element) of the list.
         /// </summary>
         /// <returns>The head of the list.</returns>
-        /// <exception cref="EmptySequenceException">if the current list is empty.</exception>
+        /// <exception cref="EmptyEnumerableException">if the current list is empty.</exception>
         /// <param name="list">The list.</param>
         public static T First<T, TList>(this TList list) where TList : IList<T, TList> {
             return list.Head;
