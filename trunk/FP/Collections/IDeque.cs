@@ -13,7 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-using FP.Core;
+using FP.Validation;
 
 namespace FP.Collections {
     /// <summary>
@@ -32,15 +32,15 @@ namespace FP.Collections {
         /// <summary>
         /// Gets the initial sublist (all elements but the last) of the list.
         /// </summary>
-        /// <value>Throws <see cref="EmptySequenceException"/>.</value>
-        /// <exception cref="EmptySequenceException"></exception>
+        /// <value>Throws <see cref="EmptyEnumerableException"/>.</value>
+        /// <exception cref="EmptyEnumerableException"></exception>
         TDeque Init { get; }
 
         /// <summary>
         /// Gets the last element of the list.
         /// </summary>
-        /// <value>Throws <see cref="EmptySequenceException"/>.</value>
-        /// <exception cref="EmptySequenceException"></exception>
+        /// <value>Throws <see cref="EmptyEnumerableException"/>.</value>
+        /// <exception cref="EmptyEnumerableException"></exception>
         T Last { get; }
     }
 }

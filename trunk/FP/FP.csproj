@@ -110,7 +110,6 @@
     <Compile Include="Core\Unit.cs" />
     <Compile Include="Core\Comparers.cs" />
     <Compile Include="Core\Continuations.cs" />
-    <Compile Include="Core\EmptySequenceException.cs" />
     <Compile Include="Core\Enumerables.cs" />
     <Compile Include="Core\Enumerables2.cs" />
     <Compile Include="Core\Enumerators.cs" />

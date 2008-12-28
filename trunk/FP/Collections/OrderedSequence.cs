@@ -209,7 +209,7 @@ namespace FP.Collections {
         /// Returns the element with the maximal key without removing it.
         /// </summary>
         /// <remarks>If several elements have the maximal key, the element inserted last will be returned.</remarks>
-        /// <exception cref="EmptySequenceException">There are no elements in the sequence.</exception>
+        /// <exception cref="EmptyEnumerableException">There are no elements in the sequence.</exception>
         public Tuple<K, T> PeekMax() {
             Element item = _ft.Last;
             return Pair.New(item.Key, item.Value);
@@ -219,7 +219,7 @@ namespace FP.Collections {
         /// Returns the element with the minimal key without removing it.
         /// </summary>
         /// <remarks>If several elements have the minimal key, the element inserted first will be returned.</remarks>
-        /// <exception cref="EmptySequenceException">There are no elements in the sequence.</exception>
+        /// <exception cref="EmptyEnumerableException">There are no elements in the sequence.</exception>
         public Tuple<K, T> PeekMin() {
             Element item = _ft.Head;
             return Pair.New(item.Key, item.Value);
@@ -229,7 +229,7 @@ namespace FP.Collections {
         /// Removes the element with the maximal key.
         /// </summary>
         /// <remarks>If several elements have the maximal key, the element inserted last will be removed.</remarks>
-        /// <exception cref="EmptySequenceException">There are no elements in the sequence.</exception>
+        /// <exception cref="EmptyEnumerableException">There are no elements in the sequence.</exception>
         public OrderedSequence<K, T> RemoveMax() {
             return MakeOrderedSequence(_ft.Init);
         }
@@ -238,7 +238,7 @@ namespace FP.Collections {
         /// Removes the element with the minimal key.
         /// </summary>
         /// <remarks>If several elements have the minimal key, the element inserted first will be removed.</remarks>
-        /// <exception cref="EmptySequenceException">There are no elements in the sequence.</exception>
+        /// <exception cref="EmptyEnumerableException">There are no elements in the sequence.</exception>
         public OrderedSequence<K, T> RemoveMin() {
             return MakeOrderedSequence(_ft.Tail);
         }

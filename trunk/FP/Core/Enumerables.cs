@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FP.Collections;
 using FP.HaskellNames;
+using FP.Validation;
 
 namespace FP.Core {
     /// <summary>
@@ -41,11 +42,11 @@ namespace FP.Core {
         /// <typeparam name="T"></typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <returns></returns>
-        /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
+        /// <exception cref="EmptyEnumerableException">If the sequence is empty.</exception>
         public static IEnumerable<T> Tail<T>(this IEnumerable<T> sequence) {
             using (IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 if (!enumerator.MoveNext())
-                    throw new EmptySequenceException("tail");
+                    throw new EmptyEnumerableException("tail");
                 while (enumerator.MoveNext())
                     yield return enumerator.Current;
             }
@@ -67,13 +68,13 @@ namespace FP.Core {
         /// If you wish to prevent this and are not concerned about not getting an
         /// exception for the empty list, use <c>sequence.Skip(1)</c> instead.
         /// </remarks>
-        /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
+        /// <exception cref="EmptyEnumerableException">If the sequence is empty.</exception>
         public static IEnumerable<T> Init<T>(
             this IEnumerable<T> sequence) {
             using (
                 IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 if (!enumerator.MoveNext())
-                    throw new EmptySequenceException("init");
+                    throw new EmptyEnumerableException("init");
                 while (true) {
                     T current = enumerator.Current;
                     if (enumerator.MoveNext())
@@ -489,11 +490,11 @@ namespace FP.Core {
         /// <param name="comparer">A comparer.</param>
         /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="comparer" /> is null.</exception>
-        /// <exception cref="EmptySequenceException"><paramref name="source"/> is empty.</exception>
+        /// <exception cref="EmptyEnumerableException"><paramref name="source"/> is empty.</exception>
         public static T Max<T>(this IEnumerable<T> source, IComparer<T> comparer) {
             using (var enumerator = source.GetEnumerator()) {
                 if (!enumerator.MoveNext())
-                    throw new EmptySequenceException("source");
+                    throw new EmptyEnumerableException("source");
                 T max = enumerator.Current;
                 // ReSharper disable CompareNonConstrainedGenericWithNull
                 if (default(T) == null) {
@@ -519,7 +520,7 @@ namespace FP.Core {
         /// <param name="comparer">A comparer.</param>
         /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="comparer" /> is null.</exception>
-        /// <exception cref="EmptySequenceException"><paramref name="source"/> is empty.</exception>
+        /// <exception cref="EmptyEnumerableException"><paramref name="source"/> is empty.</exception>
         public static T Min<T>(this IEnumerable<T> source, IComparer<T> comparer) {
             return source.Max(comparer.Reverse());
         }
@@ -571,13 +572,13 @@ namespace FP.Core {
         /// <param name="sequence">The sequence to fold.</param>
         /// <param name="func">The binary function.</param>
         /// <returns>The list of accumulator values.</returns>
-        /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
+        /// <exception cref="EmptyEnumerableException">If the sequence is empty.</exception>
         public static IEnumerable<T> ScanLeft<T>(
             this IEnumerable<T> sequence, Func<T, T, T> func) {
             using (
                 IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 if (!enumerator.MoveNext())
-                    throw new EmptySequenceException("scanleft");
+                    throw new EmptyEnumerableException("scanleft");
                 T acc = enumerator.Current;
                 yield return acc;
                 while (enumerator.MoveNext()) {
@@ -691,11 +692,11 @@ namespace FP.Core {
         /// <typeparam name="T"></typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <returns></returns>
-        /// <exception cref="EmptySequenceException">If the sequence is empty.</exception>
+        /// <exception cref="EmptyEnumerableException">If the sequence is empty.</exception>
         public static IEnumerable<T> Cycle<T>(
             this IEnumerable<T> sequence) {
             if (sequence.IsEmpty())
-                throw new EmptySequenceException("cycle");
+                throw new EmptyEnumerableException("cycle");
             while (true) {
                 foreach (T t in sequence)
                     yield return t;

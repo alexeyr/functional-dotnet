@@ -17,7 +17,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using FP.Core;
+using FP.Validation;
 
 namespace FP.Collections {
     //TODO: Test lazy lists!
@@ -81,7 +81,7 @@ namespace FP.Collections {
         /// Gets the "head" (first element) of the list.
         /// </summary>
         /// <value>The head of the list.</value>
-        /// <exception cref="EmptySequenceException">is the current list <see cref="IsEmpty"/>.</exception>
+        /// <exception cref="EmptyEnumerableException">is the current list <see cref="IsEmpty"/>.</exception>
         public virtual T Head {
             get { return _head; }
         }
@@ -90,7 +90,7 @@ namespace FP.Collections {
         /// Gets the "tail" (all elements but the first) of the list.
         /// </summary>
         /// <value>The tail of the list.</value>
-        /// <exception cref="EmptySequenceException">is the current list <see cref="IsEmpty"/>.</exception>
+        /// <exception cref="EmptyEnumerableException">is the current list <see cref="IsEmpty"/>.</exception>
         public virtual LazyList<T> Tail {
             get {
                 if (_enumerator != null) {
@@ -156,9 +156,9 @@ namespace FP.Collections {
             /// <summary>
             /// Gets the "head" (first element) of the list.
             /// </summary>
-            /// <exception cref="EmptySequenceException"></exception>
+            /// <exception cref="EmptyEnumerableException"></exception>
             public override T Head {
-                get { throw new EmptySequenceException(); }
+                get { throw new EmptyEnumerableException(); }
             }
 
             /// <summary>
@@ -172,9 +172,9 @@ namespace FP.Collections {
             /// <summary>
             /// Gets the "tail" (all elements but the first) of the list.
             /// </summary>
-            /// <exception cref="EmptySequenceException">is the current list <see cref="IsEmpty"/>.</exception>
+            /// <exception cref="EmptyEnumerableException">is the current list <see cref="IsEmpty"/>.</exception>
             public override LazyList<T> Tail {
-                get { throw new EmptySequenceException(); }
+                get { throw new EmptyEnumerableException(); }
             }
 
             /// <summary>

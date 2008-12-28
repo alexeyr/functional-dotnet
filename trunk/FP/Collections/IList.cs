@@ -14,7 +14,7 @@
 */
 
 using System;
-using FP.Core;
+using FP.Validation;
 
 namespace FP.Collections {
     /// <summary>
@@ -27,14 +27,14 @@ namespace FP.Collections {
         /// Gets the "head" (first element) of the list.
         /// </summary>
         /// <value>The head of the list.</value>
-        /// <exception cref="EmptySequenceException">if the current list <see cref="ICollection{T}.IsEmpty"/>.</exception>
+        /// <exception cref="EmptyEnumerableException">if the current list <see cref="ICollection{T}.IsEmpty"/>.</exception>
         T Head { get; }
 
         /// <summary>
         /// Gets the "tail" (all elements but the first) of the list.
         /// </summary>
         /// <value>The tail of the list.</value>
-        /// <exception cref="EmptySequenceException">if the list <see cref="ICollection{T}.IsEmpty"/>.</exception>
+        /// <exception cref="EmptyEnumerableException">if the list <see cref="ICollection{T}.IsEmpty"/>.</exception>
         TList Tail { get; }
 
         /// <summary>

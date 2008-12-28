@@ -270,8 +270,8 @@ namespace FP.Collections {
         /// <summary>
         /// Gets the head of the list.
         /// </summary>
-        /// <value>Throws <see cref="EmptySequenceException"/>.</value>
-        /// <exception cref="EmptySequenceException"></exception>
+        /// <value>Throws <see cref="EmptyEnumerableException"/>.</value>
+        /// <exception cref="EmptyEnumerableException"></exception>
         public T Head {
             get { return _ft.Head.Value; }
         }
@@ -279,8 +279,8 @@ namespace FP.Collections {
         /// <summary>
         /// Gets the tail of the list.
         /// </summary>
-        /// <value>Throws <see cref="EmptySequenceException"/>.</value>
-        /// <exception cref="EmptySequenceException"></exception>
+        /// <value>Throws <see cref="EmptyEnumerableException"/>.</value>
+        /// <exception cref="EmptyEnumerableException"></exception>
         public RandomAccessSequence<T> Tail {
             get { return new RandomAccessSequence<T>(_ft.Tail); }
         }
@@ -288,8 +288,8 @@ namespace FP.Collections {
         /// <summary>
         /// Gets the initial sublist (all elements but the last) of the list.
         /// </summary>
-        /// <value>Throws <see cref="EmptySequenceException"/>.</value>
-        /// <exception cref="EmptySequenceException"></exception>
+        /// <value>Throws <see cref="EmptyEnumerableException"/>.</value>
+        /// <exception cref="EmptyEnumerableException"></exception>
         public RandomAccessSequence<T> Init {
             get { return new RandomAccessSequence<T>(_ft.Init); }
         }
@@ -297,8 +297,8 @@ namespace FP.Collections {
         /// <summary>
         /// Gets the last element of the list.
         /// </summary>
-        /// <value>Throws <see cref="EmptySequenceException"/>.</value>
-        /// <exception cref="EmptySequenceException"></exception>
+        /// <value>Throws <see cref="EmptyEnumerableException"/>.</value>
+        /// <exception cref="EmptyEnumerableException"></exception>
         public T Last {
             get { return _ft.Last.Value; }
         }

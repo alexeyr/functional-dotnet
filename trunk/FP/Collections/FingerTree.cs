@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Linq;
 using FP.Core;
 using FP.HaskellNames;
+using FP.Validation;
 
 //TODO: performance test
 
@@ -200,28 +201,28 @@ namespace FP.Collections {
         /// Gets the head of the list, provided it is not empty.
         /// </summary>
         /// <value>The head.</value>
-        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+        /// <exception cref="EmptyEnumerableException">if the list is empty.</exception>
         public abstract T Head { get; }
 
         /// <summary>
         /// Gets the tail of the list, provided it is not empty.
         /// </summary>
         /// <value>The tail.</value>
-        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+        /// <exception cref="EmptyEnumerableException">if the list is empty.</exception>
         public abstract FingerTree<T, V> Tail { get; }
 
         /// <summary>
         /// Gets the initial sublist (all elements but the last) of the list, provided it is not empty.
         /// </summary>
         /// <value>The last element.</value>
-        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+        /// <exception cref="EmptyEnumerableException">if the list is empty.</exception>
         public abstract FingerTree<T, V> Init { get; }
 
         /// <summary>
         /// Gets the last element of the list, provided it is not empty.
         /// </summary>
         /// <value>The last element of the list.</value>
-        /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+        /// <exception cref="EmptyEnumerableException">if the list is empty.</exception>
         public abstract T Last { get; }
 
         /// <summary>
@@ -372,37 +373,37 @@ namespace FP.Collections {
             /// <summary>
             /// Gets the head of the list.
             /// </summary>
-            /// <value>Throws <see cref="EmptySequenceException"/>.</value>
-            /// <exception cref="EmptySequenceException"></exception>
+            /// <value>Throws <see cref="EmptyEnumerableException"/>.</value>
+            /// <exception cref="EmptyEnumerableException"></exception>
             public override T Head {
-                get { throw new EmptySequenceException(); }
+                get { throw new EmptyEnumerableException(); }
             }
 
             /// <summary>
             /// Gets the tail of the list.
             /// </summary>
-            /// <value>Throws <see cref="EmptySequenceException"/>.</value>
-            /// <exception cref="EmptySequenceException"></exception>
+            /// <value>Throws <see cref="EmptyEnumerableException"/>.</value>
+            /// <exception cref="EmptyEnumerableException"></exception>
             public override FingerTree<T, V> Tail {
-                get { throw new EmptySequenceException(); }
+                get { throw new EmptyEnumerableException(); }
             }
 
             /// <summary>
             /// Gets the initial sublist (all elements but the last) of the list.
             /// </summary>
-            /// <value>Throws <see cref="EmptySequenceException"/>.</value>
-            /// <exception cref="EmptySequenceException"></exception>
+            /// <value>Throws <see cref="EmptyEnumerableException"/>.</value>
+            /// <exception cref="EmptyEnumerableException"></exception>
             public override FingerTree<T, V> Init {
-                get { throw new EmptySequenceException(); }
+                get { throw new EmptyEnumerableException(); }
             }
 
             /// <summary>
             /// Gets the last element of the list.
             /// </summary>
-            /// <value>Throws <see cref="EmptySequenceException"/>.</value>
-            /// <exception cref="EmptySequenceException"></exception>
+            /// <value>Throws <see cref="EmptyEnumerableException"/>.</value>
+            /// <exception cref="EmptyEnumerableException"></exception>
             public override T Last {
-                get { throw new EmptySequenceException(); }
+                get { throw new EmptyEnumerableException(); }
             }
 
             /// <summary>
@@ -424,7 +425,7 @@ namespace FP.Collections {
 
             internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate,
                                                                    V initial) {
-                throw new EmptySequenceException("Empty tree can't be split");
+                throw new EmptyEnumerableException("Empty tree can't be split");
             }
 
             /// <summary>
@@ -928,7 +929,7 @@ namespace FP.Collections {
             /// Gets the head of the list, provided it is not empty.
             /// </summary>
             /// <value>The head.</value>
-            /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+            /// <exception cref="EmptyEnumerableException">if the list is empty.</exception>
             public override T Head {
                 get { return _left[0]; }
             }
@@ -937,7 +938,7 @@ namespace FP.Collections {
             /// Gets the tail of the list, provided it is not empty.
             /// </summary>
             /// <value>The tail.</value>
-            /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+            /// <exception cref="EmptyEnumerableException">if the list is empty.</exception>
             public override FingerTree<T, V> Tail {
                 get {
                     return (_middleSuspended == null)
@@ -950,7 +951,7 @@ namespace FP.Collections {
             /// Gets the initial sublist (all elements but the last) of the list, provided it is not empty.
             /// </summary>
             /// <value>The last element.</value>
-            /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+            /// <exception cref="EmptyEnumerableException">if the list is empty.</exception>
             public override FingerTree<T, V> Init {
                 get {
                     return (_middleSuspended == null)
@@ -963,7 +964,7 @@ namespace FP.Collections {
             /// Gets the last element of the list, provided it is not empty.
             /// </summary>
             /// <value>The last element of the list.</value>
-            /// <exception cref="EmptySequenceException">if the list is empty.</exception>
+            /// <exception cref="EmptyEnumerableException">if the list is empty.</exception>
             public override T Last {
                 get { return _right[_right.Length - 1]; }
             }
