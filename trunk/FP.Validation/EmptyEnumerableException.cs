@@ -14,6 +14,7 @@
 */
 
 using System;
+using System.Runtime.Serialization;
 
 namespace FP.Validation {
     /// <summary>
@@ -21,6 +22,17 @@ namespace FP.Validation {
     /// when called on an empty sequence.
     /// </summary>
     public class EmptyEnumerableException : ArgumentException {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmptyEnumerableException"/> class.
+        /// </summary>
+        public EmptyEnumerableException() {}
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmptyEnumerableException"/> class.
+        /// </summary>
+        /// <param name="paramName">The name of the parameter.</param>
+        public EmptyEnumerableException(string paramName) : base("must not be empty, but it was", paramName) { }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EmptyEnumerableException"/> class.
         /// </summary>
@@ -33,11 +45,17 @@ namespace FP.Validation {
         /// Initializes a new instance of the <see cref="EmptyEnumerableException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public EmptyEnumerableException(string message) : base(message) {}
+        /// <param name="paramName">Name of the param.</param>
+        /// <param name="innerException">The inner exception.</param>
+        public EmptyEnumerableException(string message, string paramName, Exception innerException) : base(message, paramName, innerException) {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmptyEnumerableException"/> class.
         /// </summary>
-        public EmptyEnumerableException() {}
+        /// <param name="message">The message.</param>
+        /// <param name="paramName">Name of the param.</param>
+        public EmptyEnumerableException(string message, string paramName) : base(message, paramName) {}
+
+        protected EmptyEnumerableException(SerializationInfo info, StreamingContext context) : base(info, context) {}
     }
 }
