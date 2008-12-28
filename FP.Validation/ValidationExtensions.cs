@@ -13,6 +13,8 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FP.Validation {
     /// <summary>
@@ -213,6 +215,42 @@ namespace FP.Validation {
                 validation.Throw();
             return null;
         } // Throw(validation)
+
+        /// <summary>
+        /// Validate that the specified sequence is not empty. Null sequences are considered empty.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="sequence"/>.</typeparam>
+        /// <param name="validation">The validation.</param>
+        /// <param name="sequence">The value of the parameter.</param>
+        /// <param name="paramName">The name of the parameter.</param>
+        public static Validation IsNotEmpty<T>(this Validation validation, IEnumerable<T> sequence,
+                                              string paramName) {
+            if (sequence == null) return validation.AddException(
+                    new ArgumentNullException(paramName));
+            if (sequence.Any())
+                return validation;
+            return
+                validation.AddException(
+                    new EmptyEnumerableException(paramName));
+        } // IsNotEmpty(validation, sequence, paramName)
+
+        /// <summary>
+        /// Validate that the specified collection is not empty. Null collections are considered empty.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="collection"/>.</typeparam>
+        /// <param name="validation">The validation.</param>
+        /// <param name="collection">The value of the parameter.</param>
+        /// <param name="paramName">The name of the parameter.</param>
+        public static Validation IsNotEmpty<T>(this Validation validation, ICollection<T> collection,
+                                              string paramName) {
+            if (collection == null) return validation.AddException(
+                    new ArgumentNullException(paramName));
+            if (collection.Count == 0)
+                return validation;
+            return
+                validation.AddException(
+                    new EmptyEnumerableException(paramName));
+        } // IsNotEmpty(validation, sequence, paramName)
 
         /// <summary>
         /// Allocates a new <see cref="Validation"/> if <paramref name="validation"/> is 
