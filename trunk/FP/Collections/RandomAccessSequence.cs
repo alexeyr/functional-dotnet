@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using FP.Core;
 using FP.HaskellNames;
+using FP.Validation;
 
 namespace FP.Collections {
     /// <summary>
@@ -226,8 +227,7 @@ namespace FP.Collections {
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public T this[int index] {
             get {
-                if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException("index");
+                Requires.That.IsIndexInRange(this, index, "index").Check();
                 return _ft.SplitTree(i => i > index, 0).Middle.Value;
             }
         }
@@ -242,8 +242,7 @@ namespace FP.Collections {
         /// Equivalent to <code>SetAt(index, function(this[index])), but faster.</code>
         /// </remarks>
         public RandomAccessSequence<T> UpdateAt(int index, Func<T, T> function) {
-            if (index < 0 || index >= Count)
-                throw new ArgumentOutOfRangeException("index");
+            Requires.That.IsIndexInRange(this, index, "index").Check();
             var split = _ft.SplitTree(i => i > index, 0);
             T currentValue = split.Middle.Value;
             return
@@ -393,25 +392,25 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Returns the subsequence of length <paramref name="length"/> starting at index <paramref name="startIndex"/>.
+        /// Returns the subsequence of length <paramref name="count"/> starting at index <paramref name="startIndex"/>.
         /// </summary>
         /// <param name="startIndex">The index of the first element in the subsequence.</param>
-        /// <param name="length">The number of elements in the subsequence.</param>
+        /// <param name="count">The number of elements in the subsequence.</param>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
-        public RandomAccessSequence<T> Subsequence(int startIndex, int length) {
-            if (startIndex < 0 || startIndex >= Count)
-                throw new ArgumentOutOfRangeException("startIndex");
-            if (startIndex + length > Count)
-                throw new ArgumentOutOfRangeException("length");
+        public RandomAccessSequence<T> Subsequence(int startIndex, int count) {
+            Requires.That
+                .IsIndexInRange(this, startIndex, "startIndex")
+                .IsIndexInRange(this, startIndex + count, "startIndex + count")
+                .Check();
             //is special casing this needed?
-            //            if (length == 0)
+            //            if (count == 0)
             //                return this;
             //            if (startIndex == 0)
-            //                return Skip(length);
-            //            if (startIndex + length == Count)
+            //                return Skip(count);
+            //            if (startIndex + count == Count)
             //                return Take(startIndex);
             var split1 = _ft.Split(i => i >= startIndex);
-            var split2 = split1.Item2.Split(i => i >= length);
+            var split2 = split1.Item2.Split(i => i >= count);
             return new RandomAccessSequence<T>(split2.Item1);
         }
 

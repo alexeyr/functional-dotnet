@@ -17,12 +17,12 @@ using System.Collections.Generic;
 
 namespace FP.Collections {
     /// <summary>
-    /// Represents a <see cref="IRandomAccessSequence{T,TSequence}"/> where new elements can be inserted or removed.
+    /// Represents a <see cref="IUpdatableRandomAccessSequence{T,TSequence}"/> where new elements can be inserted or removed.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSequence">The type of the RA deque.</typeparam>
     public interface IInsertableRandomAccessSequence<T, TSequence> :
-        IRandomAccessSequence<T, TSequence>, IDeque<T, TSequence>
+        IUpdatableRandomAccessSequence<T, TSequence>, IDeque<T, TSequence>
         where TSequence : IInsertableRandomAccessSequence<T, TSequence> {
         /// <summary>
         /// Inserts <paramref name="newValue"/> at <paramref name="index"/>.

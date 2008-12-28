@@ -17,7 +17,7 @@ namespace FP.Validation {
             get { return _exceptions.ToArray(); }
         }
 
-        internal Validation AddException(Exception ex) {
+        internal Validation AddExceptionInternal(Exception ex) {
             lock (_exceptions) {
                 _exceptions.Add(ex);
             }
