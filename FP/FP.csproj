@@ -45,7 +45,7 @@
     <Compile Include="Collections\ICatenable.cs" />
     <Compile Include="Collections\ICollection.cs" />
     <Compile Include="Collections\IInsertableRandomAccessSequence.cs" />
-    <Compile Include="Collections\IRandomAccessSequence.cs" />
+    <Compile Include="Collections\IUpdatableRandomAccessSequence.cs" />
     <Compile Include="Collections\IReversible.cs" />
     <Compile Include="Collections\Vector.cs" />
     <Compile Include="Collections\IReversibleEnumerable.cs" />
@@ -79,7 +79,7 @@
     <Compile Include="Text\ArrayRope.cs" />
     <Compile Include="Text\FTRope.cs" />
     <Compile Include="Collections\IDeque.cs" />
-    <Compile Include="Collections\IRandomAccessSequenceRead.cs" />
+    <Compile Include="Collections\IRandomAccessSequence.cs" />
     <Compile Include="Text\ConcatRope.cs" />
     <Compile Include="Text\CharSequenceRope.cs" />
     <Compile Include="Text\ICharSequence.cs" />
@@ -131,6 +131,7 @@
     <Compile Include="Core\Triple.cs" />
     <Compile Include="Text\CharSubsequence.cs" />
     <Compile Include="Text\SubstringRope.cs" />
+    <Compile Include="Validation\FPValidationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />

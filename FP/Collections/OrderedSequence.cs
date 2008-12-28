@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using FP.Core;
 using FP.HaskellNames;
+using FP.Validation;
 
 namespace FP.Collections {
     /// <summary>
@@ -27,7 +28,7 @@ namespace FP.Collections {
     /// <typeparam name="K">The type of the keys.</typeparam>
     /// <typeparam name="T">The type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
-    public struct OrderedSequence<K, T> : IEnumerable<T>, IEquatable<OrderedSequence<K, T>> {
+    public struct OrderedSequence<K, T> : IEnumerable<T>, IEquatable<OrderedSequence<K, T>>, IRandomAccessSequence<Tuple<K, T>, OrderedSequence<K, T>> {
         private readonly IComparer<K> _comparer;
         private readonly FingerTree<Element, Tuple<K, int>> _ft;
 
@@ -177,7 +178,7 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Merges the sequence with <paramref name="otherSequence"/>.
+        /// Intersects the sequence with <paramref name="otherSequence"/>.
         /// </summary>
         /// <param name="otherSequence">The other sequence.</param>
         /// <returns></returns>
@@ -248,7 +249,12 @@ namespace FP.Collections {
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<T> GetEnumerator() {
+        public IEnumerator<Tuple<K, T>> GetEnumerator() {
+            foreach (var element in _ft)
+                yield return Pair.New(element.Key, element.Value);
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() {
             foreach (var element in _ft)
                 yield return element.Value;
         }
@@ -258,10 +264,29 @@ namespace FP.Collections {
         }
 
         /// <summary>
+        /// Merges <paramref name="tree1"/> and <paramref name="tree2"/>.
+        /// </summary>
+        public static OrderedSequence<K, T> operator +(
+            OrderedSequence<K, T> tree1, OrderedSequence<K, T> tree2) {
+            return tree1.Union(tree2);
+        }
+
+        /// <summary>
         /// Gets the number of elements in the sequence.
         /// </summary>
         public int Count {
             get { return _ft.Measure.Item2; }
+        }
+
+        public OrderedSequence<K, T> Subsequence(int startIndex, int count) {
+            Requires.That
+                .IsIndexInRange(this, startIndex, "startIndex")
+                .IsIndexInRange(this, startIndex + count, "startIndex + count")
+                .Check();
+
+            var split1 = _ft.Split(pair => pair.Item2 > startIndex);
+            var split2 = split1.Item2.Split(pair => pair.Item2 >= count);
+            return new OrderedSequence<K,T>(_comparer, split2.Item1);
         }
 
         /// <summary>
@@ -273,8 +298,7 @@ namespace FP.Collections {
         /// </exception>
         public Tuple<K, T> this[int index] {
             get {
-                if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException("index");
+                Requires.That.IsIndexInRange(this, index, "index").Check();
                 Element result = _ft.SplitTree(pair => pair.Item2 > index, Monoid.Zero).Middle;
                 return Pair.New(result.Measure.Item1, result.Value);
             }
@@ -346,12 +370,8 @@ namespace FP.Collections {
             return tree.Insert(item.Item1, item.Item2);
         }
 
-        /// <summary>
-        /// Merges <paramref name="tree1"/> and <paramref name="tree2"/>.
-        /// </summary>
-        public static OrderedSequence<K, T> operator +(
-            OrderedSequence<K, T> tree1, OrderedSequence<K, T> tree2) {
-            return tree1.Union(tree2);
+        public bool IsEmpty {
+            get { return Count == 0; }
         }
     }
 

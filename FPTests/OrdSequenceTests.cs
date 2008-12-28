@@ -13,6 +13,8 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
+using FP.Core;
+
 namespace FPTests {
     using System;
     using System.Collections.Generic;
@@ -57,14 +59,14 @@ namespace FPTests {
 
         [Fact]
         public void Test_Ordering() {
-            Assert2.SequenceEqual(_testDataSorted, _seq);
+            Assert2.SequenceEqual(_testDataSorted, (IEnumerable<int>) (_seq));
         }
 
         [Fact]
         public void Test_FromOrderedEnumerable() {
             Assert2.SequenceEqual(_testDataSorted,
-                                  OrderedSequence.FromOrderedEnumerable(_testDataSorted,
-                                                                        int.MinValue));
+                                  (IEnumerable<int>) (OrderedSequence.FromOrderedEnumerable(_testDataSorted,
+                                                                        int.MinValue)));
         }
 
         [Fact]
@@ -74,8 +76,8 @@ namespace FPTests {
             var enum2 = _testData.Skip(count);
             var seq1 = OrderedSequence.FromEnumerable(enum1, int.MinValue);
             var seq2 = OrderedSequence.FromEnumerable(enum2, int.MinValue);
-            Assert2.SequenceEqual(_testDataSorted, seq1 + seq2);
-            Assert2.SequenceEqual(_testDataSorted, seq2 + seq1);
+            Assert2.SequenceEqual(_testDataSorted, (IEnumerable<int>) (seq1 + seq2));
+            Assert2.SequenceEqual(_testDataSorted, (IEnumerable<int>) (seq2 + seq1));
         }
 
         [Fact]
@@ -87,8 +89,8 @@ namespace FPTests {
             var seq2 = OrderedSequence.FromEnumerable(enum2, int.MinValue);
             var seq3 = OrderedSequence.FromEnumerable(enum3, int.MinValue);
             var seq6 = OrderedSequence.FromEnumerable(enum6, int.MinValue);
-            Assert2.SequenceEqual(seq6, seq2.Intersect(seq3));
-            Assert2.SequenceEqual(seq6, seq3.Intersect(seq2));
+            Assert2.SequenceEqual<Tuple<int, int>>(seq6, seq2.Intersect(seq3));
+            Assert2.SequenceEqual<Tuple<int, int>>(seq6, seq3.Intersect(seq2));
         }
 
         [Fact]

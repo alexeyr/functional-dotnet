@@ -17,44 +17,30 @@ using System;
 
 namespace FP.Collections {
     /// <summary>
-    /// Represents a random access sequence where elements can be updated.
+    /// A read interface for random access sequences.
     /// </summary>
-    /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
-    /// <typeparam name="TSequence">Type of the sequence.</typeparam>
-    public interface IRandomAccessSequence<T, TSequence> : IRandomAccessSequenceRead<T, TSequence>
+    /// <typeparam name="T">The type of elements.</typeparam>
+    /// <typeparam name="TSequence">The type of the sequence.</typeparam>
+    public interface IRandomAccessSequence<T, TSequence> : ICollection<T>
         where TSequence : IRandomAccessSequence<T, TSequence> {
         /// <summary>
-        /// Updates the element at <paramref name="index"/> using <paramref name="function"/>.
+        /// Returns a subsequence starting at <paramref name="startIndex"/> and consisting of <paramref name="count"/> elements.
         /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="function">The function to apply to the element currently at <paramref name="index"/></param>
-        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
-        /// <remarks>
-        /// Equivalent to <code>SetAt(index, function(this[index])), but faster.</code>
-        /// </remarks>
-        TSequence UpdateAt(int index, Func<T, T> function);
-        } // interface IRandomAccessSequence`2
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
+        TSequence Subsequence(int startIndex, int count);
 
-    /// <summary>
-    /// Utility class for all random access sequences.
-    /// </summary>
-    public static class RandomAccessSequences {
         /// <summary>
-        /// Replaces the <see cref="T"/> at the specified index with the specified value.
+        /// Gets the <see cref="T"/> at the specified index.
         /// </summary>
-        /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
-        /// <typeparam name="TSequence">Type of the sequence.</typeparam>
-        /// <param name="sequence">The sequence.</param>
-        /// <param name="index">The index.</param>
-        /// <param name="newValue">The new value.</param>
-        /// <returns>
-        /// The sequence where the element at <paramref name="index"/> has the value <paramref name="newValue"/>
-        /// and all other elements have the same value as in the original sequence.
-        /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
-        public static TSequence SetAt<T, TSequence>(this TSequence sequence, int index, T newValue)
-            where TSequence : IRandomAccessSequence<T, TSequence> {
-            return sequence.UpdateAt(index, _ => newValue);
+        T this[int index] { get; }
+
+        /// <summary>
+        /// Gets the number of elements in the sequence.
+        /// </summary>
+        /// <value>The number of elements in the sequence.</value>
+        int Count { get; }
         }
-    }
-} // namespace FP.Collections.Immutable
+}

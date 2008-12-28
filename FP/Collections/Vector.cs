@@ -27,7 +27,7 @@ namespace FP.Collections {
     /// A vector (nearly array-like sequence). Implemented as a 32-nary trie.
     /// </summary>
     [Serializable]
-    public sealed class Vector<T> : IRandomAccessSequence<T, Vector<T>> {
+    public sealed class Vector<T> : IUpdatableRandomAccessSequence<T, Vector<T>> {
         private const int BRANCHING = 32;
         private static readonly Vector<T>[] _emptyArray = new Vector<T>[0];
         /// <summary>
