@@ -199,8 +199,6 @@ namespace FP.Core {
             return !optional.HasValue;
         } // op_False(optional)
 
-        //TODO: delete?
-
         /// <summary>
         /// If the current instance has a value, calls <paramref name="function"/> on it and returns the result.
         /// Otherwise returns <paramref name="default"/>.

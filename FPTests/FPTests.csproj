@@ -128,6 +128,7 @@
     </Compile>
     <Compile Include="StringTests.cs" />
     <Compile Include="SwitchTests.cs" />
+    <Compile Include="ValidationTests.cs" />
     <Compile Include="VectorTests.cs" />
     <Compile Include="VectorTests.Test_InfiniteBounds.g.cs">
       <DependentUpon>VectorTests.cs</DependentUpon>
@@ -143,6 +144,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FP.Validation\FP.Validation.csproj">
+      <Project>{68D038C8-5F0A-4DE5-931C-7BE476A4EA37}</Project>
+      <Name>FP.Validation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FP\FP.csproj">
       <Project>{891E86F6-A992-4B42-B88A-F1F46EA0FCE1}</Project>
       <Name>FP</Name>
