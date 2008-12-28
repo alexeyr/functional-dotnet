@@ -217,7 +217,7 @@ namespace FP.Validation {
         } // Throw(validation)
 
         /// <summary>
-        /// Validate that the specified sequence is not empty. Null sequences are considered empty.
+        /// Validate that the specified sequence is not empty.
         /// </summary>
         /// <typeparam name="T">The type of the elements of <paramref name="sequence"/>.</typeparam>
         /// <param name="validation">The validation.</param>
@@ -225,8 +225,6 @@ namespace FP.Validation {
         /// <param name="paramName">The name of the parameter.</param>
         public static Validation IsNotEmpty<T>(this Validation validation, IEnumerable<T> sequence,
                                               string paramName) {
-            if (sequence == null) return validation.AddException(
-                    new ArgumentNullException(paramName));
             if (sequence.Any())
                 return validation;
             return
@@ -235,7 +233,7 @@ namespace FP.Validation {
         } // IsNotEmpty(validation, sequence, paramName)
 
         /// <summary>
-        /// Validate that the specified collection is not empty. Null collections are considered empty.
+        /// Validate that the specified collection is not empty.
         /// </summary>
         /// <typeparam name="T">The type of the elements of <paramref name="collection"/>.</typeparam>
         /// <param name="validation">The validation.</param>
@@ -243,14 +241,28 @@ namespace FP.Validation {
         /// <param name="paramName">The name of the parameter.</param>
         public static Validation IsNotEmpty<T>(this Validation validation, ICollection<T> collection,
                                               string paramName) {
-            if (collection == null) return validation.AddException(
-                    new ArgumentNullException(paramName));
-            if (collection.Count == 0)
+            if (collection.Count != 0)
                 return validation;
             return
                 validation.AddException(
                     new EmptyEnumerableException(paramName));
         } // IsNotEmpty(validation, sequence, paramName)
+
+        /// <summary>
+        /// Validate that the specified collection contains no elements.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="collection"/>.</typeparam>
+        /// <param name="validation">The validation.</param>
+        /// <param name="collection">The value of the parameter.</param>
+        /// <param name="paramName">The name of the parameter.</param>
+        public static Validation IsEmpty<T>(this Validation validation, ICollection<T> collection,
+                                              string paramName) {
+            if (collection.Count == 0)
+                return validation;
+            return
+                validation.AddException(
+                    new ArgumentException("must be empty, but it isn't", paramName));
+        } // IsEmpty(validation, sequence, paramName)
 
         /// <summary>
         /// Allocates a new <see cref="Validation"/> if <paramref name="validation"/> is 
