@@ -13,18 +13,22 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using FP.Collections;
 
 namespace FP.Text {
     /// <summary>
-    /// A finger-tree-based rope ("heavyweight string"). It can do all string operations.
-    /// An amortized running time is given for each operation, with <i>n</i> referring to the length 
-    /// of the sequence and <i>i</i> being the integral index used by some operations. 
+    /// A finger-tree-based rope ("heavyweight string"). It can do all string
+    /// operations. An amortized running time is given for each operation, with <i>n
+    /// </i> referring to the length  of the sequence and <i>i</i> being the integral
+    /// index used by some operations. 
     /// </summary>
     /// <typeparam name="TChar">Type of the elements of the sequence.</typeparam>
-    /// <remarks>Do not use the default constructor.</remarks>
+    /// <remarks>Do not use the default constructor. This is not complete yet!
+    /// </remarks>
+    [Obsolete]
     public struct FTRope<TChar> : IRope<TChar, FTRope<TChar>> {
         private readonly FingerTree<FlatRope<TChar>, int> _ft;
 

@@ -148,9 +148,8 @@ namespace FP.Core {
         ///
         ///<param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
         ///<exception cref="T:System.ArgumentNullException">The type of <paramref name="obj" /> is a reference type and <paramref name="obj" /> is null.</exception>
-        /// <exception cref="NotImplementedException">Always.</exception>
         public int GetHashCode(T obj) {
-            throw new NotImplementedException();
+            return obj.GetHashCode();
         }
     }
 

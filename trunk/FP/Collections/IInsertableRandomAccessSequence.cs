@@ -51,12 +51,12 @@ namespace FP.Collections {
         TSequence InsertRangeAt(int index, IEnumerable<T> ts);
 
         /// <summary>
-        /// Removes <paramref name="length"/> elements, starting at index <paramref name="startIndex"/>.
+        /// Removes <paramref name="count"/> elements, starting at index <paramref name="startIndex"/>.
         /// </summary>
         /// <param name="startIndex">The index of the first element to remove.</param>
-        /// <param name="length">The number of elements to remove.</param>
+        /// <param name="count">The number of elements to remove.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or 
-        /// <paramref name="length"/> is out of range.</exception>
-        TSequence RemoveRangeAt(int startIndex, int length);
+        /// <paramref name="count"/> is out of range.</exception>
+        TSequence RemoveRangeAt(int startIndex, int count);
         }
 }

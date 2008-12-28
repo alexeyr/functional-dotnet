@@ -21,6 +21,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using FP.Core;
+using FP.Validation;
 
 namespace FP.Collections {
     /// <summary>
@@ -195,8 +196,7 @@ namespace FP.Collections {
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public T this[int index] {
             get {
-                if (index < 0)
-                    throw new ArgumentOutOfRangeException("index");
+                Requires.That.IsIndexInRange(this, index, "index");
                 var vector = this;
                 foreach (int i in Digits(index)) {
                     if (vector._branches.Length <= i || vector._branches[i] == null)
