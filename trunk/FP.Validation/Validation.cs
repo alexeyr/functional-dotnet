@@ -18,9 +18,9 @@ namespace FP.Validation {
         }
 
         internal Validation AddExceptionInternal(Exception ex) {
-            lock (_exceptions) {
-                _exceptions.Add(ex);
-            }
+            // lock (_exceptions) { // We should never validate a method's arguments in two threads concurrently
+            _exceptions.Add(ex);
+            // }
 
             return this;
         }
