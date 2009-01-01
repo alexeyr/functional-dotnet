@@ -29,8 +29,17 @@ namespace FP.Validation {
             _exceptions = new List<Exception>(1); // optimize for only having 1 exception
         }
 
+        /// <summary>
+        /// Releases unmanaged resources and performs other cleanup operations before the
+        /// <see cref="Validation"/> is reclaimed by garbage collection.
+        /// </summary>
+        /// <exception cref="ValidationException">validation.Check() was not called!
+        /// </exception>
+        /// <remarks>Generally destructor should never throw exceptions, but I believe it's
+        /// appropriate in this case.</remarks>
         ~Validation() {
-            throw new ValidationException("validation.Check() was not called!", Exceptions);
+            if (_exceptions.Count != 0)
+                throw new ValidationException("validation.Check() was not called!", Exceptions);
         }
 
         [DebuggerNonUserCode]
@@ -38,7 +47,8 @@ namespace FP.Validation {
             Exception exception = _exceptions.Count == 1
                           ? _exceptions[0]
                           : new MultiException(Exceptions);
-            throw new ValidationException(exception);
+            _exceptions.Clear();
+            throw exception;
         }
     }
 }

@@ -16,6 +16,7 @@
 using System.Linq;
 using FP.Collections;
 using FP.Core;
+using FP.Validation;
 using Microsoft.Pex.Framework;
 using Xunit;
 using XunitExtensions;
@@ -102,10 +103,10 @@ namespace FPTests {
 
         [Fact]
         public void Test_HeadAndTailOfEmptySequence() {
-            Assert.Throws<EmptySequenceException>(() => { var a = _empty.Head; });
-            Assert.Throws<EmptySequenceException>(() => { var a = _empty.Tail; });
-            Assert.Throws<EmptySequenceException>(() => { var a = _empty.Init; });
-            Assert.Throws<EmptySequenceException>(() => { var a = _empty.Last; });
+            Assert.Throws<EmptyEnumerableException>(() => { var a = _empty.Head; });
+            Assert.Throws<EmptyEnumerableException>(() => { var a = _empty.Tail; });
+            Assert.Throws<EmptyEnumerableException>(() => { var a = _empty.Init; });
+            Assert.Throws<EmptyEnumerableException>(() => { var a = _empty.Last; });
         }
 
         [PexMethod(MaxBranches = 20000)]
