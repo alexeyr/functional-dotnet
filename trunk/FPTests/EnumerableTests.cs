@@ -1,4 +1,4 @@
-﻿/*
+/*
 * EnumerableTests.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -16,6 +16,7 @@
 using System.Linq;
 using FP.Core;
 using FP.Text;
+using FP.Validation;
 using Xunit;
 using XunitExtensions;
 using Microsoft.Pex.Framework;
@@ -25,7 +26,7 @@ namespace FPTests {
         [Fact]
         public void TailShouldThrowOnEmptySeq() {
             var emptyList = Enumerable.Empty<int>();
-            Assert.Throws(typeof (EmptySequenceException), () => emptyList.Tail().FirstOrDefault());
+            Assert.Throws(typeof (EmptyEnumerableException), () => emptyList.Tail().FirstOrDefault());
         }
 
         [Fact]
