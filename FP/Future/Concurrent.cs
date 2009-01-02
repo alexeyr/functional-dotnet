@@ -49,10 +49,8 @@ namespace FP.Future {
         /// <value>The result.</value>
         public override Result<T> Result {
             get {
-                if (!IsCompleted) {
-                    _result = ((Func<Result<T>>) _asyncResult.AsyncDelegate).EndInvoke(_asyncResult);
-                    _asyncResult = null;
-                }
+                if (!IsCompleted)
+                    _asyncResult.AsyncWaitHandle.WaitOne();
                 return _result;
             }
         }
