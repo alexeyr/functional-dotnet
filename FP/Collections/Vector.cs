@@ -134,32 +134,6 @@ namespace FP.Collections {
             }
         }
 
-        //TODO: delete?
-        /// <summary>
-        /// Checks the ints enumerated.
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerable<int> CheckIntsEnumerated() {
-            var digitStack = new Stack<int>();
-            for (int currentIndex = 0, lastDigit = 0;
-                 currentIndex < _count;
-                 currentIndex++, lastDigit++) {
-                if (lastDigit == BRANCHING) {
-                    int numZeroDigits = 1;
-                    while (digitStack.Count > 0 && lastDigit == BRANCHING) {
-                        lastDigit = digitStack.Pop();
-                        lastDigit++;
-                        numZeroDigits++;
-                    }
-                    if (digitStack.Count == 0) lastDigit = 1;
-                    digitStack.Push(lastDigit);
-                    lastDigit = 0;
-                    for (int i = 0; i < numZeroDigits - 1; i++) digitStack.Push(lastDigit);
-                }
-                yield return lastDigit;
-            }
-        }
-
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
