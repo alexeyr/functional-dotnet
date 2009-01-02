@@ -23,6 +23,8 @@ namespace FP.Future {
     /// Represents a <see cref="Future{T}"/> for which the result can be set externally.
     /// </summary>
     public class Promise<T> : Future<T> {
+        readonly object _syncRoot = new object();
+
         /// <summary>
         /// Returns a new <see cref="Promise{T}"/> which can be fulfilled later.
         /// </summary>
@@ -37,7 +39,7 @@ namespace FP.Future {
         ///</summary>
         public Future<T> Future {
             get {
-                lock (this) {
+                lock (_syncRoot) {
                     return _future ?? this;
                 }
             }
@@ -93,7 +95,7 @@ namespace FP.Future {
         /// been fulfilled or failed.</exception>
         /// <exception cref="CyclicFutureException">if the future is this promise.</exception>
         public void Fulfill(Future<T> future) {
-            lock (this) {
+            lock (_syncRoot) {
                 if (IsFulfilled) throw new PromiseAlreadyFulfilledException();
                 var promise = future as Promise<T>;
                 if (promise != null && promise.Future == this) throw new CyclicFutureException();

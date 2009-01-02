@@ -27,7 +27,6 @@ namespace FP.Core {
 
         public override bool Value {
             get { return _value == 1; }
-            set { Store(value); }
         }
 
         /// <summary>
@@ -35,14 +34,14 @@ namespace FP.Core {
         /// </summary>
         /// <param name="newValue">The new value.</param>
         /// <exception cref="RefValidationException">when <paramref name="newValue"/> doesn't
-        /// pass <see cref="Ref{T}.Validator"/>.</exception>
+        /// pass <see cref="RefBase{T}.Validator"/>.</exception>
         public sealed override bool Store(bool newValue) {
             Validate(newValue);
             return Interlocked.Exchange(ref _value, newValue ? 1 : 0) == 1;
         }
 
         /// <summary>
-        /// Atomically sets <see cref="Ref{T}.Value"/> to <paramref name="newValue"/> if and only
+        /// Atomically sets <see cref="Value"/> to <paramref name="newValue"/> if and only
         /// if the current value of the atom is identical to <see cref="oldValue"/>
         /// according to <c>Value.Equals(oldValue)</c> and <c>Validator(newValue)</c>
         /// succeeds.
@@ -51,7 +50,7 @@ namespace FP.Core {
         /// <param name="newValue">The new value.</param>
         /// <returns><c>true</c> if the change happened, else <c>false</c>.</returns>
         /// <exception cref="RefValidationException">when <paramref name="newValue"/> doesn't
-        /// pass <see cref="Ref{T}.Validator"/>.</exception>
+        /// pass <see cref="RefBase{T}.Validator"/>.</exception>
         public override bool CompareAndSet(bool oldValue, bool newValue) {
             Validate(newValue);
             bool currentValue =

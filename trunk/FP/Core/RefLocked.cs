@@ -1,17 +1,24 @@
 using System;
-using System.Threading;
 
 namespace FP.Core {
     /// <summary>
-    /// Type of mutable references to (immutable) objects.
+    /// The type of mutable references to <typeparamref name="T"/> which use locks to
+    /// make access atomic.
     /// </summary>
     /// <typeparam name="T">The type of values.</typeparam>
-    internal sealed class RefObject<T> : RefBaseEx<T> where T : class {
+    /// <remarks>Type <typeparamref name="T"/> should be immutable or at least the
+    /// value should not be mutated. In this case the use of this type is thread-safe.
+    /// All value changes except directly mutating the value are atomic.
+    /// 
+    /// Similar to Alice ML's/OCaml's ref type and Clojure's atom type.</remarks>
+    internal sealed class RefLocked<T> : RefBaseEx<T> {
+        readonly object _syncRoot = new object();
+
         /// <summary>
         /// Creates a reference with the specified initial value.
         /// </summary>
         /// <param name="value">The value.</param>
-        public RefObject(T value) : this(value, null) { }
+        public RefLocked(T value) : base(value) {}
 
         /// <summary>
         /// Creates a reference with the specified initial value and validator.
@@ -20,21 +27,26 @@ namespace FP.Core {
         /// <param name="validator">The validator function.</param>
         /// <exception cref="RefValidationException">when <paramref name="value"/> doesn't
         /// pass <paramref name="validator"/>.</exception>
-        public RefObject(T value, Action<T> validator) : base(value, validator) { }
+        public RefLocked(T value, Action<T> validator) : base(value, validator) {}
 
         /// <summary>
         /// Stores the specified new value.
         /// </summary>
         /// <param name="newValue">The new value.</param>
+        /// <returns>The old value.</returns>
         /// <exception cref="RefValidationException">when <paramref name="newValue"/> doesn't
-        /// pass <see cref="IRef{T}.Validator"/>.</exception>
+        /// pass <see cref="RefBase{T}.Validator"/>.</exception>
         public override T Store(T newValue) {
             Validate(newValue);
-            return Interlocked.Exchange(ref _value, newValue);
-        }
+            lock (_syncRoot) {
+                T tmp = _value;
+                _value = newValue;
+                return tmp;
+            }
+        } // Store(newValue)
 
         /// <summary>
-        /// Atomically sets <see cref="IRef{T}.Value"/> to <paramref name="newValue"/> if and only
+        /// Atomically sets <see cref="RefBaseEx{T}.Value"/> to <paramref name="newValue"/> if and only
         /// if the current value of the atom is identical to <see cref="oldValue"/>
         /// according to <c>Value.Equals(oldValue)</c> and <c>Validator(newValue)</c>
         /// succeeds.
@@ -43,11 +55,17 @@ namespace FP.Core {
         /// <param name="newValue">The new value.</param>
         /// <returns><c>true</c> if the change happened, else <c>false</c>.</returns>
         /// <exception cref="RefValidationException">when <paramref name="newValue"/> doesn't
-        /// pass <see cref="IRef{T}.Validator"/>.</exception>
+        /// pass <see cref="RefBase{T}.Validator"/>.</exception>
         public override bool CompareAndSet(T oldValue, T newValue) {
             Validate(newValue);
-            T currentValue = Interlocked.CompareExchange(ref _value, newValue, oldValue);
-            return ReferenceEquals(oldValue, currentValue);
-        }
+            lock (_syncRoot) {
+                if (!Value.Equals(oldValue))
+                    return false;
+                Store(newValue);
+                return true;
+            }
+        } // CompareAndSet(oldValue, newValue)
+
+        // Modify()
     }
 }
