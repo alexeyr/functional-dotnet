@@ -1,6 +1,14 @@
 using System;
 
 namespace FP.Core {
+    /// <summary>
+    /// A base class for implementing <see cref="IRef{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <remarks>Contains an implementation of <see cref="IRef{T}.Modify"/> and an
+    /// automatic property for <see cref="Validator"/>. Therefore, implementors just
+    /// need to provide overrides for <see cref="Value"/>, <see cref="Store"/>, and 
+    /// <see cref="CompareAndSet"/>.</remarks>
     public abstract class RefBase<T> : IRef<T> {
         /// <summary>
         /// Creates a reference with the specified initial value and validator.
@@ -20,7 +28,7 @@ namespace FP.Core {
         /// <summary>
         /// Value of the reference.
         /// </summary>
-        public abstract T Value { get; set; }
+        public abstract T Value { get; }
 
         /// <summary>
         /// The validator. Must be side-effect free. This will be called before any change
@@ -40,7 +48,7 @@ namespace FP.Core {
         public abstract T Store(T newValue);
 
         /// <summary>
-        /// Atomically sets <see cref="Ref{T}.Value"/> to <paramref name="newValue"/> if and only
+        /// Atomically sets <see cref="Value"/> to <paramref name="newValue"/> if and only
         /// if the current value of the atom is identical to <see cref="oldValue"/>
         /// according to <c>Value.Equals(oldValue)</c> and <c>Validator(newValue)</c>
         /// succeeds.
@@ -60,8 +68,8 @@ namespace FP.Core {
         /// </param>
         /// <returns>The pair (value swapped out, value swapped in).
         /// </returns>
-        /// <remarks>Reads the current <see cref="Ref{T}.Value"/>, applies <paramref name="f"/> to
-        /// it, and attempts to <see cref="Ref{T}.CompareAndSet(T,T)"/> the result in. If this doesn't
+        /// <remarks>Reads the current <see cref="Value"/>, applies <paramref name="f"/> to
+        /// it, and attempts to <see cref="CompareAndSet(T,T)"/> the result in. If this doesn't
         /// succeed, retry in a spin loop. The net effect is that the value will always be
         /// the result of the application of the supplied function to a current value,
         /// atomically. However, because <paramref name="f"/> might be called multiple
@@ -89,13 +97,14 @@ namespace FP.Core {
         /// <exception cref="RefValidationException">when <paramref name="value"/> is
         /// not valid.</exception>
         public void Validate(T value) {
-            if (Validator != null) {
-                try {
-                    Validator(value);
-                }
-                catch (Exception e) {
-                    throw new RefValidationException(e);
-                }
+            if (Validator == null) 
+                return;
+
+            try {
+                Validator(value);
+            }
+            catch (Exception e) {
+                throw new RefValidationException(e);
             }
         }
     }

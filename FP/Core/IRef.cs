@@ -16,7 +16,7 @@ namespace FP.Core {
         /// <summary>
         /// Value of the reference.
         /// </summary>
-        T Value { get; set; }
+        T Value { get; }
 
         /// <summary>
         /// The validator. Must be side-effect free. This will be called before any change
@@ -32,11 +32,11 @@ namespace FP.Core {
         /// <param name="newValue">The new value.</param>
         /// <returns>The old value.</returns>
         /// <exception cref="RefValidationException">when <paramref name="newValue"/> doesn't
-        /// pass <see cref="Ref{T}.Validator"/>.</exception>
+        /// pass <see cref="Validator"/>.</exception>
         T Store(T newValue);
 
         /// <summary>
-        /// Atomically sets <see cref="Ref{T}.Value"/> to <paramref name="newValue"/> if and only
+        /// Atomically sets <see cref="Value"/> to <paramref name="newValue"/> if and only
         /// if the current value of the atom is identical to <see cref="oldValue"/>
         /// according to <c>Value.Equals(oldValue)</c> and <c>Validator(newValue)</c>
         /// succeeds.
@@ -44,8 +44,8 @@ namespace FP.Core {
         /// <param name="oldValue">The old value.</param>
         /// <param name="newValue">The new value.</param>
         /// <returns><c>true</c> if the change happened, else <c>false</c>.</returns>
-        /// <exception cref="RefValidationException">when <paramref name="newValue"/> doesn't
-        /// pass <see cref="Ref{T}.Validator"/>.</exception>
+        /// <exception cref="RefValidationException">when <paramref name="newValue"/>
+        /// doesn't pass <see cref="Validator"/>.</exception>
         bool CompareAndSet(T oldValue, T newValue);
 
         /// <summary>
@@ -56,16 +56,16 @@ namespace FP.Core {
         /// </param>
         /// <returns>The pair (value swapped out, value swapped in).
         /// </returns>
-        /// <remarks>Reads the current <see cref="Ref{T}.Value"/>, applies <paramref name="f"/> to
-        /// it, and attempts to <see cref="Ref{T}.CompareAndSet"/> the result in. If this doesn't
+        /// <remarks>Reads the current <see cref="Value"/>, applies <paramref name="f"/> to
+        /// it, and attempts to <see cref="CompareAndSet"/> the result in. If this doesn't
         /// succeed, retry in a spin loop. The net effect is that the value will always be
         /// the result of the application of the supplied function to a current value,
         /// atomically. However, because <paramref name="f"/> might be called multiple
         /// times, it must be free of side effects. <c>false</c> is only returned if
         /// validation of the replacement value fails.
         /// </remarks>
-        /// <exception cref="RefValidationException"> when the new value doesn't
-        /// pass <see cref="Ref{T}.Validator"/>.</exception>
+        /// <exception cref="RefValidationException"> when the new value doesn't pass 
+        /// <see cref="Validator"/>.</exception>
         Tuple<T, T> Modify(Func<T, T> f);
 
         /// <summary>

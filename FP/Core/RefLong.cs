@@ -5,7 +5,7 @@ namespace FP.Core {
     /// <summary>
     /// Type of mutable references to <see cref="long"/>.
     /// </summary>
-    internal class RefLong : Ref<long> {
+    internal sealed class RefLong : RefBaseEx<long> {
         /// <summary>
         /// Creates a reference with the specified initial value.
         /// </summary>
@@ -33,14 +33,14 @@ namespace FP.Core {
         /// </summary>
         /// <param name="newValue">The new value.</param>
         /// <exception cref="RefValidationException">when <paramref name="newValue"/> doesn't
-        /// pass <see cref="Ref{T}.Validator"/>.</exception>
+        /// pass <see cref="IRef{T}.Validator"/>.</exception>
         public override long Store(long newValue) {
             Validate(newValue);
             return Interlocked.Exchange(ref _value, newValue);
         }
 
         /// <summary>
-        /// Atomically sets <see cref="Ref{T}.Value"/> to <paramref name="newValue"/> if and only
+        /// Atomically sets <see cref="IRef{T}.Value"/> to <paramref name="newValue"/> if and only
         /// if the current value of the atom is identical to <see cref="oldValue"/>
         /// according to <c>Value.Equals(oldValue)</c> and <c>Validator(newValue)</c>
         /// succeeds.
@@ -49,7 +49,7 @@ namespace FP.Core {
         /// <param name="newValue">The new value.</param>
         /// <returns><c>true</c> if the change happened, else <c>false</c>.</returns>
         /// <exception cref="RefValidationException">when <paramref name="newValue"/> doesn't
-        /// pass <see cref="Ref{T}.Validator"/>.</exception>
+        /// pass <see cref="IRef{T}.Validator"/>.</exception>
         public override bool CompareAndSet(long oldValue, long newValue) {
             Validate(newValue);
             long currentValue = Interlocked.CompareExchange(ref _value, newValue, oldValue);

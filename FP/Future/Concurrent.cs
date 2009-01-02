@@ -1,7 +1,7 @@
 ﻿/*
 * Concurrent.cs is part of functional-dotnet project
 * 
-* Copyright (c) 2008 Alexey Romanov
+* Copyright (c) 2008-2009 Alexey Romanov
 * All rights reserved.
 *
 * This source file is available under The New BSD License.
@@ -14,28 +14,32 @@
 */
 
 using System;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using FP.Core;
 
 namespace FP.Future {
     /// <summary>
-    /// Represents a future whose result is computed in a separate thread.
+    /// Represents a future whose result is computed in a <see cref="ThreadPool"/>
+    /// thread when one becomes available.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Concurrent<T> : Future<T> {
         private Result<T> _result;
-        private Thread _thread;
+        private AsyncResult _asyncResult;
 
         /// <summary>
         /// Initializes a new instance of a <see cref="Concurrent{T}"/> <see cref="Future{T}"/>.
         /// </summary>
         /// <param name="calculation">The calculation the new future does.</param>
         public Concurrent(Func<T> calculation) {
-            _thread = new Thread(() => {
-                                     _result = Core.Result.Try(calculation);
-                                     OnDetermined();
-                                 });
-            _thread.Start();
+            Func<Result<T>> calculation1 = () => Core.Result.Try(calculation);
+            _asyncResult = (AsyncResult) calculation1.BeginInvoke(
+                                             asyncResult => {
+                                                 _result = calculation1.EndInvoke(asyncResult);
+                                                 _asyncResult = null;
+                                                 OnDetermined();
+                                             }, null);
         }
 
         /// <summary>
@@ -45,9 +49,9 @@ namespace FP.Future {
         /// <value>The result.</value>
         public override Result<T> Result {
             get {
-                if (_thread != null && _thread.IsAlive) {
-                    _thread.Join();
-                    _thread = null;
+                if (!IsCompleted) {
+                    _result = ((Func<Result<T>>) _asyncResult.AsyncDelegate).EndInvoke(_asyncResult);
+                    _asyncResult = null;
                 }
                 return _result;
             }

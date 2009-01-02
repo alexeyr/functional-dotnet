@@ -2,7 +2,8 @@ using System;
 
 namespace FP.Core {
     /// <summary>
-    /// Exception thrown when a <see cref="Ref{T}"/> validation fails.
+    /// Exception thrown when an attempt to change the <see cref="IRef{T}.Value"/> of
+    /// an <see cref="IRef{T}"/> to an invalid one is made.
     /// </summary>
     [Serializable]
     public sealed class RefValidationException : ArgumentException {
@@ -28,6 +29,6 @@ namespace FP.Core {
         /// Initializes a new instance of the <see cref="RefValidationException"/> class.
         /// </summary>
         /// <param name="innerException">The inner exception.</param>
-        public RefValidationException(Exception innerException) : base("Invalid value for a Ref", innerException) {}
+        public RefValidationException(Exception innerException) : base("Invalid value for an IRef", innerException) {}
     }
 }
