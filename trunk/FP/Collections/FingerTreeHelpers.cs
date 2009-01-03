@@ -42,8 +42,7 @@ namespace FP.Collections {
         /// <param name="measureMonoid">The measure monoid.</param>
         public static FingerTree<T, V>.Single Single<T, V>(T item, Monoid<V> measureMonoid)
             where T : IMeasured<V> {
-            return new FingerTree<T, V>.Single(item, measureMonoid,
-                                               new FingerTree<T, V>.Empty(measureMonoid));
+            return new FingerTree<T, V>.Single(item, measureMonoid);
         }
 
         /// <summary>
