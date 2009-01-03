@@ -73,32 +73,43 @@ namespace FP.Collections {
         /// <value>The measure.</value>
         public abstract V Measure { get; }
 
-        private Empty _emptyInstance;
-        private FingerTree<FTNode<T, V>, V>.Empty _emptyInstanceNested;
+        private static readonly Dictionary<V, Empty> _emptyInstancesCache = new Dictionary<V, Empty>();
 
         internal Empty EmptyInstance {
-            get { return _emptyInstance ?? (_emptyInstance = new Empty(MeasureMonoid)); }
+            get {
+                return GetEmptyFromCache<T>(MeasureMonoid);
+            }
         }
 
         internal FingerTree<FTNode<T, V>, V>.Empty EmptyInstanceNested {
             get {
-                return _emptyInstanceNested ??
-                       (_emptyInstanceNested = new FingerTree<FTNode<T, V>, V>.Empty(MeasureMonoid));
+                return GetEmptyFromCache<FTNode<T, V>>(MeasureMonoid);
             }
         }
 
+        private static FingerTree<T1, V>.Empty GetEmptyFromCache<T1>(Monoid<V> monoid) where T1 : IMeasured<V> {
+            FingerTree<T1, V>.Empty instance;
+            V zero = monoid.Zero;
+            var emptyInstancesCache = FingerTree<T1, V>._emptyInstancesCache;
+            lock (emptyInstancesCache) {
+                if (!emptyInstancesCache.TryGetValue(zero, out instance))
+                    emptyInstancesCache[zero] = new FingerTree<T1, V>.Empty(monoid);
+            }
+            return instance;
+        }
+
         private Single MakeSingle(T value) {
-            return new Single(value, MeasureMonoid, EmptyInstance);
+            return new Single(value, MeasureMonoid);
         }
 
         private Deep MakeDeep(T[] left, FingerTree<FTNode<T, V>, V> middle,
                               T[] right) {
-            return new Deep(left, middle, right, MeasureMonoid, EmptyInstance);
+            return new Deep(left, middle, right, MeasureMonoid);
         }
 
         private Deep MakeDeep(T[] left, Func<FingerTree<FTNode<T, V>, V>> middleSuspended,
                               T[] right) {
-            return new Deep(left, middleSuspended, right, MeasureMonoid, EmptyInstance);
+            return new Deep(left, middleSuspended, right, MeasureMonoid);
         }
 
         internal FingerTree<T, V> DeepL(T[] left, FingerTree<FTNode<T, V>, V> middle,
@@ -135,14 +146,6 @@ namespace FP.Collections {
 
         internal FingerTree(Monoid<V> measureMonoid) {
             MeasureMonoid = measureMonoid;
-            _emptyInstance = null;
-            _emptyInstanceNested = null;
-        }
-
-        internal FingerTree(Monoid<V> measureMonoid, Empty emptyInstance) {
-            MeasureMonoid = measureMonoid;
-            _emptyInstance = emptyInstance;
-            _emptyInstanceNested = null;
         }
 
         protected abstract bool IsSingle { get; }
@@ -293,12 +296,7 @@ namespace FP.Collections {
         /// </summary>
         [DebuggerDisplay("Empty")]
         public class Empty : FingerTree<T, V>, IEquatable<Empty> {
-            internal Empty(Monoid<V> measureMonoid, Empty emptyInstance)
-                : base(measureMonoid, emptyInstance) {}
-
-            internal Empty(Monoid<V> measureMonoid) : base(measureMonoid) {
-                _emptyInstance = this;
-            }
+            internal Empty(Monoid<V> measureMonoid) : base(measureMonoid) { }
 
             /// <summary>
             /// Reduces the finger tree from the right.
@@ -527,8 +525,8 @@ namespace FP.Collections {
             /// </summary>
             public readonly T Value;
 
-            internal Single(T value, Monoid<V> measureMonoid, Empty emptyInstance)
-                : base(measureMonoid, emptyInstance) {
+            internal Single(T value, Monoid<V> measureMonoid)
+                : base(measureMonoid) {
                 Value = value;
             }
 
@@ -740,7 +738,7 @@ namespace FP.Collections {
             private FingerTree<FTNode<T, V>, V> _middle;
             private Func<FingerTree<FTNode<T, V>, V>> _middleSuspended;
 
-            private FingerTree<FTNode<T, V>, V> _Middle {
+            private FingerTree<FTNode<T, V>, V> Middle {
                 get {
                     if (_middleSuspended != null) ForceMiddle();
                     return _middle;
@@ -757,8 +755,8 @@ namespace FP.Collections {
             }
 
             internal Deep(T[] left, FingerTree<FTNode<T, V>, V> middle, T[] right,
-                          Monoid<V> measureMonoid, Empty emptyInstance)
-                : base(measureMonoid, emptyInstance) {
+                          Monoid<V> measureMonoid)
+                : base(measureMonoid) {
                 _left = left;
                 _right = right;
                 _middle = middle;
@@ -768,8 +766,8 @@ namespace FP.Collections {
             }
 
             internal Deep(T[] left, Func<FingerTree<FTNode<T, V>, V>> middleSuspended, T[] right,
-                          Monoid<V> measureMonoid, Empty emptyInstance)
-                : base(measureMonoid, emptyInstance) {
+                          Monoid<V> measureMonoid)
+                : base(measureMonoid) {
                 _left = left;
                 _right = right;
                 _middleSuspended = middleSuspended;
@@ -787,7 +785,7 @@ namespace FP.Collections {
             public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
                 Func<FTNode<T, V>, A, A> binOp1 = (n, a) => n.FoldRight(binOp, a);
                 return _left.FoldRight(binOp,
-                                       _Middle.FoldRight(binOp1, _right.FoldRight(binOp, initial)));
+                                       Middle.FoldRight(binOp1, _right.FoldRight(binOp, initial)));
             }
 
             /// <summary>
@@ -802,7 +800,7 @@ namespace FP.Collections {
             public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
                 Func<A, FTNode<T, V>, A> binOp1 = (a, n) => n.FoldLeft(binOp, a);
                 return _right.FoldLeft(binOp,
-                                       _Middle.FoldLeft(binOp1, _left.FoldLeft(binOp, initial)));
+                                       Middle.FoldLeft(binOp1, _left.FoldLeft(binOp, initial)));
             }
 
             /// <summary>
@@ -827,9 +825,9 @@ namespace FP.Collections {
                 // ReSharper disable PossibleNullReferenceException
                 var rightDeep = rightTree as Deep;
                 return MakeDeep(_left,
-                                () => _Middle.App3(
+                                () => Middle.App3(
                                           Nodes(_right.Concat(middleList).Concat(rightDeep._left)),
-                                          rightDeep._Middle),
+                                          rightDeep.Middle),
                                 rightDeep._right);
                 // ReSharper restore PossibleNullReferenceException
             }
@@ -878,12 +876,12 @@ namespace FP.Collections {
                     //return (_middleSuspended == null) ?
                     //    makeDeep(newLeft, _middle, _right) :
                     //    makeDeep(newLeft, _middleSuspended, _right);
-                    return MakeDeep(newLeft, _Middle, _right);
+                    return MakeDeep(newLeft, Middle, _right);
                     //see page 7 of the paper
                 }
                 return MakeDeep(new[] {newHead, _left[0]},
                                 new FTNode<T, V>.Node3(_left[1], _left[2], _left[3], MeasureMonoid) |
-                                _Middle,
+                                Middle,
                                 _right);
             }
 
@@ -898,11 +896,11 @@ namespace FP.Collections {
                     //return (_middleSuspended == null) ?
                     //    MakeDeep(newMake, _middle, _right) :
                     //    MakeDeep(newLeft, _middleSuspended, _right);
-                    return MakeDeep(_left, _Middle, newRight);
+                    return MakeDeep(_left, Middle, newRight);
                     //see page 7 of the paper
                 }
                 return MakeDeep(_left,
-                                _Middle | new FTNode<T, V>.Node3(_right[0], _right[1], _right[2],
+                                Middle | new FTNode<T, V>.Node3(_right[0], _right[1], _right[2],
                                                                  MeasureMonoid),
                                 new[] {_right[3], newLast});
             }
@@ -915,7 +913,7 @@ namespace FP.Collections {
             public override IEnumerator<T> GetEnumerator() {
                 foreach (var t in _left)
                     yield return t;
-                foreach (var node in _Middle.AsEnumerable())
+                foreach (var node in Middle.AsEnumerable())
                     //CompilerBug: doesn't compile without AsEnumerable!
                 {
                     foreach (var t in node)
@@ -1004,7 +1002,7 @@ namespace FP.Collections {
                             splitLeft.Middle,
                             newRight);
                 }
-                V totalMiddle = MeasureMonoid.Plus(totalLeft, _Middle.Measure);
+                V totalMiddle = MeasureMonoid.Plus(totalLeft, Middle.Measure);
                 if (predicate(totalMiddle)) {
                     var splitMiddle = _middle.SplitTree(predicate, totalLeft);
                     V totalLeftAndMiddleLeft = MeasureMonoid.Plus(totalLeft,
@@ -1062,7 +1060,7 @@ namespace FP.Collections {
                 // _left.CopyTo(newRight, 0);
                 // Array.Reverse(newLeft);
                 // Array.Reverse(newRight);
-                return MakeDeep(newLeft, () => _Middle.ReverseTree(node => node.Reverse(f)),
+                return MakeDeep(newLeft, () => Middle.ReverseTree(node => node.Reverse(f)),
                                 newRight);
             }
 
@@ -1071,7 +1069,7 @@ namespace FP.Collections {
                     return
                         _left != null && !_left.IsEmpty() && _left.Length < 4 &&
                         _right != null && !_right.IsEmpty() && _right.Length < 4 &&
-                        _Middle.Invariant;
+                        Middle.Invariant;
                 }
             }
 
