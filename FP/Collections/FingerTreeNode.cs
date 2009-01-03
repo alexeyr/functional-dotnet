@@ -1,7 +1,7 @@
 /*
 * FingerTreeNode.cs is part of functional-dotnet project
 * 
-* Copyright (c) 2008 Alexey Romanov
+* Copyright (c) 2008-2009 Alexey Romanov
 * All rights reserved.
 *
 * This source file is available under The New BSD License.
@@ -26,14 +26,22 @@ namespace FP.Collections {
     /// <typeparam name="V">Type of the weight monoid.</typeparam>
     internal abstract class FTNode<T, V> : IMeasured<V>, IEnumerable<T>, IFoldable<T>
         where T : IMeasured<V> {
-        private FTNode() {}
+        protected FTNode(V measure) {
+            Measure = measure;
+        }
 
         public abstract A FoldRight<A>(Func<T, A, A> binOp, A initial);
         public abstract A FoldLeft<A>(Func<A, T, A> binOp, A initial);
-        public abstract FTNode<T, V> Reverse(Func<T, T> f);
+        /// <remarks>Use only with commutative monoids!</remarks>
+        internal abstract FTNode<T, V> Reverse(Func<T, T> f);
+
         public V Measure { get; private set; }
 
-        internal abstract T[] ToArray();
+        /// <summary>
+        /// Gets the node's representation as an array.
+        /// </summary>
+        /// <remarks>Do not mutate!</remarks>
+        internal abstract T[] AsArray { get; }
 
         ///<summary>
         ///Returns an enumerator that iterates through the node.
@@ -47,7 +55,7 @@ namespace FP.Collections {
 
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
-        }
+        } // IEnumerable.GetEnumerator
 
         /// <summary>
         /// A node with two subtrees.
@@ -56,31 +64,36 @@ namespace FP.Collections {
         internal class Node2 : FTNode<T, V>, IEquatable<Node2> {
             public readonly T Item1;
             public readonly T Item2;
+            private T[] _asArray;
 
-            public Node2(T item1, T item2, Monoid<V> monoid) :
-                this(item1, item2, monoid.Plus(item1.Measure, item2.Measure)) {}
+            public Node2(T item1, T item2, Monoid<V> m) :
+                this(item1, item2, m.Plus(item1.Measure, item2.Measure)) { } // Node2
 
-            internal Node2(T item1, T item2, V measure) {
+            internal Node2(T item1, T item2, V measure) : base(measure) {
                 Item1 = item1;
                 Item2 = item2;
-                Measure = measure;
-            }
+            } // Node2
 
             public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
                 return binOp(Item1, binOp(Item2, initial));
-            }
+            } // FoldRight
 
             public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
                 return binOp(binOp(initial, Item1), Item2);
-            }
+            } // FoldLeft
 
-            public override FTNode<T, V> Reverse(Func<T, T> f) {
+            internal override FTNode<T, V> Reverse(Func<T, T> f) {
                 return new Node2(f(Item2), f(Item1), Measure);
+            } // Reverse
+
+            internal override T[] AsArray {
+                get {
+                    if (_asArray == null) _asArray = new[] {Item1, Item2};
+                    return _asArray;
+                }
             }
 
-            internal override T[] ToArray() {
-                return new[] {Item1, Item2};
-            }
+// ToArray
 
             ///<summary>
             ///Returns an enumerator that iterates through the node.
@@ -93,7 +106,7 @@ namespace FP.Collections {
             public override IEnumerator<T> GetEnumerator() {
                 yield return Item1;
                 yield return Item2;
-            }
+            } // GetEnumerator
 
             /// <summary>
             /// Indicates whether the current object is equal to another object of the same type.
@@ -106,7 +119,7 @@ namespace FP.Collections {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
                 return Equals(other.Item1, Item1) && Equals(other.Item2, Item2);
-            }
+            } // Equals
 
             /// <summary>
             /// Determines whether the specified <see cref="T:System.Object" /> is equal to the current <see cref="T:System.Object" />.
@@ -119,9 +132,9 @@ namespace FP.Collections {
             public override bool Equals(object obj) {
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != typeof (Node2)) return false;
-                return Equals((Node2) obj);
-            }
+                if (obj.GetType() != typeof(Node2)) return false;
+                return Equals((Node2)obj);
+            } // Equals
 
             /// <summary>
             /// Serves as a hash function for a particular type. 
@@ -134,16 +147,16 @@ namespace FP.Collections {
                 unchecked {
                     return (Item1.GetHashCode() * 397) ^ Item2.GetHashCode();
                 }
-            }
+            } // GetHashCode
 
             public static bool operator ==(Node2 left, Node2 right) {
                 return Equals(left, right);
-            }
+            } // op_Equality
 
             public static bool operator !=(Node2 left, Node2 right) {
                 return !Equals(left, right);
-            }
-        }
+            } // op_Inequality
+        } // class Node2
 
         /// <summary>
         /// A node with three subtrees.
@@ -153,34 +166,36 @@ namespace FP.Collections {
             public readonly T Item1;
             public readonly T Item2;
             public readonly T Item3;
+            private T[] _asArray;
 
-            public Node3(T item1, T item2, T item3, Monoid<V> monoid) :
-                this(
+            public Node3(T item1, T item2, T item3, Monoid<V> m) : this(
                 item1, item2, item3,
-                monoid.Plus(monoid.Plus(item1.Measure, item2.Measure), item3.Measure)) {}
+                m.Sum(item1.Measure, item2.Measure, item3.Measure)) { } // Node3
 
-            internal Node3(T item1, T item2, T item3, V measure) {
+            internal Node3(T item1, T item2, T item3, V measure) : base(measure) {
                 Item1 = item1;
                 Item2 = item2;
                 Item3 = item3;
-                Measure = measure;
-            }
+            } // Node3
 
             public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
                 return binOp(Item1, binOp(Item2, binOp(Item3, initial)));
-            }
+            } // FoldRight
 
             public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
                 return binOp(binOp(binOp(initial, Item1), Item2), Item3);
-            }
+            } // FoldLeft
 
-            public override FTNode<T, V> Reverse(Func<T, T> f) {
+            internal override FTNode<T, V> Reverse(Func<T, T> f) {
                 return new Node3(f(Item3), f(Item2), f(Item1), Measure);
-            }
+            } // Reverse
 
-            internal override T[] ToArray() {
-                return new[] {Item1, Item2, Item3};
-            }
+            internal override T[] AsArray {
+                get {
+                    if (_asArray == null) _asArray = new[] {Item1, Item2, Item3};
+                    return _asArray;
+                }
+            } // AsArray
 
             ///<summary>
             ///Returns an enumerator that iterates through the node.
@@ -194,7 +209,7 @@ namespace FP.Collections {
                 yield return Item1;
                 yield return Item2;
                 yield return Item3;
-            }
+            } // GetEnumerator
 
             /// <summary>
             /// Indicates whether the current object is equal to another object of the same type.
@@ -208,7 +223,7 @@ namespace FP.Collections {
                 if (ReferenceEquals(this, other)) return true;
                 return Equals(other.Item1, Item1) && Equals(other.Item2, Item2) &&
                        Equals(other.Item3, Item3);
-            }
+            } // Equals
 
             /// <summary>
             /// Determines whether the specified <see cref="T:System.Object" /> is equal to the current <see cref="T:System.Object" />.
@@ -221,9 +236,9 @@ namespace FP.Collections {
             public override bool Equals(object obj) {
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != typeof (Node3)) return false;
-                return Equals((Node3) obj);
-            }
+                if (obj.GetType() != typeof(Node3)) return false;
+                return Equals((Node3)obj);
+            } // Equals
 
             /// <summary>
             /// Serves as a hash function for a particular type. 
@@ -239,15 +254,15 @@ namespace FP.Collections {
                     result = (result * 397) ^ Item3.GetHashCode();
                     return result;
                 }
-            }
+            } // GetHashCode
 
             public static bool operator ==(Node3 left, Node3 right) {
                 return Equals(left, right);
-            }
+            } // op_Equality
 
             public static bool operator !=(Node3 left, Node3 right) {
                 return !Equals(left, right);
-            }
-        }
-        }
+            } // op_Inequality
+        } // class Node3
+    } // class FTNode`2
 }
