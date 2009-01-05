@@ -12,10 +12,14 @@
     <AssemblyName>FP</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>Svn</SccProjectName>
-    <SccLocalPath>Svn</SccLocalPath>
-    <SccAuxPath>Svn</SccAuxPath>
-    <SccProvider>SubversionScc</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,6 +44,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\ICatenable.cs" />
@@ -47,6 +52,7 @@
     <Compile Include="Collections\IInsertableRandomAccessSequence.cs" />
     <Compile Include="Collections\IUpdatableRandomAccessSequence.cs" />
     <Compile Include="Collections\IReversible.cs" />
+    <Compile Include="Collections\Split.cs" />
     <Compile Include="Collections\Vector.cs" />
     <Compile Include="Collections\IReversibleEnumerable.cs" />
     <Compile Include="Collections\ISplittable.cs" />
@@ -56,6 +62,7 @@
     <Compile Include="Core\CPS\Cont.cs" />
     <Compile Include="Core\CPS\Actions.cs" />
     <Compile Include="Core\IRef.cs" />
+    <Compile Include="Core\LazyValue.cs" />
     <Compile Include="Core\OptionalNotNull.cs" />
     <Compile Include="Core\Ref.cs" />
     <Compile Include="Core\RefBase.cs" />
@@ -132,6 +139,7 @@
     <Compile Include="Core\Triple.cs" />
     <Compile Include="Text\CharSubsequence.cs" />
     <Compile Include="Text\SubstringRope.cs" />
+    <Compile Include="Util\ArrayUtil.cs" />
     <Compile Include="Validation\FPValidationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -162,7 +170,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
+      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

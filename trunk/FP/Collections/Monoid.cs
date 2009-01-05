@@ -56,14 +56,28 @@ namespace FP.Collections {
         /// Sums three <typeparamref name="T"/>s.
         /// </summary>
         public T Sum(params T[] ts) {
-            return Sum(ts.AsEnumerable());
+            return Sum(Zero, ts.AsEnumerable());
+        }
+
+        /// <summary>
+        /// Sums three <typeparamref name="T"/>s.
+        /// </summary>
+        public T Sum(T init, params T[] ts) {
+            return Sum(init, ts.AsEnumerable());
         }
 
         /// <summary>
         /// Sums a sequence of <typeparamref name="T"/>s.
         /// </summary>
         public T Sum(IEnumerable<T> ts) {
-            T total = Zero;
+            return Sum(Zero, ts);
+        }
+
+        /// <summary>
+        /// Sums a sequence of <typeparamref name="T"/>s.
+        /// </summary>
+        public T Sum(T init, IEnumerable<T> ts) {
+            T total = init;
             foreach (T t in ts)
                 total = Plus(total, t);
             return total;
