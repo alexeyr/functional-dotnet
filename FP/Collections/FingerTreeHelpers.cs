@@ -15,7 +15,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using FP.Util;
 
 namespace FP.Collections {
     /// <summary>
@@ -30,7 +32,7 @@ namespace FP.Collections {
         /// <param name="measureMonoid">The measure monoid.</param>
         public static FingerTree<T, V>.Empty Empty<T, V>(Monoid<V> measureMonoid)
             where T : IMeasured<V> {
-            return new FingerTree<T, V>.Empty(measureMonoid);
+            return FingerTree<T, V>.GetEmptyFromCache<T>(measureMonoid);
         }
 
         /// <summary>
@@ -58,52 +60,84 @@ namespace FP.Collections {
             return Empty<T, V>(measureMonoid).AppendRange(sequence);
         }
 
-        internal static Split<T, T[]> SplitArray<T, V>(this T[] array, Monoid<V> monoid,
-                                                       Func<V, bool> pred, V init)
+        /// <summary>
+        /// Creates the tree from the specified sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of the tree.</typeparam>
+        /// <typeparam name="V">The type of the measure values.</typeparam>
+        /// <param name="array">The small array.</param>
+        /// <param name="measureMonoid">The measure monoid.</param>
+        internal static FingerTree<T, V> FromSmallArray<T, V>(T[] array,
+                                                            Monoid<V> measureMonoid)
+            where T : IMeasured<V> {
+            Debug.Assert(array.Length <= 6);
+            switch (array.Length) {
+                case 0:
+                    return Empty<T, V>(measureMonoid);
+                case 1:
+                    return Single(array[0], measureMonoid);
+                default:
+                    var emptyNested =
+                        (FingerTree<FTNode<T, V>, V>) Empty<FTNode<T, V>, V>(measureMonoid);
+                    switch (array.Length) {
+                        case 2:
+                            return new FingerTree<T, V>.Deep(
+                                new[] { array[0] }, emptyNested, new[] { array[1] },
+                                measureMonoid);
+                        case 3:
+                            return new FingerTree<T, V>.Deep(
+                                new[] { array[0], array[1] }, emptyNested, new[] { array[2] },
+                                measureMonoid);
+                        case 4:
+                            return new FingerTree<T, V>.Deep(
+                                new[] { array[0], array[1] }, emptyNested, new[] { array[2], array[3] },
+                                measureMonoid);
+                        case 5:
+                            return new FingerTree<T, V>.Deep(
+                                new[] { array[0], array[1], array[2] }, emptyNested, new[] { array[3], array[4] },
+                                measureMonoid);
+                        case 6:
+                            return new FingerTree<T, V>.Deep(
+                                new[] { array[0], array[1], array[2] }, emptyNested, new[] { array[3], array[4], array[5] },
+                                measureMonoid);
+                        default:
+                            throw new ArgumentException("Can't get here!");
+                    }
+            }
+        }
+
+        internal static Split<T, T[]> SplitArray<T, V>(this T[] array, Func<V, bool> pred, V init, Monoid<V> monoid)
             where T : IMeasured<V> {
             if (array.Length == 1) {
                 var empty = new T[0];
                 return new Split<T, T[]>(empty, array[0], empty);
             }
 
-            var left = new List<T>(Math.Min(array.Length, 10));
             V total = init;
-            for (int offset = 0; offset < array.Length - 1; offset++) {
-                T t = array[offset];
-                total = monoid.Plus(total, t.Measure);
-                if (pred(total)) {
-                    var right = array.Skip(offset + 1).ToArray();
-                    return new Split<T, T[]>(left.ToArray(), t, right);
-                }
-                left.Add(t);
+            int offset;
+            for (offset = 0; offset < array.Length - 1; offset++) {
+                total = monoid.Plus(total, array[offset].Measure);
+                if (pred(total)) break;
             }
-
-            return new Split<T, T[]>(left.ToArray(), array[array.Length - 1], new T[0]);
+            return new Split<T, T[]>(array.CopyNoChecks(0, offset), array[offset], array.CopyNoChecks(offset + 1));
         }
 
-        internal static V SumMeasures<V, T>(this IEnumerable<T> sequence, Monoid<V> monoid, V init)
+        internal static V SumMeasures<V, T>(this Monoid<V> monoid, V init, IEnumerable<T> sequence)
             where T : IMeasured<V> {
-            V total = init;
-            foreach (var t in sequence)
-                total = monoid.Plus(total, t.Measure);
-            return total;
+            return monoid.Sum(init, sequence.Select(t => t.Measure));
         }
-    }
 
-    /// <summary>
-    /// Represents a splitting of a structure of type <typeparamref name="FT"/> with elements
-    /// of type <typeparamref name="T"/>
-    /// </summary>
-    internal struct Split<T, FT> where FT : IEnumerable<T> {
-        internal readonly FT Left;
-        internal readonly T Middle;
-        internal readonly FT Right;
+        internal static V SumMeasures<V, T>(this Monoid<V> monoid, IEnumerable<T> sequence)
+        where T : IMeasured<V> {
+            return monoid.SumMeasures(monoid.Zero, sequence);
+        }
 
-        internal Split(FT left, T middle, FT right)
-            : this() {
-            Left = left;
-            Right = right;
-            Middle = middle;
+        internal static T[] MapReverse<T>(this T[] array, Func<T, T> f) {
+            T[] newArray = array.CopyNoChecks();
+            for (int i = 0; i < newArray.Length; i++)
+                newArray[i] = f(newArray[i]);
+            Array.Reverse(newArray);
+            return newArray;
         }
     }
 }

@@ -12,6 +12,7 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
+using System;
 using Xunit;
 using FP.Validation;
 
@@ -25,7 +26,7 @@ namespace FPTests {
 
             const object objNull = null;
 
-            Assert.Throws<ValidationException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
                                                Requires.That
                                                    .IsNotNull(objNull, "obj")
                                                    .Check());
@@ -40,7 +41,7 @@ namespace FPTests {
                 .IsNotNull(nullableIntNotNull, "nullableIntNotNull")
                 .Check();
 
-            Assert.Throws<ValidationException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
                                                Requires.That
                                                    .IsNotNull(nullableIntNull, "nullableIntNull")
                                                    .Check());

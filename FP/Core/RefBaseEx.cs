@@ -9,6 +9,7 @@ namespace FP.Core {
     /// <see cref="RefBase{T}"/>.
     /// </remarks>
     public abstract class RefBaseEx<T> : RefBase<T> {
+        [CLSCompliant(false)]
         protected T _value;
 
         /// <summary>

@@ -5,3 +5,4 @@ using Microsoft.Pex.Framework.Instrumentation;
 [assembly : PexAssemblyUnderTest("FP")]
 [assembly : PexInstrumentAssembly("XunitExtensions")]
 [assembly : PexExplorableFromFactories]
+[assembly: PexInstrumentAssembly("FP.Validation")]
