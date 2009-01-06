@@ -25,6 +25,8 @@ namespace FP.Future {
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
     public abstract class Future<T> {
+        protected readonly object _syncRoot = new object();
+
         /// <summary>
         /// Requests the result of the future. If the result isn't yet available, blocks the thread
         /// until it is obtained.

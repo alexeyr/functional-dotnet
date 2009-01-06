@@ -13,6 +13,7 @@ namespace FP.Core {
     public class LazyValue<T> {
         private T _value;
         private Func<T> _calculation;
+        private object _syncRoot;
 
         /// <summary>
         /// Initializes a new instance of a <see cref="Lazy{T}"/> <see cref="Future{T}"/>.
@@ -21,6 +22,7 @@ namespace FP.Core {
         /// <remarks><paramref name="calculation"/> should be side-effect-free.</remarks>
         public LazyValue(Func<T> calculation) {
             _calculation = calculation;
+            _syncRoot = new object();
         }
 
         /// <summary>
@@ -41,8 +43,11 @@ namespace FP.Core {
         public T Value {
             get {
                 if (!IsCompleted) {
-                    _value = _calculation();
-                    _calculation = null;
+                    lock (_syncRoot) {
+                        _value = _calculation();
+                        _calculation = null;
+                        _syncRoot = null;
+                    }
                 }
                 return _value;
             }

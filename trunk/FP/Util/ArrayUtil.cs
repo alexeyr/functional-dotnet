@@ -13,11 +13,11 @@ namespace FP.Util {
         }
 
         internal static T[] CopyNoChecks<T>(this T[] array) {
-            return array.CopyNoChecks(0, array.Length - 1);
+            return array.CopyNoChecks(0, array.Length);
         }
 
         internal static T[] CopyNoChecks<T>(this T[] array, int startIndex) {
-            return array.CopyNoChecks(startIndex, array.Length - startIndex - 1);
+            return array.CopyNoChecks(startIndex, array.Length - startIndex);
         }
 
         internal static T[] CopyNoChecks<T>(this T[] array, int startIndex, int length) {
