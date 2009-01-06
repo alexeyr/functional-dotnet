@@ -52,8 +52,6 @@ namespace FP.Collections {
             return new FTNode<T, V>(Measure, newArray);
         }
 
-// Reverse
-
         public V Measure { get; private set; } // Measure
 
         /// <summary>

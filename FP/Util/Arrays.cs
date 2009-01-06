@@ -13,6 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using FP.Validation;
 
@@ -93,8 +94,21 @@ namespace FP.Util {
             return result;
         }
 
+        /// <summary>
+        /// Returns an empty array of the type <typeparamref name="T"/>.
+        /// </summary>
         public static T[] EmptyArray<T>() {
             return EmptyArrayCache<T>.Instance;
+        }
+
+        /// <summary>
+        /// Enumerates the specified array in the reverse order.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array">The array.</param>
+        public static IEnumerable<T> ReverseIterator<T>(this T[] array) {
+            for (int i = array.Length - 1; i >= 0; i++)
+                yield return array[i];
         }
 
         private static class EmptyArrayCache<T> {

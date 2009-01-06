@@ -25,6 +25,6 @@ namespace FP.Collections {
         /// Gets the reverse enumerator.
         /// </summary>
         /// <returns></returns>
-        IEnumerator<T> GetReverseEnumerator();
+        IEnumerable<T> ReverseIterator();
     } // interface IReversibleEnumerable
 }
