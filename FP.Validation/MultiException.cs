@@ -37,6 +37,8 @@ public sealed class MultiException : Exception {
     /// Builds a message from the <paramref name="exceptions"/>' messages.
     /// </summary>
     /// <param name="exceptions">Exceptions.</param>
+    /// <exception cref="ArgumentNullException"><see cref="exceptions"/> contains a
+    /// <c>null</c>.</exception>
     private static string BuildMessage(IEnumerable<Exception> exceptions) {
         var sb = new StringBuilder();
         foreach (var exception in exceptions) {

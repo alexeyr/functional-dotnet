@@ -30,10 +30,11 @@ namespace FP.Validation {
         /// <param name="paramName">The name of the parameter.</param>
         public static Validation IsNotNull<T>(this Validation validation, T value,
                                               string paramName) {
+            // ReSharper disable CompareNonConstrainedGenericWithNull
             if (value != null) return validation;
+            // ReSharper restore CompareNonConstrainedGenericWithNull
             return
-                validation.AddException(
-                    new ArgumentNullException(paramName));
+                validation.AddException(new ArgumentNullException(paramName));
         } // IsNotNull(, validation, t)
 
         /// <summary>
@@ -44,12 +45,11 @@ namespace FP.Validation {
         /// <param name="validation">The validation.</param>
         /// <param name="value">The value of the parameter.</param>
         /// <param name="paramName">The name of the parameter.</param>
-        public static Validation IsNotNull<T>(this Validation validation, T? value,
-                                      string paramName) where T : struct {
+        public static Validation IsNotNull<T>(
+            this Validation validation, T? value, string paramName) where T : struct {
             if (value.HasValue) return validation;
             return
-                validation.AddException(
-                    new ArgumentNullException(paramName));
+                validation.AddException(new ArgumentNullException(paramName));
         } // IsNotNull(, validation, t)
 
         /// <summary>
@@ -71,7 +71,8 @@ namespace FP.Validation {
                 validation.AddException(
                     new ArgumentOutOfRangeException(
                         paramName,
-                        "must be between" + lowerBound + " and " + upperBound + ", but was " + value));
+                        string.Format("must be between {0} and {1}, but was {2}",
+                                      lowerBound, upperBound, value)));
         } // IsInRange(validation, lowerBound, upperBound, value, paramName)
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace FP.Validation {
                 return validation.AddException(
                     new ArgumentNullException(
                         paramName,
-                        "must be between" + lowerBound + " and " + upperBound + ", but was null"));
+                        string.Format("must be between {0} and {1}, but was null", lowerBound, upperBound)));
             }
             T value = nullableValue.Value;
             if (value.CompareTo(lowerBound) >= 0 && value.CompareTo(upperBound) <= 0)
@@ -100,7 +101,7 @@ namespace FP.Validation {
                 validation.AddException(
                     new ArgumentOutOfRangeException(
                         paramName,
-                        "must be between" + lowerBound + " and " + upperBound + ", but was " + value));
+                        string.Format("must be between {0} and {1}, but was {2}", lowerBound, upperBound, value)));
         } // IsInRange(validation, lowerBound, upperBound, nullableValue, paramName)
 
         /// <summary>
@@ -122,7 +123,7 @@ namespace FP.Validation {
                 validation.AddException(
                     new ArgumentOutOfRangeException(
                         paramName,
-                        "must be between" + lowerBound + " and " + upperBound + ", but was " + value));
+                        string.Format("must be between {0} and {1}, but was {2}", lowerBound, upperBound, value)));
         } // IsInRange(validation, lowerBound, upperBound, value, paramName)
 
         /// <summary>
@@ -142,7 +143,7 @@ namespace FP.Validation {
                 return validation.AddException(
                     new ArgumentNullException(
                         paramName,
-                        "must be between" + lowerBound + " and " + upperBound + ", but was null"));
+                        string.Format("must be between {0} and {1}, but was null", lowerBound, upperBound)));
             }
             T value = nullableValue.Value;
             if (value.CompareTo(lowerBound) >= 0 && value.CompareTo(upperBound) < 0)
@@ -151,7 +152,7 @@ namespace FP.Validation {
                 validation.AddException(
                     new ArgumentOutOfRangeException(
                         paramName,
-                        "must be between" + lowerBound + " and " + upperBound + ", but was " + value));
+                        string.Format("must be between {0} and {1}, but was {2}", lowerBound, upperBound, value)));
         } // IsInRange(validation, lowerBound, upperBound, nullableValue, paramName)
 
         /// <summary>
@@ -173,7 +174,7 @@ namespace FP.Validation {
                 validation.AddException(
                     new ArgumentOutOfRangeException(
                         paramName,
-                        "must be between" + lowerBound + " and " + upperBound + ", but was " + value));
+                        string.Format("must be between {0} and {1}, but was {2}", lowerBound, upperBound, value)));
         } // IsInRange(validation, lowerBound, upperBound, value, paramName)
 
         /// <summary>
@@ -193,7 +194,7 @@ namespace FP.Validation {
                 return validation.AddException(
                     new ArgumentNullException(
                         paramName,
-                        "must be between" + lowerBound + " and " + upperBound + ", but was null"));
+                        string.Format("must be between {0} and {1}, but was null", lowerBound, upperBound)));
             }
             T value = nullableValue.Value;
             if (value.CompareTo(lowerBound) > 0 && value.CompareTo(upperBound) < 0)
@@ -202,7 +203,7 @@ namespace FP.Validation {
                 validation.AddException(
                     new ArgumentOutOfRangeException(
                         paramName,
-                        "must be between" + lowerBound + " and " + upperBound + ", but was " + value));
+                        string.Format("must be between {0} and {1}, but was {2}", lowerBound, upperBound, value)));
         } // IsInRange(validation, lowerBound, upperBound, nullableValue, paramName)
 
         /// <summary>
@@ -263,6 +264,108 @@ namespace FP.Validation {
                 validation.AddException(
                     new ArgumentException("must be empty, but it isn't", paramName));
         } // IsEmpty(validation, sequence, paramName)
+
+        /// <summary>
+        /// Validate that the specified parameter can be used as an index for 
+        /// <paramref name="collection"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of sequence.</typeparam>
+        /// <param name="validation">The validation.</param>
+        /// <param name="collection">The collection.</param>
+        /// <param name="index">The value of the parameter.</param>
+        /// <param name="paramName">Name of the parameter.</param>
+        public static Validation IsIndexInRange<T>(
+            this Validation validation, ICollection<T> collection, int index, string paramName) {
+            if (index >= 0 && index < collection.Count)
+                return validation;
+            return validation.AddException(
+                new ArgumentOutOfRangeException(
+                    paramName,
+                    string.Format(
+                        "the collection has {0} elements, but tried to access element with index {1}",
+                        collection.Count, index)));
+        }
+
+        /// <summary>
+        /// Validate that the specified parameter can be used as an index for 
+        /// <paramref name="array"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of sequence.</typeparam>
+        /// <param name="validation">The validation.</param>
+        /// <param name="array">The array.</param>
+        /// <param name="index">The value of the parameter.</param>
+        /// <param name="paramName">Name of the parameter.</param>
+        public static Validation IsIndexInRange<T>(
+            this Validation validation, T[] array, int index, string paramName) {
+            if (index >= 0 && index < array.Length)
+                return validation;
+            return validation.AddException(
+                new ArgumentOutOfRangeException(
+                    paramName,
+                    string.Format(
+                        "the array has {0} elements, but tried to access element with index {1}",
+                        array.Length, index)));
+        }
+
+        /// <summary>
+        /// Validate that the two specified parameters can be used as starting index and length for 
+        /// a subsequence of <paramref name="collection"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of sequence.</typeparam>
+        /// <param name="validation">The validation.</param>
+        /// <param name="collection">The collection.</param>
+        /// <param name="index">The value of the index parameter.</param>
+        /// <param name="count"></param>
+        /// <param name="indexParamName">Name of the parameter.</param>
+        /// <param name="countParamName"></param>
+        public static Validation IsIndexAndCountInRange<T>(
+            this Validation validation, ICollection<T> collection, int index, int count, string indexParamName, string countParamName) {
+            if (index >= 0) {
+                if (count >= 0 && index + count < collection.Count)
+                    return validation;
+                return validation.AddException(
+                    new ArgumentOutOfRangeException(
+                        countParamName,
+                        string.Format(
+                            "the collection has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
+                            collection.Count, count, index, index + count)));
+            }
+            return validation.AddException(
+                new ArgumentOutOfRangeException(
+                    indexParamName,
+                    string.Format("the collection has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
+                            collection.Count, count, index, index + count)));
+        }
+
+        /// <summary>
+        /// Validate that the two specified parameters can be used as starting index and length for 
+        /// a subsequence of <paramref name="array"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of sequence.</typeparam>
+        /// <param name="validation">The validation.</param>
+        /// <param name="array">The collection.</param>
+        /// <param name="index">The value of the index parameter.</param>
+        /// <param name="count"></param>
+        /// <param name="indexParamName">Name of the parameter.</param>
+        /// <param name="countParamName"></param>
+        public static Validation IsIndexAndCountInRange<T>(
+            this Validation validation, T[] array, int index, int count, string indexParamName, string countParamName) {
+            if (index >= 0) {
+                if (count >= 0 && index + count < array.Length)
+                    return validation;
+                return validation.AddException(
+                    new ArgumentOutOfRangeException(
+                        countParamName,
+                        string.Format(
+                            "the array has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
+                            array.Length, count, index, index + count)));
+            }
+            return validation.AddException(
+                new ArgumentOutOfRangeException(
+                    indexParamName,
+                    string.Format("the array has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
+                            array.Length, count, index, index + count)));
+        }
 
         /// <summary>
         /// Allocates a new <see cref="Validation"/> if <paramref name="validation"/> is 

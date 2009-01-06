@@ -110,7 +110,7 @@ namespace FP.Collections {
             where T : IMeasured<V> {
             if (array.Length == 1) {
                 return new Split<T, T[]>(
-                    ArrayUtil.EmptyArray<T>(), array[0], ArrayUtil.EmptyArray<T>());
+                    Arrays.EmptyArray<T>(), array[0], Arrays.EmptyArray<T>());
             }
 
             V total = init;
@@ -120,10 +120,10 @@ namespace FP.Collections {
                 if (pred(total)) break;
             }
             var left = offset == 0
-                           ? ArrayUtil.EmptyArray<T>()
+                           ? Arrays.EmptyArray<T>()
                            : array.CopyNoChecks(0, offset);
             var right = offset == array.Length - 1
-                            ? ArrayUtil.EmptyArray<T>()
+                            ? Arrays.EmptyArray<T>()
                             : array.CopyNoChecks(offset + 1);
             return new Split<T, T[]>(left, array[offset], right);
         }
@@ -139,7 +139,7 @@ namespace FP.Collections {
         }
 
         internal static T[] MapReverse<T>(this T[] array, Func<T, T> f) {
-            T[] newArray = array.CopyNoChecks();
+            T[] newArray = array.Copy();
             for (int i = 0; i < newArray.Length; i++)
                 newArray[i] = f(newArray[i]);
             Array.Reverse(newArray);

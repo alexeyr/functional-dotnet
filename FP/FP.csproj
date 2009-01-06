@@ -139,7 +139,7 @@
     <Compile Include="Core\Triple.cs" />
     <Compile Include="Text\CharSubsequence.cs" />
     <Compile Include="Text\SubstringRope.cs" />
-    <Compile Include="Util\ArrayUtil.cs" />
+    <Compile Include="Util\Arrays.cs" />
     <Compile Include="Validation\FPValidationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

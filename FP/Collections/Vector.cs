@@ -21,6 +21,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using FP.Core;
+using FP.Util;
 using FP.Validation;
 
 namespace FP.Collections {
@@ -30,12 +31,11 @@ namespace FP.Collections {
     [Serializable]
     public sealed class Vector<T> : IUpdatableRandomAccessSequence<T, Vector<T>> {
         private const int BRANCHING = 32;
-        private static readonly Vector<T>[] _emptyArray = new Vector<T>[0];
         /// <summary>
         /// Empty vector instance.
         /// </summary>
-        public static readonly Vector<T> Empty = new Vector<T>(default(T), 0, _emptyArray);
-        private static readonly Vector<T> _default = new Vector<T>(default(T), 1, _emptyArray);
+        public static readonly Vector<T> Empty = new Vector<T>(default(T), 0, Arrays.EmptyArray<Vector<T>>());
+        private static readonly Vector<T> _default = new Vector<T>(default(T), 1, Arrays.EmptyArray<Vector<T>>());
 
         private readonly T _data;
         private readonly int _count;

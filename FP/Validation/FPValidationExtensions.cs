@@ -37,8 +37,38 @@ namespace FP.Validation {
             return validation.AddException(
                 new ArgumentOutOfRangeException(
                     paramName,
-                    "the collection has " + seq.Count +
-                    " elements, but tried to access element with index" + index));
+                    string.Format("the collection has {0} elements, but tried to access element with index {1}", seq.Count, index)));
+        }
+
+        /// <summary>
+        /// Validate that the two specified parameters can be used as starting index and length for 
+        /// a subsequence of <paramref name="seq"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of sequence.</typeparam>
+        /// <typeparam name="TSeq">The type of the sequence.</typeparam>
+        /// <param name="validation">The validation.</param>
+        /// <param name="seq">The sequence.</param>
+        /// <param name="index">The value of the index parameter.</param>
+        /// <param name="count"></param>
+        /// <param name="indexParamName">Name of the parameter.</param>
+        /// <param name="countParamName"></param>
+        public static Validation IsIndexAndCountInRange<T, TSeq>(
+            this Validation validation, IRandomAccessSequence<T, TSeq> seq, int index, int count, string indexParamName, string countParamName) where TSeq : IRandomAccessSequence<T, TSeq> {
+            if (index >= 0) {
+                if (count >= 0 && index + count < seq.Count)
+                    return validation;
+                return validation.AddException(
+                    new ArgumentOutOfRangeException(
+                        countParamName,
+                        string.Format(
+                            "the collection has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
+                            seq.Count, count, index, index + count)));
+            }
+            return validation.AddException(
+                new ArgumentOutOfRangeException(
+                    indexParamName,
+                    string.Format("the collection has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
+                            seq.Count, count, index, index + count)));
         }
     } // class FPValidationExtensions
 } // namespace FP.Validation

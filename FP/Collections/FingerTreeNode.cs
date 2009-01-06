@@ -89,7 +89,7 @@ namespace FP.Collections {
         public bool Equals(FTNode<T, V> other) {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.Measure, Measure) && ArrayUtil.ContentEquals(other.AsArray, AsArray);
+            return Equals(other.Measure, Measure) && Arrays.ContentEquals(other.AsArray, AsArray);
         } // Equals
 
         /// <summary>
