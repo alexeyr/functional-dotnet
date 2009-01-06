@@ -22,9 +22,12 @@ namespace FP.Collections {
     /// <typeparam name="T"></typeparam>
     public interface IReversibleEnumerable<T> : IEnumerable<T> {
         /// <summary>
-        /// Gets the reverse enumerator.
+        /// Returns an iterator which yields all elements of the sequence in the reverse order.
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>This should always be equivalent to, but faster than, 
+        /// <code>
+        /// AsEnumerable().Reverse();
+        /// </code></remarks>
         IEnumerable<T> ReverseIterator();
     } // interface IReversibleEnumerable
 }
