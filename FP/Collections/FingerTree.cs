@@ -38,6 +38,7 @@ namespace FP.Collections {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="V"></typeparam>
+    [Serializable]
     public abstract class FingerTree<T, V> : IEquatable<FingerTree<T, V>>,
                                              IDeque<T, FingerTree<T, V>>,
                                              IMeasured<V>, IFoldable<T>,
@@ -362,6 +363,7 @@ namespace FP.Collections {
         /// An empty <see cref="FingerTree{T,V}"/>.
         /// </summary>
         [DebuggerDisplay("Empty")]
+        [Serializable]
         public sealed class Empty : FingerTree<T, V> {
             internal Empty(Monoid<V> measureMonoid) : base(measureMonoid) { } // Empty
 
@@ -578,6 +580,7 @@ namespace FP.Collections {
         /// A <see cref="FingerTree{T,V}"/> with the single element <see cref="Value"/>.
         /// </summary>
         [DebuggerDisplay("Single(Value = {Value}")]
+        [Serializable]
         public sealed class Single : FingerTree<T, V> {
             /// <summary>
             /// The value of the element.
@@ -779,6 +782,7 @@ namespace FP.Collections {
         /// <summary>
         /// A <see cref="FingerTree{T,V}"/> with more than one element.
         /// </summary>
+        [Serializable]
         public sealed class Deep : FingerTree<T, V> {
             private readonly V _measure;
 
