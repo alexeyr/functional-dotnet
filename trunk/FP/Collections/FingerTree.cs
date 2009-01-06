@@ -1068,8 +1068,8 @@ namespace FP.Collections {
                 // ReSharper disable PossibleNullReferenceException
                 // other is Deep
                 var otherDeep = other as Deep;
-                return ArrayUtil.ContentEquals(otherDeep._left, _left) &&
-                    ArrayUtil.ContentEquals(otherDeep._right, _right) &&
+                return Arrays.ContentEquals(otherDeep._left, _left) &&
+                    Arrays.ContentEquals(otherDeep._right, _right) &&
                     (Equals(otherDeep._middleLazy, _middleLazy) || otherDeep.Middle.Equals(Middle));
                 // ReSharper restore PossibleNullReferenceException
             } // Equals

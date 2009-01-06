@@ -1,8 +1,32 @@
+/*
+* Arrays.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2009 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
 using System;
 using System.Diagnostics;
+using FP.Validation;
 
 namespace FP.Util {
-    internal static class ArrayUtil {
+    /// <summary>
+    /// Utility methods for arrays.
+    /// </summary>
+    public static class Arrays {
+        /// <summary>
+        /// Determines whether the contents of two arrays are equal.
+        /// </summary>
+        /// <typeparam name="T">The type of arrays' elements.</typeparam>
+        /// <param name="array1">The first array.</param>
+        /// <param name="array2">The second array.</param>
         public static bool ContentEquals<T>(T[] array1, T[] array2) {
             if (ReferenceEquals(array1, array2)) return true;
             if (array1.Length != array2.Length) return false;
@@ -12,8 +36,28 @@ namespace FP.Util {
             return true;
         }
 
-        internal static T[] CopyNoChecks<T>(this T[] array) {
+        /// <summary>
+        /// Copies the specified array.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <returns>A copy of the array.</returns>
+        public static T[] Copy<T>(this T[] array) {
             return array.CopyNoChecks(0, array.Length);
+        }
+
+        /// <summary>
+        /// Copies a part of the specified array, starting with.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="startIndex">The index from which copying starts.</param>
+        /// <param name="length">The number of elements to copy.</param>
+        /// <returns>A copy of the array.</returns>
+        public static T[] Copy<T>(this T[] array, int startIndex, int length) {
+            Requires.That.
+                IsIndexAndCountInRange(array, startIndex, length, "startIndex", "length").
+                Check();
+
+            return array.CopyNoChecks(startIndex, length);
         }
 
         internal static T[] CopyNoChecks<T>(this T[] array, int startIndex) {
