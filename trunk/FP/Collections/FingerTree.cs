@@ -48,34 +48,16 @@ namespace FP.Collections {
         public readonly Monoid<V> MeasureMonoid;
 
         /// <summary>
-        /// Reduces the finger tree from the right.
-        /// </summary>
-        /// <typeparam name="A">The type of the accumulator.</typeparam>
-        /// <param name="binOp">The binary operation.</param>
-        /// <param name="initial">The initial accumulator value.</param>
-        /// <returns>
-        /// The final accumulator value.
-        /// </returns>
-        public abstract A FoldRight<A>(Func<T, A, A> binOp, A initial);
-
-        /// <summary>
-        /// Reduces the finger tree from the left.
-        /// </summary>
-        /// <typeparam name="A">The type of the accumulator.</typeparam>
-        /// <param name="binOp">The binary operation.</param>
-        /// <param name="initial">The initial accumulator value.</param>
-        /// <returns>
-        /// The final accumulator value.
-        /// </returns>
-        public abstract A FoldLeft<A>(Func<A, T, A> binOp, A initial);
-
-        /// <summary>
         /// Gets the measure of the tree.
         /// </summary>
         /// <value>The measure.</value>
         public abstract V Measure { get; } // Measure
 
         private static readonly Dictionary<Monoid<V>, Empty> _emptyInstancesCache = new Dictionary<Monoid<V>, Empty>();
+
+        internal FingerTree(Monoid<V> measureMonoid) {
+            MeasureMonoid = measureMonoid;
+        }
 
         internal Empty EmptyInstance {
             get {
@@ -155,43 +137,9 @@ namespace FP.Collections {
             return MakeDeep(left, () => middle.Init, middle.Last.AsArray, measure);
         }
 
-        internal FingerTree(Monoid<V> measureMonoid) {
-            MeasureMonoid = measureMonoid;
-        } // FingerTree
+        // FingerTree
 
-        protected abstract bool IsSingle { get; } // IsSingle
-
-        protected abstract FingerTree<T, V> App3(IEnumerable<T> middleList, FingerTree<T, V> rightTree);
-
-        /// <summary>
-        /// Appends the sequence of elements to the end of the tree.
-        /// </summary>
-        /// <param name="ts">The sequence.</param>
-        public FingerTree<T, V> AppendRange(IEnumerable<T> ts) {
-            return ts.FoldLeft((tree, a) => tree | a, this);
-        } // AppendRange
-
-        /// <summary>
-        /// Prepends the sequence of elements to the beginning of the tree.
-        /// </summary>
-        /// <param name="ts">The sequence.</param>
-        public FingerTree<T, V> PrependRange(IEnumerable<T> ts) {
-            return ts.FoldRight((a, tree) => a | tree, this);
-        } // PrependRange
-
-        /// <summary>
-        /// Prepends the specified element to the beginning of the list.
-        /// </summary>
-        /// <param name="newHead">The new head.</param>
-        /// <returns>The resulting list.</returns>
-        public abstract FingerTree<T, V> Prepend(T newHead);
-
-        /// <summary>
-        /// Appends the specified element to the end of the list.
-        /// </summary>
-        /// <param name="newLast">The new last element.</param>
-        /// <returns>The resulting list.</returns>
-        public abstract FingerTree<T, V> Append(T newLast);
+        // IsSingle
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -209,6 +157,8 @@ namespace FP.Collections {
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         } // IEnumerable.GetEnumerator
+
+        public abstract IEnumerable<T> ReverseIterator();
 
         /// <summary>
         /// Gets the head of the list, provided it is not empty.
@@ -242,7 +192,41 @@ namespace FP.Collections {
         /// Gets a value indicating whether this list is empty.
         /// </summary>
         /// <value><c>true</c> if this list is empty; otherwise, <c>false</c>.</value>
-        public abstract bool IsEmpty { get; } // IsEmpty
+        public abstract bool IsEmpty { get; }
+
+        protected abstract bool IsSingle { get; }
+
+        /// <summary>
+        /// Appends the sequence of elements to the end of the tree.
+        /// </summary>
+        /// <param name="ts">The sequence.</param>
+        public FingerTree<T, V> AppendRange(IEnumerable<T> ts) {
+            return ts.FoldLeft((tree, a) => tree | a, this);
+        } // AppendRange
+
+        /// <summary>
+        /// Prepends the sequence of elements to the beginning of the tree.
+        /// </summary>
+        /// <param name="ts">The sequence.</param>
+        public FingerTree<T, V> PrependRange(IEnumerable<T> ts) {
+            return ts.FoldRight((a, tree) => a | tree, this);
+        } // PrependRange
+
+        /// <summary>
+        /// Prepends the specified element to the beginning of the list.
+        /// </summary>
+        /// <param name="newHead">The new head.</param>
+        /// <returns>The resulting list.</returns>
+        public abstract FingerTree<T, V> Prepend(T newHead);
+
+        /// <summary>
+        /// Appends the specified element to the end of the list.
+        /// </summary>
+        /// <param name="newLast">The new last element.</param>
+        /// <returns>The resulting list.</returns>
+        public abstract FingerTree<T, V> Append(T newLast);
+
+// IsEmpty
 
         /// <summary>
         /// Concatenates the tree with another.
@@ -250,6 +234,18 @@ namespace FP.Collections {
         /// <param name="otherTree">Another tree.</param>
         /// <returns>The result of concatenation.</returns>
         public abstract FingerTree<T, V> Concat(FingerTree<T, V> otherTree);
+
+        protected abstract FingerTree<T, V> App3(IEnumerable<T> middleList, FingerTree<T, V> rightTree);
+
+        /// <summary>
+        /// Prepends the measure.
+        /// </summary>
+        /// <param name="prependedMeasure">The prepended measure.</param>
+        /// <remarks>Used in order not to rely on <see cref="MeasureMonoid"/>'s Zero being
+        /// the right identity.</remarks>
+        protected virtual V PrependMeasure(V prependedMeasure) {
+            return MeasureMonoid.Plus(prependedMeasure, Measure);
+        }
 
         internal abstract Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate,
                                                                V initial);
@@ -273,16 +269,6 @@ namespace FP.Collections {
             var split = SplitTree(predicate, MeasureMonoid.Zero);
             return Pair.New(split.Left, split.Middle | split.Right);
         } // Split
-
-        /// <summary>
-        /// Prepends the measure.
-        /// </summary>
-        /// <param name="prependedMeasure">The prepended measure.</param>
-        /// <remarks>Used in order not to rely on <see cref="MeasureMonoid"/>'s Zero being
-        /// the right identity.</remarks>
-        protected virtual V PrependMeasure(V prependedMeasure) {
-            return MeasureMonoid.Plus(prependedMeasure, Measure);
-        }
 
         /// <summary>
         /// Reverses this tree.
@@ -311,7 +297,28 @@ namespace FP.Collections {
             return tree1.Concat(tree2);
         } // op_Addition
 
-        internal abstract bool Invariant { get; } // Invariant
+        /// <summary>
+        /// Reduces the finger tree from the right.
+        /// </summary>
+        /// <typeparam name="A">The type of the accumulator.</typeparam>
+        /// <param name="binOp">The binary operation.</param>
+        /// <param name="initial">The initial accumulator value.</param>
+        /// <returns>
+        /// The final accumulator value.
+        /// </returns>
+        public abstract A FoldRight<A>(Func<T, A, A> binOp, A initial);
+
+        /// <summary>
+        /// Reduces the finger tree from the left.
+        /// </summary>
+        /// <typeparam name="A">The type of the accumulator.</typeparam>
+        /// <param name="binOp">The binary operation.</param>
+        /// <param name="initial">The initial accumulator value.</param>
+        /// <returns>
+        /// The final accumulator value.
+        /// </returns>
+        public abstract A FoldLeft<A>(Func<A, T, A> binOp, A initial);
+
         public abstract bool Equals(FingerTree<T, V> other);
 
         /// <summary>
@@ -358,31 +365,7 @@ namespace FP.Collections {
         public sealed class Empty : FingerTree<T, V> {
             internal Empty(Monoid<V> measureMonoid) : base(measureMonoid) { } // Empty
 
-            /// <summary>
-            /// Reduces the finger tree from the right.
-            /// </summary>
-            /// <typeparam name="A">The type of the accumulator.</typeparam>
-            /// <param name="binOp">The binary operation.</param>
-            /// <param name="initial">The initial accumulator value.</param>
-            /// <returns>
-            /// The final accumulator value.
-            /// </returns>
-            public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
-                return initial;
-            } // FoldRight
-
-            /// <summary>
-            /// Reduces the finger tree from the left.
-            /// </summary>
-            /// <typeparam name="A">The type of the accumulator.</typeparam>
-            /// <param name="binOp">The binary operation.</param>
-            /// <param name="initial">The initial accumulator value.</param>
-            /// <returns>
-            /// The final accumulator value.
-            /// </returns>
-            public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
-                return initial;
-            } // FoldLeft
+            // FoldLeft
 
             /// <summary>
             /// Gets the measure of the tree.
@@ -392,33 +375,13 @@ namespace FP.Collections {
                 get { return MeasureMonoid.Zero; }
             } // Measure
 
-            protected override bool IsSingle {
-                get { return false; }
-            } // IsSingle
+            // IsSingle
 
-            protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
-                                                     FingerTree<T, V> rightTree) {
-                if (rightTree.IsEmpty) return this.AppendRange(middleList);
-                return rightTree.PrependRange(middleList);
-            } // App3
+            // App3
 
-            /// <summary>
-            /// Prepends the specified element to the beginning of the list.
-            /// </summary>
-            /// <param name="newHead">The new head.</param>
-            /// <returns>The resulting list.</returns>
-            public override FingerTree<T, V> Prepend(T newHead) {
-                return MakeSingle(newHead);
-            } // Prepend
+            // Append
 
-            /// <summary>
-            /// Appends the specified element to the end of the list.
-            /// </summary>
-            /// <param name="newLast">The new last element..</param>
-            /// <returns>The resulting list.</returns>
-            public override FingerTree<T, V> Append(T newLast) {
-                return MakeSingle(newLast);
-            } // Append
+            // GetEnumerator
 
             /// <summary>
             /// Returns an enumerator that iterates through a collection.
@@ -427,7 +390,13 @@ namespace FP.Collections {
             /// </returns>
             public override IEnumerator<T> GetEnumerator() {
                 yield break;
-            } // GetEnumerator
+            }
+
+// Concat
+
+            public override IEnumerable<T> ReverseIterator() {
+                yield break;
+            }
 
             /// <summary>
             /// Gets the head of the list.
@@ -471,7 +440,31 @@ namespace FP.Collections {
             /// <value><c>true</c>.</value>
             public override bool IsEmpty {
                 get { return true; }
-            } // IsEmpty
+            }
+
+            protected override bool IsSingle {
+                get { return false; }
+            }
+
+// IsEmpty
+
+            /// <summary>
+            /// Prepends the specified element to the beginning of the list.
+            /// </summary>
+            /// <param name="newHead">The new head.</param>
+            /// <returns>The resulting list.</returns>
+            public override FingerTree<T, V> Prepend(T newHead) {
+                return MakeSingle(newHead);
+            } // Prepend
+
+            /// <summary>
+            /// Appends the specified element to the end of the list.
+            /// </summary>
+            /// <param name="newLast">The new last element..</param>
+            /// <returns>The resulting list.</returns>
+            public override FingerTree<T, V> Append(T newLast) {
+                return MakeSingle(newLast);
+            }
 
             /// <summary>
             /// Concatenates the tree with another.
@@ -480,7 +473,17 @@ namespace FP.Collections {
             /// <returns>The result of concatenation.</returns>
             public override FingerTree<T, V> Concat(FingerTree<T, V> otherTree) {
                 return otherTree;
-            } // Concat
+            }
+
+            protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
+                                                     FingerTree<T, V> rightTree) {
+                if (rightTree.IsEmpty) return this.AppendRange(middleList);
+                return rightTree.PrependRange(middleList);
+            }
+
+            protected override V PrependMeasure(V prependedMeasure) {
+                return prependedMeasure;
+            }
 
             /// <summary>
             /// Splits the tree.
@@ -512,10 +515,6 @@ namespace FP.Collections {
                 return Pair.New(empty, empty);
             } // Split
 
-            protected override V PrependMeasure(V prependedMeasure) {
-                return prependedMeasure;
-            }
-
             /// <summary>
             /// Reverses this tree.
             /// </summary>
@@ -524,9 +523,33 @@ namespace FP.Collections {
                 return this;
             } // ReverseTree
 
-            internal override bool Invariant {
-                get { return true; }
-            } // Invariant
+            /// <summary>
+            /// Reduces the finger tree from the right.
+            /// </summary>
+            /// <typeparam name="A">The type of the accumulator.</typeparam>
+            /// <param name="binOp">The binary operation.</param>
+            /// <param name="initial">The initial accumulator value.</param>
+            /// <returns>
+            /// The final accumulator value.
+            /// </returns>
+            public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
+                return initial;
+            } // FoldRight
+
+            /// <summary>
+            /// Reduces the finger tree from the left.
+            /// </summary>
+            /// <typeparam name="A">The type of the accumulator.</typeparam>
+            /// <param name="binOp">The binary operation.</param>
+            /// <param name="initial">The initial accumulator value.</param>
+            /// <returns>
+            /// The final accumulator value.
+            /// </returns>
+            public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
+                return initial;
+            }
+
+// Invariant
 
             /// <summary>
             /// Indicates whether the current object is equal to another object of the same type.
@@ -566,31 +589,7 @@ namespace FP.Collections {
                 Value = value;
             } // Single
 
-            /// <summary>
-            /// Reduces the finger tree from the right.
-            /// </summary>
-            /// <typeparam name="A">The type of the accumulator.</typeparam>
-            /// <param name="binOp">The binary operation.</param>
-            /// <param name="initial">The initial accumulator value.</param>
-            /// <returns>
-            /// The final accumulator value.
-            /// </returns>
-            public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
-                return binOp(Value, initial);
-            } // FoldRight
-
-            /// <summary>
-            /// Reduces the finger tree from the left.
-            /// </summary>
-            /// <typeparam name="A">The type of the accumulator.</typeparam>
-            /// <param name="binOp">The binary operation.</param>
-            /// <param name="initial">The initial accumulator value.</param>
-            /// <returns>
-            /// The final accumulator value.
-            /// </returns>
-            public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
-                return binOp(initial, Value);
-            } // FoldLeft
+            // FoldLeft
 
             /// <summary>
             /// Gets the measure of the tree.
@@ -600,39 +599,11 @@ namespace FP.Collections {
                 get { return Value.Measure; }
             } // Measure
 
-            protected override bool IsSingle {
-                get { return true; }
-            } // IsSingle
+            // IsSingle
 
-            protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
-                                                     FingerTree<T, V> rightTree) {
-                if (rightTree.IsEmpty) return this.AppendRange(middleList);
-                if (rightTree.IsSingle)
-                    return this.AppendRange(middleList) | rightTree.Head;
-                return Value | rightTree.PrependRange(middleList);
-            } // App3
+            // App3
 
-            /// <summary>
-            /// Prepends the specified element to the beginning of the list.
-            /// </summary>
-            /// <param name="newHead">The new head.</param>
-            /// <returns>The resulting list.</returns>
-            public override FingerTree<T, V> Prepend(T newHead) {
-                return MakeDeep(
-                    new[] { newHead }, EmptyInstanceNested, new[] { Value },
-                    MeasureMonoid.Plus(newHead.Measure, Value.Measure));
-            } // Prepend
-
-            /// <summary>
-            /// Appends the specified element to the end of the list.
-            /// </summary>
-            /// <param name="newLast">The new last element.</param>
-            /// <returns>The resulting list.</returns>
-            public override FingerTree<T, V> Append(T newLast) {
-                return MakeDeep(
-                    new[] { Value }, EmptyInstanceNested, new[] { newLast },
-                    MeasureMonoid.Plus(Value.Measure, newLast.Measure));
-            } // Append
+            // Append
 
             /// <summary>
             /// Returns an enumerator that iterates through a collection.
@@ -642,6 +613,10 @@ namespace FP.Collections {
             public override IEnumerator<T> GetEnumerator() {
                 yield return Value;
             } // GetEnumerator
+
+            public override IEnumerable<T> ReverseIterator() {
+                yield return Value;
+            }
 
             /// <summary>
             /// Gets the head of the list.
@@ -681,7 +656,35 @@ namespace FP.Collections {
             /// <value><c>false</c>.</value>
             public override bool IsEmpty {
                 get { return false; }
-            } // IsEmpty
+            }
+
+            protected override bool IsSingle {
+                get { return true; }
+            }
+
+// IsEmpty
+
+            /// <summary>
+            /// Prepends the specified element to the beginning of the list.
+            /// </summary>
+            /// <param name="newHead">The new head.</param>
+            /// <returns>The resulting list.</returns>
+            public override FingerTree<T, V> Prepend(T newHead) {
+                return MakeDeep(
+                    new[] { newHead }, EmptyInstanceNested, new[] { Value },
+                    MeasureMonoid.Plus(newHead.Measure, Value.Measure));
+            } // Prepend
+
+            /// <summary>
+            /// Appends the specified element to the end of the list.
+            /// </summary>
+            /// <param name="newLast">The new last element.</param>
+            /// <returns>The resulting list.</returns>
+            public override FingerTree<T, V> Append(T newLast) {
+                return MakeDeep(
+                    new[] { Value }, EmptyInstanceNested, new[] { newLast },
+                    MeasureMonoid.Plus(Value.Measure, newLast.Measure));
+            }
 
             /// <summary>
             /// Concatenates the tree with another.
@@ -690,7 +693,17 @@ namespace FP.Collections {
             /// <returns>The result of concatenation.</returns>
             public override FingerTree<T, V> Concat(FingerTree<T, V> otherTree) {
                 return Value | otherTree;
-            } // Concat
+            }
+
+            protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
+                                                     FingerTree<T, V> rightTree) {
+                if (rightTree.IsEmpty) return this.AppendRange(middleList);
+                if (rightTree.IsSingle)
+                    return this.AppendRange(middleList) | rightTree.Head;
+                return Value | rightTree.PrependRange(middleList);
+            }
+
+// Concat
 
             internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate,
                                                                    V initial) {
@@ -704,11 +717,37 @@ namespace FP.Collections {
             internal override FingerTree<T, V> ReverseTree(Func<T, T> f) {
                 var newValue = f(Value);
                 return newValue.Equals(Value) ? this : MakeSingle(newValue);
-            } // ReverseTree
+            }
 
-            internal override bool Invariant {
-                get { return true; }
-            } // Invariant
+            /// <summary>
+            /// Reduces the finger tree from the right.
+            /// </summary>
+            /// <typeparam name="A">The type of the accumulator.</typeparam>
+            /// <param name="binOp">The binary operation.</param>
+            /// <param name="initial">The initial accumulator value.</param>
+            /// <returns>
+            /// The final accumulator value.
+            /// </returns>
+            public override A FoldRight<A>(Func<T, A, A> binOp, A initial) {
+                return binOp(Value, initial);
+            } // FoldRight
+
+            /// <summary>
+            /// Reduces the finger tree from the left.
+            /// </summary>
+            /// <typeparam name="A">The type of the accumulator.</typeparam>
+            /// <param name="binOp">The binary operation.</param>
+            /// <param name="initial">The initial accumulator value.</param>
+            /// <returns>
+            /// The final accumulator value.
+            /// </returns>
+            public override A FoldLeft<A>(Func<A, T, A> binOp, A initial) {
+                return binOp(initial, Value);
+            }
+
+// ReverseTree
+
+            // Invariant
 
             /// <summary>
             /// Indicates whether the current object is equal to another object of the same type.
@@ -742,9 +781,26 @@ namespace FP.Collections {
         /// </summary>
         public sealed class Deep : FingerTree<T, V> {
             private readonly V _measure;
+
+            /// <summary>
+            /// Gets the measure of the tree.
+            /// </summary>
+            /// <value>The measure.</value>
+            public override V Measure {
+                get {
+                    return _measure;
+                }
+            }
+
             private readonly T[] _left;
             private readonly T[] _right;
             private readonly LazyValue<FingerTree<FTNode<T, V>, V>> _middleLazy;
+
+            private FingerTree<FTNode<T, V>, V> Middle {
+                get {
+                    return _middleLazy.Value;
+                }
+            }
 
             internal Deep(T[] left, LazyValue<FingerTree<FTNode<T, V>, V>> middleLazy, T[] right,
                           Monoid<V> measureMonoid)
@@ -770,117 +826,15 @@ namespace FP.Collections {
                 Debug.Assert(_right != null && _right.Length > 0 && _right.Length <= 4);
             } // Deep
 
-            private FingerTree<FTNode<T, V>, V> Middle {
-                get {
-                    return _middleLazy.Value;
-                }
-            }
+            // Measure
 
-            /// <summary>
-            /// Gets the measure of the tree.
-            /// </summary>
-            /// <value>The measure.</value>
-            public override V Measure {
-                get {
-                    return _measure;
-                }
-            } // Measure
+            // IsSingle
 
-            protected override bool IsSingle {
-                get { return false; }
-            } // IsSingle
+            // App3
 
-            protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
-                                                     FingerTree<T, V> rightTree) {
-                if (rightTree.IsEmpty) return this.AppendRange(middleList);
-                if (rightTree.IsSingle) return this.AppendRange(middleList) | rightTree.Head;
-                // ReSharper disable PossibleNullReferenceException
-                var rightDeep = rightTree as Deep;
-                V newMeasure = MeasureMonoid.SumMeasures(Measure, middleList);
-                newMeasure = MeasureMonoid.Plus(newMeasure, rightDeep.Measure);
-                return MakeDeep(
-                    _left,
-                    () => Middle.App3(
-                              Nodes(_right.Concat(middleList).Concat(rightDeep._left)),
-                              rightDeep.Middle),
-                    rightDeep._right, 
-                    newMeasure);
-                // ReSharper restore PossibleNullReferenceException
-            } // App3
+            // Nodes
 
-            private IEnumerable<FTNode<T, V>> Nodes(IEnumerable<T> elements) {
-                Debug.Assert(elements.Count() >= 2);
-                var buffer = new Queue<T>(5);
-                foreach (var t in elements) {
-                    buffer.Enqueue(t);
-                    if (buffer.Count == 5) {
-                        yield return new FTNode<T, V>(MeasureMonoid,
-                            buffer.Dequeue(), buffer.Dequeue(), buffer.Dequeue());
-                    }
-                } // foreach
-                switch (buffer.Count) {
-                    case 2:
-                        yield return new FTNode<T, V>(MeasureMonoid,
-                            buffer.Dequeue(), buffer.Dequeue());
-                        break;
-                    case 3:
-                        yield return new FTNode<T, V>(MeasureMonoid,
-                            buffer.Dequeue(), buffer.Dequeue(), buffer.Dequeue());
-                        break;
-                    case 4:
-                        yield return new FTNode<T, V>(MeasureMonoid,
-                            buffer.Dequeue(), buffer.Dequeue());
-                        yield return new FTNode<T, V>(MeasureMonoid,
-                            buffer.Dequeue(), buffer.Dequeue());
-                        break;
-                } // switch
-            } // Nodes
-
-            /// <summary>
-            /// Prepends the specified element to the beginning of the list.
-            /// </summary>
-            /// <param name="newHead">The new head.</param>
-            /// <returns>The resulting list.</returns>
-            public override FingerTree<T, V> Prepend(T newHead) {
-                V newMeasure = MeasureMonoid.Plus(newHead.Measure, Measure);
-
-                var leftLength = _left.Length;
-                if (leftLength != 4) {
-                    var newLeft = new T[leftLength + 1];
-                    newLeft[0] = newHead;
-                    Array.Copy(_left, 0, newLeft, 1, leftLength);
-                    return MakeDeep(newLeft, _middleLazy, _right, newMeasure);
-                    //see page 7 of the paper
-                }
-                return MakeDeep(
-                    new[] {newHead, _left[0]},
-                    new FTNode<T, V>(MeasureMonoid, _left[1], _left[2], _left[3]) | Middle,
-                    _right, 
-                    newMeasure);
-            } // Prepend
-
-            /// <summary>
-            /// Appends the specified element to the end of the list.
-            /// </summary>
-            /// <param name="newLast">The new last element..</param>
-            /// <returns>The resulting list.</returns>
-            public override FingerTree<T, V> Append(T newLast) {
-                V newMeasure = MeasureMonoid.Plus(Measure, newLast.Measure);
-
-                var rightLength = _right.Length;
-                if (rightLength != 4) {
-                    var newRight = new T[rightLength + 1];
-                    Array.Copy(_right, 0, newRight, 0, rightLength);
-                    newRight[rightLength] = newLast;
-                    return MakeDeep(_left, Middle, newRight, newMeasure);
-                    //see page 7 of the paper
-                }
-                return MakeDeep(
-                    _left,
-                    Middle | new FTNode<T, V>(MeasureMonoid, _right[0], _right[1], _right[2]),
-                    new[] {_right[3], newLast}, 
-                    newMeasure);
-            } // Append
+            // Append
 
             /// <summary>
             /// Returns an enumerator that iterates through a collection.
@@ -898,6 +852,17 @@ namespace FP.Collections {
                 foreach (var t in _right)
                     yield return t;
             } // GetEnumerator
+
+            public override IEnumerable<T> ReverseIterator() {
+                foreach (var t in _right.ReverseIterator())
+                    yield return t;
+                foreach (var node in Middle.ReverseIterator()) {
+                    foreach (var t in node.AsArray.ReverseIterator())
+                        yield return t;
+                }
+                foreach (var t in _left)
+                    yield return t;
+            }
 
             /// <summary>
             /// Gets the head of the list, provided it is not empty.
@@ -949,7 +914,59 @@ namespace FP.Collections {
             /// <value><c>true</c>.</value>
             public override bool IsEmpty {
                 get { return false; }
-            } // IsEmpty
+            }
+
+            protected override bool IsSingle {
+                get { return false; }
+            }
+
+// IsEmpty
+
+            /// <summary>
+            /// Prepends the specified element to the beginning of the list.
+            /// </summary>
+            /// <param name="newHead">The new head.</param>
+            /// <returns>The resulting list.</returns>
+            public override FingerTree<T, V> Prepend(T newHead) {
+                V newMeasure = MeasureMonoid.Plus(newHead.Measure, Measure);
+
+                var leftLength = _left.Length;
+                if (leftLength != 4) {
+                    var newLeft = new T[leftLength + 1];
+                    newLeft[0] = newHead;
+                    Array.Copy(_left, 0, newLeft, 1, leftLength);
+                    return MakeDeep(newLeft, _middleLazy, _right, newMeasure);
+                    //see page 7 of the paper
+                }
+                return MakeDeep(
+                    new[] {newHead, _left[0]},
+                    new FTNode<T, V>(MeasureMonoid, _left[1], _left[2], _left[3]) | Middle,
+                    _right, 
+                    newMeasure);
+            } // Prepend
+
+            /// <summary>
+            /// Appends the specified element to the end of the list.
+            /// </summary>
+            /// <param name="newLast">The new last element..</param>
+            /// <returns>The resulting list.</returns>
+            public override FingerTree<T, V> Append(T newLast) {
+                V newMeasure = MeasureMonoid.Plus(Measure, newLast.Measure);
+
+                var rightLength = _right.Length;
+                if (rightLength != 4) {
+                    var newRight = new T[rightLength + 1];
+                    Array.Copy(_right, 0, newRight, 0, rightLength);
+                    newRight[rightLength] = newLast;
+                    return MakeDeep(_left, Middle, newRight, newMeasure);
+                    //see page 7 of the paper
+                }
+                return MakeDeep(
+                    _left,
+                    Middle | new FTNode<T, V>(MeasureMonoid, _right[0], _right[1], _right[2]),
+                    new[] {_right[3], newLast}, 
+                    newMeasure);
+            }
 
             /// <summary>
             /// Concatenates the tree with another.
@@ -962,7 +979,55 @@ namespace FP.Collections {
                 if (otherTree.IsSingle)
                     return this | otherTree.Head;
                 return App3(Enumerable.Empty<T>(), otherTree);
-            } // Concat
+            }
+
+            protected override FingerTree<T, V> App3(IEnumerable<T> middleList,
+                                                     FingerTree<T, V> rightTree) {
+                if (rightTree.IsEmpty) return this.AppendRange(middleList);
+                if (rightTree.IsSingle) return this.AppendRange(middleList) | rightTree.Head;
+                // ReSharper disable PossibleNullReferenceException
+                var rightDeep = rightTree as Deep;
+                V newMeasure = MeasureMonoid.SumMeasures(Measure, middleList);
+                newMeasure = MeasureMonoid.Plus(newMeasure, rightDeep.Measure);
+                return MakeDeep(
+                    _left,
+                    () => Middle.App3(
+                              Nodes(_right.Concat(middleList).Concat(rightDeep._left)),
+                              rightDeep.Middle),
+                    rightDeep._right, 
+                    newMeasure);
+                // ReSharper restore PossibleNullReferenceException
+            }
+
+            private IEnumerable<FTNode<T, V>> Nodes(IEnumerable<T> elements) {
+                Debug.Assert(elements.Count() >= 2);
+                var buffer = new Queue<T>(5);
+                foreach (var t in elements) {
+                    buffer.Enqueue(t);
+                    if (buffer.Count == 5) {
+                        yield return new FTNode<T, V>(MeasureMonoid,
+                                                      buffer.Dequeue(), buffer.Dequeue(), buffer.Dequeue());
+                    }
+                } // foreach
+                switch (buffer.Count) {
+                    case 2:
+                        yield return new FTNode<T, V>(MeasureMonoid,
+                                                      buffer.Dequeue(), buffer.Dequeue());
+                        break;
+                    case 3:
+                        yield return new FTNode<T, V>(MeasureMonoid,
+                                                      buffer.Dequeue(), buffer.Dequeue(), buffer.Dequeue());
+                        break;
+                    case 4:
+                        yield return new FTNode<T, V>(MeasureMonoid,
+                                                      buffer.Dequeue(), buffer.Dequeue());
+                        yield return new FTNode<T, V>(MeasureMonoid,
+                                                      buffer.Dequeue(), buffer.Dequeue());
+                        break;
+                } // switch
+            }
+
+// Concat
 
             internal override Split<T, FingerTree<T, V>> SplitTree(
                 Func<V, bool> predicate,
@@ -1013,15 +1078,6 @@ namespace FP.Collections {
                     Measure);
             } // ReverseTree
 
-            internal override bool Invariant {
-                get {
-                    return
-                        _left != null && _left.Length > 0 && _left.Length <= 4 &&
-                        _right != null && _right.Length > 0 && _right.Length <= 4 &&
-                        Middle.Invariant;
-                }
-            }
-
             /// <summary>
             /// Reduces the finger tree from the right.
             /// </summary>
@@ -1051,8 +1107,6 @@ namespace FP.Collections {
                 return _right.FoldLeft(binOp,
                                        Middle.FoldLeft(binOp1, _left.FoldLeft(binOp, initial)));
             }
-
-// Invariant
 
             /// <summary>
             /// Indicates whether the current object is equal to another object of the same type.

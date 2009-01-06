@@ -21,7 +21,7 @@ namespace FP.Collections {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TDeque">The type of the deque.</typeparam>
-    public interface IDeque<T, TDeque> : IList<T, TDeque> where TDeque : IDeque<T, TDeque> {
+    public interface IDeque<T, TDeque> : IList<T, TDeque>, IReversibleEnumerable<T> where TDeque : IDeque<T, TDeque> {
         /// <summary>
         /// Appends the specified element to the end of the list.
         /// </summary>

@@ -121,6 +121,10 @@ namespace FP.Collections {
             return Equals(other._ft, _ft);
         }
 
+        public IEnumerable<T> ReverseIterator() {
+            throw new System.NotImplementedException();
+        }
+
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
