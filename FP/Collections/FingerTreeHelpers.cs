@@ -109,8 +109,8 @@ namespace FP.Collections {
         internal static Split<T, T[]> SplitArray<T, V>(this T[] array, Func<V, bool> pred, V init, Monoid<V> monoid)
             where T : IMeasured<V> {
             if (array.Length == 1) {
-                var empty = new T[0];
-                return new Split<T, T[]>(empty, array[0], empty);
+                return new Split<T, T[]>(
+                    ArrayUtil.EmptyArray<T>(), array[0], ArrayUtil.EmptyArray<T>());
             }
 
             V total = init;
@@ -119,7 +119,13 @@ namespace FP.Collections {
                 total = monoid.Plus(total, array[offset].Measure);
                 if (pred(total)) break;
             }
-            return new Split<T, T[]>(array.CopyNoChecks(0, offset), array[offset], array.CopyNoChecks(offset + 1));
+            var left = offset == 0
+                           ? ArrayUtil.EmptyArray<T>()
+                           : array.CopyNoChecks(0, offset);
+            var right = offset == array.Length - 1
+                            ? ArrayUtil.EmptyArray<T>()
+                            : array.CopyNoChecks(offset + 1);
+            return new Split<T, T[]>(left, array[offset], right);
         }
 
         internal static V SumMeasures<V, T>(this Monoid<V> monoid, V init, IEnumerable<T> sequence)

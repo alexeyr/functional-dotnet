@@ -98,7 +98,7 @@ namespace FP.Collections {
             var emptyInstancesCache = FingerTree<T1, V>._emptyInstancesCache;
             lock (emptyInstancesCache) {
                 if (!emptyInstancesCache.TryGetValue(measureMonoid, out instance))
-                    emptyInstancesCache[measureMonoid] = new FingerTree<T1, V>.Empty(measureMonoid);
+                    instance = emptyInstancesCache[measureMonoid] = new FingerTree<T1, V>.Empty(measureMonoid);
             }
             return instance;
         } // GetEmptyFromCache
@@ -479,7 +479,6 @@ namespace FP.Collections {
             /// <param name="otherTree">Another tree.</param>
             /// <returns>The result of concatenation.</returns>
             public override FingerTree<T, V> Concat(FingerTree<T, V> otherTree) {
-                Debug.Assert(MeasureMonoid == otherTree.MeasureMonoid);
                 return otherTree;
             } // Concat
 
@@ -690,7 +689,6 @@ namespace FP.Collections {
             /// <param name="otherTree">Another tree.</param>
             /// <returns>The result of concatenation.</returns>
             public override FingerTree<T, V> Concat(FingerTree<T, V> otherTree) {
-                Debug.Assert(MeasureMonoid == otherTree.MeasureMonoid);
                 return Value | otherTree;
             } // Concat
 
@@ -959,7 +957,6 @@ namespace FP.Collections {
             /// <param name="otherTree">Another tree.</param>
             /// <returns>The result of concatenation.</returns>
             public override FingerTree<T, V> Concat(FingerTree<T, V> otherTree) {
-                Debug.Assert(MeasureMonoid == otherTree.MeasureMonoid);
                 if (otherTree.IsEmpty)
                     return this;
                 if (otherTree.IsSingle)

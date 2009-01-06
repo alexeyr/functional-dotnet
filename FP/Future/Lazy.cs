@@ -62,8 +62,10 @@ namespace FP.Future {
         public override Result<T> Result {
             get {
                 if (!IsCompleted) {
-                    _result = Core.Result.Try(_calculation);
-                    _calculation = null;
+                    lock (_syncRoot) {
+                        _result = Core.Result.Try(_calculation);
+                        _calculation = null;                        
+                    }
                 }
                 return _result;
             }
