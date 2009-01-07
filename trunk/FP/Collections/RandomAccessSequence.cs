@@ -99,95 +99,6 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
-        }
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// <i>O(1)</i>
-        /// </summary>
-        /// <returns>
-        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-        /// </returns>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <remarks>It is possible to have two unequal sequences with the same elements.</remarks>
-        public bool Equals(RandomAccessSequence<T> other) {
-            return Equals(other._ft, _ft);
-        }
-
-        public IEnumerable<T> ReverseIterator() {
-            foreach (var element in _ft.ReverseIterator()) {
-                yield return element.Value;
-            }
-        }
-
-        /// <summary>
-        /// Indicates whether this instance and a specified object are equal.
-        /// </summary>
-        /// <returns>
-        /// true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false.
-        /// </returns>
-        /// <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
-        public override bool Equals(object obj) {
-            if (obj.GetType() != typeof(RandomAccessSequence<T>)) return false;
-            return Equals((RandomAccessSequence<T>)obj);
-        }
-
-        /// <summary>
-        /// Returns the hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A 32-bit signed integer that is the hash code for this instance.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
-        public override int GetHashCode() {
-            return _ft.GetHashCode();
-        }
-
-        /// <summary>
-        /// Implements the operator ==.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator ==(RandomAccessSequence<T> left, RandomAccessSequence<T> right) {
-            return left.Equals(right);
-        }
-
-        /// <summary>
-        /// Implements the operator !=.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator !=(RandomAccessSequence<T> left, RandomAccessSequence<T> right) {
-            return !left.Equals(right);
-        }
-
-        /// <summary>
-        /// Gets the number of elements in the sequence.
-        /// </summary>
-        /// <value>The number of elements in the sequence.</value>
-        public int Count {
-            get { return _ft.Measure; }
-        }
-
-        /// <summary>
-        /// Prepends the specified element to the beginning of the list.
-        /// </summary>
-        /// <param name="newHead">The new head.</param>
-        /// <returns>The resulting list.</returns>
-        public RandomAccessSequence<T> Prepend(T newHead) {
-            return new RandomAccessSequence<T>(new Element(newHead) | _ft);
-        }
-
-        /// <summary>
         /// Appends the specified element to the end of the list.
         /// </summary>
         /// <param name="newLast">The new last element.</param>
@@ -264,6 +175,14 @@ namespace FP.Collections {
         /// <returns>The result of concatenation.</returns>
         public RandomAccessSequence<T> Concat(RandomAccessSequence<T> otherSequence) {
             return new RandomAccessSequence<T>(_ft + otherSequence._ft);
+        }
+
+        /// <summary>
+        /// Gets the number of elements in the sequence.
+        /// </summary>
+        /// <value>The number of elements in the sequence.</value>
+        public int Count {
+            get { return _ft.Measure; }
         }
 
         /// <summary>
@@ -412,6 +331,87 @@ namespace FP.Collections {
         /// <returns>The sequence containing the same elements in reverse order.</returns>
         public RandomAccessSequence<T> Reverse() {
             return new RandomAccessSequence<T>(_ft.ReverseTree(Functions.Id<Element>()));
+        }
+
+        /// <summary>
+        /// Prepends the specified element to the beginning of the list.
+        /// </summary>
+        /// <param name="newHead">The new head.</param>
+        /// <returns>The resulting list.</returns>
+        public RandomAccessSequence<T> Prepend(T newHead) {
+            return new RandomAccessSequence<T>(new Element(newHead) | _ft);
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
+        }
+
+        public IEnumerable<T> ReverseIterator() {
+            foreach (var element in _ft.ReverseIterator()) {
+                yield return element.Value;
+            }
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// <i>O(1)</i>
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <remarks>It is possible to have two unequal sequences with the same elements.</remarks>
+        public bool Equals(RandomAccessSequence<T> other) {
+            return Equals(other._ft, _ft);
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <returns>
+        /// true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false.
+        /// </returns>
+        /// <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
+        public override bool Equals(object obj) {
+            if (obj.GetType() != typeof(RandomAccessSequence<T>)) return false;
+            return Equals((RandomAccessSequence<T>)obj);
+        }
+
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A 32-bit signed integer that is the hash code for this instance.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public override int GetHashCode() {
+            return _ft.GetHashCode();
+        }
+
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(RandomAccessSequence<T> left, RandomAccessSequence<T> right) {
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(RandomAccessSequence<T> left, RandomAccessSequence<T> right) {
+            return !left.Equals(right);
         }
 
         /// <summary>
