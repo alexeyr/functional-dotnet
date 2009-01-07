@@ -35,20 +35,16 @@ namespace FP.Collections {
         IReversible<RandomAccessSequence<T>>, ICatenable<RandomAccessSequence<T>>,
         ISplittable<RandomAccessSequence<T>> {
         private static readonly RandomAccessSequence<T> _emptyInstance =
-            new RandomAccessSequence<T>(FingerTree.Empty<Element, int>(Monoids.Size));
+            new RandomAccessSequence<T>(FingerTreeSized<Element>.EmptyInstance);
 
         /// <summary>
-        /// The empty <see cref="RandomAccessSequence{T}"/>.
+        /// Gets the empty <see cref="RandomAccessSequence{T}"/>.
         /// </summary>
         public static RandomAccessSequence<T> Empty {
             get { return _emptyInstance; }
         }
 
-        private readonly FingerTree<Element, int> _ft;
-
-        internal bool Invariant {
-            get { return _ft != null /*&& _ft.Invariant*/; }
-        }
+        private readonly FingerTreeSized<Element> _ft;
 
         /// <summary>
         /// An element of the sequence.
@@ -75,16 +71,20 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> class
+        /// Initializes a new instance of the <see cref="RandomAccessSequence{T}"/> struct
         /// containing the same elements as <paramref name="sequence"/>.
         /// </summary>
         /// <param name="sequence">The original sequence.</param>
-        public RandomAccessSequence(IEnumerable<T> sequence) {
-            _ft = FingerTree.FromEnumerable(sequence.Map(x => new Element(x)), Monoids.Size);
+        internal RandomAccessSequence(IEnumerable<T> sequence) {
+            _ft = _emptyInstance._ft.AppendRange(sequence.Map(x => new Element(x)));
         }
 
-        internal RandomAccessSequence(FingerTree<Element, int> ft) {
+        internal RandomAccessSequence(FingerTreeSized<Element> ft) {
             _ft = ft;
+        }
+
+        internal static RandomAccessSequence<T> Single(T item) {
+            return new RandomAccessSequence<T>(new FingerTreeSized<Element>.Single(new Element(item)));
         }
 
         /// <summary>
@@ -122,7 +122,9 @@ namespace FP.Collections {
         }
 
         public IEnumerable<T> ReverseIterator() {
-            throw new System.NotImplementedException();
+            foreach (var element in _ft.ReverseIterator()) {
+                yield return element.Value;
+            }
         }
 
         /// <summary>
@@ -133,8 +135,8 @@ namespace FP.Collections {
         /// </returns>
         /// <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
         public override bool Equals(object obj) {
-            if (obj.GetType() != typeof (RandomAccessSequence<T>)) return false;
-            return Equals((RandomAccessSequence<T>) obj);
+            if (obj.GetType() != typeof(RandomAccessSequence<T>)) return false;
+            return Equals((RandomAccessSequence<T>)obj);
         }
 
         /// <summary>
@@ -195,44 +197,46 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Returns a pair of sequences, the first contains the first <paramref name="count"/> of
+        /// Returns a pair of sequences, the first contains the first <paramref name="index"/> of
         /// the sequence and the second one contains the rest of them.
         /// </summary>
-        /// <param name="count">The index at which the sequence will be split.</param>
-        /// <remarks>if <code>count &lt;= 0 || count &gt;= Count</code>, the corresponding part 
+        /// <param name="index">The index at which the sequence will be split.</param>
+        /// <remarks>if <code>index &lt;= 0 || index &gt;= Count</code>, the corresponding part 
         /// of the result will be empty.</remarks>
-        public Tuple<RandomAccessSequence<T>, RandomAccessSequence<T>> SplitAt(int count) {
-            if (count <= 0)
+        public Tuple<RandomAccessSequence<T>, RandomAccessSequence<T>> SplitAt(int index) {
+            if (index <= 0)
                 return Pair.New(Empty, this);
-            if (count >= Count)
+            if (index >= Count)
                 return Pair.New(this, Empty);
-            var ftSplit = _ft.Split(i => i > count);
-            return Pair.New(new RandomAccessSequence<T>(ftSplit.Item1),
-                            new RandomAccessSequence<T>(ftSplit.Item2));
+            var ftSplit = _ft.SplitAt(index);
+            return Pair.New(
+                new RandomAccessSequence<T>(ftSplit.Item1),
+                new RandomAccessSequence<T>(ftSplit.Item2));
         }
 
         /// <summary>Returns a specified number of contiguous elements from the start of the sequence.</summary>
         /// <returns>A <see cref="RandomAccessSequence{T}" /> that contains the specified number of elements from the start of the input sequence.</returns>
         /// <param name="count">The number of elements to return.</param>
         public RandomAccessSequence<T> Take(int count) {
-            return SplitAt(count).Item1;
+            return new RandomAccessSequence<T>(_ft.Take(count));
         }
 
         /// <summary>Bypasses a specified number of elements in a sequence and then returns the remaining elements.</summary>
         /// <returns>A <see cref="RandomAccessSequence{T}" /> that contains the elements that occur after the specified index in the input sequence.</returns>
         /// <param name="count">The number of elements to return.</param>
         public RandomAccessSequence<T> Skip(int count) {
-            return SplitAt(count).Item2;
+            return new RandomAccessSequence<T>(_ft.Skip(count));
         }
 
         /// <summary>
         /// Gets the <see cref="T"/> at the specified index.
         /// </summary>
+        /// <param name="index">The index.</param>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public T this[int index] {
             get {
                 Requires.That.IsIndexInRange(this, index, "index").Check();
-                return _ft.SplitTree(i => i > index, 0).Middle.Value;
+                return _ft.SplitTreeAt(index, 0).Middle.Value;
             }
         }
 
@@ -247,11 +251,10 @@ namespace FP.Collections {
         /// </remarks>
         public RandomAccessSequence<T> UpdateAt(int index, Func<T, T> function) {
             Requires.That.IsIndexInRange(this, index, "index").Check();
-            var split = _ft.SplitTree(i => i > index, 0);
+            var split = _ft.SplitTreeAt(index, 0);
             T currentValue = split.Middle.Value;
-            return
-                new RandomAccessSequence<T>((split.Left | new Element(function(currentValue))) +
-                                            split.Right);
+            return new RandomAccessSequence<T>(
+                (split.Left | new Element(function(currentValue))) + split.Right);
         }
 
         /// <summary>
@@ -312,11 +315,14 @@ namespace FP.Collections {
         /// </summary>
         /// <param name="index">The index where the new element shall be inserted.</param>
         /// <param name="newValue">The new value.</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> InsertAt(int index, T newValue) {
-            Requires.That.IsIndexInRange(this, index, "index");
-            var ftSplit = _ft.Split(i => i > index);
+            if (index == Count)
+                return new RandomAccessSequence<T>(_ft | new Element(newValue));
+            if (index == 0)
+                return new RandomAccessSequence<T>(new Element(newValue) | _ft);
+            Requires.That.IsIndexInRange(this, index, "index").Check();
+            var ftSplit = _ft.SplitAt(index);
             return
                 new RandomAccessSequence<T>((ftSplit.Item1 | new Element(newValue)) + ftSplit.Item2);
         }
@@ -325,19 +331,18 @@ namespace FP.Collections {
         /// Removes the element at index <paramref name="index"/>.
         /// </summary>
         /// <param name="index">The index of the element to remove.</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> RemoveAt(int index) {
-            Requires.That.IsIndexInRange(this, index, "index");
-            var split = _ft.SplitTree(i => i > index, 0);
+            Requires.That.IsIndexInRange(this, index, "index").Check();
+            var split = _ft.SplitTreeAt(index, 0);
             return new RandomAccessSequence<T>(split.Left + split.Right);
         }
 
         /// <summary>
-        /// Prepends a sequence.
+        /// Prepends a sequence of elements.
         /// </summary>
         /// <param name="ts">The sequence of elements to prepend.</param>
-        /// <returns>The new random access sequence consisting of elements of <paramref name="ts"/>
+        /// <returns>The random access sequence consisting of elements of <paramref name="ts"/>
         /// and this random access sequence.</returns>
         public RandomAccessSequence<T> PrependRange(IEnumerable<T> ts) {
             return new RandomAccessSequence<T>(_ft.PrependRange(ts.Map(t => new Element(t))));
@@ -347,7 +352,7 @@ namespace FP.Collections {
         /// Appends a sequence.
         /// </summary>
         /// <param name="ts">The sequence of elements to prepend.</param>
-        /// <returns>The new random access sequence consisting of
+        /// <returns>The random access sequence consisting of
         /// this random access sequence and elements of <paramref name="ts"/>.</returns>
         public RandomAccessSequence<T> AppendRange(IEnumerable<T> ts) {
             return new RandomAccessSequence<T>(_ft.AppendRange(ts.Map(t => new Element(t))));
@@ -358,14 +363,12 @@ namespace FP.Collections {
         /// </summary>
         /// <param name="index">The index where the new element shall be inserted.</param>
         /// <param name="ts">The collection of values to insert.</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> InsertRangeAt(int index, IEnumerable<T> ts) {
-            Requires.That.IsIndexInRange(this, index, "index");
-            var ftSplit = _ft.Split(i => i > index);
-            return
-                new RandomAccessSequence<T>(
-                    (ftSplit.Item1.AppendRange(ts.Map(t => new Element(t)))) + ftSplit.Item2);
+            Requires.That.IsIndexInRange(this, index, "index").Check();
+            var ftSplit = _ft.SplitAt(index);
+            return new RandomAccessSequence<T>(
+                ftSplit.Item1.AppendRange(ts.Map(x => new Element(x))) + ftSplit.Item2);
         }
 
         /// <summary>
@@ -377,19 +380,15 @@ namespace FP.Collections {
         /// <paramref name="count"/> is out of range.</exception>
         public RandomAccessSequence<T> RemoveRangeAt(int startIndex, int count) {
             Requires.That
-                .IsIndexInRange(this, startIndex, "startIndex")
-                .IsIndexInRange(this, startIndex + count, "startIndex + count")
+                .IsIndexAndCountInRange(this, startIndex, count, "startIndex", "count")
                 .Check();
-            //is special casing this needed?
-//            if (count == 0)
-//                return this;
-//            if (startIndex == 0)
-//                return Skip(count);
-//            if (startIndex + count == Count)
-//                return Take(startIndex);
-            var split1 = _ft.Split(i => i >= startIndex);
-            var split2 = split1.Item2.Split(i => i >= count);
-            return new RandomAccessSequence<T>(split1.Item1 + split2.Item2);
+            if (count == 0)
+                return this;
+            if (startIndex == 0)
+                return Skip(count);
+            var splitAtStartOfRange = _ft.SplitAt(startIndex);
+            var afterRemovedRange = splitAtStartOfRange.Item2.Skip(count);
+            return new RandomAccessSequence<T>(splitAtStartOfRange.Item1 + afterRemovedRange);
         }
 
         /// <summary>
@@ -400,19 +399,11 @@ namespace FP.Collections {
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> Subsequence(int startIndex, int count) {
             Requires.That
-                .IsIndexInRange(this, startIndex, "startIndex")
-                .IsIndexInRange(this, startIndex + count, "startIndex + count")
+                .IsIndexAndCountInRange(this, startIndex, count, "startIndex", "count")
                 .Check();
-            //is special casing this needed?
-            //            if (count == 0)
-            //                return this;
-            //            if (startIndex == 0)
-            //                return Skip(count);
-            //            if (startIndex + count == Count)
-            //                return Take(startIndex);
-            var split1 = _ft.Split(i => i >= startIndex);
-            var split2 = split1.Item2.Split(i => i >= count);
-            return new RandomAccessSequence<T>(split2.Item1);
+            if (count == 0)
+                return Empty;
+            return new RandomAccessSequence<T>(_ft.Skip(startIndex).Take(count));
         }
 
         /// <summary>
@@ -426,6 +417,8 @@ namespace FP.Collections {
         /// <summary>
         /// Prepends <paramref name="item"/> to <paramref name="seq"/>.
         /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="seq">The sequence.</param>
         public static RandomAccessSequence<T> operator |(T item, RandomAccessSequence<T> seq) {
             return seq.Prepend(item);
         }
@@ -433,6 +426,8 @@ namespace FP.Collections {
         /// <summary>
         /// Appends <paramref name="item"/> to <paramref name="seq"/>.
         /// </summary>
+        /// <param name="seq">The sequence.</param>
+        /// <param name="item">The item.</param>
         public static RandomAccessSequence<T> operator |(RandomAccessSequence<T> seq, T item) {
             return seq.Append(item);
         }
@@ -440,11 +435,13 @@ namespace FP.Collections {
         /// <summary>
         /// Concatenates <paramref name="seq1"/> and <paramref name="seq2"/>.
         /// </summary>
+        /// <param name="seq1">The first sequence.</param>
+        /// <param name="seq2">The second sequence.</param>
         public static RandomAccessSequence<T> operator +(
             RandomAccessSequence<T> seq1, RandomAccessSequence<T> seq2) {
             return seq1.Concat(seq2);
         }
-        }
+    }
 
     /// <summary>
     /// Utility methods for creating <see cref="RandomAccessSequence{T}"/>.
@@ -452,25 +449,27 @@ namespace FP.Collections {
     /// <seealso cref="RandomAccessSequence{T}"/>
     public static class RandomAccessSequence {
         /// <summary>
-        /// Creates an empty <see cref="RandomAccessSequence{T}"/>.
+        /// Returns an empty <see cref="RandomAccessSequence{T}"/>.
         /// </summary>
+        /// <typeparam name="T">The type of elements.</typeparam>
         public static RandomAccessSequence<T> Empty<T>() {
             return RandomAccessSequence<T>.Empty;
         }
 
         /// <summary>
-        /// Creates a <see cref="RandomAccessSequence{T}"/> with a single element.
+        /// Returns a <see cref="RandomAccessSequence{T}"/> with a single element.
         /// </summary>
+        /// <typeparam name="T">The type of elements.</typeparam>
         /// <param name="item">The only item in the sequence.</param>
         public static RandomAccessSequence<T> Singleton<T>(T item) {
-            return
-                new RandomAccessSequence<T>(
-                    FingerTree.Single(new RandomAccessSequence<T>.Element(item), Monoids.Size));
+            return RandomAccessSequence<T>.Single(item);
         }
 
         /// <summary>
-        /// Creates a <see cref="RandomAccessSequence{T}"/> containing the elements in <paramref name="sequence"/>.
+        /// Returns a <see cref="RandomAccessSequence{T}"/> containing the elements in <paramref name="sequence"/>.
         /// </summary>
+        /// <typeparam name="T">The type of elements.</typeparam>
+        /// <param name="sequence">The sequence.</param>
         public static RandomAccessSequence<T> FromEnumerable<T>(IEnumerable<T> sequence) {
             return new RandomAccessSequence<T>(sequence);
         }

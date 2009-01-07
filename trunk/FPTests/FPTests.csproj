@@ -95,9 +95,6 @@
     <Compile Include="RASequenceTests.Test_ConcatWithEmpty.g.cs">
       <DependentUpon>RASequenceTests.cs</DependentUpon>
     </Compile>
-    <Compile Include="RASequenceTests.Test_Creation.g.cs">
-      <DependentUpon>RASequenceTests.cs</DependentUpon>
-    </Compile>
     <Compile Include="RASequenceTests.Test_Enumerate.g.cs">
       <DependentUpon>RASequenceTests.cs</DependentUpon>
     </Compile>

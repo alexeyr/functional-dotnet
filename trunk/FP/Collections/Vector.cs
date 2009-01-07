@@ -34,8 +34,8 @@ namespace FP.Collections {
         /// <summary>
         /// Empty vector instance.
         /// </summary>
-        public static readonly Vector<T> Empty = new Vector<T>(default(T), 0, Arrays.EmptyArray<Vector<T>>());
-        private static readonly Vector<T> _default = new Vector<T>(default(T), 1, Arrays.EmptyArray<Vector<T>>());
+        public static readonly Vector<T> Empty = new Vector<T>(default(T), 0, Arrays.Empty<Vector<T>>());
+        private static readonly Vector<T> _default = new Vector<T>(default(T), 1, Arrays.Empty<Vector<T>>());
 
         private readonly T _data;
         private readonly int _count;
