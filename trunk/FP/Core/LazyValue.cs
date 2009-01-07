@@ -1,4 +1,17 @@
-﻿using FP.Future;
+﻿/*
+* LazyValue.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2009 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
 using System;
 
 namespace FP.Core {
@@ -6,7 +19,7 @@ namespace FP.Core {
     /// A lazy value.
     /// </summary>
     /// <typeparam name="T">Type of the value.</typeparam>
-    /// <remarks>The difference with <see cref="Lazy{T}"/> is that this class doesn't
+    /// <remarks>The difference with <see cref="LazyValue{T}"/> is that this class doesn't
     /// allow for calculation of the value to throw exceptions, removing a level of
     /// misdirection. Do _not_ use this class if there is any possibility that an
     /// exception will be thrown.</remarks>
@@ -16,7 +29,7 @@ namespace FP.Core {
         private object _syncRoot;
 
         /// <summary>
-        /// Initializes a new instance of a <see cref="Lazy{T}"/> <see cref="Future{T}"/>.
+        /// Initializes a new instance of the <see cref="LazyValue{T}"/> class.
         /// </summary>
         /// <param name="calculation">The calculation the new future will do on-demand.</param>
         /// <remarks><paramref name="calculation"/> should be side-effect-free.</remarks>
@@ -26,8 +39,8 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Lazy{T}"/> class which already holds
-        /// a value.
+        /// Initializes a new instance of the <see cref="LazyValue{T}"/> class which already
+        /// holds a value.
         /// </summary>
         /// <param name="value">The result.</param>
         public LazyValue(T value) {
@@ -36,20 +49,28 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// Gets the result of the future, whether it is failed or successful. If the result isn't 
-        /// available yet, blocks the thread until it is obtained.
+        /// Gets the value of the lazy calculation.
         /// </summary>
-        /// <value>The result.</value>
+        /// <value>The value.</value>
+        /// <remarks>If the calculation has not been done before, it is called and its
+        /// result stored.</remarks>
         public T Value {
             get {
-                if (!IsCompleted) {
-                    lock (_syncRoot) {
-                        _value = _calculation();
-                        _calculation = null;
-                        _syncRoot = null;
-                    }
-                }
+                Force();
                 return _value;
+            }
+        }
+
+        /// <summary>
+        /// Forces calculation of this lazy calculation's value.
+        /// </summary>
+        public void Force() {
+            if (!IsCompleted) {
+                lock (_syncRoot) {
+                    _value = _calculation();
+                    _calculation = null;
+                    _syncRoot = null;
+                }
             }
         }
 
@@ -63,16 +84,12 @@ namespace FP.Core {
             get { return _calculation == null; }
         }
 
-        /// <summary>
-        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="Future{T}"/>.
-        /// </summary>
-        /// <returns></returns>
         public override string ToString() {
             return IsCompleted ? _value.ToString() : "Lazy";
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Lazy{T}"/> to <see cref="T"/>.
+        /// Performs an implicit conversion from <see cref="LazyValue{T}"/> to <see cref="T"/>.
         /// </summary>
         /// <param name="lazy">The lazy value.</param>
         /// <returns>The result of forcing this lazy value.</returns>
@@ -81,7 +98,7 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="T"/> to <see cref="Lazy{T}"/>.
+        /// Performs an implicit conversion from <see cref="T"/> to <see cref="LazyValue{T}"/>.
         /// </summary>
         /// <param name="t">The lazy value.</param>
         /// <returns>The ready future with result <paramref name="t"/>.</returns>

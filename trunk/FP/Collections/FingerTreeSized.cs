@@ -198,7 +198,7 @@ namespace FP.Collections {
 
         protected abstract FingerTreeSized<T> App3(IEnumerable<T> middleList, FingerTreeSized<T> rightTree);
 
-        internal abstract Split<T, FingerTreeSized<T>> SplitTreeAt(int index, int initial);
+        internal abstract Split<T, FingerTreeSized<T>> SplitTreeAt(int index);
 
         /// <summary>
         /// Splits the list according to the specified predicate.
@@ -218,7 +218,7 @@ namespace FP.Collections {
         /// </remarks>
         public virtual Tuple<FingerTreeSized<T>, FingerTreeSized<T>> SplitAt(int index) {
             if (index >= Measure) return Pair.New(this, (FingerTreeSized<T>)EmptyInstance);
-            var split = SplitTreeAt(index, 0);
+            var split = SplitTreeAt(index);
             return Pair.New(split.Left, split.Middle | split.Right);
         } // Split
 
@@ -229,6 +229,8 @@ namespace FP.Collections {
         public FingerTreeSized<T> Skip(int index) {
             return SplitAt(index).Item2;
         }
+
+        internal abstract Tuple<T, int> this[int index] { get; }
 
         /// <summary>
         /// Reverses this tree.
@@ -453,7 +455,7 @@ namespace FP.Collections {
             /// <param name="index">The predicate.</param>
             /// <param name="initial">The initial.</param>
             /// <exception cref="EmptyEnumerableException">Empty tree can't be split.</exception>
-            internal override Split<T, FingerTreeSized<T>> SplitTreeAt(int index, int initial) {
+            internal override Split<T, FingerTreeSized<T>> SplitTreeAt(int index) {
                 throw new EmptyEnumerableException("Empty tree can't be split");
             } // SplitTree
 
@@ -474,6 +476,10 @@ namespace FP.Collections {
                 var empty = (FingerTreeSized<T>)this;
                 return Pair.New(empty, empty);
             } // Split
+
+            internal override Tuple<T, int> this[int index] {
+                get { throw new ArgumentException("Tried to index an empty tree!"); }
+            }
 
             internal override FingerTreeSized<T> ReverseTree(Func<T, T> f) {
                 return this;
@@ -645,9 +651,13 @@ namespace FP.Collections {
                 return Value | rightTree.PrependRange(middleList);
             }
 
-            internal override Split<T, FingerTreeSized<T>> SplitTreeAt(int index, int initial) {
+            internal override Split<T, FingerTreeSized<T>> SplitTreeAt(int index) {
                 return new Split<T, FingerTreeSized<T>>(EmptyInstance, Value, EmptyInstance);
             } // SplitTree
+
+            internal override Tuple<T, int> this[int index] {
+                get { return Pair.New(Value, index); }
+            }
 
             internal override FingerTreeSized<T> ReverseTree(Func<T, T> f) {
                 var newValue = f(Value);
@@ -803,7 +813,8 @@ namespace FP.Collections {
                     int newMeasure = Measure - _left[0].Measure;
                     if (_left.Length == 1)
                         return RotateL(Middle, _right);
-                    return MakeDeepForceMiddle(_left.CopyNoChecks(1), _middleLazy, _right);
+                    _middleLazy.Force();
+                    return MakeDeep(_left.CopyNoChecks(1), _middleLazy, _right, newMeasure);
                 }
             } // Tail
 
@@ -818,7 +829,8 @@ namespace FP.Collections {
                     int newMeasure = Measure - _right[rightLast].Measure;
                     if (_right.Length == 1)
                         return RotateR(_left, Middle);
-                    return MakeDeepForceMiddle(_left, _middleLazy, _right.CopyNoChecks(0, rightLast));
+                    _middleLazy.Force();
+                    return MakeDeep(_left, _middleLazy, _right.CopyNoChecks(0, rightLast), newMeasure);
                 }
             } // Init
 
@@ -917,7 +929,7 @@ namespace FP.Collections {
                 // ReSharper restore PossibleNullReferenceException
             }
 
-            private IEnumerable<FTNode<T, int>> Nodes(IEnumerable<T> elements) {
+            private static IEnumerable<FTNode<T, int>> Nodes(IEnumerable<T> elements) {
                 Debug.Assert(elements.Count() >= 2);
                 var buffer = new Queue<T>(5);
                 foreach (var t in elements) {
@@ -957,24 +969,23 @@ namespace FP.Collections {
                 } // switch
             }
 
-            internal override Split<T, FingerTreeSized<T>> SplitTreeAt(int index, int initial) {
-                int totalLeft = initial + _left.SumMeasures();
+            internal override Split<T, FingerTreeSized<T>> SplitTreeAt(int index) {
                 // is split on the left?
+                int totalLeft = _left.SumMeasures();
                 if (index < totalLeft) {
-                    var splitLeft = _left.SplitArrayAt(index, initial);
+                    var splitLeft = _left.SplitArrayAt(index);
                     return new Split<T, FingerTreeSized<T>>(
                         FingerTree.SizedFromArray(splitLeft.Left),
                         splitLeft.Middle,
                         DeepL(splitLeft.Right, Middle, _right));
                 } // if
 
-                int totalMiddle = totalLeft + Middle.Measure;
                 // is split in the middle?
-                if (index < totalMiddle) {
-                    var splitMiddle = Middle.SplitTreeAt(index, totalLeft);
-                    int totalLeftAndMiddleLeft = totalLeft + splitMiddle.Left.Measure;
+                int indexMiddle = index - totalLeft;
+                if (indexMiddle < Middle.Measure) {
+                    var splitMiddle = Middle.SplitTreeAt(indexMiddle);
                     var splitMiddleMiddle = splitMiddle.Middle.AsArray.
-                        SplitArrayAt(index, totalLeftAndMiddleLeft);
+                        SplitArrayAt(indexMiddle - splitMiddle.Left.Measure);
                     return new Split<T, FingerTreeSized<T>>(
                         DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left),
                         splitMiddleMiddle.Middle,
@@ -982,12 +993,33 @@ namespace FP.Collections {
                 } // if
 
                 // it must be on the right
-                var splitRight = _right.SplitArrayAt(index, totalMiddle);
+                int indexRight = indexMiddle - Middle.Measure;
+                var splitRight = _right.SplitArrayAt(indexRight);
                 return new Split<T, FingerTreeSized<T>>(
                     DeepR(_left, Middle, splitRight.Left),
                     splitRight.Middle,
                     FingerTree.SizedFromArray(splitRight.Right));
             } // SplitTree
+
+            internal override Tuple<T, int> this[int index] {
+                get {
+                    // is index on the left?
+                    int totalLeft = _left.SumMeasures();
+                    if (index < totalLeft)
+                        return _left.IndexInside(index);
+
+                    // is index in the middle?
+                    int indexMiddle = index - totalLeft;
+                    if (indexMiddle < Middle.Measure) {
+                        var nodeIndexInsideIt = Middle[indexMiddle];
+                        return nodeIndexInsideIt.Item1.AsArray.IndexInside(nodeIndexInsideIt.Item2);
+                    } // if
+
+                    // it must be on the right
+                    int indexRight = indexMiddle - Middle.Measure;
+                    return _right.IndexInside(indexRight);
+                }
+            }
 
             internal override FingerTreeSized<T> ReverseTree(Func<T, T> f) {
                 var newLeft = _right.MapReverse(f);

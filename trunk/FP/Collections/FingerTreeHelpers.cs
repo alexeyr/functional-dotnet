@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using FP.Core;
 using FP.Util;
 
 namespace FP.Collections {
@@ -188,18 +189,18 @@ namespace FP.Collections {
             }
         }
 
-        internal static Split<T, T[]> SplitArrayAt<T>(this T[] array, int index, int init)
+        internal static Split<T, T[]> SplitArrayAt<T>(this T[] array, int index)
             where T : IMeasured<int> {
             if (array.Length == 1) {
                 return new Split<T, T[]>(
                     Arrays.Empty<T>(), array[0], Arrays.Empty<T>());
             }
 
-            int total = init;
             int offset;
             for (offset = 0; offset < array.Length - 1; offset++) {
-                total = total + array[offset].Measure;
-                if (index < total) break;
+                int newIndex = index - array[offset].Measure;
+                if (newIndex < 0) break;
+                index = newIndex;
             }
             var left = offset == 0
                            ? Arrays.Empty<T>()
@@ -208,6 +209,21 @@ namespace FP.Collections {
                             ? Arrays.Empty<T>()
                             : array.CopyNoChecks(offset + 1);
             return new Split<T, T[]>(left, array[offset], right);
+        }
+
+        internal static Tuple<T, int> IndexInside<T>(this T[] array, int index)
+            where T : IMeasured<int> {
+            if (array.Length == 1) {
+                return Pair.New(array[0], index);
+            }
+
+            int offset;
+            for (offset = 0; offset < array.Length - 1; offset++) {
+                int newIndex = index - array[offset].Measure;
+                if (newIndex < 0) break;
+                index = newIndex;
+            }
+            return Pair.New(array[offset], index);
         }
     }
 }
