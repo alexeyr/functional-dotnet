@@ -236,7 +236,7 @@ namespace FP.Collections {
         public T this[int index] {
             get {
                 Requires.That.IsIndexInRange(this, index, "index").Check();
-                return _ft.SplitTreeAt(index, 0).Middle.Value;
+                return _ft[index].Item1.Value;
             }
         }
 
@@ -251,7 +251,7 @@ namespace FP.Collections {
         /// </remarks>
         public RandomAccessSequence<T> AdjustAt(int index, Func<T, T> function) {
             Requires.That.IsIndexInRange(this, index, "index").Check();
-            var split = _ft.SplitTreeAt(index, 0);
+            var split = _ft.SplitTreeAt(index);
             T currentValue = split.Middle.Value;
             return new RandomAccessSequence<T>(
                 (split.Left | new Element(function(currentValue))) + split.Right);
@@ -334,7 +334,7 @@ namespace FP.Collections {
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> RemoveAt(int index) {
             Requires.That.IsIndexInRange(this, index, "index").Check();
-            var split = _ft.SplitTreeAt(index, 0);
+            var split = _ft.SplitTreeAt(index);
             return new RandomAccessSequence<T>(split.Left + split.Right);
         }
 
