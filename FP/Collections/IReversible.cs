@@ -22,7 +22,6 @@ namespace FP.Collections {
         /// <summary>
         /// Reverses this instance.
         /// </summary>
-        /// <returns></returns>
         TCollection Reverse();
     } // interface IReversible
 } // namespace FP.Collections.Immutable

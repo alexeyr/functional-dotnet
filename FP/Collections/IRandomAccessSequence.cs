@@ -28,12 +28,12 @@ namespace FP.Collections {
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The count.</param>
-        /// <returns></returns>
         TSequence Subsequence(int startIndex, int count);
 
         /// <summary>
         /// Gets the <see cref="T"/> at the specified index.
         /// </summary>
+        /// <param name="index">The index.</param>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         T this[int index] { get; }
 
@@ -42,5 +42,5 @@ namespace FP.Collections {
         /// </summary>
         /// <value>The number of elements in the sequence.</value>
         int Count { get; }
-        }
+    }
 }

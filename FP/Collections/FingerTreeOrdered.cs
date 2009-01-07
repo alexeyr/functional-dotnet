@@ -64,14 +64,14 @@ namespace FP.Collections {
             return array[array.Length - 1].Measure;
         }
 
-        private FingerTreeOrdered<T, K> RotateL(FingerTreeOrdered<FTNode<T, K>, K> middle, T[] right) {
+        private static FingerTreeOrdered<T, K> RotateL(FingerTreeOrdered<FTNode<T, K>, K> middle, T[] right) {
             if (middle.IsEmpty)
                 return FromSortedArray(right);
             K measure = MeasureArray(right);
             return MakeDeep(middle.Head.AsArray, () => middle.Tail, right, measure);
         }
 
-        private Deep MakeDeepForceMiddle(T[] left, LazyValue<FingerTreeOrdered<FTNode<T, K>, K>> middle, T[] right) {
+        private static Deep MakeDeepForceMiddle(T[] left, LazyValue<FingerTreeOrdered<FTNode<T, K>, K>> middle, T[] right) {
             return new Deep(left, middle, right);
         }
 
@@ -79,15 +79,15 @@ namespace FP.Collections {
             return new Single(value);
         } // MakeSingle
 
-        private Deep MakeDeep(T[] left, Func<FingerTreeOrdered<FTNode<T, K>, K>> func, T[] right, K measure) {
+        private static Deep MakeDeep(T[] left, Func<FingerTreeOrdered<FTNode<T, K>, K>> func, T[] right, K measure) {
             return MakeDeep(left, new LazyValue<FingerTreeOrdered<FTNode<T, K>, K>>(func), right, measure);
         } // MakeDeep
 
-        private Deep MakeDeep(T[] left, LazyValue<FingerTreeOrdered<FTNode<T, K>, K>> middle, T[] right, K measure) {
+        private static Deep MakeDeep(T[] left, LazyValue<FingerTreeOrdered<FTNode<T, K>, K>> middle, T[] right, K measure) {
             return new Deep(left, middle, right, measure);
         } // MakeDeep
 
-        private FingerTreeOrdered<T, K> DeepL(T[] left, FingerTreeOrdered<FTNode<T, K>, K> middle, T[] right) {
+        private static FingerTreeOrdered<T, K> DeepL(T[] left, FingerTreeOrdered<FTNode<T, K>, K> middle, T[] right) {
             Debug.Assert(left.Length <= 4);
             Debug.Assert(right.Length != 0 && right.Length <= 4);
 
@@ -97,7 +97,7 @@ namespace FP.Collections {
             return RotateL(middle, right);
         } // DeepL
 
-        private FingerTreeOrdered<T, K> DeepR(T[] left, FingerTreeOrdered<FTNode<T, K>, K> middle, T[] right) {
+        private static FingerTreeOrdered<T, K> DeepR(T[] left, FingerTreeOrdered<FTNode<T, K>, K> middle, T[] right) {
             Debug.Assert(left.Length != 0 && left.Length <= 4);
             Debug.Assert(right.Length <= 4);
 
@@ -107,7 +107,7 @@ namespace FP.Collections {
             return RotateR(left, middle);
         } // DeepR
 
-        private FingerTreeOrdered<T, K> RotateR(T[] left, FingerTreeOrdered<FTNode<T, K>, K> middle) {
+        private static FingerTreeOrdered<T, K> RotateR(T[] left, FingerTreeOrdered<FTNode<T, K>, K> middle) {
             if (middle.IsEmpty)
                 return FromSortedArray(left);
             K measure = middle.PrependMeasure(MeasureArray(left));
@@ -276,7 +276,7 @@ namespace FP.Collections {
         /// <remarks>Overridden in <see cref="Empty"/>, where <see cref="Measure"/> throws
         /// an exception.</remarks>
         public virtual Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> Split(K key) {
-            if (key.CompareTo(Measure) >= 0) return Pair.New(this, (FingerTreeOrdered<T, K>)EmptyInstance);
+            if (key.CompareTo(Measure) > 0) return Pair.New(this, (FingerTreeOrdered<T, K>)EmptyInstance);
             var split = SplitTreeAt(key);
             return Pair.New(split.Left, split.Middle | split.Right);
         } // Split
@@ -396,7 +396,7 @@ namespace FP.Collections {
             /// </summary>
             /// <value>The measure.</value>
             public override K Measure {
-                get { throw new InvalidOperationException(); }
+                get { throw new EmptyEnumerableException(); }
             } // Measure
 
             /// <summary>
@@ -977,9 +977,9 @@ namespace FP.Collections {
             }
 
             internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key) {
-                K totalLeft = MeasureArray(_left);
+                K maxLeft = MeasureArray(_left);
                 // is split on the left?
-                if (key.CompareTo(totalLeft) <= 0) {
+                if (key.CompareTo(maxLeft) <= 0) {
                     var splitLeft = SplitArrayAt(_left, key);
                     return new Split<T, FingerTreeOrdered<T, K>>(
                         FromSortedArray(splitLeft.Left),
@@ -987,9 +987,9 @@ namespace FP.Collections {
                         DeepL(splitLeft.Right, Middle, _right));
                 } // if
 
-                K totalMiddle = Middle.PrependMeasure(totalLeft);
+                K maxMiddle = Middle.PrependMeasure(maxLeft);
                 // is split in the middle?
-                if (key.CompareTo(totalMiddle) <= 0) {
+                if (key.CompareTo(maxMiddle) <= 0) {
                     var splitMiddle = Middle.SplitTreeAt(key);
                     var splitMiddleMiddle = SplitArrayAt(splitMiddle.Middle.AsArray, key);
                     return new Split<T, FingerTreeOrdered<T, K>>(
