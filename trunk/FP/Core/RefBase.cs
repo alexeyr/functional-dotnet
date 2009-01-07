@@ -4,14 +4,14 @@ namespace FP.Core {
     /// <summary>
     /// A base class for implementing <see cref="IRef{T}"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <remarks>Contains an implementation of <see cref="IRef{T}.Modify"/> and an
+    /// <typeparam name="T">The type of reference's contents.</typeparam>
+    /// <remarks>Contains an implementation of <see cref="IRef{T}.Adjust"/> and an
     /// automatic property for <see cref="Validator"/>. Therefore, implementors just
     /// need to provide overrides for <see cref="Value"/>, <see cref="Store"/>, and 
     /// <see cref="CompareAndSet"/>.</remarks>
     public abstract class RefBase<T> : IRef<T> {
         /// <summary>
-        /// Creates a reference with the specified initial value and validator.
+        /// Initializes a new instance of the <see cref="RefBase{T}"/> class
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="validator">The validator function.</param>
@@ -26,16 +26,20 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// Value of the reference.
+        /// Gets the current value of the reference.
         /// </summary>
+        /// <value></value>
         public abstract T Value { get; }
 
         /// <summary>
-        /// The validator. Must be side-effect free. This will be called before any change
-        /// of value with the intended new value as the argument and should throw an exception
-        /// if the change is invalid.
+        /// Gets the validator action.
         /// </summary>
         /// <value>The validator function.</value>
+        /// <remarks>
+        /// This can be set when creating the reference. Must be side-effect free.
+        /// It will be called before any change of value with the intended new value as
+        /// the argument and should throw an exception if the change is invalid.
+        /// </remarks>
         public Action<T> Validator { get; protected set; }
 
         /// <summary>
@@ -78,7 +82,7 @@ namespace FP.Core {
         /// </remarks>
         /// <exception cref="RefValidationException"> when the new value doesn't
         /// pass <see cref="Validator"/>.</exception>
-        public Tuple<T, T> Modify(Func<T, T> f) {
+        public Tuple<T, T> Adjust(Func<T, T> f) {
             T oldValue;
             T newValue;
             do {

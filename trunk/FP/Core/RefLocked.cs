@@ -66,6 +66,6 @@ namespace FP.Core {
             }
         } // CompareAndSet(oldValue, newValue)
 
-        // Modify()
+        // Adjust()
     }
 }

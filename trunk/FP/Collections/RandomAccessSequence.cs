@@ -249,7 +249,7 @@ namespace FP.Collections {
         /// <remarks>
         /// Equivalent to <code>SetAt(index, function(this[index])), but faster.</code>
         /// </remarks>
-        public RandomAccessSequence<T> UpdateAt(int index, Func<T, T> function) {
+        public RandomAccessSequence<T> AdjustAt(int index, Func<T, T> function) {
             Requires.That.IsIndexInRange(this, index, "index").Check();
             var split = _ft.SplitTreeAt(index, 0);
             T currentValue = split.Middle.Value;

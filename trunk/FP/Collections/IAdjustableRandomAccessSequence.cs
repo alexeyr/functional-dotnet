@@ -1,5 +1,5 @@
 /*
-* IUpdatableRandomAccessSequence.cs is part of functional-dotnet project
+* IAdjustableRandomAccessSequence.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
 * All rights reserved.
@@ -21,8 +21,8 @@ namespace FP.Collections {
     /// </summary>
     /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
     /// <typeparam name="TSequence">Type of the sequence.</typeparam>
-    public interface IUpdatableRandomAccessSequence<T, TSequence> : IRandomAccessSequence<T, TSequence>
-        where TSequence : IUpdatableRandomAccessSequence<T, TSequence> {
+    public interface IAdjustableRandomAccessSequence<T, TSequence> : IRandomAccessSequence<T, TSequence>
+        where TSequence : IAdjustableRandomAccessSequence<T, TSequence> {
         /// <summary>
         /// Updates the element at <paramref name="index"/> using <paramref name="function"/>.
         /// </summary>
@@ -32,13 +32,13 @@ namespace FP.Collections {
         /// <remarks>
         /// Equivalent to <code>SetAt(index, function(this[index])), but faster.</code>
         /// </remarks>
-        TSequence UpdateAt(int index, Func<T, T> function);
-        } // interface IUpdatableRandomAccessSequence`2
+        TSequence AdjustAt(int index, Func<T, T> function);
+        } // interface IAdjustableRandomAccessSequence`2
 
     /// <summary>
-    /// Utility class for all random access sequences.
+    /// Utility method for all random access sequences.
     /// </summary>
-    public static class RandomAccessSequences {
+    public static class AdjustableRandomAccessSequences {
         /// <summary>
         /// Replaces the <see cref="T"/> at the specified index with the specified value.
         /// </summary>
@@ -53,8 +53,8 @@ namespace FP.Collections {
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public static TSequence SetAt<T, TSequence>(this TSequence sequence, int index, T newValue)
-            where TSequence : IUpdatableRandomAccessSequence<T, TSequence> {
-            return sequence.UpdateAt(index, _ => newValue);
+            where TSequence : IAdjustableRandomAccessSequence<T, TSequence> {
+            return sequence.AdjustAt(index, _ => newValue);
         }
     }
 } // namespace FP.Collections.Immutable
