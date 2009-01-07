@@ -35,9 +35,8 @@ namespace FP.Collections {
     /// <typeparam name="K">The type of measure annotations.</typeparam>
     [Serializable]
     internal abstract class FingerTreeOrdered<T, K> : IEquatable<FingerTreeOrdered<T, K>>,
-                                                    IDeque<T, FingerTreeOrdered<T, K>>,
-                                                    IMeasured<K>, IFoldable<T>,
-                                                    ICatenable<FingerTreeOrdered<T, K>>
+                                                      IMeasured<K>, IFoldable<T>,
+                                                      IReversibleEnumerable<T>
         where T : IMeasured<K>
         where K : IComparable<K> {
         /// <summary>
@@ -46,15 +45,15 @@ namespace FP.Collections {
         /// <value>The measure.</value>
         public abstract K Measure { get; } // Measure
 
-        private static readonly Empty _emptyInstance = new Empty();
+        private static readonly FingerTreeOrdered<T, K> _emptyInstance = new Empty();
 
-        internal static Empty EmptyInstance {
+        internal static FingerTreeOrdered<T, K> EmptyInstance {
             get {
                 return _emptyInstance;
             }
         } // EmptyInstance
 
-        internal static FingerTreeOrdered<FTNode<T, K>, K>.Empty EmptyInstanceNested {
+        internal static FingerTreeOrdered<FTNode<T, K>, K> EmptyInstanceNested {
             get {
                 return FingerTreeOrdered<FTNode<T, K>, K>._emptyInstance;
             }
@@ -210,7 +209,7 @@ namespace FP.Collections {
         /// Appends the sequence of elements to the end of the tree.
         /// </summary>
         /// <param name="ts">The sequence.</param>
-        public FingerTreeOrdered<T, K> AppendRange(IEnumerable<T> ts) {
+        protected FingerTreeOrdered<T, K> AppendRange(IEnumerable<T> ts) {
             return ts.FoldLeft((tree, a) => tree | a, this);
         } // AppendRange
 
@@ -218,7 +217,7 @@ namespace FP.Collections {
         /// Prepends the sequence of elements to the beginning of the tree.
         /// </summary>
         /// <param name="ts">The sequence.</param>
-        public FingerTreeOrdered<T, K> PrependRange(IEnumerable<T> ts) {
+        protected FingerTreeOrdered<T, K> PrependRange(IEnumerable<T> ts) {
             return ts.FoldRight((a, tree) => a | tree, this);
         } // PrependRange
 
@@ -227,23 +226,62 @@ namespace FP.Collections {
         /// </summary>
         /// <param name="newHead">The new head.</param>
         /// <returns>The resulting list.</returns>
-        public abstract FingerTreeOrdered<T, K> Prepend(T newHead);
+        protected abstract FingerTreeOrdered<T, K> Prepend(T newHead);
 
         /// <summary>
         /// Appends the specified element to the end of the list.
         /// </summary>
         /// <param name="newLast">The new last element.</param>
         /// <returns>The resulting list.</returns>
-        public abstract FingerTreeOrdered<T, K> Append(T newLast);
+        protected abstract FingerTreeOrdered<T, K> Append(T newLast);
 
         /// <summary>
         /// Concatenates the tree with another tree.
         /// </summary>
         /// <param name="otherTree">Another tree.</param>
         /// <returns>The result of concatenation.</returns>
-        public abstract FingerTreeOrdered<T, K> Concat(FingerTreeOrdered<T, K> otherTree);
+        protected abstract FingerTreeOrdered<T, K> Concat(FingerTreeOrdered<T, K> otherTree);
 
         protected abstract FingerTreeOrdered<T, K> App3(IEnumerable<T> middleList, FingerTreeOrdered<T, K> rightTree);
+
+        /// <summary>
+        /// Extracts all elements with the given key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>Three trees. The first one contains all elements less than
+        /// <paramref cref="key"/>, the second one equal elements, and the third one greater
+        /// elements.</returns>
+        public Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> ExtractAll(K key) {
+            var split1 = Split(key, false);
+            var split2 = split1.Item2.Split(key, true);
+            return Tuple.New(split1.Item1, split2.Item1, split2.Item2);
+        }
+
+        /// <summary>
+        /// Extracts all elements with the given key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns><see cref="Optional{T}.None"/> if there are no elements equal to <paramref cref="key"/>;
+        /// The first field of the result contains all elements less than or equal to
+        /// <see cref="key"/> except one, the second is equal to it, and the third one greater elements.</returns>
+        public abstract Optional<Tuple<FingerTreeOrdered<T, K>, T, FingerTreeOrdered<T, K>>> ExtractOne(K key);
+
+        public Optional<T> this[K key] {
+            get {
+                return LeastGtOrEqual(key).Filter(t => key.CompareTo(t.Measure) == 0);
+            }
+        }
+
+        protected abstract Optional<T> LeastGtOrEqual(K key);
+
+        public FingerTreeOrdered<T, K> Insert(T item) {
+            var split = Split(item.Measure, false);
+            return (split.Item1 | item) + split.Item2;
+        }
+
+        public FingerTreeOrdered<T, K> InsertRange(IEnumerable<T> ts) {
+            return ts.Aggregate(this, (tree, t) => tree.Insert(t));
+        }
 
         /// <summary>
         /// Prepends the measure.
@@ -255,12 +293,15 @@ namespace FP.Collections {
             return Measure;
         }
 
-        internal abstract Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key);
+        internal abstract Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft);
 
         /// <summary>
         /// Splits the list according to the specified predicate.
         /// </summary>
         /// <param name="key">The predicate.</param>
+        /// <param name="equalGoLeft">if set to <c>true</c>, elements with the measure
+        /// equal to <see cref="key"/> will be at the left side of the split;
+        /// otherwise, they will be on the right side.</param>
         /// <remarks>The result has the following properties.
         /// <code>
         /// var left = tree.Split(predicate).Item1;
@@ -269,15 +310,15 @@ namespace FP.Collections {
         /// tree.SequenceEquals(left + right);
         /// left.IsEmpty() || !predicate(left.Measure);
         /// right.IsEmpty() || predicate(left.Measure + right.Head.Measure);
-        /// </code>
-        /// If there are several possible splits for which these properties hold,
+        /// </code>If there are several possible splits for which these properties hold,
         /// any of them may be returned.
         /// </remarks>
         /// <remarks>Overridden in <see cref="Empty"/>, where <see cref="Measure"/> throws
         /// an exception.</remarks>
-        public virtual Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> Split(K key) {
-            if (key.CompareTo(Measure) > 0) return Pair.New(this, (FingerTreeOrdered<T, K>)EmptyInstance);
-            var split = SplitTreeAt(key);
+        public virtual Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> Split(K key, bool equalGoLeft) {
+            if (key.CompareTo(Measure) > 0 || (equalGoLeft && key.CompareTo(Measure) == 0)) 
+                return Pair.New(this, EmptyInstance);
+            var split = SplitTreeAt(key, equalGoLeft);
             return Pair.New(split.Left, split.Middle | split.Right);
         } // Split
 
@@ -466,7 +507,7 @@ namespace FP.Collections {
             /// </summary>
             /// <param name="newHead">The new head.</param>
             /// <returns>The resulting list.</returns>
-            public override FingerTreeOrdered<T, K> Prepend(T newHead) {
+            protected override FingerTreeOrdered<T, K> Prepend(T newHead) {
                 return MakeSingle(newHead);
             } // Prepend
 
@@ -475,7 +516,7 @@ namespace FP.Collections {
             /// </summary>
             /// <param name="newLast">The new last element..</param>
             /// <returns>The resulting list.</returns>
-            public override FingerTreeOrdered<T, K> Append(T newLast) {
+            protected override FingerTreeOrdered<T, K> Append(T newLast) {
                 return MakeSingle(newLast);
             }
 
@@ -484,7 +525,7 @@ namespace FP.Collections {
             /// </summary>
             /// <param name="otherTree">Another tree.</param>
             /// <returns>The result of concatenation.</returns>
-            public override FingerTreeOrdered<T, K> Concat(FingerTreeOrdered<T, K> otherTree) {
+            protected override FingerTreeOrdered<T, K> Concat(FingerTreeOrdered<T, K> otherTree) {
                 return otherTree;
             }
 
@@ -493,33 +534,23 @@ namespace FP.Collections {
                 return rightTree.PrependRange(middleList);
             }
 
+            public override Optional<Tuple<FingerTreeOrdered<T, K>, T, FingerTreeOrdered<T, K>>> ExtractOne(K key) {
+                return Optional<Tuple<FingerTreeOrdered<T, K>, T, FingerTreeOrdered<T, K>>>.None;
+            }
+
+            protected override Optional<T> LeastGtOrEqual(K key) {
+                return Optional<T>.None;
+            }
+
             protected override K PrependMeasure(K prependedMeasure) {
                 return prependedMeasure;
             }
 
-            /// <summary>
-            /// Splits the tree.
-            /// </summary>
-            /// <param name="key">The predicate.</param>
-            /// <exception cref="EmptyEnumerableException">Empty tree can't be split.</exception>
-            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key) {
+            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft) {
                 throw new EmptyEnumerableException("Empty tree can't be split");
             } // SplitTree
 
-            /// <summary>
-            /// Splits the list according to the specified predicate. The result has the following properties.
-            /// <code>
-            /// var left = tree.Split(predicate).Item1;
-            /// var right = tree.Split(predicate).Item2;
-            /// ---------
-            /// tree.SequenceEquals(left + right);
-            /// left.IsEmpty() || !predicate(left.TotalMeasure);
-            /// right.IsEmpty() || !predicate(left.TotalMeasure + right.Head.Measure);
-            /// </code>
-            /// If there are several splits, the split returned is not guaranteed to be the first one!
-            /// </summary>
-            /// <param name="key">The predicate.</param>
-            public override Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> Split(K key) {
+            public override Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> Split(K key, bool equalGoLeft) {
                 var empty = (FingerTreeOrdered<T, K>)this;
                 return Pair.New(empty, empty);
             } // Split
@@ -655,7 +686,7 @@ namespace FP.Collections {
             /// </summary>
             /// <param name="newHead">The new head.</param>
             /// <returns>The resulting list.</returns>
-            public override FingerTreeOrdered<T, K> Prepend(T newHead) {
+            protected override FingerTreeOrdered<T, K> Prepend(T newHead) {
                 return MakeDeep(
                     new[] { newHead }, EmptyInstanceNested, new[] { Value },
                     Value.Measure);
@@ -666,7 +697,7 @@ namespace FP.Collections {
             /// </summary>
             /// <param name="newLast">The new last element.</param>
             /// <returns>The resulting list.</returns>
-            public override FingerTreeOrdered<T, K> Append(T newLast) {
+            protected override FingerTreeOrdered<T, K> Append(T newLast) {
                 return MakeDeep(
                     new[] { Value }, EmptyInstanceNested, new[] { newLast },
                     newLast.Measure);
@@ -677,7 +708,7 @@ namespace FP.Collections {
             /// </summary>
             /// <param name="otherTree">Another tree.</param>
             /// <returns>The result of concatenation.</returns>
-            public override FingerTreeOrdered<T, K> Concat(FingerTreeOrdered<T, K> otherTree) {
+            protected override FingerTreeOrdered<T, K> Concat(FingerTreeOrdered<T, K> otherTree) {
                 return Value | otherTree;
             }
 
@@ -688,7 +719,20 @@ namespace FP.Collections {
                 return Value | rightTree.PrependRange(middleList);
             }
 
-            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key) {
+            public override Optional<Tuple<FingerTreeOrdered<T, K>, T, FingerTreeOrdered<T, K>>> ExtractOne(K key) {
+                return
+                    key.CompareTo(Measure) == 0
+                        ? Tuple.New(EmptyInstance, Value, EmptyInstance)
+                        : Optional<Tuple<FingerTreeOrdered<T, K>, T, FingerTreeOrdered<T, K>>>.None;
+            }
+
+            protected override Optional<T> LeastGtOrEqual(K key) {
+                return key.CompareTo(Measure) == 0
+                           ? Value
+                           : Optional<T>.None;
+            }
+
+            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft) {
                 return new Split<T, FingerTreeOrdered<T, K>>(EmptyInstance, Value, EmptyInstance);
             } // SplitTree
 
@@ -882,7 +926,7 @@ namespace FP.Collections {
             /// </summary>
             /// <param name="newHead">The new head.</param>
             /// <returns>The resulting list.</returns>
-            public override FingerTreeOrdered<T, K> Prepend(T newHead) {
+            protected override FingerTreeOrdered<T, K> Prepend(T newHead) {
                 var leftLength = _left.Length;
                 if (leftLength != 4) {
                     var newLeft = new T[leftLength + 1];
@@ -902,7 +946,7 @@ namespace FP.Collections {
             /// </summary>
             /// <param name="newLast">The new last element..</param>
             /// <returns>The resulting list.</returns>
-            public override FingerTreeOrdered<T, K> Append(T newLast) {
+            protected override FingerTreeOrdered<T, K> Append(T newLast) {
                 var rightLength = _right.Length;
                 if (rightLength != 4) {
                     var newRight = new T[rightLength + 1];
@@ -922,7 +966,7 @@ namespace FP.Collections {
             /// </summary>
             /// <param name="otherTree">Another tree.</param>
             /// <returns>The result of concatenation.</returns>
-            public override FingerTreeOrdered<T, K> Concat(FingerTreeOrdered<T, K> otherTree) {
+            protected override FingerTreeOrdered<T, K> Concat(FingerTreeOrdered<T, K> otherTree) {
                 if (otherTree.IsEmpty)
                     return this;
                 if (otherTree.IsSingle)
@@ -943,6 +987,36 @@ namespace FP.Collections {
                     rightDeep._right,
                     rightDeep.Measure);
                 // ReSharper restore PossibleNullReferenceException
+            }
+
+            public override Optional<Tuple<FingerTreeOrdered<T, K>, T, FingerTreeOrdered<T, K>>> ExtractOne(K key) {
+                var split = Split(key, true);
+                var lessOrEqual = split.Item1;
+                if (key.CompareTo(lessOrEqual.Measure) > 0)
+                    return Optional<Tuple<FingerTreeOrdered<T, K>, T, FingerTreeOrdered<T, K>>>.None;
+                return Tuple.New(lessOrEqual.Init, lessOrEqual.Last, split.Item2);
+            }
+
+            protected override Optional<T> LeastGtOrEqual(K key) {
+                // is split on the left?
+                K maxLeft = MeasureArray(_left);
+                int keyComparedToMaxLeft = key.CompareTo(maxLeft);
+                if (keyComparedToMaxLeft <= 0)
+                    return LeastGtOrEqual(_left, key);
+
+                int keyComparedToMaxMiddle = key.CompareTo(Middle.PrependMeasure(maxLeft));
+                // is split in the middle?
+                if (keyComparedToMaxMiddle <= 0)
+                    return Middle.LeastGtOrEqual(key).MapPartial(node => LeastGtOrEqual(node.AsArray, key));
+
+                // it must be on the right
+                return LeastGtOrEqual(_right, key);
+            }
+
+            private Optional<T> LeastGtOrEqual(T[] array, K key) {
+                foreach (T t in array)
+                    if (key.CompareTo(t.Measure) >= 0) return Optional.Some(t);
+                return Optional<T>.None;
             }
 
             private static IEnumerable<FTNode<T, K>> Nodes(IEnumerable<T> elements) {
@@ -976,22 +1050,23 @@ namespace FP.Collections {
                 return new FTNode<T, K>(t3.Measure, t1, t2, t3);
             }
 
-            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key) {
-                K maxLeft = MeasureArray(_left);
+            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft) {
                 // is split on the left?
-                if (key.CompareTo(maxLeft) <= 0) {
-                    var splitLeft = SplitArrayAt(_left, key);
+                K maxLeft = MeasureArray(_left);
+                int keyComparedToMaxLeft = key.CompareTo(maxLeft);
+                if (keyComparedToMaxLeft < 0 || (!equalGoLeft && keyComparedToMaxLeft == 0)) {
+                    var splitLeft = SplitArrayAt(_left, key, equalGoLeft);
                     return new Split<T, FingerTreeOrdered<T, K>>(
                         FromSortedArray(splitLeft.Left),
                         splitLeft.Middle,
                         DeepL(splitLeft.Right, Middle, _right));
                 } // if
 
-                K maxMiddle = Middle.PrependMeasure(maxLeft);
+                int keyComparedToMaxMiddle = key.CompareTo(Middle.PrependMeasure(maxLeft));
                 // is split in the middle?
-                if (key.CompareTo(maxMiddle) <= 0) {
-                    var splitMiddle = Middle.SplitTreeAt(key);
-                    var splitMiddleMiddle = SplitArrayAt(splitMiddle.Middle.AsArray, key);
+                if (keyComparedToMaxMiddle < 0 || (!equalGoLeft && keyComparedToMaxMiddle == 0)) {
+                    var splitMiddle = Middle.SplitTreeAt(key, equalGoLeft);
+                    var splitMiddleMiddle = SplitArrayAt(splitMiddle.Middle.AsArray, key, equalGoLeft);
                     return new Split<T, FingerTreeOrdered<T, K>>(
                         DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left),
                         splitMiddleMiddle.Middle,
@@ -999,14 +1074,14 @@ namespace FP.Collections {
                 } // if
 
                 // it must be on the right
-                var splitRight = SplitArrayAt(_right, key);
+                var splitRight = SplitArrayAt(_right, key, equalGoLeft);
                 return new Split<T, FingerTreeOrdered<T, K>>(
                     DeepR(_left, Middle, splitRight.Left),
                     splitRight.Middle,
                     FromSortedArray(splitRight.Right));
             } // SplitTree
 
-            private Split<T, T[]> SplitArrayAt(T[] array, K key) {
+            private static Split<T, T[]> SplitArrayAt(T[] array, K key, bool equalGoLeft) {
                 if (array.Length == 1) {
                     return new Split<T, T[]>(
                         Arrays.Empty<T>(), array[0], Arrays.Empty<T>());
@@ -1014,8 +1089,8 @@ namespace FP.Collections {
 
                 int offset;
                 for (offset = 0; offset < array.Length - 1; offset++) {
-                    K total = array[offset].Measure;
-                    if (key.CompareTo(total) >= 0) break;
+                    var keyComparedToElement = key.CompareTo(array[offset].Measure);
+                    if (keyComparedToElement > 0 || (!equalGoLeft && keyComparedToElement == 0)) break;
                 }
                 var left = offset == 0
                                ? Arrays.Empty<T>()

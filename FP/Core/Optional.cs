@@ -181,19 +181,25 @@ namespace FP.Core {
         /// If the current instance has a value, calls <paramref name="function"/> on it and returns <c>Some</c> the result.
         /// Otherwise returns <c>None</c>.
         /// </summary>
-        /// <typeparam name="R"></typeparam>
+        /// <typeparam name="R">The return type of <paramref name="function"/>.</typeparam>
         /// <param name="function">The function.</param>
-        /// <returns></returns>
         public Optional<R> Map<R>(Func<T, R> function) {
             return HasValue ? Optional.Some(function(_value)) : Optional<R>.None;
         } // Map(, function)
+
+        /// <summary>
+        /// Returns the optional if it has a value and the predicate is true on this value.
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        public Optional<T> Filter(Func<T, bool> predicate) {
+            return MapOrElse(predicate, false) ? this : None;
+        }
 
         /// <summary>
         /// If this optional has a value, returns itself; else evaluates 
         /// <paramref name="@default"/> and returns the result.
         /// </summary>
         /// <param name="default">The @default.</param>
-        /// <returns></returns>
         public Optional<T> OrElse(Func<Optional<T>> @default) {
             return HasValue ? this : @default();
         }
@@ -203,7 +209,6 @@ namespace FP.Core {
         /// <paramref name="@default"/>.
         /// </summary>
         /// <param name="default">The @default.</param>
-        /// <returns></returns>
         public Optional<T> OrElse(Optional<T> @default) {
             return HasValue ? this : @default;
         }
@@ -219,8 +224,8 @@ namespace FP.Core {
             // ReSharper disable CompareNonConstrainedGenericWithNull
             if (HasValue)
                 if (Value == null) {
-                    throw new InvalidOperationException("Value can't be null",
-                                                        new ArgumentNullException("Value"));
+                    throw new InvalidOperationException(
+                        "Value can't be null", new ArgumentNullException("Value"));
                 }
                 else
                     return OptionalNotNull.Some(Value);
