@@ -26,7 +26,7 @@ namespace FP.Core {
         /// </summary>
         /// <param name="r">The reference.</param>
         public static void Increment(this IRef<int> r) {
-            r.Modify(n => n + 1);
+            r.Adjust(n => n + 1);
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace FP.Core {
         /// </summary>
         /// <param name="r">The reference.</param>
         public static void Decrement(this IRef<int> r) {
-            r.Modify(n => n - 1);
+            r.Adjust(n => n - 1);
         }
 
         /// <summary>

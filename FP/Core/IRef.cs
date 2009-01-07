@@ -1,29 +1,46 @@
+/*
+* IRef.cs is part of functional-dotnet project
+* 
+* Copyright (c) 2008-2009 Alexey Romanov
+* All rights reserved.
+*
+* This source file is available under The New BSD License.
+* See license.txt file for more information.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+*/
 using System;
 
 namespace FP.Core {
     /// <summary>
     /// An interface for mutable references to <typeparamref name="T"/>.
     /// </summary>
-    /// <typeparam name="T">The type of values.</typeparam>
-    /// <remarks>Type <typeparamref name="T"/> should be immutable or at least the value
-    /// should not be mutated. In this case the use of this type is thread-safe.
-    /// All value changes except directly mutating the value are atomic.
-    /// 
-    /// Similar to Alice ML's/OCaml's ref type and Clojure's atom type.</remarks>
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of reference's contents.</typeparam>
+    /// <remarks>
+    /// <para>Type <typeparamref name="T"/> should be immutable or at least the value
+    /// should not be mutated.
+    /// </para>
+    /// <para>Behaves similarly to <c>'a ref</c> type in ML and atoms in Clojure.</para>
+    /// <para>When implementing the interface, you can almost always derive from either
+    /// <see cref="RefBase{T}"/> of <see cref="RefBaseEx{T}"/>.</para>
+    /// <para>All members of any implementing class are required to be thread-safe.</para>
+    /// </remarks>
     public interface IRef<T> {
         /// <summary>
-        /// Value of the reference.
+        /// Gets the current value of the reference.
         /// </summary>
         T Value { get; }
 
         /// <summary>
-        /// The validator. Must be side-effect free. This will be called before any change
-        /// of value with the intended new value as the argument and should throw an exception
-        /// if the change is invalid.
+        /// Gets the validator action.
         /// </summary>
         /// <value>The validator function.</value>
+        /// <remarks><para>This can be set when creating the reference. Must be side-effect free.
+        /// It will be called before any change of value with the intended new value as
+        /// the argument and should throw an exception if the change is invalid.</para></remarks>
         Action<T> Validator { get; }
 
         /// <summary>
@@ -60,13 +77,12 @@ namespace FP.Core {
         /// it, and attempts to <see cref="CompareAndSet"/> the result in. If this doesn't
         /// succeed, retry in a spin loop. The net effect is that the value will always be
         /// the result of the application of the supplied function to a current value,
-        /// atomically. However, because <paramref name="f"/> might be called multiple
-        /// times, it must be free of side effects. <c>false</c> is only returned if
-        /// validation of the replacement value fails.
+        /// atomically. However, <paramref name="f"/> may be called multiple times and
+        /// therefore it must have no side effects.
         /// </remarks>
         /// <exception cref="RefValidationException"> when the new value doesn't pass 
         /// <see cref="Validator"/>.</exception>
-        Tuple<T, T> Modify(Func<T, T> f);
+        Tuple<T, T> Adjust(Func<T, T> f);
 
         /// <summary>
         /// Validates the specified value.

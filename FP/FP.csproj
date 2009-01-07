@@ -51,7 +51,7 @@
     <Compile Include="Collections\ICatenable.cs" />
     <Compile Include="Collections\ICollection.cs" />
     <Compile Include="Collections\IInsertableRandomAccessSequence.cs" />
-    <Compile Include="Collections\IUpdatableRandomAccessSequence.cs" />
+    <Compile Include="Collections\IAdjustableRandomAccessSequence.cs" />
     <Compile Include="Collections\IReversible.cs" />
     <Compile Include="Collections\Split.cs" />
     <Compile Include="Collections\Vector.cs" />

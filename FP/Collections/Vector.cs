@@ -29,7 +29,7 @@ namespace FP.Collections {
     /// A vector (nearly array-like sequence). Implemented as a 32-nary trie.
     /// </summary>
     [Serializable]
-    public sealed class Vector<T> : IUpdatableRandomAccessSequence<T, Vector<T>> {
+    public sealed class Vector<T> : IAdjustableRandomAccessSequence<T, Vector<T>> {
         private const int BRANCHING = 32;
         /// <summary>
         /// Empty vector instance.
@@ -62,7 +62,7 @@ namespace FP.Collections {
         /// <remarks>
         /// Equivalent to <code>SetAt(index, function(this[index])), but faster.</code>
         /// </remarks>
-        public Vector<T> UpdateAt(int index, Func<T, T> function) {
+        public Vector<T> AdjustAt(int index, Func<T, T> function) {
             return UpdateAtPath(Digits(index), function);
         }
 
@@ -86,7 +86,7 @@ namespace FP.Collections {
         /// <returns>The new vector which contains all elements of this instance and 
         /// <paramref name="newValue"/>.</returns>
         public Vector<T> Append(T newValue) {
-            return UpdateAt(_count + 1, _ => newValue);
+            return AdjustAt(_count + 1, _ => newValue);
         }
 
         ///<summary>
