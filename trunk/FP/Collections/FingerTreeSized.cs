@@ -872,7 +872,7 @@ namespace FP.Collections {
                 }
                 return MakeDeep(
                     new[] { newHead, _left[0] },
-                    new FTNode<T, int>(_left[1].Measure + _left[2].Measure + _left[3].Measure, _left[1], _left[2], _left[3]) | Middle,
+                    MakeNode(_left[1], _left[2], _left[3]) | Middle,
                     _right,
                     newMeasure);
             } // Prepend
@@ -894,7 +894,7 @@ namespace FP.Collections {
                 }
                 return MakeDeep(
                     _left,
-                    Middle | new FTNode<T, int>(_right[0].Measure + _right[1].Measure + _right[2].Measure, _right[0], _right[1], _right[2]),
+                    Middle | MakeNode(_right[0], _right[1], _right[2]),
                     new[] { _right[3], newLast },
                     newMeasure);
             }
@@ -935,38 +935,29 @@ namespace FP.Collections {
                 foreach (var t in elements) {
                     buffer.Enqueue(t);
                     if (buffer.Count == 5) {
-                        var t1 = buffer.Dequeue();
-                        var t2 = buffer.Dequeue();
-                        var t3 = buffer.Dequeue();
-                        yield return new FTNode<T, int>(
-                            t1.Measure + t2.Measure + t3.Measure, t1, t2, t3);
+                        yield return MakeNode(buffer.Dequeue(), buffer.Dequeue(), buffer.Dequeue());
                     }
                 } // foreach
                 switch (buffer.Count) {
                     case 2:
-                        var t1 = buffer.Dequeue();
-                        var t2 = buffer.Dequeue();
-                        yield return new FTNode<T, int>(
-                            t1.Measure + t2.Measure, t1, t2);
+                        yield return MakeNode(buffer.Dequeue(), buffer.Dequeue());
                         break;
                     case 3:
-                        t1 = buffer.Dequeue();
-                        t2 = buffer.Dequeue();
-                        var t3 = buffer.Dequeue();
-                        yield return new FTNode<T, int>(
-                            t1.Measure + t2.Measure + t3.Measure, t1, t2, t3);
+                        yield return MakeNode(buffer.Dequeue(), buffer.Dequeue(), buffer.Dequeue());
                         break;
                     case 4:
-                        t1 = buffer.Dequeue();
-                        t2 = buffer.Dequeue();
-                        yield return new FTNode<T, int>(
-                            t1.Measure + t2.Measure, t1, t2);
-                        t3 = buffer.Dequeue();
-                        var t4 = buffer.Dequeue();
-                        yield return new FTNode<T, int>(
-                            t3.Measure + t4.Measure, t3, t4);
+                        yield return MakeNode(buffer.Dequeue(), buffer.Dequeue());
+                        yield return MakeNode(buffer.Dequeue(), buffer.Dequeue());
                         break;
                 } // switch
+            }
+
+            private static FTNode<T, int> MakeNode(T t1, T t2) {
+                return new FTNode<T, int>(t1.Measure + t2.Measure, t1, t2);
+            }
+
+            private static FTNode<T, int> MakeNode(T t1, T t2, T t3) {
+                return new FTNode<T, int>(t1.Measure + t2.Measure + t3.Measure, t1, t2, t3);
             }
 
             internal override Split<T, FingerTreeSized<T>> SplitTreeAt(int index) {
@@ -1022,12 +1013,14 @@ namespace FP.Collections {
             }
 
             internal override FingerTreeSized<T> ReverseTree(Func<T, T> f) {
-                var newLeft = _right.MapReverse(f);
-                var newRight = _left.MapReverse(f);
+                var reverseRight = _right.MapReverse(f);
+                var reverseLeft = _left.MapReverse(f);
+                Func<FingerTreeSized<FTNode<T, int>>> lazyReverseMiddle = () => 
+                    Middle.ReverseTree(node => new FTNode<T, int>(node.Measure, node.AsArray.MapReverse(f)));
                 return MakeDeep(
-                    newLeft,
-                    () => Middle.ReverseTree(node => node.Reverse(f)),
-                    newRight,
+                    reverseRight,
+                    lazyReverseMiddle,
+                    reverseLeft,
                     Measure);
             } // ReverseTree
 

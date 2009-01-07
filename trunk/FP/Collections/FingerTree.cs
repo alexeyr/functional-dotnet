@@ -264,13 +264,6 @@ namespace FP.Collections {
         } // Split
 
         /// <summary>
-        /// Reverses this tree.
-        /// </summary>
-        /// <param name="f">The function to be applied to all elements of the tree.</param>
-        /// <returns>The reverse tree.</returns>
-        internal abstract FingerTree<T, V> ReverseTree(Func<T, T> f);
-
-        /// <summary>
         /// Prepends <paramref name="item"/> to <paramref name="tree"/>.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -514,9 +507,7 @@ namespace FP.Collections {
                 return Pair.New(empty, empty);
             } // Split
 
-            internal override FingerTree<T, V> ReverseTree(Func<T, T> f) {
-                return this;
-            } // ReverseTree
+            // ReverseTree
 
             /// <summary>
             /// Reduces the finger tree from the right.
@@ -688,11 +679,6 @@ namespace FP.Collections {
             internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial) {
                 return new Split<T, FingerTree<T, V>>(EmptyInstance, Value, EmptyInstance);
             } // SplitTree
-
-            internal override FingerTree<T, V> ReverseTree(Func<T, T> f) {
-                var newValue = f(Value);
-                return newValue.Equals(Value) ? this : MakeSingle(newValue);
-            }
 
             /// <summary>
             /// Reduces the finger tree from the right.
@@ -1018,16 +1004,6 @@ namespace FP.Collections {
                     splitRight.Middle,
                     FingerTree.FromArray(splitRight.Right, MeasureMonoid));
             } // SplitTree
-
-            internal override FingerTree<T, V> ReverseTree(Func<T, T> f) {
-                var newLeft = _right.MapReverse(f);
-                var newRight = _left.MapReverse(f);
-                return MakeDeep(
-                    newLeft, 
-                    () => Middle.ReverseTree(node => node.Reverse(f)),
-                    newRight, 
-                    Measure);
-            } // ReverseTree
 
             /// <summary>
             /// Reduces the finger tree from the right.
