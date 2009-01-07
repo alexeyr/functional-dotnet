@@ -46,12 +46,6 @@ namespace FP.Collections {
             return AsArray.FoldLeft(binOp, initial);
         } // FoldLeft
 
-        /// <remarks>Use only with commutative monoids!</remarks>
-        internal FTNode<T, V> Reverse(Func<T, T> f) {
-            T[] newArray = AsArray.MapReverse(f);
-            return new FTNode<T, V>(Measure, newArray);
-        }
-
         public V Measure { get; private set; } // Measure
 
         /// <summary>
@@ -60,14 +54,13 @@ namespace FP.Collections {
         /// <remarks>Do not mutate!</remarks>
         internal T[] AsArray { get; private set; } // AsArray
 
-        ///<summary>
-        ///Returns an enumerator that iterates through the node.
-        ///</summary>
-        ///
-        ///<returns>
-        ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the node.
-        ///</returns>
-        ///<filterpriority>1</filterpriority>
+        /// <summary>
+        /// Returns an enumerator that iterates through the node.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the node.
+        /// </returns>
+        /// <filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator() {
             for (int i = 0; i < AsArray.Length; i++)
                 yield return AsArray[i];
