@@ -34,9 +34,9 @@ namespace FP.Collections {
     /// <typeparam name="T">The type of the leaves.</typeparam>
     /// <typeparam name="K">The type of measure annotations.</typeparam>
     [Serializable]
-        internal abstract class FingerTreeOrdered<T, K> : IEquatable<FingerTreeOrdered<T, K>>,
+    internal abstract class FingerTreeOrdered<T, K> : IEquatable<FingerTreeOrdered<T, K>>,
                                                     IDeque<T, FingerTreeOrdered<T, K>>,
-                                                    IMeasured<Optional<K>>, IFoldable<T>,
+                                                    IMeasured<K>, IFoldable<T>,
                                                     ICatenable<FingerTreeOrdered<T, K>>
         where T : IMeasured<K>
         where K : IComparable<K> {
@@ -44,7 +44,7 @@ namespace FP.Collections {
         /// Gets the measure of the tree.
         /// </summary>
         /// <value>The measure.</value>
-        public abstract Optional<K> Measure { get; } // Measure
+        public abstract K Measure { get; } // Measure
 
         private static readonly Empty _emptyInstance = new Empty();
 
@@ -249,8 +249,10 @@ namespace FP.Collections {
         /// Prepends the measure.
         /// </summary>
         /// <param name="prependedMeasure">The prepended measure.</param>
+        /// <remarks>Overridden in <see cref="Empty"/>, where <see cref="Measure"/> throws
+        /// an exception.</remarks>
         protected virtual K PrependMeasure(K prependedMeasure) {
-            return Measure.Value;
+            return Measure;
         }
 
         internal abstract Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key);
@@ -271,8 +273,10 @@ namespace FP.Collections {
         /// If there are several possible splits for which these properties hold,
         /// any of them may be returned.
         /// </remarks>
+        /// <remarks>Overridden in <see cref="Empty"/>, where <see cref="Measure"/> throws
+        /// an exception.</remarks>
         public virtual Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> Split(K key) {
-            if (key.CompareTo(Measure.Value) >= 0) return Pair.New(this, (FingerTreeOrdered<T, K>)EmptyInstance);
+            if (key.CompareTo(Measure) >= 0) return Pair.New(this, (FingerTreeOrdered<T, K>)EmptyInstance);
             var split = SplitTreeAt(key);
             return Pair.New(split.Left, split.Middle | split.Right);
         } // Split
@@ -391,8 +395,8 @@ namespace FP.Collections {
             /// Gets the measure of the tree.
             /// </summary>
             /// <value>The measure.</value>
-            public override Optional<K> Measure {
-                get { return Optional<K>.None; }
+            public override K Measure {
+                get { throw new InvalidOperationException(); }
             } // Measure
 
             /// <summary>
@@ -590,7 +594,7 @@ namespace FP.Collections {
             /// Gets the measure of the tree.
             /// </summary>
             /// <value>The measure.</value>
-            public override Optional<K> Measure {
+            public override K Measure {
                 get { return Value.Measure; }
             } // Measure
 
@@ -752,7 +756,7 @@ namespace FP.Collections {
             /// Gets the measure of the tree.
             /// </summary>
             /// <value>The measure.</value>
-            public override Optional<K> Measure {
+            public override K Measure {
                 get {
                     return _measure;
                 }
@@ -937,7 +941,7 @@ namespace FP.Collections {
                               Nodes(_right.Concat(middleList).Concat(rightDeep._left)),
                               rightDeep.Middle),
                     rightDeep._right,
-                    rightDeep.Measure.Value);
+                    rightDeep.Measure);
                 // ReSharper restore PossibleNullReferenceException
             }
 
