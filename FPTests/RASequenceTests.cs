@@ -27,13 +27,6 @@ namespace FPTests {
 
         [PexMethod]
         [PexGenericArguments(new[] {typeof (int)})]
-        public void Test_Creation<T>([PexAssumeNotNull] T[] arr) {
-            var seq = RandomAccessSequence.FromEnumerable(arr);
-            PexAssume.IsTrue(seq.Invariant);
-        }
-
-        [PexMethod]
-        [PexGenericArguments(new[] {typeof (int)})]
         public void Test_IsEmptyWorksCorrectly<T>(T[] arr) {
             Assert.True(_empty.IsEmpty);
             PexAssume.IsNotNullOrEmpty(arr);
@@ -71,8 +64,8 @@ namespace FPTests {
             PexAssume.IsTrue(i >= 0);
             PexAssume.IsTrue(i < seq.Count);
             var split = seq.SplitAt(i);
-            Assert2.SequenceEqual(seq.Take(i), split.Item1);
-            Assert2.SequenceEqual(seq.Skip(i), split.Item2);
+            Assert2.SequenceEqual(arr.Take(i), split.Item1);
+            Assert2.SequenceEqual(arr.Skip(i), split.Item2);
         }
 
         [PexMethod]
@@ -91,14 +84,11 @@ namespace FPTests {
             PexAssume.IsTrue(i >= 0);
             PexAssume.IsTrue(i < seq.Count);
             var newSeq = seq.SetAt(i, newValue);
-            foreach (var indexElement in newSeq.WithIndex()) {
-                int index = indexElement.Item1;
-                T value = indexElement.Item2;
-                if (index != i)
-                    Assert.Equal(seq[index], value);
-                else
-                    Assert.Equal(newValue, value);
-            }
+            var splitOld = seq.SplitAt(i);
+            var splitNew = newSeq.SplitAt(i);
+            Assert2.SequenceEqual(splitOld.Item1, splitNew.Item1);
+            Assert.Equal(newValue, splitNew.Item2.Head);
+            Assert2.SequenceEqual(splitOld.Item2.Tail, splitNew.Item2.Tail);
         }
 
         [Fact]
@@ -133,8 +123,8 @@ namespace FPTests {
         [PexGenericArguments(new[] {typeof (int)})]
         public void Test_ConcatWithEmpty<T>([PexAssumeNotNull] T[] arr) {
             var seq = RandomAccessSequence.FromEnumerable(arr);
-            Assert2.SequenceEqual(seq.Concat(Enumerable.Empty<T>()), seq);
-            Assert2.SequenceEqual(Enumerable.Empty<T>().Concat(seq), seq);
+            Assert2.SequenceEqual(seq + RandomAccessSequence<T>.Empty, seq);
+            Assert2.SequenceEqual(RandomAccessSequence<T>.Empty + seq, seq);
         }
 
         [PexMethod]
@@ -142,8 +132,6 @@ namespace FPTests {
         public void Test_Concat<T>([PexAssumeNotNull] T[] arr1, [PexAssumeNotNull] T[] arr2) {
             var seq1 = RandomAccessSequence.FromEnumerable(arr1);
             var seq2 = RandomAccessSequence.FromEnumerable(arr2);
-            PexAssume.IsTrue(seq1.Invariant);
-            PexAssume.IsTrue(seq2.Invariant);
             Assert2.SequenceEqual(seq1.AsEnumerable().Concat(seq2), seq1 + seq2);
         }
 
@@ -152,7 +140,7 @@ namespace FPTests {
         public void Test_InsertAt<T>([PexAssumeNotNull] T[] arr, int i, T newValue) {
             var seq = RandomAccessSequence.FromEnumerable(arr);
             PexAssume.IsTrue(i >= 0);
-            PexAssume.IsTrue(i < seq.Count);
+            PexAssume.IsTrue(i <= seq.Count);
             var newSeq = seq.InsertAt(i, newValue);
             var splitOld = seq.SplitAt(i);
             var splitNew = newSeq.SplitAt(i);

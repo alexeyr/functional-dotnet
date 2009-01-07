@@ -54,8 +54,7 @@ namespace FP.Collections {
         /// <typeparam name="V">The type of the measure values.</typeparam>
         /// <param name="sequence">The sequence.</param>
         /// <param name="measureMonoid">The measure monoid.</param>
-        public static FingerTree<T, V> FromEnumerable<T, V>(IEnumerable<T> sequence,
-                                                            Monoid<V> measureMonoid)
+        public static FingerTree<T, V> FromEnumerable<T, V>(IEnumerable<T> sequence, Monoid<V> measureMonoid)
             where T : IMeasured<V> {
             return Empty<T, V>(measureMonoid).AppendRange(sequence);
         }
@@ -67,10 +66,10 @@ namespace FP.Collections {
         /// <typeparam name="V">The type of the measure values.</typeparam>
         /// <param name="array">The small array.</param>
         /// <param name="measureMonoid">The measure monoid.</param>
-        internal static FingerTree<T, V> FromSmallArray<T, V>(T[] array,
-                                                            Monoid<V> measureMonoid)
+        /// <remarks>Calls <see cref="FromEnumerable{T,V}"/> when <paramref name="array"/>'s 
+        /// length is more than 6.</remarks>
+        internal static FingerTree<T, V> FromArray<T, V>(T[] array, Monoid<V> measureMonoid)
             where T : IMeasured<V> {
-            Debug.Assert(array.Length <= 6);
             switch (array.Length) {
                 case 0:
                     return Empty<T, V>(measureMonoid);
@@ -101,7 +100,7 @@ namespace FP.Collections {
                                 new[] { array[0], array[1], array[2] }, emptyNested, new[] { array[3], array[4], array[5] },
                                 measureMonoid);
                         default:
-                            throw new ArgumentException("Can't get here!");
+                            return FromEnumerable(array, measureMonoid);
                     }
             }
         }
@@ -110,7 +109,7 @@ namespace FP.Collections {
             where T : IMeasured<V> {
             if (array.Length == 1) {
                 return new Split<T, T[]>(
-                    Arrays.EmptyArray<T>(), array[0], Arrays.EmptyArray<T>());
+                    Arrays.Empty<T>(), array[0], Arrays.Empty<T>());
             }
 
             V total = init;
@@ -120,10 +119,10 @@ namespace FP.Collections {
                 if (pred(total)) break;
             }
             var left = offset == 0
-                           ? Arrays.EmptyArray<T>()
+                           ? Arrays.Empty<T>()
                            : array.CopyNoChecks(0, offset);
             var right = offset == array.Length - 1
-                            ? Arrays.EmptyArray<T>()
+                            ? Arrays.Empty<T>()
                             : array.CopyNoChecks(offset + 1);
             return new Split<T, T[]>(left, array[offset], right);
         }
@@ -144,6 +143,71 @@ namespace FP.Collections {
                 newArray[i] = f(newArray[i]);
             Array.Reverse(newArray);
             return newArray;
+        }
+
+        internal static int SumMeasures<T>(this IEnumerable<T> ts) where T : IMeasured<int> {
+            return ts.Select(t => t.Measure).Sum();
+        }
+
+        /// <summary>
+        /// Creates the tree from the specified sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of the tree.</typeparam>
+        /// <param name="array">The small array.</param>
+        /// <remarks>Calls <see cref="FromEnumerable{T,V}"/> when <paramref name="array"/>'s 
+        /// length is more than 6.</remarks>
+        internal static FingerTreeSized<T> SizedFromArray<T>(T[] array)
+            where T : IMeasured<int> {
+            switch (array.Length) {
+                case 0:
+                    return FingerTreeSized<T>.EmptyInstance;
+                case 1:
+                    return new FingerTreeSized<T>.Single(array[0]);
+                default:
+                    var emptyNested =
+                        (FingerTreeSized<FTNode<T, int>>)FingerTreeSized<FTNode<T, int>>.EmptyInstance;
+                    switch (array.Length) {
+                        case 2:
+                            return new FingerTreeSized<T>.Deep(
+                                new[] { array[0] }, emptyNested, new[] { array[1] });
+                        case 3:
+                            return new FingerTreeSized<T>.Deep(
+                                new[] { array[0], array[1] }, emptyNested, new[] { array[2] });
+                        case 4:
+                            return new FingerTreeSized<T>.Deep(
+                                new[] { array[0], array[1] }, emptyNested, new[] { array[2], array[3] });
+                        case 5:
+                            return new FingerTreeSized<T>.Deep(
+                                new[] { array[0], array[1], array[2] }, emptyNested, new[] { array[3], array[4] });
+                        case 6:
+                            return new FingerTreeSized<T>.Deep(
+                                new[] { array[0], array[1], array[2] }, emptyNested, new[] { array[3], array[4], array[5] });
+                        default:
+                            return FingerTreeSized<T>.EmptyInstance.AppendRange(array);
+                    }
+            }
+        }
+
+        internal static Split<T, T[]> SplitArrayAt<T>(this T[] array, int index, int init)
+            where T : IMeasured<int> {
+            if (array.Length == 1) {
+                return new Split<T, T[]>(
+                    Arrays.Empty<T>(), array[0], Arrays.Empty<T>());
+            }
+
+            int total = init;
+            int offset;
+            for (offset = 0; offset < array.Length - 1; offset++) {
+                total = total + array[offset].Measure;
+                if (index < total) break;
+            }
+            var left = offset == 0
+                           ? Arrays.Empty<T>()
+                           : array.CopyNoChecks(0, offset);
+            var right = offset == array.Length - 1
+                            ? Arrays.Empty<T>()
+                            : array.CopyNoChecks(offset + 1);
+            return new Split<T, T[]>(left, array[offset], right);
         }
     }
 }

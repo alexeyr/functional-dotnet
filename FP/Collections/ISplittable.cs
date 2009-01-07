@@ -22,12 +22,12 @@ namespace FP.Collections {
     /// <typeparam name="TSequence">The type of the sequence.</typeparam>
     public interface ISplittable<TSequence> {
         /// <summary>
-        /// Returns a pair of sequences, the first contains the first <paramref name="count"/> of
+        /// Returns a pair of sequences, the first contains the first <paramref name="index"/> of
         /// the sequence and the second one contains the rest of them.
         /// </summary>
-        /// <param name="count">The index at which the sequence will be split.</param>
-        /// <remarks>if <code>count &lt;= 0 || count &gt;= Count</code>, the corresponding part 
+        /// <param name="index">The index at which the sequence will be split.</param>
+        /// <remarks>if <code>index &lt;= 0 || index &gt;= Count</code>, the corresponding part 
         /// of the result will be empty.</remarks>
-        Tuple<TSequence, TSequence> SplitAt(int count);
+        Tuple<TSequence, TSequence> SplitAt(int index);
     } // interface ISplittable
 } // namespace FP.Collections

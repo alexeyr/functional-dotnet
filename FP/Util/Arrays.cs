@@ -97,7 +97,7 @@ namespace FP.Util {
         /// <summary>
         /// Returns an empty array of the type <typeparamref name="T"/>.
         /// </summary>
-        public static T[] EmptyArray<T>() {
+        public static T[] Empty<T>() {
             return EmptyArrayCache<T>.Instance;
         }
 

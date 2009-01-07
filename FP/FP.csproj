@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\FingerTreeSized.cs" />
     <Compile Include="Collections\ICatenable.cs" />
     <Compile Include="Collections\ICollection.cs" />
     <Compile Include="Collections\IInsertableRandomAccessSequence.cs" />
@@ -170,7 +171,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
+      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
