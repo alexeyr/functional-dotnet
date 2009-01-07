@@ -84,6 +84,14 @@ namespace FP.Collections {
             return instance;
         } // GetEmptyFromCache
 
+        private V SumMeasures(IEnumerable<T> sequence) {
+            return SumMeasures(MeasureMonoid.Zero, sequence);
+        }
+
+        private V SumMeasures(V init, IEnumerable<T> sequence) {
+            return FingerTree.SumMeasures(MeasureMonoid, init, sequence);
+        }
+
         private Single MakeSingle(T value) {
             return new Single(value, MeasureMonoid);
         } // MakeSingle
@@ -112,8 +120,8 @@ namespace FP.Collections {
 
         private FingerTree<T, V> RotateL(FingerTree<FTNode<T, V>, V> middle, T[] right) {
             if (middle.IsEmpty)
-                return FingerTree.FromArray(right, MeasureMonoid);
-            V measure = MeasureMonoid.SumMeasures(middle.Measure, right);
+                return FromArray(right);
+            V measure = SumMeasures(middle.Measure, right);
             return MakeDeep(middle.Head.AsArray, () => middle.Tail, right, measure);
         } // RotateL
 
@@ -129,9 +137,48 @@ namespace FP.Collections {
 
         private FingerTree<T, V> RotateR(T[] left, FingerTree<FTNode<T, V>, V> middle) {
             if (middle.IsEmpty)
-                return FingerTree.FromArray(left, MeasureMonoid);
-            V measure = middle.PrependMeasure(MeasureMonoid.SumMeasures(left));
+                return FromArray(left);
+            V measure = middle.PrependMeasure(SumMeasures(left));
             return MakeDeep(left, () => middle.Init, middle.Last.AsArray, measure);
+        }
+
+        /// <summary>
+        /// Creates the tree from the specified sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of the tree.</typeparam>
+        /// <typeparam name="V">The type of the measure values.</typeparam>
+        /// <param name="array">The small array.</param>
+        /// <remarks>Calls <see cref="FingerTree.FromEnumerable{T,V}"/> when <paramref name="array"/>'s 
+        /// length is more than 6.</remarks>
+        private FingerTree<T, V> FromArray(T[] array) {
+            switch (array.Length) {
+                case 0:
+                    return EmptyInstance;
+                case 1:
+                    return MakeSingle(array[0]);
+                default:
+                    var emptyNested =
+                        (FingerTree<FTNode<T, V>, V>)FingerTree.Empty<FTNode<T, V>, V>(MeasureMonoid);
+                    switch (array.Length) {
+                        case 2:
+                            return MakeDeepForceMiddle(
+                                new[] { array[0] }, emptyNested, new[] { array[1] });
+                        case 3:
+                            return MakeDeepForceMiddle(
+                                new[] { array[0], array[1] }, emptyNested, new[] { array[2] });
+                        case 4:
+                            return MakeDeepForceMiddle(
+                                new[] { array[0], array[1] }, emptyNested, new[] { array[2], array[3] });
+                        case 5:
+                            return MakeDeepForceMiddle(
+                                new[] { array[0], array[1], array[2] }, emptyNested, new[] { array[3], array[4] });
+                        case 6:
+                            return MakeDeepForceMiddle(
+                                new[] { array[0], array[1], array[2] }, emptyNested, new[] { array[3], array[4], array[5] });
+                        default:
+                            return FingerTree.FromEnumerable(array, MeasureMonoid);
+                    }
+            }
         }
 
         /// <summary>
@@ -535,7 +582,7 @@ namespace FP.Collections {
                 return initial;
             }
 
-// Invariant
+            // Invariant
 
             /// <summary>
             /// Indicates whether the current object is equal to another object of the same type.
@@ -766,8 +813,8 @@ namespace FP.Collections {
                 _left = left;
                 _right = right;
                 _middleLazy = middleLazy;
-                V measure = Middle.PrependMeasure(MeasureMonoid.SumMeasures(_left));
-                measure = MeasureMonoid.SumMeasures(measure, _right);
+                V measure = Middle.PrependMeasure(SumMeasures(_left));
+                measure = SumMeasures(measure, _right);
                 _measure = measure;
                 Debug.Assert(_left != null && _left.Length > 0 && _left.Length <= 4);
                 Debug.Assert(_right != null && _right.Length > 0 && _right.Length <= 4);
@@ -809,7 +856,7 @@ namespace FP.Collections {
                     foreach (var t in node.AsArray.ReverseIterator())
                         yield return t;
                 }
-                foreach (var t in _left)
+                foreach (var t in _left.ReverseIterator())
                     yield return t;
             }
 
@@ -887,7 +934,7 @@ namespace FP.Collections {
                 return MakeDeep(
                     new[] { newHead, _left[0] },
                     new FTNode<T, V>(MeasureMonoid, _left[1], _left[2], _left[3]) | Middle,
-                    _right, 
+                    _right,
                     newMeasure);
             } // Prepend
 
@@ -931,14 +978,14 @@ namespace FP.Collections {
                 if (rightTree.IsSingle) return this.AppendRange(middleList) | rightTree.Head;
                 // ReSharper disable PossibleNullReferenceException
                 var rightDeep = rightTree as Deep;
-                V newMeasure = MeasureMonoid.SumMeasures(Measure, middleList);
+                V newMeasure = SumMeasures(Measure, middleList);
                 newMeasure = MeasureMonoid.Plus(newMeasure, rightDeep.Measure);
                 return MakeDeep(
                     _left,
                     () => Middle.App3(
                               Nodes(_right.Concat(middleList).Concat(rightDeep._left)),
                               rightDeep.Middle),
-                    rightDeep._right, 
+                    rightDeep._right,
                     newMeasure);
                 // ReSharper restore PossibleNullReferenceException
             }
@@ -974,12 +1021,12 @@ namespace FP.Collections {
             internal override Split<T, FingerTree<T, V>> SplitTree(
                 Func<V, bool> predicate,
                 V initial) {
-                V totalLeft = MeasureMonoid.SumMeasures(initial, _left);
+                V totalLeft = SumMeasures(initial, _left);
                 // is split on the left?
                 if (predicate(totalLeft)) {
-                    var splitLeft = _left.SplitArray(predicate, initial, MeasureMonoid);
+                    var splitLeft = SplitArray(_left, predicate, initial);
                     return new Split<T, FingerTree<T, V>>(
-                        FingerTree.FromArray(splitLeft.Left, MeasureMonoid),
+                        FromArray(splitLeft.Left),
                         splitLeft.Middle,
                         DeepL(splitLeft.Right, Middle, _right));
                 } // if
@@ -989,8 +1036,8 @@ namespace FP.Collections {
                 if (predicate(totalMiddle)) {
                     var splitMiddle = Middle.SplitTree(predicate, totalLeft);
                     V totalLeftAndMiddleLeft = splitMiddle.Left.PrependMeasure(totalLeft);
-                    var splitMiddleMiddle = splitMiddle.Middle.AsArray.
-                        SplitArray(predicate, totalLeftAndMiddleLeft, MeasureMonoid);
+                    var splitMiddleMiddle = 
+                        SplitArray(splitMiddle.Middle.AsArray, predicate, totalLeftAndMiddleLeft);
                     return new Split<T, FingerTree<T, V>>(
                         DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left),
                         splitMiddleMiddle.Middle,
@@ -998,12 +1045,33 @@ namespace FP.Collections {
                 } // if
 
                 // it must be on the right
-                var splitRight = _right.SplitArray(predicate, totalMiddle, MeasureMonoid);
+                var splitRight = SplitArray(_right, predicate, totalMiddle);
                 return new Split<T, FingerTree<T, V>>(
-                    DeepR(_left, Middle, splitRight.Left), 
+                    DeepR(_left, Middle, splitRight.Left),
                     splitRight.Middle,
-                    FingerTree.FromArray(splitRight.Right, MeasureMonoid));
+                    FromArray(splitRight.Right));
             } // SplitTree
+
+            private Split<T, T[]> SplitArray(T[] array, Func<V, bool> pred, V init) {
+                if (array.Length == 1) {
+                    return new Split<T, T[]>(
+                        Arrays.Empty<T>(), array[0], Arrays.Empty<T>());
+                }
+
+                V total = init;
+                int offset;
+                for (offset = 0; offset < array.Length - 1; offset++) {
+                    total = MeasureMonoid.Plus(total, array[offset].Measure);
+                    if (pred(total)) break;
+                }
+                var left = offset == 0
+                               ? Arrays.Empty<T>()
+                               : array.CopyNoChecks(0, offset);
+                var right = offset == array.Length - 1
+                                ? Arrays.Empty<T>()
+                                : array.CopyNoChecks(offset + 1);
+                return new Split<T, T[]>(left, array[offset], right);
+            }
 
             /// <summary>
             /// Reduces the finger tree from the right.
@@ -1073,5 +1141,5 @@ namespace FP.Collections {
             } // GetHashCode
         } // class Deep
     } // class FingerTree`2
-    // ReSharper restore RedundantThisQualifier
 }
+// ReSharper restore RedundantThisQualifier

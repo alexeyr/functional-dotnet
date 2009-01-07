@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\FingerTreeOrdered.cs" />
     <Compile Include="Collections\FingerTreeSized.cs" />
     <Compile Include="Collections\ICatenable.cs" />
     <Compile Include="Collections\ICollection.cs" />
