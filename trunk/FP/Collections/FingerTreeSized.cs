@@ -58,19 +58,19 @@ namespace FP.Collections {
             return new Single(value);
         } // MakeSingle
 
-        private Deep MakeDeep(T[] left, Func<FingerTreeSized<FTNode<T, int>>> func, T[] right, int measure) {
+        private static Deep MakeDeep(T[] left, Func<FingerTreeSized<FTNode<T, int>>> func, T[] right, int measure) {
             return MakeDeep(left, new LazyValue<FingerTreeSized<FTNode<T, int>>>(func), right, measure);
         } // MakeDeep
 
-        private Deep MakeDeep(T[] left, LazyValue<FingerTreeSized<FTNode<T, int>>> middle, T[] right, int measure) {
+        private static Deep MakeDeep(T[] left, LazyValue<FingerTreeSized<FTNode<T, int>>> middle, T[] right, int measure) {
             return new Deep(left, middle, right, measure);
         } // MakeDeep
 
-        private Deep MakeDeepForceMiddle(T[] left, LazyValue<FingerTreeSized<FTNode<T, int>>> middle, T[] right) {
+        private static Deep MakeDeepForceMiddle(T[] left, LazyValue<FingerTreeSized<FTNode<T, int>>> middle, T[] right) {
             return new Deep(left, middle, right);
         } // MakeDeepForceMiddle
 
-        private FingerTreeSized<T> DeepL(T[] left, FingerTreeSized<FTNode<T, int>> middle, T[] right) {
+        private static FingerTreeSized<T> DeepL(T[] left, FingerTreeSized<FTNode<T, int>> middle, T[] right) {
             Debug.Assert(left.Length <= 4);
             Debug.Assert(right.Length != 0 && right.Length <= 4);
 
@@ -80,14 +80,14 @@ namespace FP.Collections {
             return RotateL(middle, right);
         } // DeepL
 
-        private FingerTreeSized<T> RotateL(FingerTreeSized<FTNode<T, int>> middle, T[] right) {
+        private static FingerTreeSized<T> RotateL(FingerTreeSized<FTNode<T, int>> middle, T[] right) {
             if (middle.IsEmpty)
                 return FromArray(right);
             int measure = middle.Measure + SumMeasures(right);
             return MakeDeep(middle.Head.AsArray, () => middle.Tail, right, measure);
         } // RotateL
 
-        private FingerTreeSized<T> DeepR(T[] left, FingerTreeSized<FTNode<T, int>> middle, T[] right) {
+        private static FingerTreeSized<T> DeepR(T[] left, FingerTreeSized<FTNode<T, int>> middle, T[] right) {
             Debug.Assert(left.Length != 0 && left.Length <= 4);
             Debug.Assert(right.Length <= 4);
 
@@ -97,7 +97,7 @@ namespace FP.Collections {
             return RotateR(left, middle);
         } // DeepR
 
-        private FingerTreeSized<T> RotateR(T[] left, FingerTreeSized<FTNode<T, int>> middle) {
+        private static FingerTreeSized<T> RotateR(T[] left, FingerTreeSized<FTNode<T, int>> middle) {
             if (middle.IsEmpty)
                 return FromArray(left);
             int measure = SumMeasures(left) + middle.Measure;
