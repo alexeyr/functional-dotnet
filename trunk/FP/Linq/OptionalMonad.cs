@@ -22,12 +22,12 @@ namespace FP.Linq {
     /// <see cref="Optional{T}"/> a monad.
     /// </summary>
     public static class OptionalMonad {
-        public static Optional<T> Where<T>(this T t, Func<T, bool> function) {
-            return function(t) ? Optional.Some(t) : Optional<T>.None;
+        public static Optional<T> Where<T>(this T t, Func<T, bool> predicate) {
+            return predicate(t) ? Optional.Some(t) : Optional<T>.None;
         }
 
-        public static Optional<T> Where<T>(this Optional<T> optional, Func<T, bool> function) {
-            return optional.MapOrElse(function, false) ? optional : Optional<T>.None;
+        public static Optional<T> Where<T>(this Optional<T> optional, Func<T, bool> predicate) {
+            return optional.Filter(predicate);
         }
 
         public static Optional<T2> Select<T1, T2>(this Optional<T1> optional, Func<T1, T2> function) {
