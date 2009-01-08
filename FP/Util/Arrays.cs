@@ -69,6 +69,7 @@ namespace FP.Util {
             Debug.Assert(startIndex >= 0);
             Debug.Assert(length >= 0);
             Debug.Assert(startIndex + length <= array.Length);
+            if (length == 0) return Empty<T>();
             var result = new T[length];
             Array.Copy(array, startIndex, result, 0, length);
             return result;
@@ -107,7 +108,7 @@ namespace FP.Util {
         /// <typeparam name="T"></typeparam>
         /// <param name="array">The array.</param>
         public static IEnumerable<T> ReverseIterator<T>(this T[] array) {
-            for (int i = array.Length - 1; i >= 0; i++)
+            for (int i = array.Length - 1; i >= 0; i--)
                 yield return array[i];
         }
 

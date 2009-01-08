@@ -38,6 +38,7 @@ namespace <#= NamespaceName #>
     /// <summary> An immutable tuple with <#= types #> fields. </summary>
     [Serializable]
     [DebuggerDisplay("{ToString()}")]
+    [DebuggerStepThrough]
     public <# if(isValueType) { #>struct<# } else { #>sealed class<# }//if #> <#= typeName #> : IEquatable<<#= typeName #>>
     {
     #region Fields
