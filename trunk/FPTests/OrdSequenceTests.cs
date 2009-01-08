@@ -13,90 +13,127 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
+using System;
+using System.Linq;
+using FP.Collections;
 using FP.Core;
+using Microsoft.Pex.Framework;
+using Xunit;
+using XunitExtensions;
 
 namespace FPTests {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using FP.Collections;
-    using Xunit;
-    using XunitExtensions;
+    [PexClass(typeof(OrderedSequence<>))]
+    public partial class OrdSequenceTests {
+        [PexMethod]
+        [PexGenericArguments(typeof(int))]
+        public void Test_Ordering<T>([PexAssumeNotNull] T[] array) where T : IComparable<T> {
+            var seq = OrderedSequence.FromEnumerable(array);
+            Array.Sort(array);
+            Assert2.SequenceEqual(array, seq);
+            Array.Reverse(array);
+            Assert2.SequenceEqual(array, seq.ReverseIterator());
+        }
 
-    public class OrdSequenceTests {
-        private readonly OrderedSequence<int, int> _empty = OrderedSequence.Empty(int.MinValue);
-        private readonly int[] _testData = new int[N];
-        private readonly int[] _testDataSorted = new int[N];
-        private readonly OrderedSequence<int, int> _seq;
-        private const int N = 1000;
-        private readonly Random _rnd = new Random();
+        [PexMethod(MaxBranches = 20000)]
+        [PexGenericArguments(typeof(int))]
+        public void Test_MinMax<T>([PexAssumeNotNull] T[] array) where T : IComparable<T> {
+            PexAssume.IsNotNullOrEmpty(array);
+            var seq = OrderedSequence.FromEnumerable(array);
+            Array.Sort(array);
+            Assert.Equal(array[0], seq.Min);
+            Assert.Equal(array[array.Length - 1], seq.Max);
+            Assert2.SequenceEqual(array.Skip(1), seq.RemoveMin());
+            Assert2.SequenceEqual(array.Take(array.Length - 1), seq.RemoveMax());
+        }
 
-        private static IEnumerable<T> Stutter<T>(IEnumerable<T> ts) {
-            foreach (var t in ts) {
-                yield return t;
-                yield return t;
+        [PexMethod]
+        [PexGenericArguments(typeof(int))]
+        public void Test_ContainsPositive<T>([PexAssumeNotNull] T[] array, T item) where T : IComparable<T> {
+            var seq = OrderedSequence.FromEnumerable(array);
+            PexAssume.IsTrue(array.Contains(item));
+            Assert.Contains(item, seq);
+            Assert.Equal(0, seq[item].Value.CompareTo(item));
+        }
+
+        [PexMethod]
+        [PexGenericArguments(typeof(int))]
+        public void Test_ContainsNegative<T>([PexAssumeNotNull] T[] array, T item) where T : IComparable<T> {
+            var seq = OrderedSequence.FromEnumerable(array);
+            PexAssume.IsFalse(array.Contains(item));
+            Assert.DoesNotContain(item, seq);
+            Assert.False(seq[item].HasValue);
+        }
+
+        [PexMethod]
+        [PexGenericArguments(typeof(int))]
+        public void Test_ExtractAll<T>([PexAssumeNotNull] T[] array, T item) where T : IComparable<T> {
+            var seq = OrderedSequence.FromEnumerable(array);
+            var split = seq.ExtractAll(item);
+            Assert2.SequenceEqual(seq, split.Item1.Concat(split.Item2).Concat(split.Item3));
+            PexAssert.TrueForAll(split.Item1, t => t.CompareTo(item) < 0);
+            PexAssert.TrueForAll(split.Item2, t => t.CompareTo(item) == 0);
+            PexAssert.TrueForAll(split.Item3, t => t.CompareTo(item) > 0);
+        }
+
+        [PexMethod]
+        [PexGenericArguments(typeof(int))]
+        public void Test_ExtractOneNegative<T>([PexAssumeNotNull] T[] array, T item) where T : IComparable<T> {
+            PexAssume.IsFalse(array.Contains(item));
+            var seq = OrderedSequence.FromEnumerable(array);
+            var maybeSplit = seq.ExtractOne(item);
+            Assert.False(maybeSplit.HasValue);
+        }
+
+        [PexMethod]
+        [PexGenericArguments(typeof(int))]
+        public void Test_ExtractOnePositive<T>([PexAssumeNotNull] T[] array, T item) where T : IComparable<T> {
+            PexAssume.IsTrue(array.Contains(item));
+            var seq = OrderedSequence.FromEnumerable(array);
+            var split = seq.ExtractOne(item).Value;
+            Assert2.SequenceEqual(seq, split.Item1.Append(split.Item2).Concat(split.Item3));
+            PexAssert.TrueForAll(split.Item1, t => t.CompareTo(item) <= 0);
+            Assert.True(split.Item2.CompareTo(item) == 0);
+            PexAssert.TrueForAll(split.Item3, t => t.CompareTo(item) >= 0);
+        }
+
+        [PexMethod]
+        [PexGenericArguments(typeof(int))]
+        public void Test_Split<T>([PexAssumeNotNull] T[] array, T item, bool equalGoLeft) where T : IComparable<T> {
+            var seq = OrderedSequence.FromEnumerable(array);
+            var split = seq.Split(item, equalGoLeft);
+            Assert2.SequenceEqual(seq, split.Item1 + split.Item2);
+            if (equalGoLeft) {
+                PexAssert.TrueForAll(split.Item1, t => t.CompareTo(item) <= 0);
+                PexAssert.TrueForAll(split.Item2, t => t.CompareTo(item) > 0);
+            }
+            else {
+                PexAssert.TrueForAll(split.Item1, t => t.CompareTo(item) < 0);
+                PexAssert.TrueForAll(split.Item2, t => t.CompareTo(item) >= 0);                
             }
         }
 
-        private static IEnumerable<T> EveryNth<T>(IEnumerable<T> ts, int n) {
-            int i = 0;
-            foreach (var t in ts) {
-                i++;
-                if (i == n) {
-                    yield return t;
-                    i = 0;
-                }
-            }
+        [PexMethod]
+        [PexGenericArguments(typeof(int))]
+        public void Test_Insert<T>([PexAssumeNotNull] T[] array1, [PexAssumeNotNull] T[] array2) where T : IComparable<T> {
+            var seq1 = OrderedSequence.FromEnumerable(array1);
+            var seq = seq1.InsertRange(array2);
+            Assert2.SequenceEqual(array1.Concat(array2).Sort(), seq);
         }
 
-        public OrdSequenceTests() {
-            for (int i = 0; i < N; i++)
-                _testData[i] = _rnd.Next(N);
-            _testData.CopyTo(_testDataSorted, 0);
-            Array.Sort(_testDataSorted);
-            _seq = OrderedSequence.FromEnumerable(_testData, int.MinValue);
+        [PexMethod]
+        [PexGenericArguments(typeof(int))]
+        public void Test_Intersect<T>([PexAssumeNotNull] T[] array1, [PexAssumeNotNull] T[] array2) where T : IComparable<T> {
+            var seq1 = OrderedSequence.FromEnumerable(array1);
+            var seq2 = OrderedSequence.FromEnumerable(array2);
+            Assert2.SequenceEqual(array1.Intersect(array2).Sort(), seq1.Intersect(seq2));
         }
 
-        [Fact]
-        public void Test_Ordering() {
-            Assert2.SequenceEqual(_testDataSorted, (IEnumerable<int>) (_seq));
-        }
-
-        [Fact]
-        public void Test_FromOrderedEnumerable() {
-            Assert2.SequenceEqual(_testDataSorted,
-                                  (IEnumerable<int>) (OrderedSequence.FromOrderedEnumerable(_testDataSorted,
-                                                                        int.MinValue)));
-        }
-
-        [Fact]
-        public void Test_Merge() {
-            const int count = N / 4;
-            var enum1 = _testData.Take(count);
-            var enum2 = _testData.Skip(count);
-            var seq1 = OrderedSequence.FromEnumerable(enum1, int.MinValue);
-            var seq2 = OrderedSequence.FromEnumerable(enum2, int.MinValue);
-            Assert2.SequenceEqual(_testDataSorted, (IEnumerable<int>) (seq1 + seq2));
-            Assert2.SequenceEqual(_testDataSorted, (IEnumerable<int>) (seq2 + seq1));
-        }
-
-        [Fact]
-        public void Test_Intersect() {
-            var enum1 = _testData.Distinct().ToArray();
-            var enum2 = EveryNth(enum1, 2);
-            var enum3 = EveryNth(enum1, 3);
-            var enum6 = EveryNth(enum1, 6);
-            var seq2 = OrderedSequence.FromEnumerable(enum2, int.MinValue);
-            var seq3 = OrderedSequence.FromEnumerable(enum3, int.MinValue);
-            var seq6 = OrderedSequence.FromEnumerable(enum6, int.MinValue);
-            Assert2.SequenceEqual<Tuple<int, int>>(seq6, seq2.Intersect(seq3));
-            Assert2.SequenceEqual<Tuple<int, int>>(seq6, seq3.Intersect(seq2));
-        }
-
-        [Fact]
-        public void Test_Indexing() {
-            Assert.Equal(N, _seq.Count);
-            for (int i = 0; i < N; i++) Assert.Equal(_testDataSorted[i], _seq[i].Item2);
+        [PexMethod(MaxBranches = 20000)]
+        [PexGenericArguments(typeof(int))]
+        public void Test_Union<T>([PexAssumeNotNull] T[] array1, [PexAssumeNotNull] T[] array2) where T : IComparable<T> {
+            var seq1 = OrderedSequence.FromEnumerable(array1);
+            var seq2 = OrderedSequence.FromEnumerable(array2);
+            Assert2.SequenceEqual(array1.Concat(array2).Sort(), seq1 + seq2);
         }
     }
 }

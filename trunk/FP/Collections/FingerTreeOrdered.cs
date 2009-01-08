@@ -293,6 +293,29 @@ namespace FP.Collections {
             return Measure;
         }
 
+        public FingerTreeOrdered<T, K> Merge(FingerTreeOrdered<T, K> otherTree) {
+            if (IsEmpty)
+                return otherTree;
+
+            var minElem = Head;
+            var split = otherTree.Split(minElem.Measure, true);
+            return (split.Item1 | minElem) + split.Item2.Merge(Tail);
+        }
+
+        public FingerTreeOrdered<T, K> Intersect(FingerTreeOrdered<T, K> otherTree) {
+            if (IsEmpty)
+                return EmptyInstance;
+
+            var minElem = Head;
+            var minMeasure = minElem.Measure;
+            var split = otherTree.Split(minMeasure, true);
+            var other_LTE_minElem = split.Item1;
+            var recursive = split.Item2.Intersect(Tail);
+            return other_LTE_minElem.IsEmpty || other_LTE_minElem.Measure.CompareTo(minMeasure) < 0
+                       ? recursive
+                       : minElem | recursive;
+        }
+
         internal abstract Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft);
 
         /// <summary>
@@ -319,7 +342,9 @@ namespace FP.Collections {
             if (key.CompareTo(Measure) > 0 || (equalGoLeft && key.CompareTo(Measure) == 0)) 
                 return Pair.New(this, EmptyInstance);
             var split = SplitTreeAt(key, equalGoLeft);
-            return Pair.New(split.Left, split.Middle | split.Right);
+            return equalGoLeft && key.CompareTo(split.Middle.Measure) == 0
+                ? Pair.New(split.Left | split.Middle, split.Right)
+                : Pair.New(split.Left, split.Middle | split.Right);
         } // Split
 
         /// <summary>
@@ -688,8 +713,7 @@ namespace FP.Collections {
             /// <returns>The resulting list.</returns>
             protected override FingerTreeOrdered<T, K> Prepend(T newHead) {
                 return MakeDeep(
-                    new[] { newHead }, EmptyInstanceNested, new[] { Value },
-                    Value.Measure);
+                    new[] { newHead }, EmptyInstanceNested, new[] { Value }, Value.Measure);
             } // Prepend
 
             /// <summary>
@@ -699,8 +723,7 @@ namespace FP.Collections {
             /// <returns>The resulting list.</returns>
             protected override FingerTreeOrdered<T, K> Append(T newLast) {
                 return MakeDeep(
-                    new[] { Value }, EmptyInstanceNested, new[] { newLast },
-                    newLast.Measure);
+                    new[] { Value }, EmptyInstanceNested, new[] { newLast }, newLast.Measure);
             }
 
             /// <summary>
@@ -727,7 +750,7 @@ namespace FP.Collections {
             }
 
             protected override Optional<T> LeastGtOrEqual(K key) {
-                return key.CompareTo(Measure) == 0
+                return key.CompareTo(Measure) <= 0
                            ? Value
                            : Optional<T>.None;
             }
@@ -992,7 +1015,7 @@ namespace FP.Collections {
             public override Optional<Tuple<FingerTreeOrdered<T, K>, T, FingerTreeOrdered<T, K>>> ExtractOne(K key) {
                 var split = Split(key, true);
                 var lessOrEqual = split.Item1;
-                if (key.CompareTo(lessOrEqual.Measure) > 0)
+                if (lessOrEqual.IsEmpty || key.CompareTo(lessOrEqual.Measure) > 0)
                     return Optional<Tuple<FingerTreeOrdered<T, K>, T, FingerTreeOrdered<T, K>>>.None;
                 return Tuple.New(lessOrEqual.Init, lessOrEqual.Last, split.Item2);
             }
@@ -1015,7 +1038,7 @@ namespace FP.Collections {
 
             private Optional<T> LeastGtOrEqual(T[] array, K key) {
                 foreach (T t in array)
-                    if (key.CompareTo(t.Measure) >= 0) return Optional.Some(t);
+                    if (key.CompareTo(t.Measure) <= 0) return Optional.Some(t);
                 return Optional<T>.None;
             }
 
@@ -1090,14 +1113,10 @@ namespace FP.Collections {
                 int offset;
                 for (offset = 0; offset < array.Length - 1; offset++) {
                     var keyComparedToElement = key.CompareTo(array[offset].Measure);
-                    if (keyComparedToElement > 0 || (!equalGoLeft && keyComparedToElement == 0)) break;
+                    if (keyComparedToElement < 0 || (!equalGoLeft && keyComparedToElement == 0)) break;
                 }
-                var left = offset == 0
-                               ? Arrays.Empty<T>()
-                               : array.CopyNoChecks(0, offset);
-                var right = offset == array.Length - 1
-                                ? Arrays.Empty<T>()
-                                : array.CopyNoChecks(offset + 1);
+                var left = array.CopyNoChecks(0, offset);
+                var right = array.CopyNoChecks(offset + 1);
                 return new Split<T, T[]>(left, array[offset], right);
             }
 
