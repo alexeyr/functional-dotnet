@@ -27,7 +27,7 @@ namespace FP.Collections {
     /// </summary>
     /// <typeparam name="T">The type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
-    public struct OrderedSequence<T> : IEnumerable<T>, IEquatable<OrderedSequence<T>> where T : IComparable<T> {
+    public struct OrderedSequence<T> : IReversibleEnumerable<T>, IEquatable<OrderedSequence<T>> where T : IComparable<T> {
         private static readonly OrderedSequence<T> _emptyInstance =
             new OrderedSequence<T>(FingerTreeOrdered<Element, T>.EmptyInstance);
 
@@ -36,12 +36,6 @@ namespace FP.Collections {
         /// </summary>
         /// <value>The empty instance.</value>
         public static OrderedSequence<T> EmptyInstance { get { return _emptyInstance; } }
-
-        private readonly FingerTreeOrdered<Element, T> _ft;
-
-        private OrderedSequence(FingerTreeOrdered<Element, T> ft) {
-            _ft = ft;
-        }
 
         [DebuggerDisplay("{Value}")]
         [DebuggerStepThrough]
@@ -55,6 +49,16 @@ namespace FP.Collections {
             public T Measure {
                 get { return Value; }
             }
+        }
+
+        private readonly FingerTreeOrdered<Element, T> _ft;
+
+        private OrderedSequence(FingerTreeOrdered<Element, T> ft) {
+            _ft = ft;
+        }
+
+        internal static OrderedSequence<T> Single(T item) {
+            return new OrderedSequence<T>(FingerTreeOrdered<Element, T>.MakeSingle(new Element(item)));
         }
 
         /// <summary>
@@ -80,8 +84,8 @@ namespace FP.Collections {
         /// <summary>
         /// Gets the sequence except its maximal element.
         /// </summary>
-        /// <remarks>O(1). If several elements are equal and maximal, ties may be broken
-        /// arbitrarily.</remarks>
+        /// <remarks>O(1). If several elements are equal and maximal, the one returned by 
+        /// <see cref="Max"/> will be removed.</remarks>
         /// <exception cref="EmptyEnumerableException">There are no elements in the
         /// sequence.</exception>
         public OrderedSequence<T> ExceptMax {
@@ -91,8 +95,8 @@ namespace FP.Collections {
         /// <summary>
         /// Gets the sequence except its minimal element.
         /// </summary>
-        /// <remarks>O(1). If several elements are equal and minimal, ties may be broken
-        /// arbitrarily.</remarks>
+        /// <remarks>O(1). If several elements are equal and minimal, the one returned by 
+        /// <see cref="Min"/> will be removed.</remarks>
         /// <exception cref="EmptyEnumerableException">There are no elements in the
         /// sequence.</exception>
         public OrderedSequence<T> ExceptMin {
@@ -192,6 +196,10 @@ namespace FP.Collections {
             return seq.Insert(item);
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this sequence is empty.
+        /// </summary>
+        /// <value><c>true</c> if this sequence is empty; otherwise, <c>false</c>.</value>
         public bool IsEmpty {
             get { return _ft.IsEmpty; }
         }
@@ -210,17 +218,6 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Gets an element equal to <paramref name="item"/> if there is one;
-        /// otherwise, <see cref="Optional{T}.None"/>.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <remarks>O(log(m)), where m is the number of elements from the closer side of
-        /// the sequence to the position of the item.</remarks>
-        public Optional<T> this[T item] {
-            get { return _ft[item].Map(el => el.Value); }
-        }
-
-        /// <summary>
         /// Determines whether the sequence contains the given item.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -234,22 +231,24 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// If the sequence contains the given item, splits it. The first subsequence
-        /// contains elements less than or equal to <paramref cref="item"/>, the second
-        /// element is equal to it, and the third one contains elements greater than or
-        /// equal to it. If the sequence doesn't contain the item, returns 
-        /// <see cref="Optional{T}.None"/>
+        /// Gets an element equal to <paramref name="item"/> if there is one;
+        /// otherwise, <see cref="Optional{T}.None"/>.
         /// </summary>
         /// <param name="item">The item.</param>
-        public Optional<Tuple<OrderedSequence<T>, T, OrderedSequence<T>>> ExtractOne(T item) {
-            var maybeTriple = _ft.ExtractOne(item);
-            if (!maybeTriple.HasValue)
-                return Optional<Tuple<OrderedSequence<T>, T, OrderedSequence<T>>>.None;
-            var triple = maybeTriple.Value;
-            return Tuple.New(
-                new OrderedSequence<T>(triple.Item1),
-                triple.Item2.Value,
-                new OrderedSequence<T>(triple.Item3));
+        /// <remarks>O(log(m)), where m is the number of elements from the closer side of
+        /// the sequence to the position of the item.</remarks>
+        public Optional<T> this[T item] {
+            get { return _ft[item].Map(el => el.Value); }
+        }
+
+        /// <summary>
+        /// Finds all elements equal to the given item.
+        /// </summary>
+        /// <param name="item">The key.</param>
+        /// <remarks>O(log(m)), where m is the number of elements from the closer side of
+        /// the sequence to the position of the item.</remarks>
+        public OrderedSequence<T> FindAll(T item) {
+            return new OrderedSequence<T>(_ft.FindAll(item));
         }
 
         /// <summary>
@@ -258,6 +257,8 @@ namespace FP.Collections {
         /// to it, and the third one greater elements.
         /// </summary>
         /// <param name="item">The item.</param>
+        /// <remarks>O(log(m)), where m is the number of elements from the closer side of
+        /// the sequence to the position of the item.</remarks>
         public Tuple<OrderedSequence<T>, OrderedSequence<T>, OrderedSequence<T>> ExtractAll(T item) {
             var triple = _ft.ExtractAll(item);
             return Tuple.New(
@@ -313,23 +314,57 @@ namespace FP.Collections {
 
         /// <summary>
         /// Splits the sequence into two parts. The first one contains all elements less
-        /// than <paramref cref="key"/>, the second one all greater elements. Elements
-        /// equal to <paramref cref="key"/> go into one of them according to the 
+        /// than <paramref cref="item"/>, the second one all greater elements. Elements
+        /// equal to <paramref cref="item"/> go into one of them according to the 
         /// <paramref name="equalGoLeft"/> parameter.
         /// </summary>
-        /// <param name="key">The element on which the sequence is split.</param>
+        /// <param name="item">The element on which the sequence is split.</param>
         /// <param name="equalGoLeft">if set to <c>true</c>, elements with the measure
-        /// equal to <see cref="key"/> will be at the left side of the split; otherwise,
+        /// equal to <see cref="item"/> will be at the left side of the split; otherwise,
         /// they will be on the right side.</param>
-        public Tuple<OrderedSequence<T>, OrderedSequence<T>> Split(T key, bool equalGoLeft) {
-            var pair = _ft.Split(key, equalGoLeft);
+        public Tuple<OrderedSequence<T>, OrderedSequence<T>> Split(T item, bool equalGoLeft) {
+            var pair = _ft.Split(item, equalGoLeft);
             return Pair.New(
                 new OrderedSequence<T>(pair.Item1),
                 new OrderedSequence<T>(pair.Item2));
         }
 
         /// <summary>
-        /// Reduces the finger tree from the right.
+        /// Returns all elements in this sequence less than <paramref name="item"/>.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        public OrderedSequence<T> LessThan(T item) {
+            return new OrderedSequence<T>(_ft.LessThan(item));
+        }
+
+        /// <summary>
+        /// Returns all elements in this sequence less than, or equal to, 
+        /// <paramref name="item"/>.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        public OrderedSequence<T> AtMost(T item) {
+            return new OrderedSequence<T>(_ft.AtMost(item));
+        }
+
+        /// <summary>
+        /// Returns all elements in this sequence greater than, or equal to, 
+        /// <paramref name="item"/>.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        public OrderedSequence<T> AtLeast(T item) {
+            return new OrderedSequence<T>(_ft.AtLeast(item));
+        }
+
+        /// <summary>
+        /// Returns all elements in this sequence greater than <paramref name="item"/>.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        public OrderedSequence<T> GreaterThan(T item) {
+            return new OrderedSequence<T>(_ft.GreaterThan(item));
+        }
+
+        /// <summary>
+        /// Reduces the sequence in descending order.
         /// </summary>
         /// <typeparam name="A">The type of the accumulator.</typeparam>
         /// <param name="binOp">The binary operation.</param>
@@ -342,7 +377,7 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Reduces the finger tree from the left.
+        /// Reduces the sequence in ascending order.
         /// </summary>
         /// <typeparam name="A">The type of the accumulator.</typeparam>
         /// <param name="binOp">The binary operation.</param>
@@ -369,6 +404,16 @@ namespace FP.Collections {
         }
 
         /// <summary>
+        /// Returns the <see cref="OrderedSequence{T}"/> containing only the specified 
+        /// <paramref name="item"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of the sequence.</typeparam>
+        /// <param name="item">The item.</param>
+        public static OrderedSequence<T> Single<T>(T item) where T : IComparable<T> {
+            return OrderedSequence<T>.Single(item);
+        }
+
+        /// <summary>
         /// Creates a <see cref="OrderedSequence{T}"/> with the elements from 
         /// <paramref name="sequence"/>.
         /// </summary>
@@ -376,7 +421,7 @@ namespace FP.Collections {
         /// <param name="sequence">The sequence of pairs (key, element) placed into the
         /// sequence initially.
         /// </param>
-        /// <remarks>If <paramref name="sequence"/> is sorted (either descending or
+        /// <remarks>If <paramref name="sequence"/> is ordered (either descending or
         /// ascending), the running time is O(n); otherwise it is O(n * log n)</remarks>
         public static OrderedSequence<T> FromEnumerable<T>(IEnumerable<T> sequence) where T : IComparable<T> {
             return Empty<T>().InsertRange(sequence);

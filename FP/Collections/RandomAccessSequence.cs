@@ -79,7 +79,7 @@ namespace FP.Collections {
             _ft = _emptyInstance._ft.AppendRange(sequence.Map(x => new Element(x)));
         }
 
-        internal RandomAccessSequence(FingerTreeSized<Element> ft) {
+        private RandomAccessSequence(FingerTreeSized<Element> ft) {
             _ft = ft;
         }
 
@@ -461,7 +461,7 @@ namespace FP.Collections {
         /// </summary>
         /// <typeparam name="T">The type of elements.</typeparam>
         /// <param name="item">The only item in the sequence.</param>
-        public static RandomAccessSequence<T> Singleton<T>(T item) {
+        public static RandomAccessSequence<T> Single<T>(T item) {
             return RandomAccessSequence<T>.Single(item);
         }
 

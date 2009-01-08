@@ -39,6 +39,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Pex.Framework, Version=0.8.31021.3, Culture=neutral, PublicKeyToken=76a274db078248c8, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -54,6 +56,8 @@
     <Compile Include="Collections\IInsertableRandomAccessSequence.cs" />
     <Compile Include="Collections\IAdjustableRandomAccessSequence.cs" />
     <Compile Include="Collections\IReversible.cs" />
+    <Compile Include="Collections\PriorityQueue.cs" />
+    <Compile Include="Collections\PriorityValuePair.cs" />
     <Compile Include="Collections\Split.cs" />
     <Compile Include="Collections\Vector.cs" />
     <Compile Include="Collections\IReversibleEnumerable.cs" />
@@ -110,7 +114,6 @@
     <Compile Include="Collections\Lists.cs" />
     <Compile Include="Collections\Monoid.cs" />
     <Compile Include="Collections\OrderedSequence.cs" />
-    <Compile Include="Collections\PriorityQueue.cs" />
     <Compile Include="Core\Result.cs" />
     <Compile Include="Collections\RandomAccessSequence.cs" />
     <Compile Include="Core\Tuple.cs">
@@ -172,7 +175,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
+      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

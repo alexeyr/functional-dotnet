@@ -77,27 +77,6 @@ namespace FPTests {
 
         [PexMethod]
         [PexGenericArguments(typeof(int))]
-        public void Test_ExtractOneNegative<T>([PexAssumeNotNull] T[] array, T item) where T : IComparable<T> {
-            PexAssume.IsFalse(array.Contains(item));
-            var seq = OrderedSequence.FromEnumerable(array);
-            var maybeSplit = seq.ExtractOne(item);
-            Assert.False(maybeSplit.HasValue);
-        }
-
-        [PexMethod]
-        [PexGenericArguments(typeof(int))]
-        public void Test_ExtractOnePositive<T>([PexAssumeNotNull] T[] array, T item) where T : IComparable<T> {
-            PexAssume.IsTrue(array.Contains(item));
-            var seq = OrderedSequence.FromEnumerable(array);
-            var split = seq.ExtractOne(item).Value;
-            Assert2.SequenceEqual(seq, split.Item1.Append(split.Item2).Concat(split.Item3));
-            PexAssert.TrueForAll(split.Item1, t => t.CompareTo(item) <= 0);
-            Assert.True(split.Item2.CompareTo(item) == 0);
-            PexAssert.TrueForAll(split.Item3, t => t.CompareTo(item) >= 0);
-        }
-
-        [PexMethod]
-        [PexGenericArguments(typeof(int))]
         public void Test_Split<T>([PexAssumeNotNull] T[] array, T item, bool equalGoLeft) where T : IComparable<T> {
             var seq = OrderedSequence.FromEnumerable(array);
             var split = seq.Split(item, equalGoLeft);
