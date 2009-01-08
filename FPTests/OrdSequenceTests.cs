@@ -42,8 +42,8 @@ namespace FPTests {
             Array.Sort(array);
             Assert.Equal(array[0], seq.Min);
             Assert.Equal(array[array.Length - 1], seq.Max);
-            Assert2.SequenceEqual(array.Skip(1), seq.RemoveMin());
-            Assert2.SequenceEqual(array.Take(array.Length - 1), seq.RemoveMax());
+            Assert2.SequenceEqual(array.Skip(1), seq.ExceptMin);
+            Assert2.SequenceEqual(array.Take(array.Length - 1), seq.ExceptMax);
         }
 
         [PexMethod]
