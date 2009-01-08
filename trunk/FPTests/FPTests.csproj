@@ -95,12 +95,6 @@
     <Compile Include="OrdSequenceTests.Test_ExtractAll.g.cs">
       <DependentUpon>OrdSequenceTests.cs</DependentUpon>
     </Compile>
-    <Compile Include="OrdSequenceTests.Test_ExtractOneNegative.g.cs">
-      <DependentUpon>OrdSequenceTests.cs</DependentUpon>
-    </Compile>
-    <Compile Include="OrdSequenceTests.Test_ExtractOnePositive.g.cs">
-      <DependentUpon>OrdSequenceTests.cs</DependentUpon>
-    </Compile>
     <Compile Include="OrdSequenceTests.Test_Insert.g.cs">
       <DependentUpon>OrdSequenceTests.cs</DependentUpon>
     </Compile>

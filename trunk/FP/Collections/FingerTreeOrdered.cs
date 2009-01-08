@@ -74,7 +74,7 @@ namespace FP.Collections {
             return new Deep(left, middle, right);
         }
 
-        private static Single MakeSingle(T value) {
+        internal static Single MakeSingle(T value) {
             return new Single(value);
         } // MakeSingle
 
@@ -258,7 +258,15 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Extracts all elements with the given key.
+        /// Finds all elements with the given key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        public FingerTreeOrdered<T, K> FindAll(K key) {
+            return AtLeast(key).AtMost(key);
+        }
+
+        /// <summary>
+        /// Extracts one element with the given key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns><see cref="Optional{T}.None"/> if there are no elements equal to <paramref cref="key"/>;
@@ -346,6 +354,22 @@ namespace FP.Collections {
                 ? Pair.New(split.Left | split.Middle, split.Right)
                 : Pair.New(split.Left, split.Middle | split.Right);
         } // Split
+
+        public FingerTreeOrdered<T, K> LessThan(K key) {
+            return Split(key, false).Item1;
+        }
+
+        public FingerTreeOrdered<T, K> AtMost(K key) {
+            return Split(key, true).Item1;
+        }
+
+        public FingerTreeOrdered<T, K> AtLeast(K key) {
+            return Split(key, false).Item2;
+        }
+
+        public FingerTreeOrdered<T, K> GreaterThan(K key) {
+            return Split(key, true).Item2;
+        }
 
         /// <summary>
         /// Prepends <paramref name="item"/> to <paramref name="tree"/>.
