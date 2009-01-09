@@ -258,7 +258,7 @@ namespace FP.Collections {
         public virtual Tuple<FingerTreeSized<T>, FingerTreeSized<T>> SplitAt(int index, bool needLeft, bool needRight) {
             if (index >= Measure) return Pair.New(this, EmptyInstance);
             var split = SplitTreeAt(index, needLeft, needRight);
-            return Pair.New(split.Left, needRight ? (split.Middle | split.Right) : EmptyInstance);
+            return Pair.New(split.Left, needRight ? (split.Pivot | split.Right) : EmptyInstance);
         } // Split
 
         public FingerTreeSized<T> Take(int index) {
@@ -1067,7 +1067,7 @@ namespace FP.Collections {
                     var splitLeft = SplitArrayAt(_left, index, needLeft, needRight);
                     return new Split<T, FingerTreeSized<T>>(
                         FromArray(splitLeft.Left),
-                        splitLeft.Middle,
+                        splitLeft.Pivot,
                         needRight ? DeepL(splitLeft.Right, Middle, _right) : EmptyInstance);
                 } // if
 
@@ -1075,12 +1075,12 @@ namespace FP.Collections {
                 int indexMiddle = index - totalLeft;
                 if (indexMiddle < Middle.Measure) {
                     var splitMiddle = Middle.SplitTreeAt(indexMiddle, true, needRight);
-                    var splitMiddleMiddle = SplitArrayAt(
-                        splitMiddle.Middle.AsArray, indexMiddle - splitMiddle.Left.Measure, needLeft, needRight);
+                    var splitMiddlePivot = SplitArrayAt(
+                        splitMiddle.Pivot.AsArray, indexMiddle - splitMiddle.Left.Measure, needLeft, needRight);
                     return new Split<T, FingerTreeSized<T>>(
-                        needLeft ? DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left) : EmptyInstance,
-                        splitMiddleMiddle.Middle,
-                        needRight ? DeepL(splitMiddleMiddle.Right, splitMiddle.Right, _right) : EmptyInstance);
+                        needLeft ? DeepR(_left, splitMiddle.Left, splitMiddlePivot.Left) : EmptyInstance,
+                        splitMiddlePivot.Pivot,
+                        needRight ? DeepL(splitMiddlePivot.Right, splitMiddle.Right, _right) : EmptyInstance);
                 } // if
 
                 // it must be on the right
@@ -1088,7 +1088,7 @@ namespace FP.Collections {
                 var splitRight = SplitArrayAt(_right, indexRight, needLeft, needRight);
                 return new Split<T, FingerTreeSized<T>>(
                     needLeft ? DeepR(_left, Middle, splitRight.Left) : EmptyInstance,
-                    splitRight.Middle,
+                    splitRight.Pivot,
                     FromArray(splitRight.Right));
             } // SplitTree
 

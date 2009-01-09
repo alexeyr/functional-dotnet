@@ -7,13 +7,13 @@ namespace FP.Collections {
     /// </summary>
     internal struct Split<T, FT> {
         internal readonly FT Left;
-        internal readonly T Middle;
+        internal readonly T Pivot;
         internal readonly FT Right;
 
-        internal Split(FT left, T middle, FT right) {
+        internal Split(FT left, T pivot, FT right) {
             Left = left;
             Right = right;
-            Middle = middle;
+            Pivot = pivot;
         }
     }
 }

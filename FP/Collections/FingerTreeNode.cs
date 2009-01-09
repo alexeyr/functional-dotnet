@@ -25,11 +25,12 @@ namespace FP.Collections {
     /// </summary>
     /// <typeparam name="T">Type of the elements in the node.</typeparam>
     /// <typeparam name="V">Type of the weight monoid.</typeparam>
-    internal sealed class FTNode<T, V> : IMeasured<V>, IEnumerable<T>, IFoldable<T>,
+    [Serializable]
+    internal struct FTNode<T, V> : IMeasured<V>, IEnumerable<T>, IFoldable<T>,
                                          IEquatable<FTNode<T, V>> where T : IMeasured<V> {
         internal FTNode(V measure, params T[] array) {
             Debug.Assert(array.Length == 2 || array.Length == 3);
-            Measure = measure;
+            _measure = measure;
             AsArray = array;
         } // FTNode
 
@@ -41,13 +42,17 @@ namespace FP.Collections {
             return AsArray.FoldLeft(binOp, initial);
         } // FoldLeft
 
-        public V Measure { get; private set; } // Measure
+        private readonly V _measure;
+
+        public V Measure {
+            get { return _measure; }
+        } // Measure
 
         /// <summary>
         /// Gets the node's representation as an array.
         /// </summary>
         /// <remarks>Do not mutate!</remarks>
-        internal T[] AsArray { get; private set; } // AsArray
+        internal readonly T[] AsArray;
 
         /// <summary>
         /// Returns an enumerator that iterates through the node.
@@ -73,30 +78,23 @@ namespace FP.Collections {
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(FTNode<T, V> other) {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
             return Equals(other.Measure, Measure) && Arrays.ContentEquals(other.AsArray, AsArray);
         } // Equals
 
         /// <summary>
-        /// Determines whether the specified <see cref="T:System.Object" /> is equal to the current <see cref="T:System.Object" />.
+        /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <returns>
-        /// true if the specified <see cref="T:System.Object" /> is equal to the current <see cref="T:System.Object" />; otherwise, false.
+        /// true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false.
         /// </returns>
         /// <param name="obj">
-        /// The <see cref="T:System.Object" /> to compare with the current <see cref="T:System.Object" />. 
+        /// Another object to compare to. 
         /// </param>
-        /// <exception cref="T:System.NullReferenceException">
-        /// The <paramref name="obj" /> parameter is null.
-        /// </exception><filterpriority>2</filterpriority>
+        /// <filterpriority>2</filterpriority>
         public override bool Equals(object obj) {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            var node = obj as FTNode<T, V>;
-            if (node == null) return false;
-            return Equals(node);
-        } // Equals
+            if (obj.GetType() != typeof (FTNode<T, V>)) return false;
+            return Equals((FTNode<T, V>) obj);
+        }
 
         /// <summary>
         /// Serves as a hash function for a particular type. 

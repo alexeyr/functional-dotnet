@@ -374,9 +374,9 @@ namespace FP.Collections {
             if (key.CompareTo(Measure) > 0 || (equalGoLeft && key.CompareTo(Measure) == 0))
                 return Pair.New(this, EmptyInstance);
             var split = SplitTreeAt(key, equalGoLeft, needLeft, needRight);
-            if (equalGoLeft && key.CompareTo(split.Middle.Measure) == 0)
-                return Pair.New(needLeft ? (split.Left | split.Middle) : EmptyInstance, split.Right);
-            else return Pair.New(split.Left, needRight ? (split.Middle | split.Right) : EmptyInstance);
+            if (equalGoLeft && key.CompareTo(split.Pivot.Measure) == 0)
+                return Pair.New(needLeft ? (split.Left | split.Pivot) : EmptyInstance, split.Right);
+            else return Pair.New(split.Left, needRight ? (split.Pivot | split.Right) : EmptyInstance);
         } // Split
 
         public FingerTreeOrdered<T, K> LessThan(K key) {
@@ -1192,7 +1192,7 @@ namespace FP.Collections {
                     var splitLeft = SplitArrayAt(_left, key, equalGoLeft, needLeft, needRight);
                     return new Split<T, FingerTreeOrdered<T, K>>(
                         FromSortedArray(splitLeft.Left),
-                        splitLeft.Middle,
+                        splitLeft.Pivot,
                         needRight ? DeepL(splitLeft.Right, Middle, _right) : EmptyInstance);
                 } // if
 
@@ -1200,18 +1200,18 @@ namespace FP.Collections {
                 // is split in the middle?
                 if (keyComparedToMaxMiddle < 0 || (!equalGoLeft && keyComparedToMaxMiddle == 0)) {
                     var splitMiddle = Middle.SplitTreeAt(key, equalGoLeft, needLeft, needRight);
-                    var splitMiddleMiddle = SplitArrayAt(splitMiddle.Middle.AsArray, key, equalGoLeft, needLeft, needRight);
+                    var splitMiddlePivot = SplitArrayAt(splitMiddle.Pivot.AsArray, key, equalGoLeft, needLeft, needRight);
                     return new Split<T, FingerTreeOrdered<T, K>>(
-                        needLeft ? DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left) : EmptyInstance,
-                        splitMiddleMiddle.Middle,
-                        needRight ? DeepL(splitMiddleMiddle.Right, splitMiddle.Right, _right) : EmptyInstance);
+                        needLeft ? DeepR(_left, splitMiddle.Left, splitMiddlePivot.Left) : EmptyInstance,
+                        splitMiddlePivot.Pivot,
+                        needRight ? DeepL(splitMiddlePivot.Right, splitMiddle.Right, _right) : EmptyInstance);
                 } // if
 
                 // it must be on the right
                 var splitRight = SplitArrayAt(_right, key, equalGoLeft, needLeft, needRight);
                 return new Split<T, FingerTreeOrdered<T, K>>(
                     needLeft ? DeepR(_left, Middle, splitRight.Left) : EmptyInstance,
-                    splitRight.Middle,
+                    splitRight.Pivot,
                     FromSortedArray(splitRight.Right));
             } // SplitTree
 

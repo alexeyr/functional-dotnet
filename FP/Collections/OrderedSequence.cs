@@ -27,6 +27,7 @@ namespace FP.Collections {
     /// </summary>
     /// <typeparam name="T">The type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
+    [Serializable]
     public struct OrderedSequence<T> : IReversibleEnumerable<T>, IEquatable<OrderedSequence<T>> where T : IComparable<T> {
         private static readonly OrderedSequence<T> _emptyInstance =
             new OrderedSequence<T>(FingerTreeOrdered<Element, T>.EmptyInstance);
