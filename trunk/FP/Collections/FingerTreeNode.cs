@@ -33,9 +33,6 @@ namespace FP.Collections {
             AsArray = array;
         } // FTNode
 
-        internal FTNode(Monoid<V> measureMonoid, params T[] array) :
-            this(FingerTree.SumMeasures(measureMonoid, measureMonoid.Zero, array), array) { } // FTNode
-
         public A FoldRight<A>(Func<T, A, A> binOp, A initial) {
             return AsArray.FoldRight(binOp, initial);
         } // FoldRight

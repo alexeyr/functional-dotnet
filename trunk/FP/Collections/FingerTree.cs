@@ -931,9 +931,38 @@ namespace FP.Collections {
                     Array.Copy(_left, 0, newLeft, 1, leftLength);
                     return MakeDeep(newLeft, _middleLazy, _right, newMeasure);
                 }
+
+                // refinement from Scala version: http://scala.sygneca.com/code/finger-trees
+                // Should make repeated prepends a bit more efficient
+                if (_right.Length == 1) {
+                    if (Middle.IsEmpty) {
+                        return MakeDeep(
+                            new[] { newHead, _left[0], _left[1] },
+                            EmptyInstanceNested,
+                            new[] { _left[2], _left[3], _right[0] },
+                            newMeasure);
+                    }
+                    if (Middle.IsSingle) {
+                        var middle = Middle.Head.AsArray;
+                        if (middle.Length == 2) {
+                            return MakeDeep(
+                                new[] { newHead, _left[0] },
+                                MakeSingleNested(MakeNode(_left[1], _left[2], _left[3])),
+                                new[] { middle[0], middle[1], _right[0] },
+                                newMeasure);
+                        }
+                        Debug.Assert(middle.Length == 3);
+                        return MakeDeep(
+                            new[] { newHead, _left[0], _left[1] },
+                            MakeSingleNested(MakeNode(_left[2], _left[3], middle[0])),
+                            new[] { middle[1], middle[2], _right[0] },
+                            newMeasure);
+                    }
+                }
+
                 return MakeDeep(
                     new[] { newHead, _left[0] },
-                    new FTNode<T, V>(MeasureMonoid, _left[1], _left[2], _left[3]) | Middle,
+                    MakeNode(_left[1], _left[2], _left[3]) | Middle,
                     _right,
                     newMeasure);
             } // Prepend
@@ -953,11 +982,44 @@ namespace FP.Collections {
                     newRight[rightLength] = newLast;
                     return MakeDeep(_left, _middleLazy, newRight, newMeasure);
                 }
+                
+                // refinement from Scala version: http://scala.sygneca.com/code/finger-trees
+                // Should make repeated appends a bit more efficient
+                if (_left.Length == 1) {
+                    if (Middle.IsEmpty) {
+                        return MakeDeep(
+                            new[] { _left[0], _right[0], _right[1] },
+                            EmptyInstanceNested,
+                            new[] { _right[2], _right[3], newLast },
+                            newMeasure);
+                    }
+                    if (Middle.IsSingle) {
+                        var middle = Middle.Head.AsArray;
+                        if (middle.Length == 2) {
+                            return MakeDeep(
+                                new[] { _left[0], middle[0], middle[1] },
+                                MakeSingleNested(MakeNode(_right[0], _right[1], _right[2])),
+                                new[] { _right[3], newLast },
+                                newMeasure);
+                        }
+                        Debug.Assert(middle.Length == 3);
+                        return MakeDeep(
+                            new[] { _left[0], middle[0], middle[1] },
+                            MakeSingleNested(MakeNode(middle[2], _right[0], _right[1])),
+                            new[] { _right[2], _right[3], newLast },
+                            newMeasure);
+                    }
+                }
+
                 return MakeDeep(
                     _left,
-                    Middle | new FTNode<T, V>(MeasureMonoid, _right[0], _right[1], _right[2]),
+                    Middle | MakeNode(_right[0], _right[1], _right[2]),
                     new[] { _right[3], newLast },
                     newMeasure);
+            }
+
+            private FingerTree<FTNode<T, V>, V> MakeSingleNested(FTNode<T, V> node) {
+                return new FingerTree<FTNode<T, V>, V>.Single(node, MeasureMonoid);
             }
 
             /// <summary>
@@ -995,27 +1057,30 @@ namespace FP.Collections {
                 var buffer = new Queue<T>(5);
                 foreach (var t in elements) {
                     buffer.Enqueue(t);
-                    if (buffer.Count == 5) {
-                        yield return new FTNode<T, V>(
-                            MeasureMonoid, buffer.Dequeue(), buffer.Dequeue(), buffer.Dequeue());
-                    }
+                    if (buffer.Count == 5)
+                        yield return MakeNode(buffer.Dequeue(), buffer.Dequeue(), buffer.Dequeue());
                 } // foreach
                 switch (buffer.Count) {
                     case 2:
-                        yield return new FTNode<T, V>(
-                            MeasureMonoid, buffer.Dequeue(), buffer.Dequeue());
+                        yield return MakeNode(buffer.Dequeue(), buffer.Dequeue());
                         break;
                     case 3:
-                        yield return new FTNode<T, V>(
-                            MeasureMonoid, buffer.Dequeue(), buffer.Dequeue(), buffer.Dequeue());
+                        yield return MakeNode(buffer.Dequeue(), buffer.Dequeue(), buffer.Dequeue());
                         break;
                     case 4:
-                        yield return new FTNode<T, V>(
-                            MeasureMonoid, buffer.Dequeue(), buffer.Dequeue());
-                        yield return new FTNode<T, V>(
-                            MeasureMonoid, buffer.Dequeue(), buffer.Dequeue());
+                        yield return MakeNode(buffer.Dequeue(), buffer.Dequeue());
+                        yield return MakeNode(buffer.Dequeue(), buffer.Dequeue());
                         break;
                 } // switch
+            }
+
+            private FTNode<T, V> MakeNode(T t1, T t2) {
+                return new FTNode<T, V>(MeasureMonoid.Plus(t1.Measure, t2.Measure), t1, t2);
+            }
+
+            private FTNode<T, V> MakeNode(T t1, T t2, T t3) {
+                return new FTNode<T, V>(
+                    MeasureMonoid.Plus(MeasureMonoid.Plus(t1.Measure, t2.Measure), t3.Measure), t1, t2, t3);
             }
 
             internal override Split<T, FingerTree<T, V>> SplitTree(

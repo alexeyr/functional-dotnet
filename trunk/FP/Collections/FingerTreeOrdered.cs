@@ -981,6 +981,35 @@ namespace FP.Collections {
                     Array.Copy(_left, 0, newLeft, 1, leftLength);
                     return MakeDeep(newLeft, _middleLazy, _right, _measure);
                 }
+
+                // refinement from Scala version: http://scala.sygneca.com/code/finger-trees
+                // Should make repeated prepends a bit more efficient
+                if (_right.Length == 1) {
+                    if (Middle.IsEmpty) {
+                        return MakeDeep(
+                            new[] { newHead, _left[0], _left[1] },
+                            EmptyInstanceNested,
+                            new[] { _left[2], _left[3], _right[0] },
+                            _measure);
+                    }
+                    if (Middle.IsSingle) {
+                        var middle = Middle.Head.AsArray;
+                        if (middle.Length == 2) {
+                            return MakeDeep(
+                                new[] { newHead, _left[0] },
+                                MakeSingleNested(MakeNode(_left[1], _left[2], _left[3])),
+                                new[] { middle[0], middle[1], _right[0] },
+                                _measure);
+                        }
+                        Debug.Assert(middle.Length == 3);
+                        return MakeDeep(
+                            new[] { newHead, _left[0], _left[1] },
+                            MakeSingleNested(MakeNode(_left[2], _left[3], middle[0])),
+                            new[] { middle[1], middle[2], _right[0] },
+                            _measure);
+                    }
+                }
+
                 return MakeDeep(
                     new[] { newHead, _left[0] },
                     MakeNode(_left[1], _left[2], _left[3]) | Middle,
@@ -995,17 +1024,51 @@ namespace FP.Collections {
             /// <returns>The resulting list.</returns>
             protected override FingerTreeOrdered<T, K> Append(T newLast) {
                 var rightLength = _right.Length;
+                var newMeasure = newLast.Measure;
                 if (rightLength != 4) {
                     var newRight = new T[rightLength + 1];
                     Array.Copy(_right, 0, newRight, 0, rightLength);
                     newRight[rightLength] = newLast;
-                    return MakeDeep(_left, _middleLazy, newRight, newLast.Measure);
+                    return MakeDeep(_left, _middleLazy, newRight, newMeasure);
                 }
+
+                // refinement from Scala version: http://scala.sygneca.com/code/finger-trees
+                // Should make repeated appends a bit more efficient
+                if (_left.Length == 1) {
+                    if (Middle.IsEmpty) {
+                        return MakeDeep(
+                            new[] { _left[0], _right[0], _right[1] },
+                            EmptyInstanceNested,
+                            new[] { _right[2], _right[3], newLast },
+                            newMeasure);
+                    }
+                    if (Middle.IsSingle) {
+                        var middle = Middle.Head.AsArray;
+                        if (middle.Length == 2) {
+                            return MakeDeep(
+                                new[] { _left[0], middle[0], middle[1] },
+                                MakeSingleNested(MakeNode(_right[0], _right[1], _right[2])),
+                                new[] { _right[3], newLast },
+                                newMeasure);
+                        }
+                        Debug.Assert(middle.Length == 3);
+                        return MakeDeep(
+                            new[] { _left[0], middle[0], middle[1] },
+                            MakeSingleNested(MakeNode(middle[2], _right[0], _right[1])),
+                            new[] { _right[2], _right[3], newLast },
+                            newMeasure);
+                    }
+                }
+
                 return MakeDeep(
                     _left,
                     Middle | MakeNode(_right[0], _right[1], _right[2]),
                     new[] { _right[3], newLast },
-                    newLast.Measure);
+                    newMeasure);
+            }
+
+            private static FingerTreeOrdered<FTNode<T, K>, K> MakeSingleNested(FTNode<T, K> node) {
+                return FingerTreeOrdered<FTNode<T, K>, K>.MakeSingle(node);
             }
 
             /// <summary>
