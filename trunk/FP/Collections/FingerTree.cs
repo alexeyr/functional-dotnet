@@ -52,30 +52,31 @@ namespace FP.Collections {
         /// <value>The measure.</value>
         public abstract V Measure { get; } // Measure
 
-        private static readonly Dictionary<Monoid<V>, Empty> _emptyInstancesCache = new Dictionary<Monoid<V>, Empty>();
+        private static readonly Dictionary<Monoid<V>, FingerTree<T, V>> _emptyInstancesCache = 
+            new Dictionary<Monoid<V>, FingerTree<T, V>>();
 
         internal FingerTree(Monoid<V> measureMonoid) {
             MeasureMonoid = measureMonoid;
         }
 
-        internal Empty EmptyInstance {
+        internal FingerTree<T, V> EmptyInstance {
             get {
                 return GetEmptyFromCache<T>();
             }
         } // EmptyInstance
 
-        internal FingerTree<FTNode<T, V>, V>.Empty EmptyInstanceNested {
+        internal FingerTree<FTNode<T, V>, V> EmptyInstanceNested {
             get {
                 return GetEmptyFromCache<FTNode<T, V>>();
             }
         } // EmptyInstanceNested
 
-        private FingerTree<T1, V>.Empty GetEmptyFromCache<T1>() where T1 : IMeasured<V> {
+        private FingerTree<T1, V> GetEmptyFromCache<T1>() where T1 : IMeasured<V> {
             return GetEmptyFromCache<T1>(MeasureMonoid);
         } // GetEmptyFromCache
 
-        internal static FingerTree<T1, V>.Empty GetEmptyFromCache<T1>(Monoid<V> measureMonoid) where T1 : IMeasured<V> {
-            FingerTree<T1, V>.Empty instance;
+        internal static FingerTree<T1, V> GetEmptyFromCache<T1>(Monoid<V> measureMonoid) where T1 : IMeasured<V> {
+            FingerTree<T1, V> instance;
             var emptyInstancesCache = FingerTree<T1, V>._emptyInstancesCache;
             lock (emptyInstancesCache) {
                 if (!emptyInstancesCache.TryGetValue(measureMonoid, out instance))
@@ -286,7 +287,7 @@ namespace FP.Collections {
             return MeasureMonoid.Plus(prependedMeasure, Measure);
         }
 
-        internal abstract Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial);
+        internal abstract Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight);
 
         /// <summary>
         /// Splits the list according to the specified predicate.
@@ -304,10 +305,11 @@ namespace FP.Collections {
         /// If there are several possible splits for which these properties hold,
         /// any of them may be returned.
         /// </remarks>
-        public virtual Tuple<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate) {
-            if (!predicate(Measure)) return Pair.New(this, (FingerTree<T, V>)EmptyInstance);
-            var split = SplitTree(predicate, MeasureMonoid.Zero);
-            return Pair.New(split.Left, split.Middle | split.Right);
+        public virtual Tuple<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate, bool needLeft, bool needRight) {
+            if (!predicate(Measure)) return
+                Pair.New(needLeft ? this : EmptyInstance, EmptyInstance);
+            var split = SplitTree(predicate, MeasureMonoid.Zero, needLeft, needRight);
+            return Pair.New(split.Left, needRight ? (split.Middle | split.Right) : EmptyInstance);
         } // Split
 
         /// <summary>
@@ -532,7 +534,7 @@ namespace FP.Collections {
             /// <param name="predicate">The predicate.</param>
             /// <param name="initial">The initial.</param>
             /// <exception cref="EmptyEnumerableException">Empty tree can't be split.</exception>
-            internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial) {
+            internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight) {
                 throw new EmptyEnumerableException("Empty tree can't be split");
             } // SplitTree
 
@@ -549,7 +551,7 @@ namespace FP.Collections {
             /// If there are several splits, the split returned is not guaranteed to be the first one!
             /// </summary>
             /// <param name="predicate">The predicate.</param>
-            public override Tuple<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate) {
+            public override Tuple<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate, bool needLeft, bool needRight) {
                 var empty = (FingerTree<T, V>)this;
                 return Pair.New(empty, empty);
             } // Split
@@ -723,7 +725,7 @@ namespace FP.Collections {
                 return Value | rightTree.PrependRange(middleList);
             }
 
-            internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial) {
+            internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight) {
                 return new Split<T, FingerTree<T, V>>(EmptyInstance, Value, EmptyInstance);
             } // SplitTree
 
@@ -1083,41 +1085,39 @@ namespace FP.Collections {
                     MeasureMonoid.Plus(MeasureMonoid.Plus(t1.Measure, t2.Measure), t3.Measure), t1, t2, t3);
             }
 
-            internal override Split<T, FingerTree<T, V>> SplitTree(
-                Func<V, bool> predicate,
-                V initial) {
+            internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight) {
                 V totalLeft = SumMeasures(initial, _left);
                 // is split on the left?
                 if (predicate(totalLeft)) {
-                    var splitLeft = SplitArray(_left, predicate, initial);
+                    var splitLeft = SplitArray(_left, predicate, initial, needLeft, needRight);
                     return new Split<T, FingerTree<T, V>>(
                         FromArray(splitLeft.Left),
                         splitLeft.Middle,
-                        DeepL(splitLeft.Right, Middle, _right));
+                        needRight ? DeepL(splitLeft.Right, Middle, _right) : EmptyInstance);
                 } // if
 
                 V totalMiddle = Middle.PrependMeasure(totalLeft);
                 // is split in the middle?
                 if (predicate(totalMiddle)) {
-                    var splitMiddle = Middle.SplitTree(predicate, totalLeft);
+                    var splitMiddle = Middle.SplitTree(predicate, totalLeft, true, needRight);
                     V totalLeftAndMiddleLeft = splitMiddle.Left.PrependMeasure(totalLeft);
-                    var splitMiddleMiddle = 
-                        SplitArray(splitMiddle.Middle.AsArray, predicate, totalLeftAndMiddleLeft);
+                    var splitMiddleMiddle =
+                        SplitArray(splitMiddle.Middle.AsArray, predicate, totalLeftAndMiddleLeft, needLeft, needRight);
                     return new Split<T, FingerTree<T, V>>(
-                        DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left),
+                        needLeft ? DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left) : EmptyInstance,
                         splitMiddleMiddle.Middle,
-                        DeepL(splitMiddleMiddle.Right, splitMiddle.Right, _right));
+                        needRight ? DeepL(splitMiddleMiddle.Right, splitMiddle.Right, _right) : EmptyInstance);
                 } // if
 
                 // it must be on the right
-                var splitRight = SplitArray(_right, predicate, totalMiddle);
+                var splitRight = SplitArray(_right, predicate, totalMiddle, needLeft, needRight);
                 return new Split<T, FingerTree<T, V>>(
-                    DeepR(_left, Middle, splitRight.Left),
+                    needLeft ? DeepR(_left, Middle, splitRight.Left) : EmptyInstance,
                     splitRight.Middle,
                     FromArray(splitRight.Right));
             } // SplitTree
 
-            private Split<T, T[]> SplitArray(T[] array, Func<V, bool> pred, V init) {
+            private Split<T, T[]> SplitArray(T[] array, Func<V, bool> pred, V init, bool needLeft, bool needRight) {
                 if (array.Length == 1) {
                     return new Split<T, T[]>(
                         Arrays.Empty<T>(), array[0], Arrays.Empty<T>());
@@ -1129,12 +1129,12 @@ namespace FP.Collections {
                     total = MeasureMonoid.Plus(total, array[offset].Measure);
                     if (pred(total)) break;
                 }
-                var left = offset == 0
-                               ? Arrays.Empty<T>()
-                               : array.CopyNoChecks(0, offset);
-                var right = offset == array.Length - 1
-                                ? Arrays.Empty<T>()
-                                : array.CopyNoChecks(offset + 1);
+                var left = needLeft
+                               ? array.CopyNoChecks(0, offset)
+                               : Arrays.Empty<T>();
+                var right = needRight
+                                ? array.CopyNoChecks(offset + 1)
+                                : Arrays.Empty<T>();
                 return new Split<T, T[]>(left, array[offset], right);
             }
 

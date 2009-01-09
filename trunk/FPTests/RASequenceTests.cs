@@ -16,6 +16,7 @@
 using System.Linq;
 using FP.Collections;
 using FP.Core;
+using FP.HaskellNames;
 using FP.Validation;
 using Microsoft.Pex.Framework;
 using Xunit;
@@ -23,12 +24,11 @@ using XunitExtensions;
 
 namespace FPTests {
     public partial class RASequenceTests {
-        private readonly RandomAccessSequence<int> _empty = RandomAccessSequence.Empty<int>();
 
         [PexMethod]
         [PexGenericArguments(new[] {typeof (int)})]
         public void Test_IsEmptyWorksCorrectly<T>(T[] arr) {
-            Assert.True(_empty.IsEmpty);
+            Assert.True(RandomAccessSequence.Empty<int>().IsEmpty);
             PexAssume.IsNotNullOrEmpty(arr);
             Assert.False(RandomAccessSequence.FromEnumerable(arr).IsEmpty);
         }
@@ -41,20 +41,18 @@ namespace FPTests {
 
         [PexMethod]
         [PexGenericArguments(new[] {typeof (int)})]
-        public void Test_Append<T>([PexAssumeNotNull] T[] arr) {
-            var seq = RandomAccessSequence<T>.Empty;
-            foreach (var i in arr)
-                seq = seq | i;
-            Assert2.SequenceEqual(arr, seq);
+        public void Test_Append<T>([PexAssumeNotNull] T[] arr1, T t, [PexAssumeNotNull] T[] arr2) {
+            var seq = RandomAccessSequence.FromEnumerable(arr1);
+            Assert2.SequenceEqual(arr1.Append(t), seq | t);
+            Assert2.SequenceEqual(arr1.Concat(arr2), seq.AppendRange(arr2));
         }
 
         [PexMethod]
         [PexGenericArguments(new[] {typeof (int)})]
-        public void Test_Prepend<T>([PexAssumeNotNull] T[] arr) {
-            var seq = RandomAccessSequence<T>.Empty;
-            foreach (var i in arr)
-                seq = i | seq;
-            Assert2.SequenceEqual(arr.Reverse(), seq);
+        public void Test_Prepend<T>([PexAssumeNotNull] T[] arr1, T t, [PexAssumeNotNull] T[] arr2) {
+            var seq = RandomAccessSequence.FromEnumerable(arr1);
+            Assert2.SequenceEqual(t.Cons(arr1.AsEnumerable()), t | seq);
+            Assert2.SequenceEqual(arr2.Concat(arr1), seq.PrependRange(arr2));
         }
 
         [PexMethod]
@@ -62,10 +60,12 @@ namespace FPTests {
         public void Test_SplitAt<T>([PexAssumeNotNull] T[] arr, int i) {
             var seq = RandomAccessSequence.FromEnumerable(arr);
             PexAssume.IsTrue(i >= 0);
-            PexAssume.IsTrue(i < seq.Count);
+            PexAssume.IsTrue(i < arr.Length);
             var split = seq.SplitAt(i);
             Assert2.SequenceEqual(arr.Take(i), split.Item1);
-            Assert2.SequenceEqual(arr.Skip(i), split.Item2);
+            Assert2.SequenceEqual(arr.Take(i), seq.Take(i));
+            Assert2.SequenceEqual(arr.Skip(i), split.Item2); 
+            Assert2.SequenceEqual(arr.Skip(i), seq.Skip(i));
         }
 
         [PexMethod]
@@ -93,10 +93,11 @@ namespace FPTests {
 
         [Fact]
         public void Test_HeadAndTailOfEmptySequence() {
-            Assert.Throws<EmptyEnumerableException>(() => { var a = _empty.Head; });
-            Assert.Throws<EmptyEnumerableException>(() => { var a = _empty.Tail; });
-            Assert.Throws<EmptyEnumerableException>(() => { var a = _empty.Init; });
-            Assert.Throws<EmptyEnumerableException>(() => { var a = _empty.Last; });
+            var empty = RandomAccessSequence.Empty<int>();
+            Assert.Throws<EmptyEnumerableException>(() => { var a = empty.Head; });
+            Assert.Throws<EmptyEnumerableException>(() => { var a = empty.Tail; });
+            Assert.Throws<EmptyEnumerableException>(() => { var a = empty.Init; });
+            Assert.Throws<EmptyEnumerableException>(() => { var a = empty.Last; });
         }
 
         [PexMethod(MaxBranches = 20000)]

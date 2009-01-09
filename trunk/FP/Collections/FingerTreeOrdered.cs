@@ -324,7 +324,7 @@ namespace FP.Collections {
                        : minElem | recursive;
         }
 
-        internal abstract Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft);
+        internal abstract Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft, bool needLeft, bool needRight);
 
         /// <summary>
         /// Splits the list according to the specified predicate.
@@ -347,28 +347,52 @@ namespace FP.Collections {
         /// <remarks>Overridden in <see cref="Empty"/>, where <see cref="Measure"/> throws
         /// an exception.</remarks>
         public virtual Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> Split(K key, bool equalGoLeft) {
-            if (key.CompareTo(Measure) > 0 || (equalGoLeft && key.CompareTo(Measure) == 0)) 
+            return Split(key, equalGoLeft, true, true);
+        }
+
+        /// <summary>
+        /// Splits the list according to the specified predicate.
+        /// </summary>
+        /// <param name="key">The predicate.</param>
+        /// <param name="equalGoLeft">if set to <c>true</c>, elements with the measure
+        /// equal to <see cref="key"/> will be at the left side of the split;
+        /// otherwise, they will be on the right side.</param>
+        /// <remarks>The result has the following properties.
+        /// <code>
+        /// var left = tree.Split(predicate).Item1;
+        /// var right = tree.Split(predicate).Item2;
+        /// ---------
+        /// tree.SequenceEquals(left + right);
+        /// left.IsEmpty() || !predicate(left.Measure);
+        /// right.IsEmpty() || predicate(left.Measure + right.Head.Measure);
+        /// </code>If there are several possible splits for which these properties hold,
+        /// any of them may be returned.
+        /// </remarks>
+        /// <remarks>Overridden in <see cref="Empty"/>, where <see cref="Measure"/> throws
+        /// an exception.</remarks>
+        public virtual Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> Split(K key, bool equalGoLeft, bool needLeft, bool needRight) {
+            if (key.CompareTo(Measure) > 0 || (equalGoLeft && key.CompareTo(Measure) == 0))
                 return Pair.New(this, EmptyInstance);
-            var split = SplitTreeAt(key, equalGoLeft);
-            return equalGoLeft && key.CompareTo(split.Middle.Measure) == 0
-                ? Pair.New(split.Left | split.Middle, split.Right)
-                : Pair.New(split.Left, split.Middle | split.Right);
+            var split = SplitTreeAt(key, equalGoLeft, needLeft, needRight);
+            if (equalGoLeft && key.CompareTo(split.Middle.Measure) == 0)
+                return Pair.New(needLeft ? (split.Left | split.Middle) : EmptyInstance, split.Right);
+            else return Pair.New(split.Left, needRight ? (split.Middle | split.Right) : EmptyInstance);
         } // Split
 
         public FingerTreeOrdered<T, K> LessThan(K key) {
-            return Split(key, false).Item1;
+            return Split(key, false, true, false).Item1;
         }
 
         public FingerTreeOrdered<T, K> AtMost(K key) {
-            return Split(key, true).Item1;
+            return Split(key, true, true, false).Item1;
         }
 
         public FingerTreeOrdered<T, K> AtLeast(K key) {
-            return Split(key, false).Item2;
+            return Split(key, false, false, true).Item2;
         }
 
         public FingerTreeOrdered<T, K> GreaterThan(K key) {
-            return Split(key, true).Item2;
+            return Split(key, true, false, true).Item2;
         }
 
         /// <summary>
@@ -595,11 +619,11 @@ namespace FP.Collections {
                 return prependedMeasure;
             }
 
-            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft) {
+            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft, bool needLeft, bool needRight) {
                 throw new EmptyEnumerableException("Empty tree can't be split");
             } // SplitTree
 
-            public override Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> Split(K key, bool equalGoLeft) {
+            public override Tuple<FingerTreeOrdered<T, K>, FingerTreeOrdered<T, K>> Split(K key, bool equalGoLeft, bool needLeft, bool needRight) {
                 var empty = (FingerTreeOrdered<T, K>)this;
                 return Pair.New(empty, empty);
             } // Split
@@ -779,7 +803,7 @@ namespace FP.Collections {
                            : Optional<T>.None;
             }
 
-            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft) {
+            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft, bool needLeft, bool needRight) {
                 return new Split<T, FingerTreeOrdered<T, K>>(EmptyInstance, Value, EmptyInstance);
             } // SplitTree
 
@@ -1160,38 +1184,38 @@ namespace FP.Collections {
                 return new FTNode<T, K>(t3.Measure, t1, t2, t3);
             }
 
-            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft) {
+            internal override Split<T, FingerTreeOrdered<T, K>> SplitTreeAt(K key, bool equalGoLeft, bool needLeft, bool needRight) {
                 // is split on the left?
                 K maxLeft = MeasureArray(_left);
                 int keyComparedToMaxLeft = key.CompareTo(maxLeft);
                 if (keyComparedToMaxLeft < 0 || (!equalGoLeft && keyComparedToMaxLeft == 0)) {
-                    var splitLeft = SplitArrayAt(_left, key, equalGoLeft);
+                    var splitLeft = SplitArrayAt(_left, key, equalGoLeft, needLeft, needRight);
                     return new Split<T, FingerTreeOrdered<T, K>>(
                         FromSortedArray(splitLeft.Left),
                         splitLeft.Middle,
-                        DeepL(splitLeft.Right, Middle, _right));
+                        needRight ? DeepL(splitLeft.Right, Middle, _right) : EmptyInstance);
                 } // if
 
                 int keyComparedToMaxMiddle = key.CompareTo(Middle.PrependMeasure(maxLeft));
                 // is split in the middle?
                 if (keyComparedToMaxMiddle < 0 || (!equalGoLeft && keyComparedToMaxMiddle == 0)) {
-                    var splitMiddle = Middle.SplitTreeAt(key, equalGoLeft);
-                    var splitMiddleMiddle = SplitArrayAt(splitMiddle.Middle.AsArray, key, equalGoLeft);
+                    var splitMiddle = Middle.SplitTreeAt(key, equalGoLeft, needLeft, needRight);
+                    var splitMiddleMiddle = SplitArrayAt(splitMiddle.Middle.AsArray, key, equalGoLeft, needLeft, needRight);
                     return new Split<T, FingerTreeOrdered<T, K>>(
-                        DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left),
+                        needLeft ? DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left) : EmptyInstance,
                         splitMiddleMiddle.Middle,
-                        DeepL(splitMiddleMiddle.Right, splitMiddle.Right, _right));
+                        needRight ? DeepL(splitMiddleMiddle.Right, splitMiddle.Right, _right) : EmptyInstance);
                 } // if
 
                 // it must be on the right
-                var splitRight = SplitArrayAt(_right, key, equalGoLeft);
+                var splitRight = SplitArrayAt(_right, key, equalGoLeft, needLeft, needRight);
                 return new Split<T, FingerTreeOrdered<T, K>>(
-                    DeepR(_left, Middle, splitRight.Left),
+                    needLeft ? DeepR(_left, Middle, splitRight.Left) : EmptyInstance,
                     splitRight.Middle,
                     FromSortedArray(splitRight.Right));
             } // SplitTree
 
-            private static Split<T, T[]> SplitArrayAt(T[] array, K key, bool equalGoLeft) {
+            private static Split<T, T[]> SplitArrayAt(T[] array, K key, bool equalGoLeft, bool needLeft, bool needRight) {
                 if (array.Length == 1) {
                     return new Split<T, T[]>(
                         Arrays.Empty<T>(), array[0], Arrays.Empty<T>());
@@ -1202,8 +1226,12 @@ namespace FP.Collections {
                     var keyComparedToElement = key.CompareTo(array[offset].Measure);
                     if (keyComparedToElement < 0 || (!equalGoLeft && keyComparedToElement == 0)) break;
                 }
-                var left = array.CopyNoChecks(0, offset);
-                var right = array.CopyNoChecks(offset + 1);
+                var left = needLeft
+                               ? array.CopyNoChecks(0, offset)
+                               : Arrays.Empty<T>();
+                var right = needRight
+                                ? array.CopyNoChecks(offset + 1)
+                                : Arrays.Empty<T>();
                 return new Split<T, T[]>(left, array[offset], right);
             }
 
