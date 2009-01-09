@@ -951,7 +951,7 @@ namespace FP.Collections {
                     var newRight = new T[rightLength + 1];
                     Array.Copy(_right, 0, newRight, 0, rightLength);
                     newRight[rightLength] = newLast;
-                    return MakeDeep(_left, Middle, newRight, newMeasure);
+                    return MakeDeep(_left, _middleLazy, newRight, newMeasure);
                 }
                 return MakeDeep(
                     _left,
