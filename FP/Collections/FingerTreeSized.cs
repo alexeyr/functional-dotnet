@@ -31,9 +31,9 @@ namespace FP.Collections {
     /// <typeparam name="T">The type of the leaves.</typeparam>
     [Serializable]
     internal abstract class FingerTreeSized<T> : IEquatable<FingerTreeSized<T>>,
-                                                  IDeque<T, FingerTreeSized<T>>,
-                                                  IMeasured<int>, IFoldable<T>,
-                                                  ICatenable<FingerTreeSized<T>> where T : IMeasured<int> {
+                                                 IDeque<T, FingerTreeSized<T>>,
+                                                 IMeasured<int>, IFoldable<T>,
+                                                 ICatenable<FingerTreeSized<T>> where T : IMeasured<int> {
         /// <summary>
         /// Gets the measure of the tree.
         /// </summary>
@@ -238,6 +238,26 @@ namespace FP.Collections {
         protected abstract FingerTreeSized<T> App3(IEnumerable<T> middleList, FingerTreeSized<T> rightTree);
 
         internal abstract Split<T, FingerTreeSized<T>> SplitTreeAt(int index, bool needLeft, bool needRight);
+
+        /// <summary>
+        /// Splits the list according to the specified predicate.
+        /// </summary>
+        /// <param name="index">The predicate.</param>
+        /// <remarks>The result has the following properties.
+        /// <code>
+        /// var left = tree.Split(predicate).Item1;
+        /// var right = tree.Split(predicate).Item2;
+        /// ---------
+        /// tree.SequenceEquals(left + right);
+        /// left.IsEmpty() || !predicate(left.Measure);
+        /// right.IsEmpty() || predicate(left.Measure + right.Head.Measure);
+        /// </code>
+        /// If there are several possible splits for which these properties hold,
+        /// any of them may be returned.
+        /// </remarks>
+        public virtual Tuple<FingerTreeSized<T>, FingerTreeSized<T>> SplitAt(int index) {
+            return SplitAt(index, true, true);
+        }
 
         /// <summary>
         /// Splits the list according to the specified predicate.

@@ -1164,8 +1164,9 @@ namespace FP.Core {
         /// <param name="sequence2">The second sequence.</param>
         /// <returns></returns>
         public static IEnumerable<T> ZipWith<T1, T2, T>(
-            this Func<T1, T2, T> function, IEnumerable<T1> sequence1,
-            IEnumerable<T2> sequence2) {
+            this IEnumerable<T1> sequence1,
+            IEnumerable<T2> sequence2, 
+            Func<T1, T2, T> function) {
             using (
                 IEnumerator<T1> enumerator1 =
                     sequence1.GetEnumerator())
@@ -1196,18 +1197,13 @@ namespace FP.Core {
         /// <param name="sequence3">The third sequence.</param>
         /// <returns></returns>
         public static IEnumerable<T> ZipWith<T1, T2, T3, T>(
-            this Func<T1, T2, T3, T> function,
-            IEnumerable<T1> sequence1, IEnumerable<T2> sequence2,
-            IEnumerable<T3> sequence3) {
-            using (
-                IEnumerator<T1> enumerator1 =
-                    sequence1.GetEnumerator())
-            using (
-                IEnumerator<T2> enumerator2 =
-                    sequence2.GetEnumerator())
-            using (
-                IEnumerator<T3> enumerator3 =
-                    sequence3.GetEnumerator()) {
+            this IEnumerable<T1> sequence1, 
+            IEnumerable<T2> sequence2,
+            IEnumerable<T3> sequence3, 
+            Func<T1, T2, T3, T> function) {
+            using (IEnumerator<T1> enumerator1 = sequence1.GetEnumerator())
+            using (IEnumerator<T2> enumerator2 = sequence2.GetEnumerator())
+            using (IEnumerator<T3> enumerator3 = sequence3.GetEnumerator()) {
                 while (enumerator1.MoveNext() &&
                        enumerator2.MoveNext() &&
                        enumerator3.MoveNext()) {
@@ -1236,21 +1232,15 @@ namespace FP.Core {
         /// <param name="sequence4">The fourth sequence.</param>
         /// <returns></returns>
         public static IEnumerable<T> ZipWith<T1, T2, T3, T4, T>(
-            this Func<T1, T2, T3, T4, T> function,
-            IEnumerable<T1> sequence1, IEnumerable<T2> sequence2,
-            IEnumerable<T3> sequence3, IEnumerable<T4> sequence4) {
-            using (
-                IEnumerator<T1> enumerator1 =
-                    sequence1.GetEnumerator())
-            using (
-                IEnumerator<T2> enumerator2 =
-                    sequence2.GetEnumerator())
-            using (
-                IEnumerator<T3> enumerator3 =
-                    sequence3.GetEnumerator())
-            using (
-                IEnumerator<T4> enumerator4 =
-                    sequence4.GetEnumerator()) {
+            this IEnumerable<T1> sequence1, 
+            IEnumerable<T2> sequence2,
+            IEnumerable<T3> sequence3, 
+            IEnumerable<T4> sequence4, 
+            Func<T1, T2, T3, T4, T> function) {
+            using (IEnumerator<T1> enumerator1 = sequence1.GetEnumerator())
+            using (IEnumerator<T2> enumerator2 = sequence2.GetEnumerator())
+            using (IEnumerator<T3> enumerator3 = sequence3.GetEnumerator())
+            using (IEnumerator<T4> enumerator4 = sequence4.GetEnumerator()) {
                 while (enumerator1.MoveNext() &&
                        enumerator2.MoveNext() &&
                        enumerator3.MoveNext() &&

@@ -119,7 +119,7 @@ namespace FP.Collections {
                 return Pair.New(Empty, this);
             if (index >= Count)
                 return Pair.New(this, Empty);
-            var ftSplit = _ft.SplitAt(index, true, true);
+            var ftSplit = _ft.SplitAt(index);
             return Pair.New(
                 new RandomAccessSequence<T>(ftSplit.Item1),
                 new RandomAccessSequence<T>(ftSplit.Item2));
@@ -241,7 +241,7 @@ namespace FP.Collections {
             if (index == 0)
                 return new RandomAccessSequence<T>(new Element(newValue) | _ft);
             Requires.That.IsIndexInRange(this, index, "index").Check();
-            var ftSplit = _ft.SplitAt(index, true, true);
+            var ftSplit = _ft.SplitAt(index);
             return
                 new RandomAccessSequence<T>((ftSplit.Item1 | new Element(newValue)) + ftSplit.Item2);
         }
@@ -285,7 +285,7 @@ namespace FP.Collections {
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public RandomAccessSequence<T> InsertRangeAt(int index, IEnumerable<T> ts) {
             Requires.That.IsIndexInRange(this, index, "index").Check();
-            var ftSplit = _ft.SplitAt(index, true, true);
+            var ftSplit = _ft.SplitAt(index);
             return new RandomAccessSequence<T>(
                 ftSplit.Item1.AppendRange(ts.Map(x => new Element(x))) + ftSplit.Item2);
         }
@@ -305,7 +305,7 @@ namespace FP.Collections {
                 return this;
             if (startIndex == 0)
                 return Skip(count);
-            var splitAtStartOfRange = _ft.SplitAt(startIndex, true, true);
+            var splitAtStartOfRange = _ft.SplitAt(startIndex);
             var afterRemovedRange = splitAtStartOfRange.Item2.Skip(count);
             return new RandomAccessSequence<T>(splitAtStartOfRange.Item1 + afterRemovedRange);
         }
@@ -360,7 +360,7 @@ namespace FP.Collections {
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
-        /// <i>O(1)</i>
+        /// <i>O(log(n))</i>
         /// </summary>
         /// <returns>
         /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.

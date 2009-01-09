@@ -37,14 +37,18 @@ namespace FP.Collections {
     /// <typeparam name="T">The type of the leaves.</typeparam>
     /// <typeparam name="V">The type of measure annotations.</typeparam>
     [Serializable]
-    public abstract class FingerTree<T, V> : IEquatable<FingerTree<T, V>>,
-                                             IDeque<T, FingerTree<T, V>>,
-                                             IMeasured<V>, IFoldable<T>,
-                                             ICatenable<FingerTree<T, V>> where T : IMeasured<V> {
+    internal abstract class FingerTree<T, V> : IEquatable<FingerTree<T, V>>,
+                                               IDeque<T, FingerTree<T, V>>,
+                                               IMeasured<V>, IFoldable<T>,
+                                               ICatenable<FingerTree<T, V>> where T : IMeasured<V> {
         /// <summary>
         /// The monoid to be used to combine the measures of values.
         /// </summary>
         public readonly Monoid<V> MeasureMonoid;
+
+        public Func<V, V, V> Plus { get { return MeasureMonoid.Plus; } }
+
+        public V Zero { get { return MeasureMonoid.Zero; } }
 
         /// <summary>
         /// Gets the measure of the tree.
@@ -86,7 +90,7 @@ namespace FP.Collections {
         } // GetEmptyFromCache
 
         private V SumMeasures(IEnumerable<T> sequence) {
-            return SumMeasures(MeasureMonoid.Zero, sequence);
+            return SumMeasures(Zero, sequence);
         }
 
         private V SumMeasures(V init, IEnumerable<T> sequence) {
@@ -284,7 +288,7 @@ namespace FP.Collections {
         /// <remarks>Used in order not to rely on <see cref="MeasureMonoid"/>'s Zero being
         /// the right identity.</remarks>
         protected virtual V PrependMeasure(V prependedMeasure) {
-            return MeasureMonoid.Plus(prependedMeasure, Measure);
+            return Plus(prependedMeasure, Measure);
         }
 
         internal abstract Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight);
@@ -308,7 +312,7 @@ namespace FP.Collections {
         public virtual Tuple<FingerTree<T, V>, FingerTree<T, V>> Split(Func<V, bool> predicate, bool needLeft, bool needRight) {
             if (!predicate(Measure)) return
                 Pair.New(needLeft ? this : EmptyInstance, EmptyInstance);
-            var split = SplitTree(predicate, MeasureMonoid.Zero, needLeft, needRight);
+            var split = SplitTree(predicate, Zero, needLeft, needRight);
             return Pair.New(split.Left, needRight ? (split.Pivot | split.Right) : EmptyInstance);
         } // Split
 
@@ -427,7 +431,7 @@ namespace FP.Collections {
             /// </summary>
             /// <value>The measure.</value>
             public override V Measure {
-                get { return MeasureMonoid.Zero; }
+                get { return Zero; }
             } // Measure
 
             /// <summary>
@@ -605,7 +609,7 @@ namespace FP.Collections {
             /// </returns>
             /// <filterpriority>2</filterpriority>
             public override int GetHashCode() {
-                return MeasureMonoid.Zero.GetHashCode();
+                return Zero.GetHashCode();
             } // GetHashCode
         } // class Empty
 
@@ -695,7 +699,7 @@ namespace FP.Collections {
             public override FingerTree<T, V> Prepend(T newHead) {
                 return MakeDeep(
                     new[] { newHead }, EmptyInstanceNested, new[] { Value },
-                    MeasureMonoid.Plus(newHead.Measure, Value.Measure));
+                    Plus(newHead.Measure, Value.Measure));
             } // Prepend
 
             /// <summary>
@@ -706,7 +710,7 @@ namespace FP.Collections {
             public override FingerTree<T, V> Append(T newLast) {
                 return MakeDeep(
                     new[] { Value }, EmptyInstanceNested, new[] { newLast },
-                    MeasureMonoid.Plus(Value.Measure, newLast.Measure));
+                    Plus(Value.Measure, newLast.Measure));
             }
 
             /// <summary>
@@ -924,7 +928,7 @@ namespace FP.Collections {
             /// <param name="newHead">The new head.</param>
             /// <returns>The resulting list.</returns>
             public override FingerTree<T, V> Prepend(T newHead) {
-                V newMeasure = MeasureMonoid.Plus(newHead.Measure, Measure);
+                V newMeasure = Plus(newHead.Measure, Measure);
 
                 var leftLength = _left.Length;
                 if (leftLength != 4) {
@@ -975,7 +979,7 @@ namespace FP.Collections {
             /// <param name="newLast">The new last element..</param>
             /// <returns>The resulting list.</returns>
             public override FingerTree<T, V> Append(T newLast) {
-                V newMeasure = MeasureMonoid.Plus(Measure, newLast.Measure);
+                V newMeasure = Plus(Measure, newLast.Measure);
 
                 var rightLength = _right.Length;
                 if (rightLength != 4) {
@@ -1043,7 +1047,7 @@ namespace FP.Collections {
                 // ReSharper disable PossibleNullReferenceException
                 var rightDeep = rightTree as Deep;
                 V newMeasure = SumMeasures(Measure, middleList);
-                newMeasure = MeasureMonoid.Plus(newMeasure, rightDeep.Measure);
+                newMeasure = Plus(newMeasure, rightDeep.Measure);
                 return MakeDeep(
                     _left,
                     () => Middle.App3(
@@ -1077,12 +1081,12 @@ namespace FP.Collections {
             }
 
             private FTNode<T, V> MakeNode(T t1, T t2) {
-                return new FTNode<T, V>(MeasureMonoid.Plus(t1.Measure, t2.Measure), t1, t2);
+                return new FTNode<T, V>(Plus(t1.Measure, t2.Measure), t1, t2);
             }
 
             private FTNode<T, V> MakeNode(T t1, T t2, T t3) {
                 return new FTNode<T, V>(
-                    MeasureMonoid.Plus(MeasureMonoid.Plus(t1.Measure, t2.Measure), t3.Measure), t1, t2, t3);
+                    Plus(Plus(t1.Measure, t2.Measure), t3.Measure), t1, t2, t3);
             }
 
             internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight) {
@@ -1126,7 +1130,7 @@ namespace FP.Collections {
                 V total = init;
                 int offset;
                 for (offset = 0; offset < array.Length - 1; offset++) {
-                    total = MeasureMonoid.Plus(total, array[offset].Measure);
+                    total = Plus(total, array[offset].Measure);
                     if (pred(total)) break;
                 }
                 var left = needLeft
