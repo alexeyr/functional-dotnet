@@ -20,7 +20,7 @@ namespace FP.Collections {
     /// <summary>
     /// Utility class.
     /// </summary>
-    public static class FingerTree {
+    internal static class FingerTree {
         /// <summary>
         /// Creates the empty tree with the specified measure monoid.
         /// </summary>
