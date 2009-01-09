@@ -26,9 +26,7 @@ namespace FP.Collections {
     /// <typeparam name="T">Type of the elements in the node.</typeparam>
     /// <typeparam name="V">Type of the weight monoid.</typeparam>
     internal sealed class FTNode<T, V> : IMeasured<V>, IEnumerable<T>, IFoldable<T>,
-                                         IEquatable<FTNode<T, V>>
-        where T : IMeasured<V> {
-
+                                         IEquatable<FTNode<T, V>> where T : IMeasured<V> {
         internal FTNode(V measure, params T[] array) {
             Debug.Assert(array.Length == 2 || array.Length == 3);
             Measure = measure;
