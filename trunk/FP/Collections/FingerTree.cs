@@ -309,7 +309,7 @@ namespace FP.Collections {
             if (!predicate(Measure)) return
                 Pair.New(needLeft ? this : EmptyInstance, EmptyInstance);
             var split = SplitTree(predicate, MeasureMonoid.Zero, needLeft, needRight);
-            return Pair.New(split.Left, needRight ? (split.Middle | split.Right) : EmptyInstance);
+            return Pair.New(split.Left, needRight ? (split.Pivot | split.Right) : EmptyInstance);
         } // Split
 
         /// <summary>
@@ -1092,7 +1092,7 @@ namespace FP.Collections {
                     var splitLeft = SplitArray(_left, predicate, initial, needLeft, needRight);
                     return new Split<T, FingerTree<T, V>>(
                         FromArray(splitLeft.Left),
-                        splitLeft.Middle,
+                        splitLeft.Pivot,
                         needRight ? DeepL(splitLeft.Right, Middle, _right) : EmptyInstance);
                 } // if
 
@@ -1101,19 +1101,19 @@ namespace FP.Collections {
                 if (predicate(totalMiddle)) {
                     var splitMiddle = Middle.SplitTree(predicate, totalLeft, true, needRight);
                     V totalLeftAndMiddleLeft = splitMiddle.Left.PrependMeasure(totalLeft);
-                    var splitMiddleMiddle =
-                        SplitArray(splitMiddle.Middle.AsArray, predicate, totalLeftAndMiddleLeft, needLeft, needRight);
+                    var splitMiddlePivot =
+                        SplitArray(splitMiddle.Pivot.AsArray, predicate, totalLeftAndMiddleLeft, needLeft, needRight);
                     return new Split<T, FingerTree<T, V>>(
-                        needLeft ? DeepR(_left, splitMiddle.Left, splitMiddleMiddle.Left) : EmptyInstance,
-                        splitMiddleMiddle.Middle,
-                        needRight ? DeepL(splitMiddleMiddle.Right, splitMiddle.Right, _right) : EmptyInstance);
+                        needLeft ? DeepR(_left, splitMiddle.Left, splitMiddlePivot.Left) : EmptyInstance,
+                        splitMiddlePivot.Pivot,
+                        needRight ? DeepL(splitMiddlePivot.Right, splitMiddle.Right, _right) : EmptyInstance);
                 } // if
 
                 // it must be on the right
                 var splitRight = SplitArray(_right, predicate, totalMiddle, needLeft, needRight);
                 return new Split<T, FingerTree<T, V>>(
                     needLeft ? DeepR(_left, Middle, splitRight.Left) : EmptyInstance,
-                    splitRight.Middle,
+                    splitRight.Pivot,
                     FromArray(splitRight.Right));
             } // SplitTree
 

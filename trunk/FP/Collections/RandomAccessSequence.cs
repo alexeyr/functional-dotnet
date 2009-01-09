@@ -163,7 +163,7 @@ namespace FP.Collections {
         public RandomAccessSequence<T> AdjustAt(int index, Func<T, T> function) {
             Requires.That.IsIndexInRange(this, index, "index").Check();
             var split = _ft.SplitTreeAt(index, true, true);
-            T currentValue = split.Middle.Value;
+            T currentValue = split.Pivot.Value;
             return new RandomAccessSequence<T>(
                 (split.Left | new Element(function(currentValue))) + split.Right);
         }

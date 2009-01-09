@@ -26,7 +26,9 @@ namespace FP.Collections {
     /// <typeparam name="T">The type of the values in the queue.</typeparam>
     /// <typeparam name="TPriority">The type of the priority.</typeparam>
     /// <remarks>Do not use the default constructor.</remarks>
-    public struct PriorityQueue<T, TPriority> : IReversibleEnumerable<PriorityValuePair<T, TPriority>>, IEquatable<PriorityQueue<T, TPriority>>,
+    [Serializable]
+    public struct PriorityQueue<T, TPriority> : 
+        IReversibleEnumerable<PriorityValuePair<T, TPriority>>, IEquatable<PriorityQueue<T, TPriority>>,
         IFoldable<PriorityValuePair<T, TPriority>>
         where T : IComparable<T>
         where TPriority : IComparable<TPriority> {
