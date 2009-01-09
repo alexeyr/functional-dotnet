@@ -73,6 +73,10 @@ namespace FPTests {
             PexAssert.TrueForAll(split.Item1, t => t.CompareTo(item) < 0);
             PexAssert.TrueForAll(split.Item2, t => t.CompareTo(item) == 0);
             PexAssert.TrueForAll(split.Item3, t => t.CompareTo(item) > 0);
+            Assert2.SequenceEqual(split.Item1, seq.LessThan(item));
+            Assert2.SequenceEqual(split.Item1.Concat(split.Item2), seq.AtMost(item));
+            Assert2.SequenceEqual(split.Item2.Concat(split.Item3), seq.AtLeast(item));
+            Assert2.SequenceEqual(split.Item3, seq.GreaterThan(item));
         }
 
         [PexMethod]

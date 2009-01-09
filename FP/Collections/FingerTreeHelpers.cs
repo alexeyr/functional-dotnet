@@ -27,7 +27,7 @@ namespace FP.Collections {
         /// <typeparam name="T">The type of the elements of the tree.</typeparam>
         /// <typeparam name="V">The type of the measure values.</typeparam>
         /// <param name="measureMonoid">The measure monoid.</param>
-        public static FingerTree<T, V>.Empty Empty<T, V>(Monoid<V> measureMonoid)
+        public static FingerTree<T, V> Empty<T, V>(Monoid<V> measureMonoid)
             where T : IMeasured<V> {
             return FingerTree<T, V>.GetEmptyFromCache<T>(measureMonoid);
         }
@@ -39,7 +39,7 @@ namespace FP.Collections {
         /// <typeparam name="V">The type of the measure values.</typeparam>
         /// <param name="item">The item.</param>
         /// <param name="measureMonoid">The measure monoid.</param>
-        public static FingerTree<T, V>.Single Single<T, V>(T item, Monoid<V> measureMonoid)
+        public static FingerTree<T, V> Single<T, V>(T item, Monoid<V> measureMonoid)
             where T : IMeasured<V> {
             return new FingerTree<T, V>.Single(item, measureMonoid);
         }
