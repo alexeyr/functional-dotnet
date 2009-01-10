@@ -142,8 +142,8 @@
     <Compile Include="Text\Strings.cs" />
     <Compile Include="Core\Switch.cs" />
     <Compile Include="Core\Triple.cs" />
-    <Compile Include="Text\CharSubsequence.cs" />
-    <Compile Include="Text\SubstringRope.cs" />
+    <Compile Include="Text\CharSubSequence_TMP.cs" />
+    <Compile Include="Text\SubStringRope_TMP.cs" />
     <Compile Include="Util\Arrays.cs" />
     <Compile Include="Validation\FPValidationExtensions.cs" />
   </ItemGroup>
@@ -175,7 +175,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
+      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

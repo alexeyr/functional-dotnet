@@ -1,5 +1,5 @@
 /*
-* SubstringRope.cs is part of functional-dotnet project
+* SubStringRope.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
 * All rights reserved.
@@ -22,33 +22,33 @@ namespace FP.Text {
     /// </summary>
     /// <typeparam name="TSequence">The type of the character sequence.</typeparam>
     [Serializable]
-    public sealed class SubstringRope<TSequence> :
-        CharSequenceRope<CharSubsequence<TSequence>>
+    public sealed class SubStringRope<TSequence> :
+        CharSequenceRope<CharSubSequence<TSequence>>
         where TSequence : ICharSequence {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubstringRope{TSequence}"/> class.
+        /// Initializes a new instance of the <see cref="SubStringRope{TSequence}"/> class.
         /// </summary>
         /// <param name="charSequence">The char sequence.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="length">The length.</param>
-        public SubstringRope(TSequence charSequence, int offset, int length)
-            : base(new CharSubsequence<TSequence>(charSequence, offset, length)) { }
+        public SubStringRope(TSequence charSequence, int offset, int length)
+            : base(new CharSubSequence<TSequence>(charSequence, offset, length)) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubstringRope{TSequence}"/> class.
+        /// Initializes a new instance of the <see cref="SubStringRope{TSequence}"/> class.
         /// </summary>
-        /// <param name="subsequence">The subsequence.</param>
+        /// <param name="subSequence">The subsequence.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="length">The length.</param>
-        public SubstringRope(CharSubsequence<TSequence> subsequence, int offset, int length)
-            : base(new CharSubsequence<TSequence>(subsequence, offset, length)) { }
+        public SubStringRope(CharSubSequence<TSequence> subSequence, int offset, int length)
+            : base(new CharSubSequence<TSequence>(subSequence, offset, length)) { }
 
         public override Rope SubString(int startIndex, int count) {
             if (startIndex == 0 && count == Count)
                 return this;
             if (count <= MAX_SHORT_SIZE)
                 return new ArrayRope(_charSequence.ToArray());
-            return new SubstringRope<TSequence>(_charSequence, startIndex, count);
+            return new SubStringRope<TSequence>(_charSequence, startIndex, count);
         }
     }
 }

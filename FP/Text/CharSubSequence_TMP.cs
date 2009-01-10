@@ -1,5 +1,5 @@
 /*
-* CharSubsequence.cs is part of functional-dotnet project
+* CharSubSequence.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
 * All rights reserved.
@@ -23,7 +23,7 @@ namespace FP.Text {
     /// Represents a subsequence of a character sequence.
     /// </summary>
     /// <typeparam name="TSequence">The type of the sequence.</typeparam>
-    public struct CharSubsequence<TSequence> : ICharSequence
+    public struct CharSubSequence<TSequence> : ICharSequence
         where TSequence : ICharSequence {
         //TODO: cache data
         //TODO: Patricia trie
@@ -33,12 +33,12 @@ namespace FP.Text {
 
         /// <summary>
         /// Initializes a new instance of the 
-        /// <see cref="CharSubsequence&lt;TSequence&gt;"/> struct.
+        /// <see cref="CharSubSequence{TSequence}"/> struct.
         /// </summary>
         /// <param name="sequence">The sequence.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="length">The length.</param>
-        public CharSubsequence(TSequence sequence, int offset, int length) {
+        public CharSubSequence(TSequence sequence, int offset, int length) {
             if (offset < 0)
                 throw new ArgumentOutOfRangeException("offset");
             if (length < 0 || offset + length > sequence.Count)
@@ -50,18 +50,18 @@ namespace FP.Text {
 
         /// <summary>
         /// Initializes a new instance of the 
-        /// <see cref="CharSubsequence&lt;TSequence&gt;"/> struct.
+        /// <see cref="CharSubSequence{TSequence}"/> struct.
         /// </summary>
-        /// <param name="subsequence">The subsequence.</param>
+        /// <param name="subSequence">The subsequence.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="length">The length.</param>
-        public CharSubsequence(CharSubsequence<TSequence> subsequence, int offset, int length) {
+        public CharSubSequence(CharSubSequence<TSequence> subSequence, int offset, int length) {
             if (offset < 0)
                 throw new ArgumentOutOfRangeException("offset");
-            if (length < 0 || offset + length > subsequence.Count)
+            if (length < 0 || offset + length > subSequence.Count)
                 throw new ArgumentOutOfRangeException("length");
-            _sequence = subsequence._sequence;
-            _offset = subsequence._offset + offset;
+            _sequence = subSequence._sequence;
+            _offset = subSequence._offset + offset;
             _length = length;
         }
 

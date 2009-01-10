@@ -24,7 +24,7 @@ namespace FP.Text {
     /// <typeparam name="TSequence">The type of the character sequence used by the rope.</typeparam>
     /// <seealso cref="StringRope"/>
     /// <seealso cref="ArrayRope"/>
-    /// <seealso cref="SubstringRope{TSequence}"/>
+    /// <seealso cref="SubStringRope{TSequence}"/>
     /// <remarks>If you plan to use this class with a specific type of character sequences, it may be convenient to 
     /// create a subclass.</remarks>
     [Serializable]
@@ -71,7 +71,7 @@ namespace FP.Text {
                 return this;
             if (count <= MAX_SHORT_SIZE)
                 return new ArrayRope(_charSequence.ToArray());
-            return new SubstringRope<TSequence>(_charSequence, startIndex, count);
+            return new SubStringRope<TSequence>(_charSequence, startIndex, count);
         }
         }
 }
