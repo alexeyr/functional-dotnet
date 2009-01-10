@@ -43,7 +43,7 @@ namespace FP.Text {
 
         /// <summary>
         /// Clears the specified <see cref="StringBuilder"/>.
-        /// This is equivalent to calling <c>sb.Length = 0</c>.
+        /// This is equivalent to calling <c>sb.Count = 0</c>.
         /// </summary>
         /// <param name="sb">The <see cref="StringBuilder"/>.</param>
         public static void Clear(this StringBuilder sb) {

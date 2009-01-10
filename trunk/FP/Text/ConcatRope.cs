@@ -25,7 +25,7 @@ namespace FP.Text {
     public sealed class ConcatRope : Rope {
         private readonly Rope _child1;
         private readonly Rope _child2;
-        private readonly int _length;
+        private readonly int _count;
         private readonly byte _depth;
         private readonly bool _isBalanced;
 
@@ -37,9 +37,9 @@ namespace FP.Text {
         public ConcatRope(Rope rope1, Rope rope2) {
             _child1 = rope1;
             _child2 = rope2;
-            _length = _child1.Length + _child2.Length;
+            _count = _child1.Count + _child2.Count;
             _depth = (byte) (Math.Max(_child1.Depth, _child2.Depth) + 1);
-            _isBalanced = (_length >= MinLength[_depth]);
+            _isBalanced = (_count >= MinLength[_depth]);
         }
 
         public override IEnumerator<char> GetEnumerator() {
@@ -52,15 +52,15 @@ namespace FP.Text {
         /// <summary>
         /// Gets the length of the sequence.
         /// </summary>
-        public override int Length {
-            get { return _length; }
+        public override int Count {
+            get { return _count; }
         }
 
         /// <summary>
         /// The index at which the second child begins.
         /// </summary>
         private int SplitIndex {
-            get { return _child1.Length; }
+            get { return _child1.Count; }
         }
 
         /// <summary>
@@ -98,21 +98,21 @@ namespace FP.Text {
         /// Returns the substring.
         /// </summary>
         /// <param name="startIndex">The start index.</param>
-        /// <param name="length">The length.</param>
-        public override Rope SubString(int startIndex, int length) {
-            if (startIndex < 0 || startIndex >= length)
+        /// <param name="count">The length.</param>
+        public override Rope SubString(int startIndex, int count) {
+            if (startIndex < 0 || startIndex >= count)
                 throw new ArgumentOutOfRangeException("startIndex");
-            if (startIndex + length > _length)
-                throw new ArgumentOutOfRangeException("length");
-            if (startIndex == 0 && length == _length)
+            if (startIndex + count > _count)
+                throw new ArgumentOutOfRangeException("count");
+            if (startIndex == 0 && count == _count)
                 return this;
-            if (startIndex + length <= SplitIndex)
-                return _child1.SubString(startIndex, length);
+            if (startIndex + count <= SplitIndex)
+                return _child1.SubString(startIndex, count);
             if (startIndex >= SplitIndex)
-                return _child2.SubString(startIndex - SplitIndex, length);
+                return _child2.SubString(startIndex - SplitIndex, count);
             int length1 = SplitIndex - startIndex;
             return
-                _child1.SubString(startIndex, length1).Concat(_child2.SubString(0, length - length1));
+                _child1.SubString(startIndex, length1).Concat(_child2.SubString(0, count - length1));
         }
 
         internal override Rope ConcatShort(FlatRope otherFlat) {
@@ -121,14 +121,14 @@ namespace FP.Text {
         }
 
         protected internal override bool IsRightMostChildFlatAndShort {
-            get { return _child2.Length < MAX_SHORT_SIZE && _child2 is FlatRope; }
+            get { return _child2.Count < MAX_SHORT_SIZE && _child2 is FlatRope; }
         }
 
         protected internal override bool IsBalanced {
             get {
 //                if (_isBalanced)
 //                    return true;
-//                if (_length >= MinLength[Depth]) {
+//                if (_count >= MinLength[Depth]) {
 //                    _isBalanced = true;
 //                    return true;
 //                }
@@ -164,7 +164,7 @@ namespace FP.Text {
             //First find where we should add it
             int i = 0;
             Rope tempRope = null;
-            while (rope.Length >= MinLength[i + 1]) {
+            while (rope.Count >= MinLength[i + 1]) {
                 if (forest[i] != null) {
                     tempRope = forest[i].Concat(tempRope);
                     forest[i] = null;
@@ -177,7 +177,7 @@ namespace FP.Text {
                     tempRope = forest[i].Concat(tempRope);
                     forest[i] = null;
                 }
-                if (i == MAX_ROPE_DEPTH || tempRope.Length < MinLength[i + 1]) {
+                if (i == MAX_ROPE_DEPTH || tempRope.Count < MinLength[i + 1]) {
                     forest[i] = tempRope;
                     return;
                 }

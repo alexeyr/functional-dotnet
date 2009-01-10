@@ -21,18 +21,5 @@ namespace FP.Text {
     /// </summary>
     /// <typeparam name="TRope">The type of the rope.</typeparam>
     public interface IRope<TRope> : ICharSequence, ICatenable<TRope>
-        where TRope : IRope<TRope> {
-        /// <summary>
-        /// Returns the substring.
-        /// </summary>
-        /// <param name="startIndex">The start index.</param>
-        /// <param name="length">The length.</param>
-        TRope SubString(int startIndex, int length);
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is empty.
-        /// </summary>
-        /// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
-        bool IsEmpty { get; }
-        }
+        where TRope : IRope<TRope> { }
 }

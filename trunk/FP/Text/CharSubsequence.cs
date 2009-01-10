@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using FP.Collections;
 
 namespace FP.Text {
     /// <summary>
@@ -40,7 +41,7 @@ namespace FP.Text {
         public CharSubsequence(TSequence sequence, int offset, int length) {
             if (offset < 0)
                 throw new ArgumentOutOfRangeException("offset");
-            if (length < 0 || offset + length > sequence.Length)
+            if (length < 0 || offset + length > sequence.Count)
                 throw new ArgumentOutOfRangeException("length");
             _sequence = sequence;
             _offset = offset;
@@ -57,7 +58,7 @@ namespace FP.Text {
         public CharSubsequence(CharSubsequence<TSequence> subsequence, int offset, int length) {
             if (offset < 0)
                 throw new ArgumentOutOfRangeException("offset");
-            if (length < 0 || offset + length > subsequence.Length)
+            if (length < 0 || offset + length > subsequence.Count)
                 throw new ArgumentOutOfRangeException("length");
             _sequence = subsequence._sequence;
             _offset = subsequence._offset + offset;
@@ -82,8 +83,12 @@ namespace FP.Text {
         /// <summary>
         /// Gets the length of the sequence.
         /// </summary>
-        public int Length {
+        public int Count {
             get { return _length; }
+        }
+
+        ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int count) {
+            throw new System.NotImplementedException();
         }
 
         /// <summary>
@@ -111,6 +116,10 @@ namespace FP.Text {
             if (sourceIndex + count > _length)
                 throw new ArgumentOutOfRangeException("count");
             _sequence.CopyTo(_offset + sourceIndex, destination, destinationIndex, count);
+        }
+
+        public bool IsEmpty {
+            get { return _length == 0; }
         }
         }
 }

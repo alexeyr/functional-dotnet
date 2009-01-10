@@ -27,8 +27,8 @@ namespace FP.Text {
     public abstract class FlatRope : Rope, IMeasured<int> {
         //TODO: Try to pull CharSequenceRope up into this class and make it sealed
         internal override Rope ConcatShort(FlatRope otherFlat) {
-            int length = Length;
-            var array = new char[length + otherFlat.Length];
+            int length = Count;
+            var array = new char[length + otherFlat.Count];
             this.CopyTo(array, 0);
             otherFlat.CopyTo(array, length);
             return new ArrayRope(array);
@@ -39,7 +39,7 @@ namespace FP.Text {
         }
 
         protected internal override sealed bool IsRightMostChildFlatAndShort {
-            get { return Length < MAX_SHORT_SIZE; }
+            get { return Count < MAX_SHORT_SIZE; }
         }
 
         protected internal override sealed bool IsBalanced {
@@ -55,7 +55,7 @@ namespace FP.Text {
         /// </summary>
         /// <value>The measure.</value>
         public int Measure {
-            get { return Length; }
+            get { return Count; }
         }
     }
 }

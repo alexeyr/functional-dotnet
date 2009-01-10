@@ -160,7 +160,7 @@ namespace FP.Collections {
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The count.</param>
         /// <returns></returns>
-        public Vector<T> Subsequence(int startIndex, int count) {
+        public Vector<T> SubSequence(int startIndex, int count) {
             throw new NotImplementedException();
         }
 

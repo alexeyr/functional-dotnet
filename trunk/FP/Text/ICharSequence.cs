@@ -14,17 +14,13 @@
 */
 
 using System.Collections.Generic;
+using FP.Collections;
 
 namespace FP.Text {
     /// <summary>
     /// Represents a random-access sequence of characters.
     /// </summary>
-    public interface ICharSequence : IEnumerable<char> {
-        /// <summary>
-        /// Gets the length of the sequence.
-        /// </summary>
-        int Length { get; }
-
+    public interface ICharSequence : IRandomAccessSequence<char, ICharSequence> {
         /// <summary>
         /// Gets the <paramref name="index"/>-th character in the sequence.
         /// Should be quick constant time.
@@ -56,7 +52,7 @@ namespace FP.Text {
         public static void CopyTo<TSequence>(this TSequence sequence, char[] destination,
                                                     int destinationIndex)
             where TSequence : ICharSequence {
-            sequence.CopyTo(0, destination, destinationIndex, sequence.Length);
+            sequence.CopyTo(0, destination, destinationIndex, sequence.Count);
         }
 
         /// <summary>
@@ -65,7 +61,7 @@ namespace FP.Text {
         /// <param name="sequence">The sequence.</param>
         /// <returns>The array with the same elements as <paramref name="sequence"/>.</returns>
         public static char[] ToArray(this ICharSequence sequence) {
-            var array = new char[sequence.Length];
+            var array = new char[sequence.Count];
             sequence.CopyTo(array, 0);
             return array;
         }

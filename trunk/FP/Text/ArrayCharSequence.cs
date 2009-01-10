@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using FP.Collections;
 
 namespace FP.Text {
     ///<summary>
@@ -50,8 +51,12 @@ namespace FP.Text {
         /// <summary>
         /// Gets the length of the sequence.
         /// </summary>
-        public int Length {
+        public int Count {
             get { return _array.Length; }
+        }
+
+        ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int count) {
+            throw new System.NotImplementedException();
         }
 
         /// <summary>
@@ -71,6 +76,10 @@ namespace FP.Text {
         /// <param name="count">The number of elements to copy.</param>
         public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
             Array.Copy(_array, sourceIndex, destination, destinationIndex, count);
+        }
+
+        public bool IsEmpty {
+            get { return _array.Length == 0; }
         }
     }
 }
