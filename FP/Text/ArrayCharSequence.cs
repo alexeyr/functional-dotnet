@@ -55,10 +55,6 @@ namespace FP.Text {
             get { return _array.Length; }
         }
 
-        public string AsString() {
-            return new string(_array);
-        }
-
         ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int count) {
             throw new System.NotImplementedException();
         }

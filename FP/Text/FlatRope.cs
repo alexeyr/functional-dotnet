@@ -27,7 +27,11 @@ namespace FP.Text {
     public abstract class FlatRope : Rope, IMeasured<int> {
         //TODO: Try to pull CharSequenceRope up into this class and make it sealed
         internal override Rope ConcatShort(FlatRope otherFlat) {
-            return new StringRope(this.AsString() + otherFlat.AsString());
+            int length = Count;
+            var array = new char[length + otherFlat.Count];
+            this.CopyTo(array, 0);
+            otherFlat.CopyTo(array, length);
+            return new ArrayRope(array);
         } // ConcatShort(otherFlat)
 
         protected internal override sealed byte Depth {
