@@ -26,5 +26,9 @@ namespace FP.Text {
         /// </summary>
         /// <param name="s">The string.</param>
         public StringRope(string s) : base(new StringCharSequence(s)) {}
+
+        public override string ToString() {
+            return _charSequence.String;
+        }
     } // class StringRope
 } // namespace FP.Text

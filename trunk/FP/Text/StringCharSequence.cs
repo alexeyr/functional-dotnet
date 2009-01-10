@@ -20,7 +20,7 @@ using FP.Collections;
 namespace FP.Text {
     /// <summary>
     /// An adapter for <see cref="string"/> to the 
-    /// <see cref="CharSubSequence{TSequence}"/> interface.
+    /// <see cref="CharSubsequence{TSequence}"/> interface.
     /// </summary>
     public struct StringCharSequence : ICharSequence {
         private readonly string _string;
@@ -85,7 +85,7 @@ namespace FP.Text {
             get { return _string; }
         }
 
-        public string AsString() {
+        public override string ToString() {
             return String;
         }
 

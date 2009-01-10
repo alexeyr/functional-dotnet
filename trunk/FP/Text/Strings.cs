@@ -52,6 +52,8 @@ namespace FP.Text {
 
         /// <summary>
         /// Converts a sequence of <see cref="char"/>s to a <see cref="string"/>.
+        /// This should be called <c>ToString</c>, but this is impossible for the
+        /// obvious reason.
         /// </summary>
         /// <param name="charSequence">The char sequence.</param>
         /// <returns></returns>

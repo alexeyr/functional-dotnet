@@ -23,14 +23,13 @@ namespace FP.Text {
     /// <typeparam name="TSequence">The type of the character sequence used by the rope.</typeparam>
     /// <seealso cref="StringRope"/>
     /// <seealso cref="ArrayRope"/>
-    /// <seealso cref="SubStringRope{TSequence}"/>
+    /// <seealso cref="SubstringRope{TSequence}"/>
     /// <remarks>If you plan to use this class with a specific type of character sequences, it may be convenient to 
     /// create a subclass.</remarks>
     [Serializable]
     public class CharSequenceRope<TSequence> : FlatRope
         where TSequence : ICharSequence {
-        [CLSCompliant(false)] 
-        protected readonly TSequence _charSequence;
+        [CLSCompliant(false)] protected readonly TSequence _charSequence;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharSequenceRope{TSequence}"/> class.
