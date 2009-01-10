@@ -20,7 +20,7 @@ using FP.Collections;
 namespace FP.Text {
     /// <summary>
     /// An adapter for <see cref="string"/> to the 
-    /// <see cref="CharSubsequence{TSequence}"/> interface.
+    /// <see cref="CharSubSequence{TSequence}"/> interface.
     /// </summary>
     public struct StringCharSequence : ICharSequence {
         private readonly string _string;
