@@ -1,4 +1,4 @@
-ï»¿/*
+/*
 * Switch.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2008 Alexey Romanov
@@ -25,7 +25,7 @@ namespace FP.Core
                     #region struct Tuple<T1, T2>
     /// <summary> An immutable tuple with 2 fields. </summary>
     [Serializable]
-    [DebuggerDisplay("{ToString()}")]
+    [DebuggerDisplay("{AsString()}")]
     [DebuggerStepThrough]
     public struct Tuple<T1, T2> : IEquatable<Tuple<T1, T2>>
     {
@@ -114,7 +114,7 @@ namespace FP.Core
                   #region struct Tuple<T1, T2, T3>
     /// <summary> An immutable tuple with 3 fields. </summary>
     [Serializable]
-    [DebuggerDisplay("{ToString()}")]
+    [DebuggerDisplay("{AsString()}")]
     [DebuggerStepThrough]
     public struct Tuple<T1, T2, T3> : IEquatable<Tuple<T1, T2, T3>>
     {
@@ -212,7 +212,7 @@ namespace FP.Core
                   #region class Tuple<T1, T2, T3, T4>
     /// <summary> An immutable tuple with 4 fields. </summary>
     [Serializable]
-    [DebuggerDisplay("{ToString()}")]
+    [DebuggerDisplay("{AsString()}")]
     [DebuggerStepThrough]
     public sealed class Tuple<T1, T2, T3, T4> : IEquatable<Tuple<T1, T2, T3, T4>>
     {
@@ -319,7 +319,7 @@ namespace FP.Core
                   #region class Tuple<T1, T2, T3, T4, T5>
     /// <summary> An immutable tuple with 5 fields. </summary>
     [Serializable]
-    [DebuggerDisplay("{ToString()}")]
+    [DebuggerDisplay("{AsString()}")]
     [DebuggerStepThrough]
     public sealed class Tuple<T1, T2, T3, T4, T5> : IEquatable<Tuple<T1, T2, T3, T4, T5>>
     {
@@ -462,7 +462,7 @@ namespace FP.Core
 
     #endregion Helpers
 
-    #region New(â€¦)
+    #region New(…)
 
     	              public static Tuple<T1, T2> New<T1, T2>(T1 item1, T2 item2) {
       return new Tuple<T1, T2>(item1, item2);
@@ -480,7 +480,7 @@ namespace FP.Core
       return new Tuple<T1, T2, T3, T4, T5>(item1, item2, item3, item4, item5);
     }
     
-    #endregion New(â€¦)
+    #endregion New(…)
 
     #endregion Methods
   }

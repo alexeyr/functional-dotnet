@@ -85,7 +85,7 @@ namespace FP.Text {
             get { return _string; }
         }
 
-        public override string ToString() {
+        public string AsString() {
             return String;
         }
 

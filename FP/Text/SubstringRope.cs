@@ -14,6 +14,7 @@
 */
 
 using System;
+using System.Linq;
 
 namespace FP.Text {
     /// <summary>
@@ -31,7 +32,7 @@ namespace FP.Text {
         /// <param name="offset">The offset.</param>
         /// <param name="length">The length.</param>
         public SubstringRope(TSequence charSequence, int offset, int length)
-            : base(new CharSubsequence<TSequence>(charSequence, offset, length)) {}
+            : base(new CharSubsequence<TSequence>(charSequence, offset, length)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubstringRope{TSequence}"/> class.
@@ -40,18 +41,14 @@ namespace FP.Text {
         /// <param name="offset">The offset.</param>
         /// <param name="length">The length.</param>
         public SubstringRope(CharSubsequence<TSequence> subsequence, int offset, int length)
-            : base(new CharSubsequence<TSequence>(subsequence, offset, length)) {}
+            : base(new CharSubsequence<TSequence>(subsequence, offset, length)) { }
 
         public override Rope SubString(int startIndex, int count) {
             if (startIndex == 0 && count == Count)
                 return this;
-            if (count <= MAX_SHORT_SIZE) {
-                char[] array = new char[count];
-                _charSequence.CopyTo(startIndex, array, 0, count);
-                return
-                    new ArrayRope(array);
-            }
+            if (count <= MAX_SHORT_SIZE)
+                return new ArrayRope(_charSequence.ToArray());
             return new SubstringRope<TSequence>(_charSequence, startIndex, count);
         }
-        }
+    }
 }

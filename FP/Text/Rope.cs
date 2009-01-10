@@ -76,23 +76,14 @@ namespace FP.Text {
         /// </summary>
         public abstract int Count { get; }
 
+        public abstract string AsString();
+
         /// <summary>
         /// Gets the <paramref name="index"/>-th character in the sequence.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less
         /// than 0 or greater or equal to <see cref="Count"/>.</exception>
         public abstract char this[int index] { get; }
-
-        /// <summary>
-        /// Copies the part of the rope starting with <paramref name="sourceIndex"/> to 
-        /// <paramref name="destination"/>, starting at <paramref name="destinationIndex"/>.
-        /// </summary>
-        /// <param name="sourceIndex">The index from which copying starts.</param>
-        /// <param name="destination">The destination array.</param>
-        /// <param name="destinationIndex">The index in the destination array.</param>
-        /// <param name="count">The number of chars to copy.</param>
-        public abstract void CopyTo(int sourceIndex, char[] destination, int destinationIndex,
-                                    int count);
 
         /// <summary>
         /// Returns the substring.
@@ -120,7 +111,7 @@ namespace FP.Text {
             var result = new ConcatRope(this, other);
             byte depth = result.Depth;
             return depth > MAX_ROPE_DEPTH || (depth > 20 && result.Count < MinLength[3 * depth / 4])
-                       ? result.Rebalance()
+                       ? result.ReBalance()
                        : result;
         }
 
@@ -143,6 +134,6 @@ namespace FP.Text {
         /// <summary>
         /// Rebalances this instance.
         /// </summary>
-        public abstract Rope Rebalance();
+        public abstract Rope ReBalance();
     }
 }

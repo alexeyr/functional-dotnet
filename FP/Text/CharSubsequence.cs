@@ -87,6 +87,10 @@ namespace FP.Text {
             get { return _length; }
         }
 
+        public string AsString() {
+            throw new NotImplementedException();
+        }
+
         ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int count) {
             throw new System.NotImplementedException();
         }
@@ -103,23 +107,8 @@ namespace FP.Text {
             }
         }
 
-        /// <summary>
-        /// Copies the array to <paramref name="destination"/>, starting at <paramref name="destinationIndex"/>.
-        /// </summary>
-        /// <param name="sourceIndex">The index to start copying from.</param>
-        /// <param name="destination">The destination array.</param>
-        /// <param name="destinationIndex">The index in the destination array.</param>
-        /// <param name="count">The number of elements to copy.</param>
-        public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
-            if (sourceIndex < 0)
-                throw new ArgumentOutOfRangeException("sourceIndex");
-            if (sourceIndex + count > _length)
-                throw new ArgumentOutOfRangeException("count");
-            _sequence.CopyTo(_offset + sourceIndex, destination, destinationIndex, count);
-        }
-
         public bool IsEmpty {
             get { return _length == 0; }
         }
-        }
+    }
 }
