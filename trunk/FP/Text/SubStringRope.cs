@@ -46,10 +46,9 @@ namespace FP.Text {
             if (startIndex == 0 && count == Count)
                 return this;
             if (count <= MAX_SHORT_SIZE) {
-                char[] array = new char[count];
+                var array = new char[count];
                 _charSequence.CopyTo(startIndex, array, 0, count);
-                return
-                    new ArrayRope(array);
+                return array.MakeArrayRope();
             }
             return new SubStringRope<TSequence>(_charSequence, startIndex, count);
         }
