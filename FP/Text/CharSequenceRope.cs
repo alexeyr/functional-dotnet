@@ -71,8 +71,7 @@ namespace FP.Text {
             if (count <= MAX_SHORT_SIZE) {
                 var array = new char[count];
                 _charSequence.CopyTo(startIndex, array, 0, count);
-                return
-                    new ArrayRope(array);
+                return array.MakeArrayRope();
             }
             return new SubStringRope<TSequence>(_charSequence, startIndex, count);
         }

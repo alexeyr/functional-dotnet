@@ -31,7 +31,7 @@ namespace FP.Text {
             var array = new char[length + otherFlat.Count];
             this.CopyTo(array, 0);
             otherFlat.CopyTo(array, length);
-            return new ArrayRope(array);
+            return array.MakeArrayRope();
         } // ConcatShort(otherFlat)
 
         protected internal override sealed byte Depth {
