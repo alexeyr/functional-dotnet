@@ -20,20 +20,20 @@ namespace FP.Text {
     /// A rope representing a string.
     /// </summary>
     [Serializable]
-    public sealed class ArrayRope<TChar> : CharSequenceRope<TChar, ArrayCharSequence<TChar>> {
+    public sealed class ArrayRope : CharSequenceRope<ArrayCharSequence> {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ArrayRope&lt;TChar&gt;"/> class.
+        /// Initializes a new instance of the <see cref="ArrayRope"/> class.
         /// </summary>
         /// <param name="array">The array.</param>
-        public ArrayRope(TChar[] array) : base(new ArrayCharSequence<TChar>(array)) {}
+        public ArrayRope(char[] array) : base(new ArrayCharSequence(array)) {}
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="FP.Text.StringRope"/>.
         /// </summary>
         /// <param name="array">The string.</param>
         /// <returns>The rope containing the string.</returns>
-        public static implicit operator ArrayRope<TChar>(TChar[] array) {
-            return new ArrayRope<TChar>(array);
+        public static implicit operator ArrayRope(char[] array) {
+            return new ArrayRope(array);
         }
     } // class StringRope
 } // namespace FP.Text

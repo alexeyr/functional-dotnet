@@ -19,9 +19,9 @@ using System.Collections.Generic;
 namespace FP.Text {
     /// <summary>
     /// An adapter for <see cref="string"/> to the 
-    /// <see cref="CharSubsequence{TChar,TSequence}"/> interface.
+    /// <see cref="CharSubsequence{TSequence}"/> interface.
     /// </summary>
-    public struct StringCharSequence : ICharSequence<char> {
+    public struct StringCharSequence : ICharSequence {
         private readonly string _string;
 
         /// <summary>

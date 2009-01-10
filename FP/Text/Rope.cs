@@ -24,14 +24,12 @@ namespace FP.Text {
     /// constant-time concatenation, logarithmic insertion, substrings, random access, 
     /// linear iteration.
     /// </summary>
-    /// <typeparam name="TChar">The type of chars used, normally either
-    /// <see cref="char"/> or <see cref="byte"/>.</typeparam>
     /// <remarks>
-    /// <see cref="Rope{TChar}"/> doesn't implement <see cref="IMeasured{V}"/> so that it doesn't
+    /// <see cref="Rope"/> doesn't implement <see cref="IMeasured{V}"/> so that it doesn't
     /// get put into a <see cref="FingerTree{T,V}"/> by accident.
     /// </remarks>
     [Serializable]
-    public abstract class Rope<TChar> : IRope<TChar, Rope<TChar>> {
+    public abstract class Rope : IRope<Rope> {
         /// <summary>
         /// This is the maximum size for the flat rope to be considered "short".
         /// </summary>
@@ -61,7 +59,7 @@ namespace FP.Text {
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
-        public abstract IEnumerator<TChar> GetEnumerator();
+        public abstract IEnumerator<char> GetEnumerator();
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -79,11 +77,11 @@ namespace FP.Text {
         public abstract int Length { get; }
 
         /// <summary>
-        /// Gets the <paramref name="index"/>-th <see cref="TChar"/> in the sequence.
+        /// Gets the <paramref name="index"/>-th character in the sequence.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less
         /// than 0 or greater or equal to <see cref="Length"/>.</exception>
-        public abstract TChar this[int index] { get; }
+        public abstract char this[int index] { get; }
 
         /// <summary>
         /// Copies the part of the rope starting with <paramref name="sourceIndex"/> to 
@@ -93,7 +91,7 @@ namespace FP.Text {
         /// <param name="destination">The destination array.</param>
         /// <param name="destinationIndex">The index in the destination array.</param>
         /// <param name="count">The number of chars to copy.</param>
-        public abstract void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex,
+        public abstract void CopyTo(int sourceIndex, char[] destination, int destinationIndex,
                                     int count);
 
         /// <summary>
@@ -101,28 +99,28 @@ namespace FP.Text {
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="length">The length.</param>
-        public abstract Rope<TChar> SubString(int startIndex, int length);
+        public abstract Rope SubString(int startIndex, int length);
 
-        public Rope<TChar> Concat(Rope<TChar> other) {
+        public Rope Concat(Rope other) {
             if (other == null || other.IsEmpty)
                 return this;
             if (IsEmpty)
                 return other;
-            var otherFlat = other as FlatRope<TChar>;
+            var otherFlat = other as FlatRope;
             if (otherFlat != null && IsRightMostChildFlatAndShort &&
                 otherFlat.Length <= MAX_SHORT_SIZE) return ConcatShort(otherFlat);
             return ConcatAndRebalanceIfNeeded(other);
         }
 
-        private Rope<TChar> ConcatAndRebalanceIfNeeded(Rope<TChar> other) {
-            var result = new ConcatRope<TChar>(this, other);
+        private Rope ConcatAndRebalanceIfNeeded(Rope other) {
+            var result = new ConcatRope(this, other);
             byte depth = result.Depth;
             return depth > MAX_ROPE_DEPTH || (depth > 20 && result.Length < MinLength[3 * depth / 4])
                        ? result.Rebalance()
                        : result;
         }
 
-        internal abstract Rope<TChar> ConcatShort(FlatRope<TChar> otherFlat);
+        internal abstract Rope ConcatShort(FlatRope otherFlat);
 
         /// <summary>
         /// Gets the depth of the rope (0 for the flat ropes).
@@ -141,6 +139,6 @@ namespace FP.Text {
         /// Rebalances this instance.
         /// </summary>
         /// <returns></returns>
-        public abstract Rope<TChar> Rebalance();
+        public abstract Rope Rebalance();
     }
 }

@@ -32,8 +32,8 @@ namespace FP.Text {
         /// </summary>
         /// <param name="array">The array.</param>
         /// <returns>The rope holding <paramref name="array"/>.</returns>
-        public static ArrayRope<TChar> ToRope<TChar>(this TChar[] array) {
-            return new ArrayRope<TChar>(array);
+        public static ArrayRope ToRope(this char[] array) {
+            return new ArrayRope(array);
         } // ToRope(, array)
     } // class Ropes
 } // namespace FP.Text

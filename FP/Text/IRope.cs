@@ -19,10 +19,9 @@ namespace FP.Text {
     /// <summary>
     /// An interface for large strings.
     /// </summary>
-    /// <typeparam name="TChar">The type of the char.</typeparam>
     /// <typeparam name="TRope">The type of the rope.</typeparam>
-    public interface IRope<TChar, TRope> : ICharSequence<TChar>, ICatenable<TRope>
-        where TRope : IRope<TChar, TRope> {
+    public interface IRope<TRope> : ICharSequence, ICatenable<TRope>
+        where TRope : IRope<TRope> {
         /// <summary>
         /// Returns the substring.
         /// </summary>
