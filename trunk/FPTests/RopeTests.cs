@@ -23,13 +23,13 @@ namespace FPTests {
         [PexMethod]
         public void Test_Creation([PexAssumeNotNull] string[] strings) {
             string largeString = string.Concat(strings);
-            Rope largeRope = new StringRope("");
+            Rope largeRope = new StringRope(string.Empty);
             foreach (string s in strings) {
                 PexAssume.IsNotNull(s);
                 PexAssume.IsTrue(s.Length >= 256);
                 largeRope.Concat(new StringRope(s));
             }
-            Assert.Equal(largeString, largeRope.AsString());
+            Assert.Equal(largeString, largeRope.ToString());
         }
 
         [PexMethod]

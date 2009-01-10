@@ -72,6 +72,10 @@ namespace FP.Text {
             get { return _ft.Measure; }
         }
 
+        public string AsString() {
+            throw new System.NotImplementedException();
+        }
+
         /// <summary>
         /// Gets the <paramref name="index"/>-th character in the sequence.
         /// Should be quick constant time.

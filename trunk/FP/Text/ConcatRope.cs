@@ -63,35 +63,17 @@ namespace FP.Text {
             get { return _child1.Count; }
         }
 
+        public override string AsString() {
+            throw new System.NotImplementedException();
+        }
+
         /// <summary>
         /// Gets the <paramref name="index"/>-th character in the sequence.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or
-        /// greater or equal to <see cref="Rope.Length"/>.</exception>
+        /// greater or equal to <see cref="Rope.Count"/>.</exception>
         public override char this[int index] {
             get { return index < SplitIndex ? _child1[index] : _child2[index - SplitIndex]; }
-        }
-
-        /// <summary>
-        /// Copies the rope to <paramref name="destination"/>, starting at <paramref name="destinationIndex"/>.
-        /// </summary>
-        /// <param name="sourceIndex">The starting index to copy.</param>
-        /// <param name="destination">The destination array.</param>
-        /// <param name="destinationIndex">The index in the destination array.</param>
-        /// <param name="count">The number of elements to copy.</param>
-        public override void CopyTo(int sourceIndex, char[] destination, int destinationIndex,
-                                    int count) {
-            if (sourceIndex < SplitIndex) {
-                int count1 = SplitIndex - sourceIndex;
-                if (count <= count1) {
-                    _child1.CopyTo(sourceIndex, destination, destinationIndex, count);
-                    return;
-                }
-                _child1.CopyTo(sourceIndex, destination, destinationIndex, count1);
-                _child2.CopyTo(0, destination, destinationIndex + count1, count - count1);
-                return;
-            }
-            _child2.CopyTo(sourceIndex - SplitIndex, destination, destinationIndex, count);
         }
 
         /// <summary>
@@ -140,7 +122,7 @@ namespace FP.Text {
             get { return _depth; }
         }
 
-        public override Rope Rebalance() {
+        public override Rope ReBalance() {
             if (IsBalanced)
                 return this;
             var forest = new Rope[MAX_ROPE_DEPTH + 1];

@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FP.Text {
     /// <summary>
@@ -29,7 +30,8 @@ namespace FP.Text {
     [Serializable]
     public class CharSequenceRope<TSequence> : FlatRope
         where TSequence : ICharSequence {
-        [CLSCompliant(false)] protected readonly TSequence _charSequence;
+        [CLSCompliant(false)] 
+        protected readonly TSequence _charSequence;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharSequenceRope{TSequence}"/> class.
@@ -50,6 +52,10 @@ namespace FP.Text {
             get { return _charSequence.Count; }
         }
 
+        public override string AsString() {
+            return _charSequence.ToString();
+        }
+
         /// <summary>
         /// Gets the <paramref name="index"/>-th character in the sequence.
         /// </summary>
@@ -60,20 +66,11 @@ namespace FP.Text {
             }
         }
 
-        public override sealed void CopyTo(int sourceIndex, char[] destination,
-                                           int destinationIndex, int count) {
-            _charSequence.CopyTo(sourceIndex, destination, destinationIndex, count);
-        }
-
         public override Rope SubString(int startIndex, int count) {
             if (startIndex == 0 && count == Count)
                 return this;
-            if (count <= MAX_SHORT_SIZE) {
-                var array = new char[count];
-                _charSequence.CopyTo(startIndex, array, 0, count);
-                return
-                    new ArrayRope(array);
-            }
+            if (count <= MAX_SHORT_SIZE)
+                return new ArrayRope(_charSequence.ToArray());
             return new SubstringRope<TSequence>(_charSequence, startIndex, count);
         }
         }
