@@ -142,8 +142,8 @@
     <Compile Include="Text\Strings.cs" />
     <Compile Include="Core\Switch.cs" />
     <Compile Include="Core\Triple.cs" />
-    <Compile Include="Text\CharSubSequence_TMP.cs" />
-    <Compile Include="Text\SubStringRope_TMP.cs" />
+    <Compile Include="Text\CharSubSequence.cs" />
+    <Compile Include="Text\SubStringRope.cs" />
     <Compile Include="Util\Arrays.cs" />
     <Compile Include="Validation\FPValidationExtensions.cs" />
   </ItemGroup>
