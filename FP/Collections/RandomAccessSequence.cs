@@ -316,7 +316,7 @@ namespace FP.Collections {
         /// <param name="startIndex">The index of the first element in the subsequence.</param>
         /// <param name="count">The number of elements in the subsequence.</param>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
-        public RandomAccessSequence<T> Subsequence(int startIndex, int count) {
+        public RandomAccessSequence<T> SubSequence(int startIndex, int count) {
             Requires.That
                 .IsIndexAndCountInRange(this, startIndex, count, "startIndex", "count")
                 .Check();

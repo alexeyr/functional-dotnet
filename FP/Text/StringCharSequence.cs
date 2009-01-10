@@ -15,6 +15,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using FP.Collections;
 
 namespace FP.Text {
     /// <summary>
@@ -49,8 +50,12 @@ namespace FP.Text {
         /// <summary>
         /// Gets the length of the sequence.
         /// </summary>
-        public int Length {
+        public int Count {
             get { return _string.Length; }
+        }
+
+        ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int count) {
+            throw new System.NotImplementedException();
         }
 
         /// <summary>
@@ -82,6 +87,10 @@ namespace FP.Text {
 
         public override string ToString() {
             return String;
+        }
+
+        public bool IsEmpty {
+            get { return _string.Length == 0; }
         }
     }
 }

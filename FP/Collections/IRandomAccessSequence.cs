@@ -28,7 +28,7 @@ namespace FP.Collections {
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The count.</param>
-        TSequence Subsequence(int startIndex, int count);
+        TSequence SubSequence(int startIndex, int count);
 
         /// <summary>
         /// Gets the <see cref="T"/> at the specified index.

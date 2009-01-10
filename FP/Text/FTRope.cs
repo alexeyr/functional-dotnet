@@ -50,6 +50,10 @@ namespace FP.Text {
         }
 
         public FTRope SubString(int startIndex, int length) {
+            throw new NotImplementedException();
+        }
+
+        ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int length) {
             throw new System.NotImplementedException();
         }
 
@@ -58,13 +62,13 @@ namespace FP.Text {
         }
 
         public bool IsEmpty {
-            get { return Length == 0; }
+            get { return Count == 0; }
         }
 
         /// <summary>
         /// Gets the length of the sequence.
         /// </summary>
-        public int Length {
+        public int Count {
             get { return _ft.Measure; }
         }
 

@@ -74,13 +74,13 @@ namespace FP.Text {
         /// <summary>
         /// Gets the length of the sequence.
         /// </summary>
-        public abstract int Length { get; }
+        public abstract int Count { get; }
 
         /// <summary>
         /// Gets the <paramref name="index"/>-th character in the sequence.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less
-        /// than 0 or greater or equal to <see cref="Length"/>.</exception>
+        /// than 0 or greater or equal to <see cref="Count"/>.</exception>
         public abstract char this[int index] { get; }
 
         /// <summary>
@@ -98,8 +98,12 @@ namespace FP.Text {
         /// Returns the substring.
         /// </summary>
         /// <param name="startIndex">The start index.</param>
-        /// <param name="length">The length.</param>
-        public abstract Rope SubString(int startIndex, int length);
+        /// <param name="count">The length.</param>
+        public abstract Rope SubString(int startIndex, int count);
+
+        ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int count) {
+            return SubString(startIndex, count);
+        }
 
         public Rope Concat(Rope other) {
             if (other == null || other.IsEmpty)
@@ -108,14 +112,14 @@ namespace FP.Text {
                 return other;
             var otherFlat = other as FlatRope;
             if (otherFlat != null && IsRightMostChildFlatAndShort &&
-                otherFlat.Length <= MAX_SHORT_SIZE) return ConcatShort(otherFlat);
+                otherFlat.Count <= MAX_SHORT_SIZE) return ConcatShort(otherFlat);
             return ConcatAndRebalanceIfNeeded(other);
         }
 
         private Rope ConcatAndRebalanceIfNeeded(Rope other) {
             var result = new ConcatRope(this, other);
             byte depth = result.Depth;
-            return depth > MAX_ROPE_DEPTH || (depth > 20 && result.Length < MinLength[3 * depth / 4])
+            return depth > MAX_ROPE_DEPTH || (depth > 20 && result.Count < MinLength[3 * depth / 4])
                        ? result.Rebalance()
                        : result;
         }
@@ -129,16 +133,16 @@ namespace FP.Text {
         protected internal abstract byte Depth { get; }
 
         protected internal abstract bool IsRightMostChildFlatAndShort { get; }
+
         protected internal abstract bool IsBalanced { get; }
 
         public bool IsEmpty {
-            get { return Length == 0; }
+            get { return Count == 0; }
         }
 
         /// <summary>
         /// Rebalances this instance.
         /// </summary>
-        /// <returns></returns>
         public abstract Rope Rebalance();
     }
 }

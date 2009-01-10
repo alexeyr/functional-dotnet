@@ -46,8 +46,8 @@ namespace FP.Text {
         /// <summary>
         /// Gets the length of the sequence.
         /// </summary>
-        public override sealed int Length {
-            get { return _charSequence.Length; }
+        public override sealed int Count {
+            get { return _charSequence.Count; }
         }
 
         /// <summary>
@@ -65,16 +65,16 @@ namespace FP.Text {
             _charSequence.CopyTo(sourceIndex, destination, destinationIndex, count);
         }
 
-        public override Rope SubString(int startIndex, int length) {
-            if (startIndex == 0 && length == Length)
+        public override Rope SubString(int startIndex, int count) {
+            if (startIndex == 0 && count == Count)
                 return this;
-            if (length <= MAX_SHORT_SIZE) {
-                var array = new char[length];
-                _charSequence.CopyTo(startIndex, array, 0, length);
+            if (count <= MAX_SHORT_SIZE) {
+                var array = new char[count];
+                _charSequence.CopyTo(startIndex, array, 0, count);
                 return
                     new ArrayRope(array);
             }
-            return new SubstringRope<TSequence>(_charSequence, startIndex, length);
+            return new SubstringRope<TSequence>(_charSequence, startIndex, count);
         }
         }
 }
