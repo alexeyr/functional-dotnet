@@ -21,23 +21,20 @@ namespace FP.Text {
     /// <summary>
     /// The concatenation of two ropes.
     /// </summary>
-    /// <typeparam name="TChar">The type of the char.</typeparam>
-    /// <typeparam name="TChar">The type of chars used, normally either
-    /// <see cref="char"/> or <see cref="byte"/>.</typeparam>
     [Serializable]
-    public sealed class ConcatRope<TChar> : Rope<TChar> {
-        private readonly Rope<TChar> _child1;
-        private readonly Rope<TChar> _child2;
+    public sealed class ConcatRope : Rope {
+        private readonly Rope _child1;
+        private readonly Rope _child2;
         private readonly int _length;
         private readonly byte _depth;
         private readonly bool _isBalanced;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConcatRope&lt;TChar&gt;"/> class.
+        /// Initializes a new instance of the <see cref="ConcatRope"/> class.
         /// </summary>
         /// <param name="rope1">The first rope.</param>
         /// <param name="rope2">The second rope.</param>
-        public ConcatRope(Rope<TChar> rope1, Rope<TChar> rope2) {
+        public ConcatRope(Rope rope1, Rope rope2) {
             _child1 = rope1;
             _child2 = rope2;
             _length = _child1.Length + _child2.Length;
@@ -45,10 +42,10 @@ namespace FP.Text {
             _isBalanced = (_length >= MinLength[_depth]);
         }
 
-        public override IEnumerator<TChar> GetEnumerator() {
-            foreach (TChar c in _child1)
+        public override IEnumerator<char> GetEnumerator() {
+            foreach (char c in _child1)
                 yield return c;
-            foreach (TChar c in _child2)
+            foreach (char c in _child2)
                 yield return c;
         }
 
@@ -67,11 +64,11 @@ namespace FP.Text {
         }
 
         /// <summary>
-        /// Gets the <paramref name="index"/>-th <see cref="TChar"/> in the sequence.
+        /// Gets the <paramref name="index"/>-th character in the sequence.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or
-        /// greater or equal to <see cref="Rope{TChar}.Length"/>.</exception>
-        public override TChar this[int index] {
+        /// greater or equal to <see cref="Rope.Length"/>.</exception>
+        public override char this[int index] {
             get { return index < SplitIndex ? _child1[index] : _child2[index - SplitIndex]; }
         }
 
@@ -82,7 +79,7 @@ namespace FP.Text {
         /// <param name="destination">The destination array.</param>
         /// <param name="destinationIndex">The index in the destination array.</param>
         /// <param name="count">The number of elements to copy.</param>
-        public override void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex,
+        public override void CopyTo(int sourceIndex, char[] destination, int destinationIndex,
                                     int count) {
             if (sourceIndex < SplitIndex) {
                 int count1 = SplitIndex - sourceIndex;
@@ -102,7 +99,7 @@ namespace FP.Text {
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="length">The length.</param>
-        public override Rope<TChar> SubString(int startIndex, int length) {
+        public override Rope SubString(int startIndex, int length) {
             if (startIndex < 0 || startIndex >= length)
                 throw new ArgumentOutOfRangeException("startIndex");
             if (startIndex + length > _length)
@@ -118,13 +115,13 @@ namespace FP.Text {
                 _child1.SubString(startIndex, length1).Concat(_child2.SubString(0, length - length1));
         }
 
-        internal override Rope<TChar> ConcatShort(FlatRope<TChar> otherFlat) {
-            var child2flat = (FlatRope<TChar>) _child2;
-            return new ConcatRope<TChar>(_child1, child2flat.ConcatShort(otherFlat));
+        internal override Rope ConcatShort(FlatRope otherFlat) {
+            var child2flat = (FlatRope) _child2;
+            return new ConcatRope(_child1, child2flat.ConcatShort(otherFlat));
         }
 
         protected internal override bool IsRightMostChildFlatAndShort {
-            get { return _child2.Length < MAX_SHORT_SIZE && _child2 is FlatRope<TChar>; }
+            get { return _child2.Length < MAX_SHORT_SIZE && _child2 is FlatRope; }
         }
 
         protected internal override bool IsBalanced {
@@ -143,12 +140,12 @@ namespace FP.Text {
             get { return _depth; }
         }
 
-        public override Rope<TChar> Rebalance() {
+        public override Rope Rebalance() {
             if (IsBalanced)
                 return this;
-            var forest = new Rope<TChar>[MAX_ROPE_DEPTH + 1];
+            var forest = new Rope[MAX_ROPE_DEPTH + 1];
             AddToForest(this, forest);
-            Rope<TChar> result = null;
+            Rope result = null;
             foreach (var rope in forest)
                 result = rope.Concat(result);
             //TODO: check that result can't be null
@@ -156,9 +153,9 @@ namespace FP.Text {
             return result;
         }
 
-        private static void AddToForest(Rope<TChar> rope, Rope<TChar>[] forest) {
+        private static void AddToForest(Rope rope, Rope[] forest) {
             if (!rope.IsBalanced) {
-                var concat = rope as ConcatRope<TChar>;
+                var concat = rope as ConcatRope;
                 Debug.Assert(concat != null);
                 AddToForest(concat._child1, forest);
                 AddToForest(concat._child2, forest);
@@ -166,7 +163,7 @@ namespace FP.Text {
             //Adding balanced rope
             //First find where we should add it
             int i = 0;
-            Rope<TChar> tempRope = null;
+            Rope tempRope = null;
             while (rope.Length >= MinLength[i + 1]) {
                 if (forest[i] != null) {
                     tempRope = forest[i].Concat(tempRope);

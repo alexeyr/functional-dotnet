@@ -21,10 +21,9 @@ namespace FP.Text {
     /// <summary>
     /// Represents a subsequence of a character sequence.
     /// </summary>
-    /// <typeparam name="TChar">The type of the char.</typeparam>
     /// <typeparam name="TSequence">The type of the sequence.</typeparam>
-    public struct CharSubsequence<TChar, TSequence> : ICharSequence<TChar>
-        where TSequence : ICharSequence<TChar> {
+    public struct CharSubsequence<TSequence> : ICharSequence
+        where TSequence : ICharSequence {
         //TODO: cache data
         //TODO: Patricia trie
         private readonly TSequence _sequence;
@@ -33,7 +32,7 @@ namespace FP.Text {
 
         /// <summary>
         /// Initializes a new instance of the 
-        /// <see cref="CharSubsequence&lt;TChar, TSequence&gt;"/> struct.
+        /// <see cref="CharSubsequence&lt;TSequence&gt;"/> struct.
         /// </summary>
         /// <param name="sequence">The sequence.</param>
         /// <param name="offset">The offset.</param>
@@ -50,12 +49,12 @@ namespace FP.Text {
 
         /// <summary>
         /// Initializes a new instance of the 
-        /// <see cref="CharSubsequence&lt;TChar, TSequence&gt;"/> struct.
+        /// <see cref="CharSubsequence&lt;TSequence&gt;"/> struct.
         /// </summary>
         /// <param name="subsequence">The subsequence.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="length">The length.</param>
-        public CharSubsequence(CharSubsequence<TChar, TSequence> subsequence, int offset, int length) {
+        public CharSubsequence(CharSubsequence<TSequence> subsequence, int offset, int length) {
             if (offset < 0)
                 throw new ArgumentOutOfRangeException("offset");
             if (length < 0 || offset + length > subsequence.Length)
@@ -71,7 +70,7 @@ namespace FP.Text {
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<TChar> GetEnumerator() {
+        public IEnumerator<char> GetEnumerator() {
             for (int i = _offset; i < _offset + _length; i++)
                 yield return _sequence[i];
         }
@@ -88,10 +87,10 @@ namespace FP.Text {
         }
 
         /// <summary>
-        /// Gets the <paramref name="index"/>-th <see cref="TChar"/> in the sequence.
+        /// Gets the <paramref name="index"/>-th character in the sequence.
         /// Should be quick constant time.
         /// </summary>
-        public TChar this[int index] {
+        public char this[int index] {
             get {
                 if (index >= _length)
                     throw new ArgumentOutOfRangeException("index");
@@ -106,7 +105,7 @@ namespace FP.Text {
         /// <param name="destination">The destination array.</param>
         /// <param name="destinationIndex">The index in the destination array.</param>
         /// <param name="count">The number of elements to copy.</param>
-        public void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex, int count) {
+        public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
             if (sourceIndex < 0)
                 throw new ArgumentOutOfRangeException("sourceIndex");
             if (sourceIndex + count > _length)

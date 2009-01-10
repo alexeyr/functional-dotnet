@@ -25,14 +25,13 @@ namespace FP.Text {
     /// </i> referring to the length  of the sequence and <i>i</i> being the integral
     /// index used by some operations. 
     /// </summary>
-    /// <typeparam name="TChar">Type of the elements of the sequence.</typeparam>
     /// <remarks>Do not use the default constructor. This is not complete yet!
     /// </remarks>
     [Obsolete]
-    public struct FTRope<TChar> : IRope<TChar, FTRope<TChar>> {
-        private readonly FingerTree<FlatRope<TChar>, int> _ft;
+    public struct FTRope : IRope<FTRope> {
+        private readonly FingerTree<FlatRope, int> _ft;
 
-        internal FTRope(FingerTree<FlatRope<TChar>, int> ft) {
+        internal FTRope(FingerTree<FlatRope, int> ft) {
             _ft = ft;
         }
 
@@ -42,7 +41,7 @@ namespace FP.Text {
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<TChar> GetEnumerator() {
+        public IEnumerator<char> GetEnumerator() {
             throw new System.NotImplementedException();
         }
 
@@ -50,11 +49,11 @@ namespace FP.Text {
             return GetEnumerator();
         }
 
-        public FTRope<TChar> SubString(int startIndex, int length) {
+        public FTRope SubString(int startIndex, int length) {
             throw new System.NotImplementedException();
         }
 
-        public FTRope<TChar> Concat(FTRope<TChar> other) {
+        public FTRope Concat(FTRope other) {
             throw new System.NotImplementedException();
         }
 
@@ -70,14 +69,14 @@ namespace FP.Text {
         }
 
         /// <summary>
-        /// Gets the <paramref name="index"/>-th <see cref="TChar"/> in the sequence.
+        /// Gets the <paramref name="index"/>-th character in the sequence.
         /// Should be quick constant time.
         /// </summary>
-        public TChar this[int index] {
+        public char this[int index] {
             get { throw new System.NotImplementedException(); }
         }
 
-        public void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex, int count) {
+        public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
             throw new System.NotImplementedException();
         }
     }

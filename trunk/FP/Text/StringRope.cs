@@ -20,7 +20,7 @@ namespace FP.Text {
     /// A rope representing a string.
     /// </summary>
     [Serializable]
-    public sealed class StringRope : CharSequenceRope<char, StringCharSequence> {
+    public sealed class StringRope : CharSequenceRope<StringCharSequence> {
         /// <summary>
         /// Initializes a new instance of the <see cref="StringRope"/> class.
         /// </summary>

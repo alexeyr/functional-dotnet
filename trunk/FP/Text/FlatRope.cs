@@ -18,22 +18,20 @@ using FP.Collections;
 
 namespace FP.Text {
     /// <summary>
-    /// A leaf node of a <see cref="Rope{TChar}"/>.
+    /// A leaf node of a <see cref="Rope"/>.
     /// </summary>
-    /// <typeparam name="TChar">The type of chars used, normally either
-    /// <see cref="char"/> or <see cref="byte"/>.</typeparam>
     /// <remarks>
-    /// <see cref="Rope{TChar}"/> doesn't implement <see cref="IMeasured{V}"/> so that there 
+    /// <see cref="Rope"/> doesn't implement <see cref="IMeasured{V}"/> so that there 
     /// </remarks>
     [Serializable]
-    public abstract class FlatRope<TChar> : Rope<TChar>, IMeasured<int> {
+    public abstract class FlatRope : Rope, IMeasured<int> {
         //TODO: Try to pull CharSequenceRope up into this class and make it sealed
-        internal override Rope<TChar> ConcatShort(FlatRope<TChar> otherFlat) {
+        internal override Rope ConcatShort(FlatRope otherFlat) {
             int length = Length;
-            var array = new TChar[length + otherFlat.Length];
+            var array = new char[length + otherFlat.Length];
             this.CopyTo(array, 0);
             otherFlat.CopyTo(array, length);
-            return new ArrayRope<TChar>(array);
+            return new ArrayRope(array);
         } // ConcatShort(otherFlat)
 
         protected internal override sealed byte Depth {
@@ -48,7 +46,7 @@ namespace FP.Text {
             get { return true; }
         }
 
-        public override sealed Rope<TChar> Rebalance() {
+        public override sealed Rope Rebalance() {
             return this;
         }
 

@@ -18,29 +18,28 @@ using System.Collections.Generic;
 
 namespace FP.Text {
     /// <summary>
-    /// A flat rope containing an <see cref="ICharSequence{TChar}"/>.
+    /// A flat rope containing an <see cref="ICharSequence"/>.
     /// </summary>
-    /// <typeparam name="TChar">The type of the characters in the rope.</typeparam>
     /// <typeparam name="TSequence">The type of the character sequence used by the rope.</typeparam>
     /// <seealso cref="StringRope"/>
-    /// <seealso cref="ArrayRope{TChar}"/>
-    /// <seealso cref="SubstringRope{TChar,TSequence}"/>
+    /// <seealso cref="ArrayRope"/>
+    /// <seealso cref="SubstringRope{TSequence}"/>
     /// <remarks>If you plan to use this class with a specific type of character sequences, it may be convenient to 
     /// create a subclass.</remarks>
     [Serializable]
-    public class CharSequenceRope<TChar, TSequence> : FlatRope<TChar>
-        where TSequence : ICharSequence<TChar> {
+    public class CharSequenceRope<TSequence> : FlatRope
+        where TSequence : ICharSequence {
         [CLSCompliant(false)] protected readonly TSequence _charSequence;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CharSequenceRope{TChar,TSequence}"/> class.
+        /// Initializes a new instance of the <see cref="CharSequenceRope{TSequence}"/> class.
         /// </summary>
         /// <param name="charSequence">The character sequence.</param>
         public CharSequenceRope(TSequence charSequence) {
             _charSequence = charSequence;
         }
 
-        public override sealed IEnumerator<TChar> GetEnumerator() {
+        public override sealed IEnumerator<char> GetEnumerator() {
             return _charSequence.GetEnumerator();
         }
 
@@ -52,30 +51,30 @@ namespace FP.Text {
         }
 
         /// <summary>
-        /// Gets the <paramref name="index"/>-th <see cref="TChar"/> in the sequence.
+        /// Gets the <paramref name="index"/>-th character in the sequence.
         /// </summary>
-        public override sealed TChar this[int index] {
+        public override sealed char this[int index] {
             get {
                 //bounds checking is responsibility of _charSequence
                 return _charSequence[index];
             }
         }
 
-        public override sealed void CopyTo(int sourceIndex, TChar[] destination,
+        public override sealed void CopyTo(int sourceIndex, char[] destination,
                                            int destinationIndex, int count) {
             _charSequence.CopyTo(sourceIndex, destination, destinationIndex, count);
         }
 
-        public override Rope<TChar> SubString(int startIndex, int length) {
+        public override Rope SubString(int startIndex, int length) {
             if (startIndex == 0 && length == Length)
                 return this;
             if (length <= MAX_SHORT_SIZE) {
-                var array = new TChar[length];
+                var array = new char[length];
                 _charSequence.CopyTo(startIndex, array, 0, length);
                 return
-                    new ArrayRope<TChar>(array);
+                    new ArrayRope(array);
             }
-            return new SubstringRope<TChar, TSequence>(_charSequence, startIndex, length);
+            return new SubstringRope<TSequence>(_charSequence, startIndex, length);
         }
         }
 }

@@ -19,16 +19,16 @@ using System.Collections.Generic;
 
 namespace FP.Text {
     ///<summary>
-    ///An adapter of an array to <see cref="ICharSequence{TChar}"/>.
+    ///An adapter of an array to <see cref="ICharSequence"/>.
     ///</summary>
-    public struct ArrayCharSequence<TChar> : ICharSequence<TChar> {
-        private readonly TChar[] _array;
+    public struct ArrayCharSequence : ICharSequence {
+        private readonly char[] _array;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ArrayCharSequence{TChar}"/> struct.
+        /// Initializes a new instance of the <see cref="ArrayCharSequence"/> struct.
         /// </summary>
         /// <param name="array">The array.</param>
-        public ArrayCharSequence(TChar[] array) {
+        public ArrayCharSequence(char[] array) {
             _array = array;
         }
 
@@ -38,8 +38,8 @@ namespace FP.Text {
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<TChar> GetEnumerator() {
-            foreach (TChar c in _array)
+        public IEnumerator<char> GetEnumerator() {
+            foreach (char c in _array)
                 yield return c;
         }
 
@@ -55,10 +55,10 @@ namespace FP.Text {
         }
 
         /// <summary>
-        /// Gets the <paramref name="index"/>-th <see cref="TChar"/> in the sequence.
+        /// Gets the <paramref name="index"/>-th character in the sequence.
         /// Should be quick constant time.
         /// </summary>
-        public TChar this[int index] {
+        public char this[int index] {
             get { return _array[index]; }
         }
 
@@ -69,7 +69,7 @@ namespace FP.Text {
         /// <param name="destination">The destination array.</param>
         /// <param name="destinationIndex">The index in the destination array.</param>
         /// <param name="count">The number of elements to copy.</param>
-        public void CopyTo(int sourceIndex, TChar[] destination, int destinationIndex, int count) {
+        public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
             Array.Copy(_array, sourceIndex, destination, destinationIndex, count);
         }
     }
