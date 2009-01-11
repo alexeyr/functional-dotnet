@@ -36,7 +36,7 @@ namespace FP.Collections {
         public static readonly EmptyList Empty = new EmptyList();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LazyList&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="LazyList{T}"/> class.
         /// </summary>
         /// <param name="head">The head.</param>
         /// <param name="enumerator">The enumerator used to create following elements.
@@ -47,7 +47,7 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LazyList&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="LazyList{T}"/> class.
         /// </summary>
         /// <param name="head">The head.</param>
         /// <param name="tail">The tail.</param>

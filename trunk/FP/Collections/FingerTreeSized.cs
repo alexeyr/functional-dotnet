@@ -377,7 +377,7 @@ namespace FP.Collections {
         public abstract override int GetHashCode();
 
         /// <summary>
-        /// Determines whether two instances of <see cref="FingerTree&lt;T, V&gt;"/> are equal.
+        /// Determines whether two instances of <see cref="FingerTree{T, V}"/> are equal.
         /// </summary>
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
@@ -389,7 +389,7 @@ namespace FP.Collections {
         } // op_Equality
 
         /// <summary>
-        /// Determines whether two instances of <see cref="FingerTree&lt;T, V&gt;"/> are unequal.
+        /// Determines whether two instances of <see cref="FingerTree{T, V}"/> are unequal.
         /// </summary>
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>

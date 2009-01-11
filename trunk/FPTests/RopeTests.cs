@@ -27,9 +27,9 @@ namespace FPTests {
             foreach (string s in strings) {
                 PexAssume.IsNotNull(s);
                 PexAssume.IsTrue(s.Length >= 256);
-                largeRope.Concat(s.MakeStringRope());
+                largeRope = largeRope.Concat(s.MakeStringRope());
             }
-            Assert.Equal(largeString, largeRope.ToString());
+            Assert.Equal(largeString, largeRope.AsString());
         }
 
         [PexMethod]

@@ -26,7 +26,7 @@ namespace FP.Core {
     /// <see cref="IEnumerator.MoveNext"/> has been called) and consider <see cref="IEnumerator{T}.Current"/>
     /// if relevant.
     /// 
-    /// The methods which return <see cref="IEnumerable{T}"/> use deferred execution, all
+    /// The methods which return <see cref="IEnumerator{T}"/> use deferred execution, all
     /// other methods execute immediately.
     /// </remarks>
     public static class Enumerators {
@@ -44,7 +44,7 @@ namespace FP.Core {
         /// <param name="predicate">A function to test each element for a condition.</param>
         public static void SkipWhile<T>(this IEnumerator<T> enumerator, Func<T, bool> predicate) {
             while (predicate(enumerator.Current))
-                enumerator.MoveNext();
+                if (!enumerator.MoveNext()) break;
         }
 
         /// <summary>Advances a enumerator as long as a specified condition is true.</summary>
@@ -53,7 +53,7 @@ namespace FP.Core {
         public static void SkipWhile<T>(this IEnumerator<T> enumerator, Func<T, int, bool> predicate) {
             int index = 0;
             while (predicate(enumerator.Current, index)) {
-                enumerator.MoveNext();
+                if (!enumerator.MoveNext()) break;
                 index++;
             }
         }
@@ -61,7 +61,7 @@ namespace FP.Core {
         /// <summary>Advances a enumerator by a specified number of elements and returns elements read along the way.</summary>
         /// <param name="enumerator">An <see cref="IEnumerator{T}" /> to advance.</param>
         /// <param name="count">The number of elements to skip.</param>
-        public static IEnumerable<T> Take<T>(this IEnumerator<T> enumerator, int count) {
+        public static IEnumerator<T> Take<T>(this IEnumerator<T> enumerator, int count) {
             while (count > 0 && enumerator.MoveNext()) {
                 count--;
                 yield return enumerator.Current;
@@ -71,23 +71,23 @@ namespace FP.Core {
         /// <summary>Advances a enumerator as long as a specified condition is true and returns elements read along the way.</summary>
         /// <param name="enumerator">An <see cref="IEnumerator{T}" /> to return elements from.</param>
         /// <param name="predicate">A function to test each element for a condition.</param>
-        public static IEnumerable<T> TakeWhile<T>(this IEnumerator<T> enumerator,
+        public static IEnumerator<T> TakeWhile<T>(this IEnumerator<T> enumerator,
                                                   Func<T, bool> predicate) {
             while (predicate(enumerator.Current)) {
                 yield return enumerator.Current;
-                enumerator.MoveNext();
+                if (!enumerator.MoveNext()) yield break;
             }
         }
 
         /// <summary>Advances a enumerator as long as a specified condition is true and returns elements read along the way.</summary>
         /// <param name="enumerator">An <see cref="IEnumerator{T}" /> to return elements from.</param>
         /// <param name="predicate">A function to test each element for a condition; the second parameter of the function represents the index of the source element.</param>
-        public static IEnumerable<T> TakeWhile<T>(this IEnumerator<T> enumerator,
+        public static IEnumerator<T> TakeWhile<T>(this IEnumerator<T> enumerator,
                                                   Func<T, int, bool> predicate) {
             int index = 0;
             while (predicate(enumerator.Current, index)) {
                 yield return enumerator.Current;
-                enumerator.MoveNext();
+                if (!enumerator.MoveNext()) yield break;
                 index++;
             }
         }

@@ -53,13 +53,11 @@ namespace FP.Text {
 /* 43 */1134903170, /* 44 */1836311903, /* 45 */ int.MaxValue
                                                                               };
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-        /// </returns>
-        public abstract IEnumerator<char> GetEnumerator();
+        public abstract IEnumerator<char> GetEnumerator(int startIndex);
+
+        public IEnumerator<char> GetEnumerator() {
+            return GetEnumerator(0);
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -100,10 +98,6 @@ namespace FP.Text {
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The length.</param>
         public abstract Rope SubString(int startIndex, int count);
-
-        ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int count) {
-            return SubString(startIndex, count);
-        }
 
         public Rope Concat(Rope other) {
             if (other == null || other.IsEmpty)

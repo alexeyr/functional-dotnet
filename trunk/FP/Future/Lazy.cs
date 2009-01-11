@@ -117,7 +117,7 @@ namespace FP.Future {
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="FP.Future.Lazy&lt;T&gt;"/> to <see cref="System.Func&lt;T&gt;"/>.
+        /// Performs an implicit conversion from <see cref="FP.Future.Lazy{T}"/> to <see cref="System.Func{T}"/>.
         /// </summary>
         /// <param name="lazy">The lazy value.</param>
         /// <returns>The calculation needed to return the value.</returns>
@@ -126,8 +126,8 @@ namespace FP.Future {
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Func&lt;T&gt;"/> to 
-        /// <see cref="FP.Future.Lazy&lt;T&gt;"/>.
+        /// Performs an implicit conversion from <see cref="System.Func{T}"/> to 
+        /// <see cref="FP.Future.Lazy{T}"/>.
         /// </summary>
         /// <param name="calculation">The calculation the returned future will do
         /// on-demand.</param>

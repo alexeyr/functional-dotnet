@@ -21,7 +21,7 @@ namespace FP.Collections {
     /// </summary>
     /// <typeparam name="T">Type of the elements of the sequence.</typeparam>
     /// <typeparam name="TSequence">Type of the sequence.</typeparam>
-    public interface IAdjustableRandomAccessSequence<T, TSequence> : IRandomAccessSequence<T, TSequence>
+    public interface IAdjustableRandomAccessSequence<T, TSequence> : IRandomAccess<T>
         where TSequence : IAdjustableRandomAccessSequence<T, TSequence> {
         /// <summary>
         /// Updates the element at <paramref name="index"/> using <paramref name="function"/>.

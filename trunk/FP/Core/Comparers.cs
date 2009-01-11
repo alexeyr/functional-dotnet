@@ -87,7 +87,7 @@ namespace FP.Core {
         private readonly Comparison<T> _comparison;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FunctorComparer&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="FunctorComparer{T}"/> class.
         /// </summary>
         /// <param name="comparison">The comparison.</param>
         public FunctorComparer(Comparison<T> comparison) {
@@ -117,7 +117,7 @@ namespace FP.Core {
         private readonly Func<T, T, bool> _comparison;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FunctorEqualityComparer&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="FunctorEqualityComparer{T}"/> class.
         /// </summary>
         /// <param name="comparison">The comparison.</param>
         public FunctorEqualityComparer(Func<T, T, bool> comparison) {
@@ -161,7 +161,7 @@ namespace FP.Core {
         private readonly IComparer<T> _baseComparer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReverseComparer&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="ReverseComparer{T}"/> class.
         /// </summary>
         /// <param name="baseComparer">The base comparer.</param>
         public ReverseComparer(IComparer<T> baseComparer) {

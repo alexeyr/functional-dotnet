@@ -35,6 +35,10 @@ namespace FP.Text {
             _ft = ft;
         }
 
+        public IEnumerator<char> GetEnumerator(int startIndex) {
+            throw new System.NotImplementedException();
+        }
+
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
@@ -42,7 +46,7 @@ namespace FP.Text {
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<char> GetEnumerator() {
-            throw new System.NotImplementedException();
+            return GetEnumerator(0);
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -51,10 +55,6 @@ namespace FP.Text {
 
         public FTRope SubString(int startIndex, int length) {
             throw new NotImplementedException();
-        }
-
-        ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int length) {
-            throw new System.NotImplementedException();
         }
 
         public FTRope Concat(FTRope other) {

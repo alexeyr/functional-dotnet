@@ -31,7 +31,7 @@ namespace FP.Validation {
         /// <param name="index">The value of the parameter.</param>
         /// <param name="paramName">Name of the parameter.</param>
         public static Validation IsIndexInRange<T, TSeq>(
-            this Validation validation, IRandomAccessSequence<T, TSeq> seq, int index, string paramName) where TSeq : IRandomAccessSequence<T, TSeq> {
+            this Validation validation, TSeq seq, int index, string paramName) where TSeq : IRandomAccess<T> {
             if (index >= 0 && index < seq.Count)
                 return validation;
             return validation.AddException(
@@ -53,7 +53,7 @@ namespace FP.Validation {
         /// <param name="indexParamName">Name of the parameter.</param>
         /// <param name="countParamName"></param>
         public static Validation IsIndexAndCountInRange<T, TSeq>(
-            this Validation validation, IRandomAccessSequence<T, TSeq> seq, int index, int count, string indexParamName, string countParamName) where TSeq : IRandomAccessSequence<T, TSeq> {
+            this Validation validation, TSeq seq, int index, int count, string indexParamName, string countParamName) where TSeq : IRandomAccess<T> {
             if (index >= 0) {
                 if (count >= 0 && index + count < seq.Count)
                     return validation;
@@ -67,8 +67,38 @@ namespace FP.Validation {
             return validation.AddException(
                 new ArgumentOutOfRangeException(
                     indexParamName,
-                    string.Format("the collection has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
-                            seq.Count, count, index, index + count)));
+                    string.Format(
+                        "the collection has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
+                        seq.Count, count, index, index + count)));
         }
+
+        /// <summary>
+        /// Overload of <see cref="IsIndexInRange{T,TSeq}"/> for type inference.
+        /// </summary>
+        public static Validation IsIndexInRange<T>(this Validation validation, RandomAccessSequence<T> seq, int index, string paramName) {
+            return validation.IsIndexInRange<T, RandomAccessSequence<T>>(seq, index, paramName);
+        }
+
+        /// <summary>
+        /// Overload of <see cref="IsIndexAndCountInRange{T,TSeq}"/> for type inference.
+        /// </summary>
+        public static Validation IsIndexAndCountInRange<T>(this Validation validation, RandomAccessSequence<T> seq, int index, int count, string indexParamName, string countParamName) {
+            return validation.IsIndexAndCountInRange<T, RandomAccessSequence<T>>(seq, index, count, indexParamName, countParamName);
+        }
+
+        /// <summary>
+        /// Overload of <see cref="IsIndexInRange{T,TSeq}"/> for type inference.
+        /// </summary>
+        public static Validation IsIndexInRange<T>(this Validation validation, IRandomAccess<T> seq, int index, string paramName) {
+            return validation.IsIndexInRange<T, IRandomAccess<T>>(seq, index, paramName);
+        }
+
+        /// <summary>
+        /// Overload of <see cref="IsIndexAndCountInRange{T,TSeq}"/> for type inference.
+        /// </summary>
+        public static Validation IsIndexAndCountInRange<T>(this Validation validation, IRandomAccess<T> seq, int index, int count, string indexParamName, string countParamName) {
+            return validation.IsIndexAndCountInRange<T, IRandomAccess<T>>(seq, index, count, indexParamName, countParamName);
+        }
+
     } // class FPValidationExtensions
 } // namespace FP.Validation

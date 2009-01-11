@@ -40,8 +40,12 @@ namespace FP.Text {
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<char> GetEnumerator() {
-            foreach (char c in _array)
-                yield return c;
+            return GetEnumerator(0);
+        }
+
+        public IEnumerator<char> GetEnumerator(int startIndex) {
+            for (int i = startIndex; i < _array.Length; i++)
+                yield return _array[i];
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -53,10 +57,6 @@ namespace FP.Text {
         /// </summary>
         public int Count {
             get { return _array.Length; }
-        }
-
-        ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int count) {
-            throw new System.NotImplementedException();
         }
 
         /// <summary>

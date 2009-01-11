@@ -232,7 +232,7 @@ namespace FP.Core {
             private readonly T _value;
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="Result&lt;T&gt;.Success"/> class.
+            /// Initializes a new instance of the <see cref="Result{T}.Success"/> class.
             /// </summary>
             /// <param name="value">The value.</param>
             public Success(T value) {

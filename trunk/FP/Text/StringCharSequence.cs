@@ -20,7 +20,7 @@ using FP.Collections;
 namespace FP.Text {
     /// <summary>
     /// An adapter for <see cref="string"/> to the 
-    /// <see cref="CharSubsequence{TSequence}"/> interface.
+    /// <see cref="CharSubSequence{TSequence}"/> interface.
     /// </summary>
     public struct StringCharSequence : ICharSequence {
         private readonly string _string;
@@ -47,15 +47,17 @@ namespace FP.Text {
             return _string.GetEnumerator();
         }
 
+        public IEnumerator<char> GetEnumerator(int startIndex) {
+            for (int i = startIndex; i < _string.Length; i++)
+                yield return _string[i];
+
+        }
+
         /// <summary>
         /// Gets the length of the sequence.
         /// </summary>
         public int Count {
             get { return _string.Length; }
-        }
-
-        ICharSequence IRandomAccessSequence<char, ICharSequence>.SubSequence(int startIndex, int count) {
-            throw new System.NotImplementedException();
         }
 
         /// <summary>

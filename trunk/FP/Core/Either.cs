@@ -154,7 +154,7 @@ namespace FP.Core {
             private readonly L _value;
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="Either&lt;L, R&gt;.Left"/> class.
+            /// Initializes a new instance of the <see cref="Either{L, R}.Left"/> class.
             /// </summary>
             /// <param name="value">The value.</param>
             public Left(L value) {
@@ -285,7 +285,7 @@ namespace FP.Core {
             private readonly R _value;
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="Either&lt;L, R&gt;.Right"/> class.
+            /// Initializes a new instance of the <see cref="Either{L, R}.Right"/> class.
             /// </summary>
             /// <param name="value">The value.</param>
             public Right(R value) {

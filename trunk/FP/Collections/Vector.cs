@@ -13,24 +13,25 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-// Inspired by the Scala implementation by Daniel Spiewak, 
-// http://www.codecommit.com/blog/scala/implementing-persistent-vectors-in-scala
-
 using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using FP.Core;
 using FP.Util;
 using FP.Validation;
 
+// Inspired by the Scala implementation by Daniel Spiewak, 
+// http://www.codecommit.com/blog/scala/implementing-persistent-vectors-in-scala
 namespace FP.Collections {
     /// <summary>
     /// A vector (nearly array-like sequence). Implemented as a 32-nary trie.
     /// </summary>
+    /// <typeparam name="T">The type of elements.</typeparam>
     [Serializable]
     public sealed class Vector<T> : IAdjustableRandomAccessSequence<T, Vector<T>> {
         private const int BRANCHING = 32;
+
         /// <summary>
         /// Empty vector instance.
         /// </summary>
@@ -42,7 +43,7 @@ namespace FP.Collections {
         private readonly Vector<T>[] _branches;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Vector&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="Vector{T}"/> class.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <param name="count">The count.</param>
@@ -89,14 +90,14 @@ namespace FP.Collections {
             return AdjustAt(_count + 1, _ => newValue);
         }
 
-        ///<summary>
-        ///Returns an enumerator that iterates through the collection.
-        ///</summary>
-        ///<returns>
-        ///A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to
-        ///iterate through the collection.
-        ///</returns>
-        ///<filterpriority>1</filterpriority>
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to
+        /// iterate through the collection.
+        /// </returns>
+        /// <filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator() {
             Vector<T> currentVector = this;
             var vectorStack = new Stack<Vector<T>>();
@@ -155,18 +156,9 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Returns a subsequence starting at <paramref name="startIndex"/> and consisting of <paramref name="count"/> elements.
-        /// </summary>
-        /// <param name="startIndex">The start index.</param>
-        /// <param name="count">The count.</param>
-        /// <returns></returns>
-        public Vector<T> SubSequence(int startIndex, int count) {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Gets the <see cref="T"/> at the specified index.
         /// </summary>
+        /// <param name="index">The index.</param>
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public T this[int index] {
             get {
@@ -199,7 +191,7 @@ namespace FP.Collections {
 
         private static IEnumerable<int> Digits(int number, int @base) {
             var list = new List<int>(5);
-            if (number == 0) return new[] {0};
+            if (number == 0) return new[] { 0 };
             while (number > 0) {
                 list.Add(number % @base);
                 number /= @base;
