@@ -54,7 +54,7 @@ namespace FP.Text {
             var array = new char[length + otherFlat.Count];
             this.CopyTo<FlatRope>(array, 0);
             otherFlat.CopyTo(array, length);
-            return array.MakeArrayRope();
+            return array.ToRope();
         }
     }
 }

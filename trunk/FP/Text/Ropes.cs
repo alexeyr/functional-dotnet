@@ -23,17 +23,17 @@ namespace FP.Text {
         /// </summary>
         /// <param name="s">The string.</param>
         /// <returns>The rope holding <paramref name="s"/>.</returns>
-        public static CharSequenceRope<StringCharSequence> MakeStringRope(this string s) {
+        public static CharSequenceRope<StringCharSequence> ToRope(this string s) {
             return new CharSequenceRope<StringCharSequence>(new StringCharSequence(s));
-        } // MakeArrayRope()
+        } // ToRope()
 
         /// <summary>
         /// Converts an array to a rope.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <returns>The rope holding <paramref name="array"/>.</returns>
-        public static CharSequenceRope<ArrayCharSequence> MakeArrayRope(this char[] array) {
+        public static CharSequenceRope<ArrayCharSequence> ToRope(this char[] array) {
             return new CharSequenceRope<ArrayCharSequence>(new ArrayCharSequence(array));
-        } // MakeArrayRope(, array)
+        } // ToRope()
     } // class Ropes
 } // namespace FP.Text
