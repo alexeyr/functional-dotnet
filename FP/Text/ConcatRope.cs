@@ -41,7 +41,7 @@ namespace FP.Text {
             _child2 = rope2;
             _count = _child1.Count + _child2.Count;
             _depth = (byte)(Math.Max(_child1.Depth, _child2.Depth) + 1);
-            _isBalanced = (_count >= MinLength[_depth]);
+            _isBalanced = (_count >= MinCount[_depth]);
         }
 
         public override IEnumerator<char> GetEnumerator(int startIndex) {
@@ -153,12 +153,6 @@ namespace FP.Text {
 
         public override bool IsBalanced {
             get {
-//                if (_isBalanced)
-//                    return true;
-//                if (_count >= MinLength[Depth]) {
-//                    _isBalanced = true;
-//                    return true;
-//                }
                 return _isBalanced;
             }
         }
@@ -191,7 +185,7 @@ namespace FP.Text {
             //First find where we should add it
             int i = 0;
             Rope tempRope = null;
-            while (rope.Count >= MinLength[i + 1]) {
+            while (rope.Count >= MinCount[i + 1]) {
                 if (forest[i] != null) {
                     tempRope = forest[i].Concat(tempRope);
                     forest[i] = null;
@@ -204,7 +198,7 @@ namespace FP.Text {
                     tempRope = forest[i].Concat(tempRope);
                     forest[i] = null;
                 }
-                if (i == MAX_ROPE_DEPTH || tempRope.Count < MinLength[i + 1]) {
+                if (i == MAX_ROPE_DEPTH || tempRope.Count < MinCount[i + 1]) {
                     forest[i] = tempRope;
                     return;
                 }

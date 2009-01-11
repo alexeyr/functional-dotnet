@@ -71,22 +71,30 @@ namespace FP.Text {
         /// </summary>
         /// <param name="sequence">The sequence.</param>
         /// <returns>The array with the same elements as <paramref name="sequence"/>.</returns>
-        public static char[] ToArray(this ICharSequence sequence) {
-            var array = new char[sequence.Count];
-            sequence.CopyTo(array, 0);
+        public static char[] ToArray(this ICharSequence sequence, int startIndex, int count) {
+            var array = new char[count];
+            sequence.CopyTo(startIndex, array, 0, count);
             return array;
         }
 
         /// <summary>
-        /// Converts the <paramref name="sequence"/> to a string.
+        /// Converts a character sequence to a string.
         /// </summary>
         /// <param name="sequence">The sequence.</param>
         /// <returns>The string with the same characters as <paramref name="sequence"/>.</returns>
         public static string AsString(this ICharSequence sequence) {
-            using (var sw = new StringWriter()) {
-                sequence.WriteOut(sw, 0, sequence.Count);
-                return sw.ToString();
-            }
+            return sequence.SubStringAsString(0, sequence.Count);
+        }
+
+        /// <summary>
+        /// Converts a part of a character sequence to a string.
+        /// </summary>
+        /// <param name="sequence">The sequence.</param>
+        /// <returns>The string with the same characters as <paramref name="sequence"/>.</returns>
+        public static string SubStringAsString(this ICharSequence sequence, int startIndex, int count) {
+            if (count == 0) 
+                return string.Empty;
+            return new string(sequence.ToArray(startIndex, count));
         }
 
         /// <summary>

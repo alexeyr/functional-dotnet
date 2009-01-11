@@ -41,7 +41,7 @@ namespace FP.Text {
         /// </summary>
         protected const int MAX_ROPE_DEPTH = 45;
 
-        protected static readonly int[] MinLength = new int[MAX_ROPE_DEPTH + 1] {
+        protected static readonly int[] MinCount = new int[MAX_ROPE_DEPTH + 1] {
 /* 0 */1, /* 1 */2, /* 2 */3, /* 3 */5, /* 4 */8, /* 5 */13, /* 6 */21,
 /* 7 */34, /* 8 */55, /* 9 */89, /* 10 */144, /* 11 */233, /* 12 */377,
 /* 13 */610, /* 14 */987, /* 15 */1597, /* 16 */2584, /* 17 */4181,
@@ -115,7 +115,7 @@ namespace FP.Text {
         private Rope ConcatAndReBalanceIfNeeded(Rope other) {
             var result = new ConcatRope(this, other);
             byte depth = result.Depth;
-            return depth > MAX_ROPE_DEPTH || (depth > 20 && result.Count < MinLength[3 * depth / 4])
+            return depth > MAX_ROPE_DEPTH || (depth > 20 && result.Count < MinCount[3 * depth / 4])
                        ? result.ReBalance()
                        : result;
         }
