@@ -35,5 +35,18 @@ namespace FP.Text {
         public static CharSequenceRope<ArrayCharSequence> ToRope(this char[] array) {
             return new CharSequenceRope<ArrayCharSequence>(new ArrayCharSequence(array));
         } // ToRope()
+
+        /// <summary>
+        /// Converts a char sequence to a rope.
+        /// </summary>
+        /// <param name="charSequence">The array.</param>
+        /// <returns>The rope holding <paramref name="charSequence"/>.</returns>
+        public static Rope ToRope<TCharSequence>(this TCharSequence charSequence) 
+            where TCharSequence : ICharSequence {
+            var asRope = charSequence as Rope;
+            if (asRope != null)
+                return asRope;
+            return new CharSequenceRope<TCharSequence>(charSequence);
+        } // ToRope()
     } // class Ropes
 } // namespace FP.Text
