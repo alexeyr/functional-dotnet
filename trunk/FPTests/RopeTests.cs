@@ -16,27 +16,56 @@
 using FP.Text;
 using Microsoft.Pex.Framework;
 using Xunit;
+using XunitExtensions;
 
 namespace FPTests {
     [PexClass(typeof (Rope))]
     public partial class RopeTests {
-        [PexMethod]
-        public void Test_Creation([PexAssumeNotNull] string[] strings) {
-            string largeString = string.Concat(strings);
+        private Rope MakeLargeRope(string[] strings) {
             Rope largeRope = string.Empty.MakeStringRope();
             foreach (string s in strings) {
                 PexAssume.IsNotNull(s);
                 PexAssume.IsTrue(s.Length == 0 || !char.IsControl(s[0]));
                 largeRope = largeRope.Concat(s.MakeStringRope());
             }
+            return largeRope;
+        }
+
+        [PexMethod(MaxBranches = 40000)]
+        public void Test_Indexing([PexAssumeNotNull] string[] strings, int i) {
+            PexAssume.IsTrue(i >= 0);
+            string largeString = string.Concat(strings);
+            PexAssume.IsTrue(i < largeString.Length);
+            Rope largeRope = MakeLargeRope(strings);
+            Assert.Equal(largeString[i], largeRope[i]);
+        }
+
+        [PexMethod(MaxBranches = 40000)]
+        public void Test_Creation([PexAssumeNotNull] string[] strings) {
+            string largeString = string.Concat(strings);
+            Rope largeRope = MakeLargeRope(strings);
+            Assert2.SequenceEqual(largeString, largeRope);
             Assert.Equal(largeString, largeRope.AsString());
         }
 
-        [PexMethod]
-        public void Test_Concat([PexAssumeNotNull] Rope rope1, [PexAssumeNotNull] Rope rope2) {
-            Assert.Equal(rope1.AsString() + rope2.AsString(), rope1.Concat(rope2).AsString());
+        [PexMethod(MaxBranches = 40000)]
+        public void Test_Concat([PexAssumeNotNull] string[] strings1, [PexAssumeNotNull] string[] strings2) {
+            var rope1 = MakeLargeRope(strings1);
+            var rope2 = MakeLargeRope(strings2);
+
+            Assert.Equal(string.Concat(strings1) + string.Concat(strings2), rope1.Concat(rope2).AsString());
         }
 
-        //TODO: Test substring creation!
+        [PexMethod(MaxBranches = 40000)]
+        public void Test_SubString([PexAssumeNotNull] string[] strings, int startIndex, int count) {
+            PexAssume.IsTrue(startIndex >= 0);
+            PexAssume.IsTrue(count >= 0);
+            PexAssume.IsTrue(startIndex + count >= 0); // to prevent overflow
+            string largeString = string.Concat(strings);
+            PexAssume.IsTrue(startIndex + count <= largeString.Length);
+            Rope largeRope = MakeLargeRope(strings);
+            Assert.Equal(largeString.Substring(startIndex, count), largeRope.SubString(startIndex, count).AsString());
+        }
+
     }
 }

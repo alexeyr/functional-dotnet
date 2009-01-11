@@ -151,7 +151,16 @@
     </Compile>
     <Compile Include="RefTests.cs" />
     <Compile Include="RopeTests.cs" />
+    <Compile Include="RopeTests.Test_Concat.g.cs">
+      <DependentUpon>RopeTests.cs</DependentUpon>
+    </Compile>
     <Compile Include="RopeTests.Test_Creation.g.cs">
+      <DependentUpon>RopeTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RopeTests.Test_Indexing.g.cs">
+      <DependentUpon>RopeTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RopeTests.Test_SubString.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>
     <Compile Include="StringTests.cs" />

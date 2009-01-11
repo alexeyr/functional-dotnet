@@ -321,7 +321,7 @@ namespace FP.Validation {
         public static Validation IsIndexAndCountInRange<T>(
             this Validation validation, ICollection<T> collection, int index, int count, string indexParamName, string countParamName) {
             if (index >= 0) {
-                if (count >= 0 && index + count < collection.Count)
+                if (count >= 0 && index + count <= collection.Count)
                     return validation;
                 return validation.AddException(
                     new ArgumentOutOfRangeException(
@@ -351,7 +351,7 @@ namespace FP.Validation {
         public static Validation IsIndexAndCountInRange<T>(
             this Validation validation, T[] array, int index, int count, string indexParamName, string countParamName) {
             if (index >= 0) {
-                if (count >= 0 && index + count < array.Length)
+                if (count >= 0 && index + count <= array.Length)
                     return validation;
                 return validation.AddException(
                     new ArgumentOutOfRangeException(

@@ -89,8 +89,7 @@ namespace FP.Text {
         /// <param name="destination">The destination array.</param>
         /// <param name="destinationIndex">The index in the destination array.</param>
         /// <param name="count">The number of chars to copy.</param>
-        public abstract void CopyTo(int sourceIndex, char[] destination, int destinationIndex,
-                                    int count);
+        public abstract void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count);
 
         /// <summary>
         /// Returns the substring.
@@ -128,7 +127,13 @@ namespace FP.Text {
 
         protected internal abstract bool IsRightMostChildShort { get; }
 
-        protected internal abstract bool IsBalanced { get; }
+        /// <summary>
+        /// Gets a value indicating whether this rope is balanced.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is balanced; otherwise, <c>false</c>.
+        /// </value>
+        public abstract bool IsBalanced { get; }
 
         public bool IsEmpty {
             get { return Count == 0; }
