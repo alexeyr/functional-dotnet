@@ -22,11 +22,11 @@ namespace FPTests {
     [PexClass(typeof (Rope))]
     public partial class RopeTests {
         private Rope MakeLargeRope(string[] strings) {
-            Rope largeRope = string.Empty.MakeStringRope();
+            Rope largeRope = string.Empty.ToRope();
             foreach (string s in strings) {
                 PexAssume.IsNotNull(s);
                 PexAssume.IsTrue(s.Length == 0 || !char.IsControl(s[0]));
-                largeRope = largeRope.Concat(s.MakeStringRope());
+                largeRope = largeRope.Concat(s.ToRope());
             }
             return largeRope;
         }
