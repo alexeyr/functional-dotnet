@@ -315,9 +315,9 @@ namespace FP.Validation {
         /// <param name="validation">The validation.</param>
         /// <param name="collection">The collection.</param>
         /// <param name="index">The value of the index parameter.</param>
-        /// <param name="count"></param>
-        /// <param name="indexParamName">Name of the parameter.</param>
-        /// <param name="countParamName"></param>
+        /// <param name="count">The number of elements in the subsequence.</param>
+        /// <param name="indexParamName">Name of the "index" parameter.</param>
+        /// <param name="countParamName">Name of the "count" parameter.</param>
         public static Validation IsIndexAndCountInRange<T>(
             this Validation validation, ICollection<T> collection, int index, int count, string indexParamName, string countParamName) {
             if (index >= 0) {

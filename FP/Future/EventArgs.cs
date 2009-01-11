@@ -42,7 +42,7 @@ namespace FP.Future {
         public bool IsComplete { get { return Future.IsCompleted; } }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PromiseFulfilledArgs&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="PromiseFulfilledArgs{T}"/> class.
         /// </summary>
         /// <param name="future">The <see cref="Future"/>.</param>
         public PromiseFulfilledArgs(Future<T> future) {
@@ -62,7 +62,7 @@ namespace FP.Future {
         public Result<T> Result { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FutureDeterminedArgs&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="FutureDeterminedArgs{T}"/> class.
         /// </summary>
         /// <param name="result">The result.</param>
         public FutureDeterminedArgs(Result<T> result) {

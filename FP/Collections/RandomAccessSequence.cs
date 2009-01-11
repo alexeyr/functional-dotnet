@@ -32,6 +32,7 @@ namespace FP.Collections {
     public struct RandomAccessSequence<T> :
         IEquatable<RandomAccessSequence<T>>,
         IInsertableRandomAccessSequence<T, RandomAccessSequence<T>>,
+        IRandomAccessSequence<T, RandomAccessSequence<T>>,
         IReversible<RandomAccessSequence<T>>, ICatenable<RandomAccessSequence<T>>,
         ISplittable<RandomAccessSequence<T>> {
         private static readonly RandomAccessSequence<T> _emptyInstance =

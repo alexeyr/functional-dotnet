@@ -55,6 +55,7 @@
     <Compile Include="Collections\ICollection.cs" />
     <Compile Include="Collections\IInsertableRandomAccessSequence.cs" />
     <Compile Include="Collections\IAdjustableRandomAccessSequence.cs" />
+    <Compile Include="Collections\IRandomAccess.cs" />
     <Compile Include="Collections\IReversible.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
     <Compile Include="Collections\PriorityValuePair.cs" />
@@ -140,7 +141,6 @@
     <Compile Include="Text\Strings.cs" />
     <Compile Include="Core\Switch.cs" />
     <Compile Include="Core\Triple.cs" />
-    <Compile Include="Text\CharSubSequence.cs" />
     <Compile Include="Text\SubStringRope.cs" />
     <Compile Include="Util\Arrays.cs" />
     <Compile Include="Validation\FPValidationExtensions.cs" />
@@ -173,7 +173,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
+      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

@@ -21,26 +21,12 @@ namespace FP.Collections {
     /// </summary>
     /// <typeparam name="T">The type of elements.</typeparam>
     /// <typeparam name="TSequence">The type of the sequence.</typeparam>
-    public interface IRandomAccessSequence<T, TSequence> : ICollection<T>
-        where TSequence : IRandomAccessSequence<T, TSequence> {
+    public interface IRandomAccessSequence<T, TSequence> : IRandomAccess<T> where TSequence : IRandomAccessSequence<T, TSequence> {
         /// <summary>
         /// Returns a subsequence starting at <paramref name="startIndex"/> and consisting of <paramref name="count"/> elements.
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The count.</param>
         TSequence SubSequence(int startIndex, int count);
-
-        /// <summary>
-        /// Gets the <see cref="T"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
-        T this[int index] { get; }
-
-        /// <summary>
-        /// Gets the number of elements in the sequence.
-        /// </summary>
-        /// <value>The number of elements in the sequence.</value>
-        int Count { get; }
     }
 }

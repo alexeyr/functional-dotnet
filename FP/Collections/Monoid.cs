@@ -36,7 +36,7 @@ namespace FP.Collections {
         public readonly Func<T, T, T> Plus;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Monoid&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="Monoid{T}"/> class.
         /// </summary>
         /// <param name="zero">The zero.</param>
         /// <param name="plus">The add.</param>

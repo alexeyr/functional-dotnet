@@ -42,11 +42,23 @@ namespace FP.Text {
             _isBalanced = (_count >= MinLength[_depth]);
         }
 
-        public override IEnumerator<char> GetEnumerator() {
-            foreach (char c in _child1)
-                yield return c;
-            foreach (char c in _child2)
-                yield return c;
+        public override IEnumerator<char> GetEnumerator(int startIndex) {
+            if (_child1.Count <= startIndex)
+                return _child2.GetEnumerator(startIndex - _child1.Count);
+            return MergedEnumerator(startIndex);
+        }
+
+        private IEnumerator<char> MergedEnumerator(int startIndex) {
+            using (var child1enum = _child1.GetEnumerator(startIndex)) {
+                while (child1enum.MoveNext()) {
+                    yield return child1enum.Current;
+                }
+            }
+            using (var child2enum = _child2.GetEnumerator(0)) {
+                while (child2enum.MoveNext()) {
+                    yield return child2enum.Current;
+                }
+            }
         }
 
         /// <summary>
