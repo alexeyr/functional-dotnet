@@ -33,7 +33,7 @@ namespace FP.Text {
             get { return Count < MAX_SHORT_SIZE; }
         }
 
-        protected internal override sealed bool IsBalanced {
+        public override sealed bool IsBalanced {
             get { return true; }
         }
 

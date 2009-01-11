@@ -55,7 +55,7 @@ namespace FP.Validation {
         public static Validation IsIndexAndCountInRange<T, TSeq>(
             this Validation validation, TSeq seq, int index, int count, string indexParamName, string countParamName) where TSeq : IRandomAccess<T> {
             if (index >= 0) {
-                if (count >= 0 && index + count < seq.Count)
+                if (count >= 0 && index + count <= seq.Count)
                     return validation;
                 return validation.AddException(
                     new ArgumentOutOfRangeException(

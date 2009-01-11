@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using FP.Validation;
 
 namespace FP.Text {
     /// <summary>
@@ -38,7 +39,7 @@ namespace FP.Text {
             _child1 = rope1;
             _child2 = rope2;
             _count = _child1.Count + _child2.Count;
-            _depth = (byte) (Math.Max(_child1.Depth, _child2.Depth) + 1);
+            _depth = (byte)(Math.Max(_child1.Depth, _child2.Depth) + 1);
             _isBalanced = (_count >= MinLength[_depth]);
         }
 
@@ -112,10 +113,9 @@ namespace FP.Text {
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The length.</param>
         public override Rope SubString(int startIndex, int count) {
-            if (startIndex < 0 || startIndex >= count)
-                throw new ArgumentOutOfRangeException("startIndex");
-            if (startIndex + count > _count)
-                throw new ArgumentOutOfRangeException("count");
+            Requires.That.
+                IsIndexAndCountInRange(this, startIndex, count, "startIndex", "count").Check();
+
             if (startIndex == 0 && count == _count)
                 return this;
             if (startIndex + count <= SplitIndex)
@@ -136,7 +136,7 @@ namespace FP.Text {
             get { return _child2.Count < MAX_SHORT_SIZE && _child2 is FlatRope; }
         }
 
-        protected internal override bool IsBalanced {
+        public override bool IsBalanced {
             get {
 //                if (_isBalanced)
 //                    return true;
