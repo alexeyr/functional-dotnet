@@ -132,7 +132,7 @@ namespace FP.Text {
             return new ConcatRope(_child1, child2flat.ConcatShort(otherFlat));
         }
 
-        protected internal override bool IsRightMostChildFlatAndShort {
+        protected internal override bool IsRightMostChildShort {
             get { return _child2.Count < MAX_SHORT_SIZE && _child2 is FlatRope; }
         }
 

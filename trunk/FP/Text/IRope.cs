@@ -21,5 +21,6 @@ namespace FP.Text {
     /// </summary>
     /// <typeparam name="TRope">The type of the rope.</typeparam>
     public interface IRope<TRope> : ICharSequence, ICatenable<TRope>
-        where TRope : IRope<TRope> { }
+        where TRope : IRope<TRope> {
+        }
 }

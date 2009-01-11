@@ -16,12 +16,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using FP.Collections;
 
 namespace FP.Text {
-    ///<summary>
-    ///An adapter of an array to <see cref="ICharSequence"/>.
-    ///</summary>
+    /// <summary>
+    /// An adapter of an array to <see cref="ICharSequence"/>.
+    /// </summary>
     public struct ArrayCharSequence : ICharSequence {
         private readonly char[] _array;
 

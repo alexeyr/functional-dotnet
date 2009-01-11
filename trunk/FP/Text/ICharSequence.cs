@@ -49,8 +49,10 @@ namespace FP.Text {
         /// <param name="destination">The destination array.</param>
         /// <param name="destinationIndex">Index of the destination array where the copy
         /// will start.</param>
-        public static void CopyTo<TSequence>(this TSequence sequence, char[] destination,
-                                                    int destinationIndex)
+        public static void CopyTo<TSequence>(
+            this TSequence sequence, 
+            char[] destination,
+            int destinationIndex)
             where TSequence : ICharSequence {
             sequence.CopyTo(0, destination, destinationIndex, sequence.Count);
         }

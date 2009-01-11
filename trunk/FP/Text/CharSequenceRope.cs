@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using FP.Validation;
 
 namespace FP.Text {
     /// <summary>
@@ -48,9 +49,6 @@ namespace FP.Text {
             get { return _charSequence.Count; }
         }
 
-        /// <summary>
-        /// Gets the <paramref name="index"/>-th character in the sequence.
-        /// </summary>
         public override sealed char this[int index] {
             get {
                 // bounds checking is responsibility of _charSequence

@@ -61,7 +61,9 @@ namespace FP.Text {
         }
 
         public override void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
-            throw new System.NotImplementedException();
+            Requires.That.IsIndexAndCountInRange(this, sourceIndex, count, "sourceIndex", "count").Check();
+
+            _sourceRope.CopyTo(_offset + sourceIndex, destination, destinationIndex, count);
         }
 
         public override Rope SubString(int startIndex, int count) {
