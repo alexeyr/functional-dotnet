@@ -15,12 +15,13 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using FP.Collections;
 
 namespace FP.Text {
     /// <summary>
     /// An adapter for <see cref="string"/> to the 
-    /// <see cref="CharSubSequence{TSequence}"/> interface.
+    /// <see cref="ICharSequence"/> interface.
     /// </summary>
     public struct StringCharSequence : ICharSequence {
         private readonly string _string;
@@ -77,6 +78,10 @@ namespace FP.Text {
         /// <param name="count">The number of elements to copy.</param>
         public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
             _string.CopyTo(sourceIndex, destination, destinationIndex, count);
+        }
+
+        public void WriteOut(TextWriter writer, int startIndex, int count) {
+            writer.Write(_string.Substring(startIndex, count));
         }
 
         /// <summary>

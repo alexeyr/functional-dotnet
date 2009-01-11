@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using FP.Validation;
 
 namespace FP.Text {
@@ -70,7 +71,7 @@ namespace FP.Text {
         }
 
         /// <summary>
-        /// The index at which the second child begins.
+        /// Gets the index at which the second child begins.
         /// </summary>
         private int SplitIndex {
             get { return _child1.Count; }
@@ -80,7 +81,7 @@ namespace FP.Text {
         /// Gets the <paramref name="index"/>-th character in the sequence.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or
-        /// greater or equal to <see cref="Rope.Length"/>.</exception>
+        /// greater or equal to <see cref="Count"/>.</exception>
         public override char this[int index] {
             get { return index < SplitIndex ? _child1[index] : _child2[index - SplitIndex]; }
         }
@@ -105,6 +106,20 @@ namespace FP.Text {
                 return;
             }
             _child2.CopyTo(sourceIndex - SplitIndex, destination, destinationIndex, count);
+        }
+
+        public override void WriteOut(TextWriter writer, int startIndex, int count) {
+            if (startIndex < SplitIndex) {
+                int count1 = SplitIndex - startIndex;
+                if (count <= count1) {
+                    _child1.WriteOut(writer, startIndex, count);
+                    return;
+                }
+                _child1.WriteOut(writer, startIndex, count1);
+                _child2.WriteOut(writer, 0, count - count1);
+                return;
+            }
+            _child2.WriteOut(writer, startIndex - SplitIndex, count);
         }
 
         /// <summary>

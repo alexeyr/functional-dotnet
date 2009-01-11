@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using FP.Validation;
 
 namespace FP.Text {
@@ -64,6 +65,10 @@ namespace FP.Text {
             Requires.That.IsIndexAndCountInRange(this, sourceIndex, count, "sourceIndex", "count").Check();
 
             _sourceRope.CopyTo(_offset + sourceIndex, destination, destinationIndex, count);
+        }
+
+        public override void WriteOut(TextWriter writer, int startIndex, int count) {
+            _sourceRope.WriteOut(writer, _offset + startIndex, count);
         }
 
         public override Rope SubString(int startIndex, int count) {

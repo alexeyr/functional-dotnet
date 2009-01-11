@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 namespace FP.Text {
     /// <summary>
@@ -75,6 +76,10 @@ namespace FP.Text {
         /// <param name="count">The number of elements to copy.</param>
         public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
             Array.Copy(_array, sourceIndex, destination, destinationIndex, count);
+        }
+
+        public void WriteOut(TextWriter writer, int startIndex, int count) {
+            writer.Write(_array, startIndex, count);
         }
 
         public bool IsEmpty {
