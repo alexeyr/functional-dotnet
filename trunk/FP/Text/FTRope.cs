@@ -54,11 +54,19 @@ namespace FP.Text {
             return GetEnumerator();
         }
 
-        public FTRope SubString(int startIndex, int length) {
+        public IRope<FTRope> SubString(int startIndex, int length) {
             throw new NotImplementedException();
         }
 
-        public FTRope Concat(FTRope other) {
+        byte IRope.Depth {
+            get { throw new System.NotImplementedException(); }
+        }
+
+        bool IRope.IsBalanced {
+            get { return true; }
+        }
+
+        public IRope<FTRope> Concat(IRope<FTRope> other) {
             throw new System.NotImplementedException();
         }
 

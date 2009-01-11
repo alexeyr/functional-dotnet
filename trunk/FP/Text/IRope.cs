@@ -20,13 +20,32 @@ namespace FP.Text {
     /// An interface for "ropes", scalable representations of strings.
     /// </summary>
     public interface IRope : ICharSequence {
-        
+        /// <summary>
+        /// Gets the depth of the rope (0 for the flat ropes).
+        /// </summary>
+        /// <value>The depth.</value>
+        byte Depth { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this rope is balanced.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is balanced; otherwise, <c>false</c>.
+        /// </value>
+        bool IsBalanced { get; }
     }
 
     /// <summary>
     /// Ropes with representation compatible with <typeparamref name="TRope"/>.
     /// </summary>
     /// <typeparam name="TRope">The type of the rope.</typeparam>
-    public interface IRope<TRope> : IRope, ICatenable<TRope>
-        where TRope : IRope<TRope> { }
+    public interface IRope<TRope> : IRope, ICatenable<IRope<TRope>>
+        where TRope : IRope<TRope> {
+        /// <summary>
+        /// Returns the substring.
+        /// </summary>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">The length.</param>
+        IRope<TRope> SubString(int startIndex, int count);
+        }
 }

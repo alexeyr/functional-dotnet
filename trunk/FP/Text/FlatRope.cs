@@ -25,7 +25,7 @@ namespace FP.Text {
     /// </remarks>
     [Serializable]
     public abstract class FlatRope : Rope, IMeasured<int> {
-        protected internal override sealed byte Depth {
+        public override sealed byte Depth {
             get { return 0; }
         }
 
@@ -37,7 +37,7 @@ namespace FP.Text {
             get { return true; }
         }
 
-        public override sealed Rope ReBalance() {
+        public override sealed IRope<Rope> ReBalance() {
             return this;
         }
 

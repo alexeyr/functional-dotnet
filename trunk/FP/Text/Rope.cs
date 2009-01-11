@@ -99,9 +99,9 @@ namespace FP.Text {
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The length.</param>
-        public abstract Rope SubString(int startIndex, int count);
+        public abstract IRope<Rope> SubString(int startIndex, int count);
 
-        public Rope Concat(Rope other) {
+        public IRope<Rope> Concat(IRope<Rope> other) {
             if (other == null || other.IsEmpty)
                 return this;
             if (IsEmpty)
@@ -112,7 +112,7 @@ namespace FP.Text {
             return ConcatAndReBalanceIfNeeded(other);
         }
 
-        private Rope ConcatAndReBalanceIfNeeded(Rope other) {
+        private IRope<Rope> ConcatAndReBalanceIfNeeded(IRope<Rope> other) {
             var result = new ConcatRope(this, other);
             byte depth = result.Depth;
             return depth > MAX_ROPE_DEPTH || (depth > 20 && result.Count < MinCount[3 * depth / 4])
@@ -126,7 +126,7 @@ namespace FP.Text {
         /// Gets the depth of the rope (0 for the flat ropes).
         /// </summary>
         /// <value>The depth.</value>
-        protected internal abstract byte Depth { get; }
+        public abstract byte Depth { get; }
 
         protected internal abstract bool IsRightMostChildShort { get; }
 
@@ -145,6 +145,6 @@ namespace FP.Text {
         /// <summary>
         /// Rebalances this instance.
         /// </summary>
-        public abstract Rope ReBalance();
+        public abstract IRope<Rope> ReBalance();
     }
 }
