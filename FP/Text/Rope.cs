@@ -105,7 +105,7 @@ namespace FP.Text {
             if (IsEmpty)
                 return other;
             var otherFlat = other as FlatRope;
-            if (otherFlat != null && IsRightMostChildFlatAndShort &&
+            if (otherFlat != null && IsRightMostChildShort &&
                 otherFlat.Count <= MAX_SHORT_SIZE) return ConcatShort(otherFlat);
             return ConcatAndReBalanceIfNeeded(other);
         }
@@ -126,7 +126,7 @@ namespace FP.Text {
         /// <value>The depth.</value>
         protected internal abstract byte Depth { get; }
 
-        protected internal abstract bool IsRightMostChildFlatAndShort { get; }
+        protected internal abstract bool IsRightMostChildShort { get; }
 
         protected internal abstract bool IsBalanced { get; }
 

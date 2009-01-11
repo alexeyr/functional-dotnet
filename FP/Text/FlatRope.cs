@@ -25,20 +25,11 @@ namespace FP.Text {
     /// </remarks>
     [Serializable]
     public abstract class FlatRope : Rope, IMeasured<int> {
-        //TODO: Try to pull CharSequenceRope up into this class and make it sealed
-        internal override Rope ConcatShort(FlatRope otherFlat) {
-            int length = Count;
-            var array = new char[length + otherFlat.Count];
-            this.CopyTo(array, 0);
-            otherFlat.CopyTo(array, length);
-            return array.MakeArrayRope();
-        } // ConcatShort(otherFlat)
-
         protected internal override sealed byte Depth {
             get { return 0; }
         }
 
-        protected internal override sealed bool IsRightMostChildFlatAndShort {
+        protected internal override sealed bool IsRightMostChildShort {
             get { return Count < MAX_SHORT_SIZE; }
         }
 
@@ -56,6 +47,14 @@ namespace FP.Text {
         /// <value>The measure.</value>
         public int Measure {
             get { return Count; }
+        }
+
+        internal override Rope ConcatShort(FlatRope otherFlat) {
+            int length = Count;
+            var array = new char[length + otherFlat.Count];
+            this.CopyTo<FlatRope>(array, 0);
+            otherFlat.CopyTo(array, length);
+            return array.MakeArrayRope();
         }
     }
 }
