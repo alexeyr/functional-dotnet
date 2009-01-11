@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using FP.Collections;
 
 namespace FP.Text {
@@ -90,6 +91,8 @@ namespace FP.Text {
         /// <param name="destinationIndex">The index in the destination array.</param>
         /// <param name="count">The number of chars to copy.</param>
         public abstract void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count);
+
+        public abstract void WriteOut(TextWriter writer, int startIndex, int count);
 
         /// <summary>
         /// Returns the substring.

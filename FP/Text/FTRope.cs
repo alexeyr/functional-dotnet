@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using FP.Collections;
 
 namespace FP.Text {
@@ -81,6 +82,10 @@ namespace FP.Text {
         }
 
         public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
+            throw new System.NotImplementedException();
+        }
+
+        public void WriteOut(TextWriter writer, int startIndex, int count) {
             throw new System.NotImplementedException();
         }
     }

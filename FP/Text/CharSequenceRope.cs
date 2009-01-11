@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using FP.Validation;
 
 namespace FP.Text {
@@ -59,6 +60,10 @@ namespace FP.Text {
         public override sealed void CopyTo(int sourceIndex, char[] destination,
                                            int destinationIndex, int count) {
             _charSequence.CopyTo(sourceIndex, destination, destinationIndex, count);
+        }
+
+        public override void WriteOut(TextWriter writer, int startIndex, int count) {
+            _charSequence.WriteOut(writer, startIndex, count);
         }
 
         public override Rope SubString(int startIndex, int count) {

@@ -14,6 +14,7 @@
 */
 
 using System.Collections.Generic;
+using System.IO;
 using FP.Collections;
 
 namespace FP.Text {
@@ -35,6 +36,14 @@ namespace FP.Text {
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         IEnumerator<char> GetEnumerator(int startIndex);
+
+        /// <summary>
+        /// Writes the sequence out on the given writer.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="startIndex">The starting index.</param>
+        /// <param name="count">The number of characters to write.</param>
+        void WriteOut(TextWriter writer, int startIndex, int count);
     }
 
     /// <summary>
@@ -50,7 +59,7 @@ namespace FP.Text {
         /// <param name="destinationIndex">Index of the destination array where the copy
         /// will start.</param>
         public static void CopyTo<TSequence>(
-            this TSequence sequence, 
+            this TSequence sequence,
             char[] destination,
             int destinationIndex)
             where TSequence : ICharSequence {
@@ -74,7 +83,32 @@ namespace FP.Text {
         /// <param name="sequence">The sequence.</param>
         /// <returns>The string with the same characters as <paramref name="sequence"/>.</returns>
         public static string AsString(this ICharSequence sequence) {
-            return new string(sequence.ToArray());
+            using (var sw = new StringWriter()) {
+                sequence.WriteOut(sw, 0, sequence.Count);
+                return sw.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Writes a part of a character sequence to the specified writer.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="charSequence">The char sequence.</param>
+        /// <param name="startIndex">The starting index.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public static void Write(
+            this TextWriter writer, ICharSequence charSequence, int startIndex, int count) {
+            charSequence.WriteOut(writer, startIndex, count);
+        }
+
+        /// <summary>
+        /// Writes a character sequence to the specified writer.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="charSequence">The char sequence.</param>
+        public static void Write(
+            this TextWriter writer, ICharSequence charSequence) {
+            charSequence.WriteOut(writer, 0, charSequence.Count);
         }
     }
 }
