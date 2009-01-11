@@ -17,10 +17,16 @@ using FP.Collections;
 
 namespace FP.Text {
     /// <summary>
-    /// An interface for large strings.
+    /// An interface for "ropes", scalable representations of strings.
+    /// </summary>
+    public interface IRope : ICharSequence {
+        
+    }
+
+    /// <summary>
+    /// Ropes with representation compatible with <typeparamref name="TRope"/>.
     /// </summary>
     /// <typeparam name="TRope">The type of the rope.</typeparam>
-    public interface IRope<TRope> : ICharSequence, ICatenable<TRope>
-        where TRope : IRope<TRope> {
-        }
+    public interface IRope<TRope> : IRope, ICatenable<TRope>
+        where TRope : IRope<TRope> { }
 }
