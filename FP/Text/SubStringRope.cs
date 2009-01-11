@@ -71,7 +71,7 @@ namespace FP.Text {
             _sourceRope.WriteOut(writer, _offset + startIndex, count);
         }
 
-        public override Rope SubString(int startIndex, int count) {
+        public override IRope<Rope> SubString(int startIndex, int count) {
             if (startIndex == 0 && count == Count)
                 return this;
 

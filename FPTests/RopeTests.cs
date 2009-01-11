@@ -21,8 +21,8 @@ using XunitExtensions;
 namespace FPTests {
     [PexClass(typeof (Rope))]
     public partial class RopeTests {
-        private Rope MakeLargeRope(string[] strings) {
-            Rope largeRope = string.Empty.ToRope();
+        private IRope<Rope> MakeLargeRope(string[] strings) {
+            IRope<Rope> largeRope = string.Empty.ToRope();
             foreach (string s in strings) {
                 PexAssume.IsNotNull(s);
                 PexAssume.IsTrue(s.Length == 0 || !char.IsControl(s[0]));
@@ -36,14 +36,14 @@ namespace FPTests {
             PexAssume.IsTrue(i >= 0);
             string largeString = string.Concat(strings);
             PexAssume.IsTrue(i < largeString.Length);
-            Rope largeRope = MakeLargeRope(strings);
+            IRope<Rope> largeRope = MakeLargeRope(strings);
             Assert.Equal(largeString[i], largeRope[i]);
         }
 
         [PexMethod(MaxBranches = 40000)]
         public void Test_Creation([PexAssumeNotNull] string[] strings) {
             string largeString = string.Concat(strings);
-            Rope largeRope = MakeLargeRope(strings);
+            IRope<Rope> largeRope = MakeLargeRope(strings);
             Assert2.SequenceEqual(largeString, largeRope);
             Assert.Equal(largeString, largeRope.AsString());
         }
@@ -63,7 +63,7 @@ namespace FPTests {
             PexAssume.IsTrue(startIndex + count >= 0); // to prevent overflow
             string largeString = string.Concat(strings);
             PexAssume.IsTrue(startIndex + count <= largeString.Length);
-            Rope largeRope = MakeLargeRope(strings);
+            IRope<Rope> largeRope = MakeLargeRope(strings);
             Assert.Equal(largeString.Substring(startIndex, count), largeRope.SubString(startIndex, count).AsString());
         }
 

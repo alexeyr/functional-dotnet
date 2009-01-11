@@ -66,7 +66,7 @@ namespace FP.Text {
             _charSequence.WriteOut(writer, startIndex, count);
         }
 
-        public override Rope SubString(int startIndex, int count) {
+        public override IRope<Rope> SubString(int startIndex, int count) {
             if (startIndex == 0 && count == Count)
                 return this;
             //            if (count <= MAX_SHORT_SIZE) {
