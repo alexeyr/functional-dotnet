@@ -23,7 +23,7 @@ namespace FP.Text {
     /// An adapter for <see cref="string"/> to the 
     /// <see cref="ICharSequence"/> interface.
     /// </summary>
-    public struct StringCharSequence : ICharSequence {
+    public struct StringCharSequence : IFlatCharSequence {
         private readonly string _string;
 
         /// <summary>

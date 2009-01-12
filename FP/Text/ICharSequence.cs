@@ -47,6 +47,11 @@ namespace FP.Text {
     }
 
     /// <summary>
+    /// Represents a char sequence for which all operations' times do not depend on its length.
+    /// </summary>
+    public interface IFlatCharSequence : ICharSequence { }
+
+    /// <summary>
     /// Utility class with extension methods for <see cref="ICharSequence"/>
     /// </summary>
     public static class CharSequences {
