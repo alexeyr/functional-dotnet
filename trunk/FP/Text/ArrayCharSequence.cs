@@ -22,7 +22,7 @@ namespace FP.Text {
     /// <summary>
     /// An adapter of an array to <see cref="ICharSequence"/>.
     /// </summary>
-    public struct ArrayCharSequence : ICharSequence {
+    public struct ArrayCharSequence : IFlatCharSequence {
         private readonly char[] _array;
 
         /// <summary>

@@ -42,7 +42,7 @@ namespace FP.Text {
         /// <param name="charSequence">The array.</param>
         /// <returns>The rope holding <paramref name="charSequence"/>.</returns>
         public static Rope ToRope<TCharSequence>(this TCharSequence charSequence) 
-            where TCharSequence : ICharSequence {
+            where TCharSequence : IFlatCharSequence {
             var asRope = charSequence as Rope;
             if (asRope != null)
                 return asRope;

@@ -28,7 +28,7 @@ namespace FP.Text {
     /// create a subclass.</remarks>
     [Serializable]
     public class CharSequenceRope<TSequence> : FlatRope
-        where TSequence : ICharSequence {
+        where TSequence : IFlatCharSequence {
         private readonly TSequence _charSequence;
 
         /// <summary>
