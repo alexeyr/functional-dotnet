@@ -25,8 +25,8 @@ namespace FP.Text {
     /// </summary>
     [Serializable]
     public sealed class ConcatRope : Rope {
-        private readonly IRope<Rope> _child1;
-        private readonly IRope<Rope> _child2;
+        private readonly Rope _child1;
+        private readonly Rope _child2;
         private readonly int _count;
         private readonly byte _depth;
         private readonly bool _isBalanced;
@@ -36,7 +36,7 @@ namespace FP.Text {
         /// </summary>
         /// <param name="rope1">The first rope.</param>
         /// <param name="rope2">The second rope.</param>
-        public ConcatRope(IRope<Rope> rope1, IRope<Rope> rope2) {
+        public ConcatRope(Rope rope1, Rope rope2) {
             _child1 = rope1;
             _child2 = rope2;
             _count = _child1.Count + _child2.Count;
@@ -127,7 +127,7 @@ namespace FP.Text {
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The length.</param>
-        public override IRope<Rope> SubString(int startIndex, int count) {
+        public override Rope SubString(int startIndex, int count) {
             Requires.That.
                 IsIndexAndCountInRange(this, startIndex, count, "startIndex", "count").Check();
 
@@ -161,12 +161,12 @@ namespace FP.Text {
             get { return _depth; }
         }
 
-        public override IRope<Rope> ReBalance() {
+        public override Rope ReBalance() {
             if (IsBalanced)
                 return this;
             var forest = new Rope[MAX_ROPE_DEPTH + 1];
             AddToForest(this, forest);
-            IRope<Rope> result = null;
+            Rope result = null;
             foreach (var rope in forest)
                 result = rope.Concat(result);
             //TODO: check that result can't be null
@@ -174,7 +174,7 @@ namespace FP.Text {
             return result;
         }
 
-        private static void AddToForest(IRope<Rope> rope, IRope<Rope>[] forest) {
+        private static void AddToForest(Rope rope, Rope[] forest) {
             if (!rope.IsBalanced) {
                 var concat = rope as ConcatRope;
                 Debug.Assert(concat != null);
@@ -184,7 +184,7 @@ namespace FP.Text {
             //Adding balanced rope
             //First find where we should add it
             int i = 0;
-            IRope<Rope> tempRope = null;
+            Rope tempRope = null;
             while (rope.Count >= MinCount[i + 1]) {
                 if (forest[i] != null) {
                     tempRope = forest[i].Concat(tempRope);

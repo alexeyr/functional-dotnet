@@ -37,7 +37,7 @@ namespace FP.Text {
             get { return true; }
         }
 
-        public override sealed IRope<Rope> ReBalance() {
+        public override sealed Rope ReBalance() {
             return this;
         }
 
