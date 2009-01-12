@@ -23,10 +23,10 @@ using XunitExtensions;
 namespace FPTests {
     [PexClass(typeof (Rope))]
     public partial class RopeTests {
-        private IRope<Rope> MakeLargeRope(string[] strings) {
+        private Rope MakeLargeRope(string[] strings) {
             PexAssume.TrueForAll(strings, s => s != null);
             PexAssume.TrueForAny(strings, s => s.Length != 0 && !char.IsControl(s[0]));
-            IRope<Rope> largeRope = string.Empty.ToRope();
+            Rope largeRope = string.Empty.ToRope();
             foreach (string s in strings)
                 largeRope = largeRope.Concat(s.ToRope());
             return largeRope;
