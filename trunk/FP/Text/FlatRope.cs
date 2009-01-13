@@ -14,6 +14,7 @@
 */
 
 using System;
+using System.Diagnostics;
 using FP.Collections;
 using FP.Util;
 
@@ -25,6 +26,7 @@ namespace FP.Text {
     /// <see cref="Rope"/> doesn't implement <see cref="IMeasured{V}"/> so that there 
     /// </remarks>
     [Serializable]
+    [DebuggerDisplay("Count = {Count}: {this.AsString()}")]
     public abstract class FlatRope : Rope, IFlatCharSequence, IMeasured<int> {
         public sealed override byte Depth {
             get { return 0; }
