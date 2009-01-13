@@ -24,6 +24,7 @@ namespace FP.Text {
     /// The concatenation of two ropes.
     /// </summary>
     [Serializable]
+    [DebuggerDisplay("Depth = {Depth}, Count = {Count}, Child1({_child1.Depth}, {_child1.Count}), Child2({_child2.Depth}, {_child2.Count})")]
     public sealed class ConcatRope : Rope {
         private readonly Rope _child1;
         private readonly Rope _child2;
@@ -181,8 +182,10 @@ namespace FP.Text {
             var forest = new Rope[MAX_ROPE_DEPTH + 1];
             AddToForest(this, forest);
             Rope result = null;
-            foreach (var rope in forest)
-                result = rope.Concat(result);
+            foreach (var rope in forest) {
+                if (rope != null)
+                    result = rope.Concat(result);
+            }
             Debug.Assert(result != null);
             if (result.Depth > MAX_ROPE_DEPTH) throw new ArgumentException("The rope is too long.");
             return result;
@@ -195,6 +198,7 @@ namespace FP.Text {
                 Debug.Assert(concat != null);
                 AddToForest(concat._child1, forest);
                 AddToForest(concat._child2, forest);
+                return;
             }
 
             // Adding balanced rope
