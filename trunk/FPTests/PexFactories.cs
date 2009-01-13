@@ -16,13 +16,13 @@ using FP.Text;
 using Microsoft.Pex.Framework.Factories;
 
 namespace FPTests {
-    [PexFactoryClass]
-    public static class PexFactories {
-        [PexFactoryMethod(typeof(Rope))]
-        public static Rope StringToRope(string s) {
-            return s.ToRope();
-        }
-
+//    [PexFactoryClass]
+//    public static class PexFactories {
+//        [PexFactoryMethod(typeof(Rope))]
+//        public static Rope StringToRope(string s) {
+//            return s.ToRope();
+//        }
+//
 //        [PexFactoryMethod(typeof(Rope))]
 //        public static Rope ArrayToRope(char[] array) {
 //            return array.ToRope();
@@ -39,7 +39,7 @@ namespace FPTests {
 //            PexAssume.IsTrue(count >= 0);
 //            PexAssume.IsTrue(startIndex + count >= 0); // to prevent overflow
 //            PexAssume.IsTrue(startIndex + count <= rope.Count);
-//            return rope.SubString(startIndex, count);
+//            return rope.SubStringInternal(startIndex, count);
 //        }
-    }
+//    }
 }

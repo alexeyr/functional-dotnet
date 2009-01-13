@@ -68,9 +68,6 @@ namespace FP.Text {
                          });
         }
 
-        //-- | 'lines' breaks a string up into a list of strings at newline
-        //-- characters.  The resulting strings do not contain newlines.
-
         /// <summary>
         /// Breaks the specified char sequence into a sequence of strings at newline
         /// characters. The resulting strings do not contain newlines.
@@ -105,7 +102,6 @@ namespace FP.Text {
         /// An inverse to <see cref="Lines"/>. It joins lines, after appending a terminating newline to each.
         /// </summary>
         /// <param name="lines">A sequence of sequences of chars.</param>
-        /// <returns></returns>
         public static IEnumerable<char> UnLinesCS(this IEnumerable<IEnumerable<char>> lines) {
             return lines.Intercalate(Environment.NewLine);
 
@@ -115,10 +111,9 @@ namespace FP.Text {
         }
 
         /// <summary>
-        /// An inverse to <see cref="Lines"/>. It joins lines, after appending a terminating newline to each.
+        /// An inverse to <see cref="Lines"/>. Joins lines, after appending a terminating newline to each.
         /// </summary>
         /// <param name="lines">A sequence of strings.</param>
-        /// <returns></returns>
         public static IEnumerable<char> UnLines(this IEnumerable<string> lines) {
             return lines.Cast<IEnumerable<char>>().UnLinesCS();
         }
@@ -127,7 +122,6 @@ namespace FP.Text {
         /// Equivalent to <c>UnLines().ToStringProper()</c>, but more efficient.
         /// </summary>
         /// <param name="lines">A sequence of strings.</param>
-        /// <returns></returns>
         public static string UnLinesAsString(this IEnumerable<string> lines) {
             var sb = new StringBuilder();
             foreach (string s in lines.Intersperse(Environment.NewLine))
@@ -200,6 +194,23 @@ namespace FP.Text {
             foreach (string s in words.Intersperse(" "))
                 sb.Append(s);
             return sb.ToString();
+        }
+
+        private static readonly char[] _whitespaceChars =
+            new[] {
+                      '\t', '\n', '\v', '\f', '\r', ' ',
+                      '\u0085', '\u00a0', '\u1680', '\u2000', '\u2001',
+                      '\u2002', '\u2003', '\u2004', '\u2005', '\u2006',
+                      '\u2007', '\u2008', '\u2009', '\u200a', '\u200b', '\u2028',
+                      '\u2029', '\u3000', '\ufeff'
+                  };
+
+        /// <summary>
+        /// Gets the array of all whitespace <see cref="char"/>s.
+        /// </summary>
+        /// <value>The whitespace <see cref="char"/>s.</value>
+        public static char[] WhitespaceChars {
+            get { return _whitespaceChars; }
         }
     }
 }

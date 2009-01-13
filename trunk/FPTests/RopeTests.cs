@@ -13,8 +13,6 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-using System.Linq;
-using FP.HaskellNames;
 using FP.Text;
 using Microsoft.Pex.Framework;
 using Xunit;
@@ -24,9 +22,11 @@ namespace FPTests {
     [PexClass(typeof (Rope))]
     public partial class RopeTests {
         private Rope MakeLargeRope(string[] strings) {
-            PexAssume.TrueForAll(strings, s => s != null);
+            // Remove all nulls
+            for (int i = 0; i < strings.Length; i++)
+                PexAssume.IsNotNull(strings[i]);
             PexAssume.TrueForAny(strings, s => s.Length != 0 && !char.IsControl(s[0]));
-            Rope largeRope = string.Empty.ToRope();
+            Rope largeRope = Rope.EmptyInstance;
             foreach (string s in strings)
                 largeRope = largeRope.Concat(s.ToRope());
             return largeRope;
@@ -35,9 +35,9 @@ namespace FPTests {
         [PexMethod(MaxBranches = 40000)]
         public void Test_Indexing([PexAssumeNotNull] string[] strings, int i) {
             PexAssume.IsTrue(i >= 0);
-            PexAssume.TrueForAll(strings, s => s != null);
-            PexAssume.IsTrue(i < strings.Map(s => s.Length).Sum());
-            IRope<Rope> largeRope = MakeLargeRope(strings);
+            // PexAssume.IsTrue(i < strings.Map(s => s != null ? s.Length : 0).Sum());
+            var largeRope = MakeLargeRope(strings);
+            PexAssume.IsTrue(i < largeRope.Count);
             string largeString = string.Concat(strings);
             // PexAssume.IsTrue(i < largeString.Length);
             Assert.Equal(largeString[i], largeRope[i]);
@@ -45,7 +45,7 @@ namespace FPTests {
 
         [PexMethod(MaxBranches = 40000)]
         public void Test_Creation([PexAssumeNotNull] string[] strings) {
-            IRope<Rope> largeRope = MakeLargeRope(strings);
+            var largeRope = MakeLargeRope(strings);
             string largeString = string.Concat(strings);
             Assert2.SequenceEqual(largeString, largeRope);
             Assert.Equal(largeString, largeRope.AsString());
@@ -65,11 +65,25 @@ namespace FPTests {
             PexAssume.IsTrue(count >= 0);
             PexAssume.IsTrue(startIndex + count >= 0); // to prevent overflow
             PexAssume.TrueForAll(strings, s => s != null);
-            PexAssume.IsTrue(startIndex + count < strings.Map(s => s.Length).Sum());
+            // PexAssume.IsTrue(startIndex + count < strings.Map(s => s.Length).Sum());
             string largeString = string.Concat(strings);
-            // PexAssume.IsTrue(startIndex + count <= largeString.Length);
-            IRope<Rope> largeRope = MakeLargeRope(strings);
+            PexAssume.IsTrue(startIndex + count <= largeString.Length);
+            var largeRope = MakeLargeRope(strings);
             Assert.Equal(largeString.Substring(startIndex, count), largeRope.SubString(startIndex, count).AsString());
+        }
+
+        [PexMethod]
+        public void Test_TrimStart([PexAssumeNotNull] string[] strings, [PexAssumeNotNull] char[] trimChars) {
+            string largeString = string.Concat(strings);
+            var largeRope = MakeLargeRope(strings);
+            Assert.Equal(largeString.TrimStart(trimChars), largeRope.TrimStart(trimChars).AsString());
+        }
+
+        [PexMethod]
+        public void Test_TrimEnd([PexAssumeNotNull] string[] strings, [PexAssumeNotNull] char[] trimChars) {
+            string largeString = string.Concat(strings);
+            var largeRope = MakeLargeRope(strings);
+            Assert.Equal(largeString.TrimEnd(trimChars), largeRope.TrimEnd(trimChars).AsString());
         }
     }
 }

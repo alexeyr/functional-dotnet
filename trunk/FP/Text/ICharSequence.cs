@@ -76,6 +76,19 @@ namespace FP.Text {
         /// </summary>
         /// <param name="sequence">The sequence.</param>
         /// <returns>The array with the same elements as <paramref name="sequence"/>.</returns>
+        public static char[] ToArray(this ICharSequence sequence) {
+            return ToArray(sequence, 0, sequence.Count);
+        }
+
+        /// <summary>
+        /// Converts the <paramref name="sequence"/> to an array.
+        /// </summary>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">The count.</param>
+        /// <returns>
+        /// The array with the same elements as <paramref name="sequence"/>.
+        /// </returns>
         public static char[] ToArray(this ICharSequence sequence, int startIndex, int count) {
             var array = new char[count];
             sequence.CopyTo(startIndex, array, 0, count);

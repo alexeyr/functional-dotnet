@@ -66,15 +66,23 @@ namespace FP.Text {
             _charSequence.WriteOut(writer, startIndex, count);
         }
 
-        public override Rope SubString(int startIndex, int count) {
+        public override Rope SubStringInternal(int startIndex, int count) {
             if (startIndex == 0 && count == Count)
                 return this;
-            //            if (count <= MAX_SHORT_SIZE) {
-            //                var array = new char[count];
-            //                _charSequence.CopyTo(startIndex, array, 0, count);
-            //                return array.ToRope();
-            //            }
-            return new SubStringRope(this, startIndex, count);
+            if (count <= MAX_SHORT_SIZE) {
+                var array = _charSequence.ToArray(startIndex, count);
+                return array.ToRope();
+            }
+            return new SubStringRope<TSequence>(this, startIndex, count);
+        }
+
+        public override Rope Reverse() {
+            if (Count <= MAX_SHORT_SIZE) {
+                var array = _charSequence.ToArray();
+                Array.Reverse(array);
+                return array.ToRope();
+            }
+            return new ReverseRope<TSequence>(this, 0, Count);
         }
     }
 }

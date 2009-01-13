@@ -34,14 +34,22 @@ namespace FP.Text {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConcatRope"/> class.
         /// </summary>
-        /// <param name="rope1">The first rope.</param>
-        /// <param name="rope2">The second rope.</param>
-        public ConcatRope(Rope rope1, Rope rope2) {
-            _child1 = rope1;
-            _child2 = rope2;
+        /// <param name="child1">The first rope.</param>
+        /// <param name="child2">The second rope.</param>
+        internal ConcatRope(Rope child1, Rope child2) {
+            _child1 = child1;
+            _child2 = child2;
             _count = _child1.Count + _child2.Count;
             _depth = (byte)(Math.Max(_child1.Depth, _child2.Depth) + 1);
             _isBalanced = (_count >= MinCount[_depth]);
+        }
+
+        private ConcatRope(Rope child1, Rope child2, int count, byte depth, bool isBalanced) {
+            _child1 = child1;
+            _child2 = child2;
+            _count = count;
+            _depth = depth;
+            _isBalanced = isBalanced;
         }
 
         public override IEnumerator<char> GetEnumerator(int startIndex) {
@@ -127,34 +135,40 @@ namespace FP.Text {
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The length.</param>
-        public override Rope SubString(int startIndex, int count) {
-            Requires.That.
-                IsIndexAndCountInRange(this, startIndex, count, "startIndex", "count").Check();
-
+        public override Rope SubStringInternal(int startIndex, int count) {
             if (startIndex == 0 && count == _count)
                 return this;
             if (startIndex + count <= SplitIndex)
-                return _child1.SubString(startIndex, count);
+                return _child1.SubStringInternal(startIndex, count);
             if (startIndex >= SplitIndex)
-                return _child2.SubString(startIndex - SplitIndex, count);
+                return _child2.SubStringInternal(startIndex - SplitIndex, count);
             int length1 = SplitIndex - startIndex;
             return
-                _child1.SubString(startIndex, length1).Concat(_child2.SubString(0, count - length1));
+                _child1.SubStringInternal(startIndex, length1).Concat(_child2.SubStringInternal(0, count - length1));
         }
 
-        internal override Rope ConcatShort(FlatRope otherFlat) {
-            var child2flat = (FlatRope) _child2;
-            return new ConcatRope(_child1, child2flat.ConcatShort(otherFlat));
+        protected internal override Rope AppendShort<TCharSequence>(TCharSequence sequence, int startIndex, int count) {
+            return _child1.Concat(_child2.AppendShort(sequence, startIndex, count));
         }
 
-        protected internal override bool IsRightMostChildShort {
-            get { return _child2.Count < MAX_SHORT_SIZE && _child2 is FlatRope; }
+        protected internal override Rope PrependShort<TCharSequence>(TCharSequence sequence, int startIndex, int count) {
+            return _child1.PrependShort(sequence, startIndex, count).Concat(_child2);
+        }
+
+        protected override IFlatCharSequence Flatten() {
+            return new ArrayCharSequence(this.ToArray());
+        }
+
+        protected override int RightChildCount {
+            get { return _child2.Count; }
+        }
+
+        protected override int LeftChildCount {
+            get { return _child1.Count; }
         }
 
         public override bool IsBalanced {
-            get {
-                return _isBalanced;
-            }
+            get { return _isBalanced; }
         }
 
         public override byte Depth {
@@ -169,20 +183,22 @@ namespace FP.Text {
             Rope result = null;
             foreach (var rope in forest)
                 result = rope.Concat(result);
-            //TODO: check that result can't be null
+            Debug.Assert(result != null);
             if (result.Depth > MAX_ROPE_DEPTH) throw new ArgumentException("The rope is too long.");
             return result;
         }
 
         private static void AddToForest(Rope rope, Rope[] forest) {
             if (!rope.IsBalanced) {
+                // only ConcatRope can be unbalanced
                 var concat = rope as ConcatRope;
                 Debug.Assert(concat != null);
                 AddToForest(concat._child1, forest);
                 AddToForest(concat._child2, forest);
             }
-            //Adding balanced rope
-            //First find where we should add it
+
+            // Adding balanced rope
+            // First find where we should add it
             int i = 0;
             Rope tempRope = null;
             while (rope.Count >= MinCount[i + 1]) {
@@ -204,6 +220,28 @@ namespace FP.Text {
                 }
                 i++;
             }
+        }
+
+        public override Rope Reverse() {
+            return new ConcatRope(_child2.Reverse(), _child1.Reverse(), _count, _depth, _isBalanced);
+        }
+
+        internal override Rope TrimStartInternal(char[] trimChars) {
+            var trimmedChild1 = _child1.TrimStart(trimChars);
+            if (trimmedChild1 == _child1)
+                return this;
+            if (trimmedChild1.IsEmpty)
+                return _child2.TrimStart(trimChars);
+            return trimmedChild1.Concat(_child2);
+        }
+
+        internal override Rope TrimEndInternal(char[] trimChars) {
+            var trimmedChild2 = _child2.TrimEnd(trimChars);
+            if (trimmedChild2 == _child2)
+                return this;
+            if (trimmedChild2.IsEmpty)
+                return _child1.TrimEnd(trimChars);
+            return _child1.Concat(trimmedChild2);
         }
     }
 }
