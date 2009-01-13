@@ -164,6 +164,12 @@
     <Compile Include="RopeTests.Test_SubString.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>
+    <Compile Include="RopeTests.Test_TrimEnd.g.cs">
+      <DependentUpon>RopeTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RopeTests.Test_TrimStart.g.cs">
+      <DependentUpon>RopeTests.cs</DependentUpon>
+    </Compile>
     <Compile Include="StringTests.cs" />
     <Compile Include="SwitchTests.cs" />
     <Compile Include="ValidationTests.cs" />

@@ -38,6 +38,19 @@ namespace FP.Util {
         }
 
         /// <summary>
+        /// Determines whether the given array contains the given item.
+        /// </summary>
+        /// <typeparam name="T">The type of array's elements.</typeparam>
+        /// <param name="array">The array.</param>
+        /// <param name="item">The item.</param>
+        public static bool Contains<T>(this T[] array, T item) {
+            var equalityC = EqualityComparer<T>.Default;
+            for (int i = 0; i < array.Length; i++)
+                if (equalityC.Equals(array[i], item)) return true;
+            return false;
+        }
+
+        /// <summary>
         /// Copies the specified array.
         /// </summary>
         /// <param name="array">The array.</param>

@@ -1,7 +1,7 @@
 /*
-* SubStringRope.cs is part of functional-dotnet project
+* ReverseRope.cs is part of functional-dotnet project
 * 
-* Copyright (c) 2008 Alexey Romanov
+* Copyright (c) 2009 Alexey Romanov
 * All rights reserved.
 *
 * This source file is available under The New BSD License.
@@ -12,7 +12,6 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,30 +22,32 @@ namespace FP.Text {
     /// A rope which is a substring of another rope.
     /// </summary>
     [Serializable]
-    public sealed class SubStringRope<TSequence> : FlatRope where TSequence : IFlatCharSequence {
+    public sealed class ReverseRope<TSequence> : FlatRope where TSequence : IFlatCharSequence {
         private readonly CharSequenceRope<TSequence> _sourceRope;
-        private readonly int _offset;
+        private readonly int _offsetFromEnd;
         private readonly int _length;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubStringRope"/> class.
+        /// Initializes a new instance of the <see cref="ReverseRope{TSequence}"/> class.
         /// </summary>
         /// <param name="sourceRope">The char sequence.</param>
-        /// <param name="offset">The offset.</param>
+        /// <param name="offsetFromEnd">The offset.</param>
         /// <param name="length">The length.</param>
-        public SubStringRope(CharSequenceRope<TSequence> sourceRope, int offset, int length) {
+        public ReverseRope(CharSequenceRope<TSequence> sourceRope, int offsetFromEnd, int length) {
             Requires.That.
-                IsIndexAndCountInRange(sourceRope, offset, length, "offset", "length").Check();
+                IsIndexAndCountInRange(sourceRope, offsetFromEnd - length, length, "offsetFromEnd", "length").Check();
 
             _sourceRope = sourceRope;
-            _offset = offset;
+            _offsetFromEnd = offsetFromEnd;
             _length = length;
         }
 
         public override IEnumerator<char> GetEnumerator(int startIndex) {
             Requires.That.IsIndexInRange(this, startIndex, "startIndex").Check();
 
-            return _sourceRope.GetEnumerator(_offset + startIndex);
+            int lastIndex = _sourceRope.Count - _offsetFromEnd - 1;
+            for (int i = 0; i < _length; i++)
+                yield return _sourceRope[lastIndex - i];
         }
 
         public override int Count {
@@ -57,29 +58,39 @@ namespace FP.Text {
             get {
                 Requires.That.IsIndexInRange(this, index, "startIndex").Check();
 
-                return _sourceRope[_offset + index];
+                return _sourceRope[_offsetFromEnd - index];
             }
         }
 
         public override void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
             Requires.That.IsIndexAndCountInRange(this, sourceIndex, count, "sourceIndex", "count").Check();
 
-            _sourceRope.CopyTo(_offset + sourceIndex, destination, destinationIndex, count);
+            // BUG: Possible off-by-one!
+            int firstIndex = _sourceRope.Count - _offsetFromEnd - count;
+            _sourceRope.CopyTo(firstIndex, destination, destinationIndex, count);
+            Array.Reverse(destination, destinationIndex, count);
         }
 
         public override void WriteOut(TextWriter writer, int startIndex, int count) {
-            _sourceRope.WriteOut(writer, _offset + startIndex, count);
+            // _sourceRope.WriteOut(writer, _offsetFromEnd + startIndex, count);
         }
 
         public override Rope SubStringInternal(int startIndex, int count) {
             if (startIndex == 0 && count == Count)
                 return this;
 
-            return _sourceRope.SubStringInternal(_offset + startIndex, count);
+            if (count <= MAX_SHORT_SIZE) {
+                // BUG: Possible off-by-one!
+                int firstIndex = _sourceRope.Count - _offsetFromEnd - count;
+                var array = _sourceRope.ToArray(firstIndex, count);
+                Array.Reverse(array);
+                return array.ToRope();
+            }
+            return new ReverseRope<TSequence>(_sourceRope, _offsetFromEnd + startIndex, count);
         }
 
         public override Rope Reverse() {
-            return new ReverseRope<TSequence>(_sourceRope, _sourceRope.Count - _offset - _length, _length);
+            return _sourceRope.SubString(_sourceRope.Count - _offsetFromEnd - _length, _length);
         }
     }
 }

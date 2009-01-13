@@ -100,6 +100,8 @@
     <Compile Include="Text\ICharSequence.cs" />
     <Compile Include="Text\FlatRope.cs" />
     <Compile Include="Text\IRope.cs" />
+    <Compile Include="Text\RepeatedCharSequence.cs" />
+    <Compile Include="Text\ReverseRope.cs" />
     <Compile Include="Text\Rope.cs" />
     <Compile Include="Core\Either.cs" />
     <Compile Include="Collections\FingerTreeHelpers.cs" />
@@ -173,7 +175,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
+      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

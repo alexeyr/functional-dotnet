@@ -58,6 +58,26 @@ namespace FP.Text {
             throw new NotImplementedException();
         }
 
+        public FTRope Append<TCharSequence>(TCharSequence charSequence, int startIndex, int count) where TCharSequence : IFlatCharSequence {
+            throw new System.NotImplementedException();
+        }
+
+        public FTRope Prepend<TCharSequence>(TCharSequence charSequence, int startIndex, int count) where TCharSequence : IFlatCharSequence {
+            throw new System.NotImplementedException();
+        }
+
+        public FTRope Reverse() {
+            throw new System.NotImplementedException();
+        }
+
+        public FTRope TrimStart(params char[] trimChars) {
+            throw new System.NotImplementedException();
+        }
+
+        public FTRope TrimEnd(params char[] trimChars) {
+            throw new System.NotImplementedException();
+        }
+
         public FTRope Concat(FTRope other) {
             throw new System.NotImplementedException();
         }

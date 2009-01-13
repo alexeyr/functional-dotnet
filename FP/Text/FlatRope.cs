@@ -15,6 +15,7 @@
 
 using System;
 using FP.Collections;
+using FP.Util;
 
 namespace FP.Text {
     /// <summary>
@@ -24,20 +25,28 @@ namespace FP.Text {
     /// <see cref="Rope"/> doesn't implement <see cref="IMeasured{V}"/> so that there 
     /// </remarks>
     [Serializable]
-    public abstract class FlatRope : Rope, IMeasured<int> {
-        public override sealed byte Depth {
+    public abstract class FlatRope : Rope, IFlatCharSequence, IMeasured<int> {
+        public sealed override byte Depth {
             get { return 0; }
         }
 
-        protected internal override sealed bool IsRightMostChildShort {
-            get { return Count < MAX_SHORT_SIZE; }
+        protected sealed override int RightChildCount {
+            get { return Count; }
         }
 
-        public override sealed bool IsBalanced {
+        protected sealed override int LeftChildCount {
+            get { return Count; }
+        }
+
+        public sealed override bool IsBalanced {
             get { return true; }
         }
 
-        public override sealed Rope ReBalance() {
+        public sealed override Rope ReBalance() {
+            return this;
+        }
+
+        protected override IFlatCharSequence Flatten() {
             return this;
         }
 
@@ -49,12 +58,42 @@ namespace FP.Text {
             get { return Count; }
         }
 
-        internal override Rope ConcatShort(FlatRope otherFlat) {
-            int length = Count;
-            var array = new char[length + otherFlat.Count];
-            this.CopyTo<FlatRope>(array, 0);
-            otherFlat.CopyTo(array, length);
+        protected internal sealed override Rope AppendShort<TCharSequence>(TCharSequence sequence, int startIndex, int count) {
+            int thisCount = Count;
+            var array = new char[thisCount + count];
+            this.CopyTo(array, 0);
+            sequence.CopyTo(startIndex, array, thisCount, count);
             return array.ToRope();
+        }
+
+        protected internal sealed override Rope PrependShort<TCharSequence>(TCharSequence sequence, int startIndex, int count) {
+            var array = new char[count + Count];
+            sequence.CopyTo(startIndex, array, 0, count);
+            this.CopyTo(array, count);
+            return array.ToRope();
+        }
+
+        internal override Rope TrimStartInternal(char[] trimChars) {
+            int i = 0;
+            // Use iterator since it may be substantially cheaper for StreamCharSequence
+            // and shouldn't cost too much in other cases
+            foreach (char c in this) {
+                if (!trimChars.Contains(c)) break;
+                i++;
+            }
+            if (Count - i == 0)
+                return EmptyInstance;
+            return SubStringInternal(i, Count - i);
+        }
+
+        internal override Rope TrimEndInternal(char[] trimChars) {
+            int i;
+            for (i = Count - 1; i >= 0; i--) {
+                if (!trimChars.Contains(this[i])) break;
+            }
+            if (i == -1)
+                return EmptyInstance;
+            return SubStringInternal(0, i + 1);
         }
     }
 }
