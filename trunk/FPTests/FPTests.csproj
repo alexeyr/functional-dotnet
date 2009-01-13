@@ -161,6 +161,9 @@
     <Compile Include="RopeTests.Test_Indexing.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>
+    <Compile Include="RopeTests.Test_Reverse.g.cs">
+      <DependentUpon>RopeTests.cs</DependentUpon>
+    </Compile>
     <Compile Include="RopeTests.Test_SubString.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>

@@ -27,6 +27,10 @@ namespace FP.Text {
         private readonly int _offsetFromEnd;
         private readonly int _length;
 
+        private int FirstIndex { get { return _sourceRope.Count - _offsetFromEnd - _length; } }
+
+        private int LastIndex { get { return _sourceRope.Count - _offsetFromEnd - 1; } }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ReverseRope{TSequence}"/> class.
         /// </summary>
@@ -35,7 +39,7 @@ namespace FP.Text {
         /// <param name="length">The length.</param>
         public ReverseRope(CharSequenceRope<TSequence> sourceRope, int offsetFromEnd, int length) {
             Requires.That.
-                IsIndexAndCountInRange(sourceRope, offsetFromEnd - length, length, "offsetFromEnd", "length").Check();
+                IsIndexAndCountInRange(sourceRope, sourceRope.Count - offsetFromEnd - length, length, "offsetFromEnd", "length").Check();
 
             _sourceRope = sourceRope;
             _offsetFromEnd = offsetFromEnd;
@@ -45,7 +49,7 @@ namespace FP.Text {
         public override IEnumerator<char> GetEnumerator(int startIndex) {
             Requires.That.IsIndexInRange(this, startIndex, "startIndex").Check();
 
-            int lastIndex = _sourceRope.Count - _offsetFromEnd - 1;
+            int lastIndex = LastIndex;
             for (int i = 0; i < _length; i++)
                 yield return _sourceRope[lastIndex - i];
         }
@@ -58,7 +62,7 @@ namespace FP.Text {
             get {
                 Requires.That.IsIndexInRange(this, index, "startIndex").Check();
 
-                return _sourceRope[_offsetFromEnd - index];
+                return _sourceRope[LastIndex - index];
             }
         }
 

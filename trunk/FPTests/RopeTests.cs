@@ -13,6 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
+using System;
 using FP.Text;
 using Microsoft.Pex.Framework;
 using Xunit;
@@ -84,6 +85,14 @@ namespace FPTests {
             string largeString = string.Concat(strings);
             var largeRope = MakeLargeRope(strings);
             Assert.Equal(largeString.TrimEnd(trimChars), largeRope.TrimEnd(trimChars).AsString());
+        }
+
+        [PexMethod]
+        public void Test_Reverse([PexAssumeNotNull] string[] strings) {
+            char[] largeStringCharArray = string.Concat(strings).ToCharArray();
+            var largeRope = MakeLargeRope(strings);
+            Array.Reverse(largeStringCharArray);
+            Assert.Equal(new string(largeStringCharArray), largeRope.Reverse().AsString());
         }
     }
 }
