@@ -37,6 +37,13 @@ namespace FP.Text {
         /// <param name="charSequence">The character sequence.</param>
         public CharSequenceRope(TSequence charSequence) {
             _charSequence = charSequence;
+            if (_charSequence.Count < 0) {
+                throw new ArgumentException(
+                    string.Format(
+                        "Attempted to create a rope from character sequence {0} with apparent length {1}. " +
+                        "It's possible there is an overflow",
+                        _charSequence, _charSequence.Count));
+            }
         }
 
         public override sealed IEnumerator<char> GetEnumerator(int startIndex) {
