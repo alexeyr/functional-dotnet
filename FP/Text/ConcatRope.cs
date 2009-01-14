@@ -41,6 +41,13 @@ namespace FP.Text {
             _child1 = child1;
             _child2 = child2;
             _count = _child1.Count + _child2.Count;
+            if (_count < 0) {
+                throw new ArgumentException(
+                    string.Format(
+                        "Attempted to concatenate ropes with lengths {0} and {1}. " + 
+                        "The total length of resulting rope would be {2}. The maximum length permitted is {3}.",
+                        _child1.Count, _child2.Count, (long) _child1.Count + _child2.Count, int.MaxValue));
+            }
             _depth = (byte)(Math.Max(_child1.Depth, _child2.Depth) + 1);
             _isBalanced = (_count >= MinCount[_depth]);
         }
