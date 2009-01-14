@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using FP.Core;
 
 namespace FP.Text {
     /// <summary>
@@ -27,7 +28,7 @@ namespace FP.Text {
         /// </summary>
         /// <param name="s">The string.</param>
         /// <returns>The rope holding <paramref name="s"/>.</returns>
-        public static CharSequenceRope<StringCharSequence> ToRope(this string s) {
+        public static FlatRope ToRope(this string s) {
             return new CharSequenceRope<StringCharSequence>(new StringCharSequence(s));
         } // ToRope()
 
@@ -36,7 +37,7 @@ namespace FP.Text {
         /// </summary>
         /// <param name="array">The array.</param>
         /// <returns>The rope holding <paramref name="array"/>.</returns>
-        public static CharSequenceRope<ArrayCharSequence> ToRope(this char[] array) {
+        public static FlatRope ToRope(this char[] array) {
             return new CharSequenceRope<ArrayCharSequence>(new ArrayCharSequence(array));
         } // ToRope()
 
@@ -82,28 +83,53 @@ namespace FP.Text {
         }
 
         public static TRope Insert<TRope, TCharSequence>(this TRope rope, int startIndex, TCharSequence charSequence) 
-            where TRope : IRope<TRope> where TCharSequence : ICharSequence {
-            throw new System.NotImplementedException();
+            where TRope : IRope<TRope> where TCharSequence : IFlatCharSequence {
+            if (startIndex == 0)
+                return rope.Prepend(charSequence);
+            if (startIndex == rope.Count)
+                return rope.Append(charSequence);
+            return rope.SubString(0, startIndex).Append(charSequence).
+                Concat(rope.SubString(startIndex, rope.Count - startIndex));
+        }
+
+        public static TRope Insert<TRope>(this TRope rope, int startIndex, TRope rope2)
+            where TRope : IRope<TRope> {
+            if (startIndex == 0)
+                return rope2.Concat(rope2);
+            if (startIndex == rope.Count)
+                return rope.Concat(rope2);
+            return rope.SubString(0, startIndex).Concat(rope2).
+                Concat(rope.SubString(startIndex, rope.Count - startIndex));
         }
 
         public static TRope PadStart<TRope>(this TRope rope, int totalWidth, char paddingChar) where TRope : IRope<TRope> {
-            int paddingWidth = rope.Count - totalWidth;
+            int paddingWidth = totalWidth - rope.Count;
             if (paddingWidth <= 0)
                 return rope;
             return rope.Prepend(new RepeatedCharSequence(paddingChar, paddingWidth));
         }
 
         public static TRope PadEnd<TRope>(this TRope rope, int totalWidth, char paddingChar) where TRope : IRope<TRope> {
-            int paddingWidth = rope.Count - totalWidth;
+            int paddingWidth = totalWidth - rope.Count;
             if (paddingWidth <= 0)
                 return rope;
             return rope.Append(new RepeatedCharSequence(paddingChar, paddingWidth));
         }
 
-        public static TRope StartsWithOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)
+        public static bool StartsWithOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)
             where TRope : IRope<TRope>
             where TCharSequence : ICharSequence {
-            throw new System.NotImplementedException();
+            if (charSequence.Count == 0)
+                return true;
+            if (charSequence.Count > rope.Count)
+                return false;
+
+            Func<char, char, bool> compare; 
+            if (ignoreCase)
+                compare = (c1, c2) => char.ToUpperInvariant(c1) == char.ToUpperInvariant(c2);
+            else
+                compare = (c1, c2) => c1 == c2;
+            return charSequence.ZipWith(rope, compare).And();
         }
 
         public static TRope EndsWithOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)

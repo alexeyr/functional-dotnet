@@ -100,6 +100,21 @@ namespace FPTests {
             Assert.Equal(new string(largeStringCharArray), largeRope.Reverse().AsString());
         }
 
+        [PexMethod]
+        public void Test_Padding([PexAssumeNotNull] string s, int totalWidth, char paddingChar) {
+            PexAssume.IsTrue(totalWidth >= 0);
+            PexAssume.IsTrue(totalWidth < 1000000); // To avoid out-of-memory errors
+            Rope rope = s.ToRope();
+            Assert.Equal(s.PadLeft(totalWidth, paddingChar), rope.PadStart(totalWidth, paddingChar).AsString());
+            Assert.Equal(s.PadRight(totalWidth, paddingChar), rope.PadEnd(totalWidth, paddingChar).AsString());
+        }
+
+        [PexMethod]
+        public void Test_StartsWithOrdinal([PexAssumeNotNull] string s1, [PexAssumeNotNull] string s2) {
+            PexAssert.AreEqual(s1.StartsWith(s2, StringComparison.Ordinal), s1.ToRope().StartsWithOrdinal<Rope, Rope>(s2.ToRope(), false));
+            PexAssert.AreEqual(s1.StartsWith(s2, StringComparison.OrdinalIgnoreCase), s1.ToRope().StartsWithOrdinal<Rope, Rope>(s2.ToRope(), true));
+        }
+
         [Fact]
         public void Test_Rebalance() {
             string digits = "0123456789";
