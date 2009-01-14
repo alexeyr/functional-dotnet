@@ -186,6 +186,21 @@
     <Compile Include="VectorTests.Test_ReplaceSingleElement.g.cs">
       <DependentUpon>VectorTests.cs</DependentUpon>
     </Compile>
+    <Compile Include="VectorTests.Test_ReplaceSingleElement01.g.cs">
+      <DependentUpon>VectorTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VectorTests.Test_ReplaceSingleElement02.g.cs">
+      <DependentUpon>VectorTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VectorTests.Test_ReplaceSingleElement03.g.cs">
+      <DependentUpon>VectorTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VectorTests.Test_ReplaceSingleElement04.g.cs">
+      <DependentUpon>VectorTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VectorTests.Test_ReplaceSingleElement05.g.cs">
+      <DependentUpon>VectorTests.cs</DependentUpon>
+    </Compile>
     <Compile Include="VectorTests.Test_SingleElementVector.g.cs">
       <DependentUpon>VectorTests.cs</DependentUpon>
     </Compile>

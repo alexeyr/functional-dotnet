@@ -162,7 +162,7 @@ namespace FP.Collections {
         /// <exception cref="ArgumentOutOfRangeException"><c>index</c> is out of range.</exception>
         public T this[int index] {
             get {
-                Requires.That.IsIndexInRange(this, index, "index");
+                // Requires.That.IsIndexInRange(this, index, "index").Check();
                 var vector = this;
                 foreach (int i in Digits(index)) {
                     if (vector._branches.Length <= i || vector._branches[i] == null)

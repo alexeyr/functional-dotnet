@@ -28,34 +28,31 @@ namespace FPTests {
             Assert.Equal(null, Vector<object>.Empty[i]);
         }
 
-        [PexGenericArguments(typeof (int))]
-        [PexGenericArguments(typeof (object))]
-        [PexMethod(MaxBranches = 2000)]
+        [PexGenericArguments(typeof(int))]
+        [PexGenericArguments(typeof(object))]
+        [PexMethod(MaxBranches = 20000)]
         public void Test_SingleElementVector<T>(int i, T value) {
             PexAssume.IsTrue(i >= 0);
             Vector<T> vector = Vector<T>.Empty.SetAt(i, value);
             Assert.Equal(value, vector[i]);
         } // SingleElementVector()
 
-        [PexMethod(MaxBranches = 4000)]
-        public void Test_ReplaceSingleElement(int i, int j) {
-            var vector = Vector.New("Haskell", "Ocaml", "Scala", "Ruby");
+        [PexGenericArguments(typeof(int))]
+        [PexMethod(MaxBranches = 40000)]
+        public void Test_ReplaceSingleElement<T>([PexAssumeNotNull] T[] array, T newValue, int i) {
+            var vector = Vector.New(array);
             PexAssume.IsTrue(i >= 0);
-            PexAssume.IsTrue(j >= 0);
-            var vector2 = vector.SetAt(i, "C#");
-            PexAssume.IsTrue(j < vector2.Count + 1);
-            if (j == i)
-                Assert.Equal("C#", vector2[j]);
-            else
-                Assert.Equal(vector[j], vector2[j]);
+            var vector2 = vector.SetAt(i, newValue);
+            Assert.True(vector2.Count >= vector.Count);
+            Assert.Equal(newValue, vector2[i]);
+            PexAssert.TrueForAll(0, vector2.Count, j => j == i || Equals(vector2[j], vector[j]));
         } // ReplaceSingleElement(i, j)
 
-        [PexGenericArguments(typeof (int))]
-        [PexGenericArguments(typeof (object))]
-        [PexMethod(MaxBranches = 4000)]
+        [PexGenericArguments(typeof(int))]
+        // [PexGenericArguments(typeof(object))]
+        [PexMethod(MaxBranches = 40000)]
         public void Test_StoreManyElements<T>([PexAssumeNotNull] T[] array) {
             PexAssume.IsNotNull(array);
-            PexAssume.IsTrue(array.Length <= 65);
             var vector = Vector<T>.Empty;
             for (int i = 0; i < array.Length; i++)
                 vector = vector.SetAt(i, array[i]);
