@@ -50,7 +50,6 @@ namespace FP.Text {
         public IEnumerator<char> GetEnumerator(int startIndex) {
             for (int i = startIndex; i < _string.Length; i++)
                 yield return _string[i];
-
         }
 
         /// <summary>
@@ -97,6 +96,24 @@ namespace FP.Text {
 
         public bool IsEmpty {
             get { return _string.Length == 0; }
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="StringCharSequence"/> to <see cref="System.String"/>.
+        /// </summary>
+        /// <param name="charSequence">The char sequence.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator string(StringCharSequence charSequence) {
+            return charSequence._string;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="StringCharSequence"/>.
+        /// </summary>
+        /// <param name="s">The s.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator StringCharSequence(string s) {
+            return new StringCharSequence(s);
         }
     }
 }

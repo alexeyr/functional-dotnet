@@ -85,5 +85,23 @@ namespace FP.Text {
         public bool IsEmpty {
             get { return _array.Length == 0; }
         }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ArrayCharSequence"/> to array of <see cref="char"/>.
+        /// </summary>
+        /// <param name="charSequence">The char sequence.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator char[](ArrayCharSequence charSequence) {
+            return charSequence._array;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from array of <see cref="char"/> to <see cref="ArrayCharSequence"/>.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator ArrayCharSequence(char[] array) {
+            return new ArrayCharSequence(array);
+        }
     }
 }

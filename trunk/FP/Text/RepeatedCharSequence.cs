@@ -28,10 +28,10 @@ namespace FP.Text {
         /// <summary>
         /// Initializes a new instance of the <see cref="RepeatedCharSequence"/> struct.
         /// </summary>
-        /// <param name="ch">The character.</param>
+        /// <param name="c">The character.</param>
         /// <param name="count">The number of times the character is repeated.</param>
-        public RepeatedCharSequence(char ch, int count) {
-            _char = ch;
+        public RepeatedCharSequence(char c, int count) {
+            _char = c;
             _count = count;
         }
 
@@ -95,6 +95,15 @@ namespace FP.Text {
 
         public bool IsEmpty {
             get { return _count == 0; }
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Char"/> to <see cref="FP.Text.RepeatedCharSequence"/>.
+        /// </summary>
+        /// <param name="c">The c.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator RepeatedCharSequence(char c) {
+            return new RepeatedCharSequence(c, 1);
         }
     }
 }
