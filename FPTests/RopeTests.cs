@@ -99,5 +99,17 @@ namespace FPTests {
             Array.Reverse(largeStringCharArray);
             Assert.Equal(new string(largeStringCharArray), largeRope.Reverse().AsString());
         }
+
+        [Fact]
+        public void Test_Rebalance() {
+            string digits = "0123456789";
+            digits = digits + digits;
+            var rope = Rope.EmptyInstance;
+            for (int i = 0; i < 32; i++)
+                rope = rope.Concat(digits.ToRope());
+            for (int i = 0; i < 5; i++)
+                digits = digits + digits;
+            Assert.Equal(digits, rope.AsString());
+        }
     }
 }

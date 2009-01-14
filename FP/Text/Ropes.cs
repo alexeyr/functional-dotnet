@@ -53,16 +53,32 @@ namespace FP.Text {
             return new CharSequenceRope<TCharSequence>(charSequence);
         } // ToRope()
 
+        public static TRope Append<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence) 
+            where TRope : IRope<TRope> where TCharSequence : IFlatCharSequence {
+            return rope.Append(charSequence, 0, charSequence.Count);
+        }
+
         public static TRope Append<TRope>(this TRope rope, char ch) where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
+            return rope.Append(new RepeatedCharSequence(ch, 1));
+        }
+
+        public static TRope Prepend<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence)
+            where TRope : IRope<TRope>
+            where TCharSequence : IFlatCharSequence {
+            return rope.Prepend(charSequence, 0, charSequence.Count);
         }
 
         public static TRope Prepend<TRope>(this TRope rope, char ch) where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
+            return rope.Prepend(new RepeatedCharSequence(ch, 1));
+        }
+
+        public static TRope Remove<TRope>(this TRope rope, int startIndex) where TRope : IRope<TRope> {
+            return Remove(rope, startIndex, 1);
         }
 
         public static TRope Remove<TRope>(this TRope rope, int startIndex, int count) where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
+            return rope.SubString(0, startIndex).Concat(
+                rope.SubString(startIndex + count, rope.Count - startIndex - count));
         }
 
         public static TRope Insert<TRope, TCharSequence>(this TRope rope, int startIndex, TCharSequence charSequence) 
@@ -71,11 +87,17 @@ namespace FP.Text {
         }
 
         public static TRope PadStart<TRope>(this TRope rope, int totalWidth, char paddingChar) where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
+            int paddingWidth = rope.Count - totalWidth;
+            if (paddingWidth <= 0)
+                return rope;
+            return rope.Prepend(new RepeatedCharSequence(paddingChar, paddingWidth));
         }
 
         public static TRope PadEnd<TRope>(this TRope rope, int totalWidth, char paddingChar) where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
+            int paddingWidth = rope.Count - totalWidth;
+            if (paddingWidth <= 0)
+                return rope;
+            return rope.Append(new RepeatedCharSequence(paddingChar, paddingWidth));
         }
 
         public static TRope StartsWithOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)
