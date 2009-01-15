@@ -92,6 +92,7 @@
     <Compile Include="Future\PromiseAlreadyFulfilledException.cs" />
     <Compile Include="Future\Status.cs" />
     <Compile Include="Text\ArrayCharSequence.cs" />
+    <Compile Include="Text\CharSequences.cs" />
     <Compile Include="Text\FTRope.cs" />
     <Compile Include="Collections\IDeque.cs" />
     <Compile Include="Collections\IRandomAccessSequence.cs" />

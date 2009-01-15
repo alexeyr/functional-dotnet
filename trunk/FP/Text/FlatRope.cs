@@ -83,15 +83,16 @@ namespace FP.Text {
                 if (!trimChars.Contains(c)) break;
                 i++;
             }
-            if (Count - i == 0)
+            if (i == Count)
                 return EmptyInstance;
             return SubStringInternal(i, Count - i);
         }
 
         internal override Rope TrimEndInternal(char[] trimChars) {
-            int i;
-            for (i = Count - 1; i >= 0; i--) {
-                if (!trimChars.Contains(this[i])) break;
+            int i = Count - 1;
+            foreach (char c in ReverseIterator()) {
+                if (!trimChars.Contains(c)) break;
+                i--;
             }
             if (i == -1)
                 return EmptyInstance;

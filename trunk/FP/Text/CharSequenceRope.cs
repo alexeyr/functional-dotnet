@@ -62,8 +62,6 @@ namespace FP.Text {
         }
 
         public override IEnumerable<char> IteratorFrom(int startIndex) {
-            Requires.That.IsIndexInRange(this, startIndex, "startIndex").Check();
-
             return CharSequence.IteratorFrom(StartIndex + startIndex).Take(_count - startIndex);
         }
 
