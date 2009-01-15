@@ -98,6 +98,7 @@
     <Compile Include="Text\ConcatRope.cs" />
     <Compile Include="Text\ICharSequence.cs" />
     <Compile Include="Text\FlatRope.cs" />
+    <Compile Include="Collections\IEnumerableFrom.cs" />
     <Compile Include="Text\IRope.cs" />
     <Compile Include="Text\RepeatedCharSequence.cs" />
     <Compile Include="Text\ReverseRope.cs" />

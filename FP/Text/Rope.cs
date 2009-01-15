@@ -68,12 +68,12 @@ namespace FP.Text {
 
         internal Rope() { }
 
-        public abstract IEnumerator<char> GetEnumerator(int startIndex);
+        public abstract IEnumerable<char> IteratorFrom(int startIndex);
 
         public abstract IEnumerable<char> ReverseIterator();
 
         public IEnumerator<char> GetEnumerator() {
-            return GetEnumerator(0);
+            return IteratorFrom(0).GetEnumerator();
         }
 
         /// <summary>

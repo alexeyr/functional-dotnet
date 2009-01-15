@@ -36,7 +36,7 @@ namespace FP.Text {
             _ft = ft;
         }
 
-        public IEnumerator<char> GetEnumerator(int startIndex) {
+        public IEnumerable<char> IteratorFrom(int startIndex) {
             throw new System.NotImplementedException();
         }
 
@@ -51,7 +51,7 @@ namespace FP.Text {
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<char> GetEnumerator() {
-            return GetEnumerator(0);
+            return IteratorFrom(0).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
