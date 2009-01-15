@@ -23,14 +23,14 @@ using System.Text;
 /// An exception type which wraps several exceptions at once.
 /// </summary>
 [Serializable]
-public sealed class MultiException : Exception {
-    private readonly Exception[] _innerExceptions;
+public sealed class MultiException : ArgumentException {
+    private readonly ArgumentException[] _innerExceptions;
 
     /// <summary>
     /// Inner exceptions.
     /// </summary>
-    public IEnumerable<Exception> InnerExceptions {
-        get { return _innerExceptions ?? new Exception[0]; }
+    public IEnumerable<ArgumentException> InnerExceptions {
+        get { return _innerExceptions ?? new ArgumentException[0]; }
     } // InnerExceptions
 
     /// <summary>
@@ -39,7 +39,7 @@ public sealed class MultiException : Exception {
     /// <param name="exceptions">Exceptions.</param>
     /// <exception cref="ArgumentNullException"><see cref="exceptions"/> contains a
     /// <c>null</c>.</exception>
-    private static string BuildMessage(IEnumerable<Exception> exceptions) {
+    private static string BuildMessage(IEnumerable<ArgumentException> exceptions) {
         var sb = new StringBuilder();
         foreach (var exception in exceptions) {
             if (exception == null)
@@ -54,7 +54,7 @@ public sealed class MultiException : Exception {
     /// </summary>
     /// <param name="message">The message.</param>
     /// <param name="innerException">The inner exception.</param>
-    public MultiException(string message, Exception innerException)
+    public MultiException(string message, ArgumentException innerException)
         : base(message, innerException) {
         _innerExceptions = new[] { innerException };
     }
@@ -63,7 +63,7 @@ public sealed class MultiException : Exception {
     /// Initializes a new instance of the <see cref="MultiException"/> class.
     /// </summary>
     /// <param name="innerExceptions">The inner exceptions.</param>
-    public MultiException(params Exception[] innerExceptions) : 
+    public MultiException(params ArgumentException[] innerExceptions) : 
         this(BuildMessage(innerExceptions), innerExceptions) { }
 
     /// <summary>
@@ -71,7 +71,7 @@ public sealed class MultiException : Exception {
     /// </summary>
     /// <param name="message">The message.</param>
     /// <param name="innerExceptions">The inner exceptions.</param>
-    public MultiException(string message, params Exception[] innerExceptions)
+    public MultiException(string message, params ArgumentException[] innerExceptions)
         : base(message, innerExceptions.FirstOrDefault()) {
         if (innerExceptions.Contains(null))
             throw new ArgumentNullException();
@@ -83,7 +83,7 @@ public sealed class MultiException : Exception {
     /// Create multi exception
     /// </summary>
     /// <param name="innerExceptions">The inner exceptions.</param>
-    public MultiException(IEnumerable<Exception> innerExceptions) : 
+    public MultiException(IEnumerable<ArgumentException> innerExceptions) : 
         this(BuildMessage(innerExceptions), innerExceptions) { }
 
     /// <summary>
@@ -91,7 +91,7 @@ public sealed class MultiException : Exception {
     /// </summary>
     /// <param name="message">The message.</param>
     /// <param name="innerExceptions">The inner exceptions.</param>
-    public MultiException(string message, IEnumerable<Exception> innerExceptions)
+    public MultiException(string message, IEnumerable<ArgumentException> innerExceptions)
         : this(message, innerExceptions.ToArray()) {
     } // MultiException(message, innerExceptions)
 

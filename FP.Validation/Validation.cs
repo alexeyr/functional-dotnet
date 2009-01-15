@@ -11,22 +11,21 @@ namespace FP.Validation {
     /// check conditions.</remarks>
     /// <seealso cref="ValidationExtensions"/>
     public class Validation {
-        private readonly List<Exception> _exceptions;
+        private readonly List<ArgumentException> _exceptions;
 
-        internal Exception[] Exceptions {
+        internal ArgumentException[] Exceptions {
             get { return _exceptions.ToArray(); }
         }
 
-        internal Validation AddExceptionInternal(Exception ex) {
+        internal Validation AddExceptionInternal(ArgumentException ex) {
             // lock (_exceptions) { // We should never validate a method's arguments in two threads concurrently
             _exceptions.Add(ex);
             // }
-
             return this;
         }
 
         internal Validation() {
-            _exceptions = new List<Exception>(1); // optimize for only having 1 exception
+            _exceptions = new List<ArgumentException>(1); // optimize for only having 1 exception
         }
 
         /// <summary>

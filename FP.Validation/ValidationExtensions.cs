@@ -372,7 +372,7 @@ namespace FP.Validation {
         ///                                             "must be positive, but was " + value));
         /// ]]></example>
         /// </remarks>
-        public static Validation AddException(this Validation validation, Exception exception) {
+        public static Validation AddException(this Validation validation, ArgumentException exception) {
             return (validation ?? new Validation()).AddExceptionInternal(exception);
         }
     } // class ValidationExtensions
