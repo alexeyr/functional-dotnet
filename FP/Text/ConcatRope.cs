@@ -183,7 +183,7 @@ namespace FP.Text {
             get { return _depth; }
         }
 
-        public override Rope ReBalance() {
+        public override Rope Rebalance() {
             if (IsBalanced)
                 return this;
             var forest = new Rope[MAX_ROPE_DEPTH + 1];

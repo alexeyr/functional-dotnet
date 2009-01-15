@@ -190,7 +190,7 @@ namespace FP.Text {
             
             // Do we need to rebalance result?
             return depth > MAX_ROPE_DEPTH || (depth > 20 && result.Count < MinCount[3 * depth / 4])
-                       ? result.ReBalance()
+                       ? result.Rebalance()
                        : result;
         }
 
@@ -221,6 +221,6 @@ namespace FP.Text {
         /// <summary>
         /// Rebalances this instance.
         /// </summary>
-        public abstract Rope ReBalance();
+        public abstract Rope Rebalance();
     }
 }
