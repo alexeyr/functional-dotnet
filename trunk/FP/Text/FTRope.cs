@@ -40,6 +40,10 @@ namespace FP.Text {
             throw new System.NotImplementedException();
         }
 
+        public IEnumerable<char> ReverseIterator() {
+            throw new System.NotImplementedException();
+        }
+
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>

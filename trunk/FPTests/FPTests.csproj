@@ -158,6 +158,9 @@
     <Compile Include="RopeTests.Test_Creation.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>
+    <Compile Include="RopeTests.Test_EndsWithOrdinal.g.cs">
+      <DependentUpon>RopeTests.cs</DependentUpon>
+    </Compile>
     <Compile Include="RopeTests.Test_Enumeration.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>

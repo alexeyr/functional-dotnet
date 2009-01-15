@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using FP.Validation;
 
 namespace FP.Text {
@@ -64,6 +65,10 @@ namespace FP.Text {
             if (_child1.Count <= startIndex)
                 return _child2.GetEnumerator(startIndex - _child1.Count);
             return MergedEnumerator(startIndex);
+        }
+
+        public override IEnumerable<char> ReverseIterator() {
+            return _child2.ReverseIterator().Concat(_child1.ReverseIterator());
         }
 
         private IEnumerator<char> MergedEnumerator(int startIndex) {

@@ -17,6 +17,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using FP.Util;
 
 namespace FP.Text {
     /// <summary>
@@ -31,6 +32,10 @@ namespace FP.Text {
         /// <param name="array">The array.</param>
         public ArrayCharSequence(char[] array) {
             _array = array;
+        }
+
+        public IEnumerable<char> ReverseIterator() {
+            return _array.ReverseIterator();
         }
 
         /// <summary>

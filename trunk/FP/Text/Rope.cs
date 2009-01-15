@@ -70,6 +70,8 @@ namespace FP.Text {
 
         public abstract IEnumerator<char> GetEnumerator(int startIndex);
 
+        public abstract IEnumerable<char> ReverseIterator();
+
         public IEnumerator<char> GetEnumerator() {
             return GetEnumerator(0);
         }

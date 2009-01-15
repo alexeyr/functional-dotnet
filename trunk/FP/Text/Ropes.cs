@@ -124,18 +124,28 @@ namespace FP.Text {
             if (charSequence.Count > rope.Count)
                 return false;
 
-            Func<char, char, bool> compare; 
+            Func<char, char, bool> equal; 
             if (ignoreCase)
-                compare = (c1, c2) => char.ToUpperInvariant(c1) == char.ToUpperInvariant(c2);
+                equal = (c1, c2) => char.ToUpperInvariant(c1) == char.ToUpperInvariant(c2);
             else
-                compare = (c1, c2) => c1 == c2;
-            return charSequence.ZipWith(rope, compare).And();
+                equal = (c1, c2) => c1 == c2;
+            return charSequence.ZipWith(rope, equal).And();
         }
 
-        public static TRope EndsWithOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)
+        public static bool EndsWithOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)
             where TRope : IRope<TRope>
             where TCharSequence : ICharSequence {
-            throw new System.NotImplementedException();
+            if (charSequence.Count == 0)
+                return true;
+            if (charSequence.Count > rope.Count)
+                return false;
+
+            Func<char, char, bool> equal;
+            if (ignoreCase)
+                equal = (c1, c2) => char.ToUpperInvariant(c1) == char.ToUpperInvariant(c2);
+            else
+                equal = (c1, c2) => c1 == c2;
+            return charSequence.ReverseIterator().ZipWith(rope.ReverseIterator(), equal).And();
         }
 
         public static TRope IndexOfOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)

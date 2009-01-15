@@ -115,6 +115,12 @@ namespace FPTests {
             PexAssert.AreEqual(s1.StartsWith(s2, StringComparison.OrdinalIgnoreCase), s1.ToRope().StartsWithOrdinal<Rope, Rope>(s2.ToRope(), true));
         }
 
+        [PexMethod]
+        public void Test_EndsWithOrdinal([PexAssumeNotNull] string s1, [PexAssumeNotNull] string s2) {
+            PexAssert.AreEqual(s1.EndsWith(s2, StringComparison.Ordinal), s1.ToRope().EndsWithOrdinal<Rope, Rope>(s2.ToRope(), false));
+            PexAssert.AreEqual(s1.EndsWith(s2, StringComparison.OrdinalIgnoreCase), s1.ToRope().EndsWithOrdinal<Rope, Rope>(s2.ToRope(), true));
+        }
+
         [Fact]
         public void Test_Rebalance() {
             string digits = "0123456789";

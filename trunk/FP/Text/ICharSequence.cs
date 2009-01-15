@@ -21,7 +21,7 @@ namespace FP.Text {
     /// <summary>
     /// Represents a random-access sequence of characters.
     /// </summary>
-    public interface ICharSequence : IRandomAccess<char> {
+    public interface ICharSequence : IRandomAccess<char>, IReversibleEnumerable<char> {
         /// <summary>
         /// Copies the sequence to <paramref name="destination"/>, starting at <paramref name="destinationIndex"/>.
         /// </summary>
