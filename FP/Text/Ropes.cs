@@ -13,10 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using FP.Core;
 
 namespace FP.Text {
     /// <summary>
@@ -116,61 +113,20 @@ namespace FP.Text {
             return rope.Append(new RepeatedCharSequence(paddingChar, paddingWidth));
         }
 
-        public static bool StartsWithOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)
-            where TRope : IRope<TRope>
-            where TCharSequence : ICharSequence {
-            if (charSequence.Count == 0)
-                return true;
-            if (charSequence.Count > rope.Count)
-                return false;
-
-            Func<char, char, bool> equal; 
-            if (ignoreCase)
-                equal = (c1, c2) => char.ToUpperInvariant(c1) == char.ToUpperInvariant(c2);
-            else
-                equal = (c1, c2) => c1 == c2;
-            return charSequence.ZipWith(rope, equal).And();
-        }
-
-        public static bool EndsWithOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)
-            where TRope : IRope<TRope>
-            where TCharSequence : ICharSequence {
-            if (charSequence.Count == 0)
-                return true;
-            if (charSequence.Count > rope.Count)
-                return false;
-
-            Func<char, char, bool> equal;
-            if (ignoreCase)
-                equal = (c1, c2) => char.ToUpperInvariant(c1) == char.ToUpperInvariant(c2);
-            else
-                equal = (c1, c2) => c1 == c2;
-            return charSequence.ReverseIterator().ZipWith(rope.ReverseIterator(), equal).And();
-        }
-
-        public static TRope IndexOfOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)
-            where TRope : IRope<TRope>
-            where TCharSequence : ICharSequence {
-            throw new System.NotImplementedException();
-        }
-
-        public static TRope EqualsOrdinal<TRope, TCharSequence>(this TRope rope, TCharSequence charSequence, bool ignoreCase)
-            where TRope : IRope<TRope>
-            where TCharSequence : ICharSequence {
-            throw new System.NotImplementedException();
-        }
-
-        public static bool StartsWith<TRope>(this TRope rope, string prefix, CultureInfo culture, CompareOptions options)
+        public static bool StartsWith<TRope>(
+            this TRope rope, string prefix, CultureInfo culture, CompareOptions options)
             where TRope : IRope<TRope> {
             throw new System.NotImplementedException();
         }
 
-        public static bool EndsWith<TRope>(this TRope rope, string suffix, CultureInfo culture, CompareOptions options)
+        public static bool EndsWith<TRope>(
+            this TRope rope, string suffix, CultureInfo culture, CompareOptions options)
             where TRope : IRope<TRope> {
             throw new System.NotImplementedException();
         }
 
-        public static int CompareTo<TRope>(this TRope rope, string str, CultureInfo culture, CompareOptions options)
+        public static int CompareTo<TRope>(
+            this TRope rope, string str, CultureInfo culture, CompareOptions options)
             where TRope : IRope<TRope> {
             throw new System.NotImplementedException();
         }
@@ -180,52 +136,12 @@ namespace FP.Text {
             throw new System.NotImplementedException();
         }
 
-        public static int IndexOf<TRope>(this TRope rope, char ch, int startIndex, int count)
-            where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
-        }
-
         public static int IndexOf<TRope>(this TRope rope, string str, int startIndex, int count, CultureInfo culture, CompareOptions options)
             where TRope : IRope<TRope> {
             throw new System.NotImplementedException();
         }
 
-        public static int IndexOfAny<TRope>(this TRope rope, char[] anyOf, int startIndex, int count)
-            where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
-        }
-
-        public static int IndexOfAny<TRope>(this TRope rope, Func<char, bool> anyOf, int startIndex, int count)
-            where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
-        }
-
-        public static int LastIndexOf<TRope>(this TRope rope, char ch, int startIndex, int count)
-            where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
-        }
-
         public static int LastIndexOf<TRope>(this TRope rope, string str, int startIndex, int count, CultureInfo culture, CompareOptions options)
-            where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
-        }
-
-        public static int LastIndexOfAny<TRope>(this TRope rope, char[] anyOf, int startIndex, int count)
-            where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
-        }
-
-        public static int LastIndexOfAny<TRope>(this TRope rope, Func<char, bool> anyOf, int startIndex, int count)
-            where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
-        }
-
-        public static IEnumerable<TRope> Split<TRope>(this TRope rope, char[] separators, StringSplitOptions options)
-            where TRope : IRope<TRope> {
-            throw new System.NotImplementedException();
-        }
-
-        public static IEnumerable<TRope> Split<TRope>(this TRope rope, string[] separators, StringSplitOptions options)
             where TRope : IRope<TRope> {
             throw new System.NotImplementedException();
         }

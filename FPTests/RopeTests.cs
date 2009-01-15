@@ -111,14 +111,35 @@ namespace FPTests {
 
         [PexMethod]
         public void Test_StartsWithOrdinal([PexAssumeNotNull] string s1, [PexAssumeNotNull] string s2) {
-            PexAssert.AreEqual(s1.StartsWith(s2, StringComparison.Ordinal), s1.ToRope().StartsWithOrdinal<Rope, Rope>(s2.ToRope(), false));
-            PexAssert.AreEqual(s1.StartsWith(s2, StringComparison.OrdinalIgnoreCase), s1.ToRope().StartsWithOrdinal<Rope, Rope>(s2.ToRope(), true));
+            var rope1 = s1.ToRope();
+            var rope2 = s2.ToRope();
+            PexAssert.AreEqual(s1.StartsWith(s2, StringComparison.Ordinal), rope1.StartsWithOrdinal(rope2, false));
+            PexAssert.AreEqual(s1.StartsWith(s2, StringComparison.OrdinalIgnoreCase), rope1.StartsWithOrdinal(rope2, true));
         }
 
         [PexMethod]
         public void Test_EndsWithOrdinal([PexAssumeNotNull] string s1, [PexAssumeNotNull] string s2) {
-            PexAssert.AreEqual(s1.EndsWith(s2, StringComparison.Ordinal), s1.ToRope().EndsWithOrdinal<Rope, Rope>(s2.ToRope(), false));
-            PexAssert.AreEqual(s1.EndsWith(s2, StringComparison.OrdinalIgnoreCase), s1.ToRope().EndsWithOrdinal<Rope, Rope>(s2.ToRope(), true));
+            var rope1 = s1.ToRope();
+            var rope2 = s2.ToRope();
+            PexAssert.AreEqual(s1.EndsWith(s2, StringComparison.Ordinal), rope1.EndsWithOrdinal(rope2, false));
+            PexAssert.AreEqual(s1.EndsWith(s2, StringComparison.OrdinalIgnoreCase), rope1.EndsWithOrdinal(rope2, true));
+        }
+
+        [PexMethod]
+        public void Test_IndexOf([PexAssumeNotNull] string s1, char c) {
+            var rope = s1.ToRope();
+            PexAssert.AreEqual(s1.IndexOf(c), rope.IndexOf(c).ValueOrElse(-1));
+            PexAssert.AreEqual(s1.LastIndexOf(c), rope.LastIndexOf(c).ValueOrElse(-1));
+        }
+
+        [PexMethod]
+        public void Test_IndexOfIgnoringCase([PexAssumeNotNull] string s1, char c) {
+            PexAssume.IsTrue(char.IsLetter(c));
+            s1 = s1.ToUpperInvariant();
+            c = char.ToUpperInvariant(c);
+            var rope = s1.ToRope();
+            PexAssert.AreEqual(s1.IndexOf(c), rope.IndexOf(c).ValueOrElse(-1));
+            PexAssert.AreEqual(s1.LastIndexOf(c), rope.LastIndexOf(c).ValueOrElse(-1));
         }
 
         [Fact]

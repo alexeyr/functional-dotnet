@@ -167,6 +167,12 @@
     <Compile Include="RopeTests.Test_Indexing.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>
+    <Compile Include="RopeTests.Test_IndexOf.g.cs">
+      <DependentUpon>RopeTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RopeTests.Test_IndexOfIgnoringCase.g.cs">
+      <DependentUpon>RopeTests.cs</DependentUpon>
+    </Compile>
     <Compile Include="RopeTests.Test_Padding.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>
