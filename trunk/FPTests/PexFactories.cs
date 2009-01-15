@@ -1,4 +1,4 @@
-﻿/*
+/*
 * PexFactories.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2009 Alexey Romanov
@@ -34,7 +34,7 @@ namespace FPTests {
 //        }
 //
 //        [PexFactoryMethod(typeof(Rope))]
-//        public static Rope SubStringRope(Rope rope, int startIndex, int count) {
+//        public static Rope CharSequenceRope(Rope rope, int startIndex, int count) {
 //            PexAssume.IsTrue(startIndex >= 0);
 //            PexAssume.IsTrue(count >= 0);
 //            PexAssume.IsTrue(startIndex + count >= 0); // to prevent overflow

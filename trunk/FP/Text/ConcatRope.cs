@@ -143,7 +143,7 @@ namespace FP.Text {
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The length.</param>
-        public override Rope SubStringInternal(int startIndex, int count) {
+        internal override Rope SubStringInternal(int startIndex, int count) {
             if (startIndex == 0 && count == _count)
                 return this;
             if (startIndex + count <= SplitIndex)

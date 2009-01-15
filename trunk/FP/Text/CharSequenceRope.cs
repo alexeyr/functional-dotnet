@@ -20,76 +20,93 @@ using FP.Validation;
 
 namespace FP.Text {
     /// <summary>
-    /// A flat rope containing an <see cref="ICharSequence"/>.
+    /// A rope backed by (possibly part of) a character sequence.
     /// </summary>
-    /// <typeparam name="TSequence">The type of the character sequence used by the rope.</typeparam>
-    /// <seealso cref="SubStringRope"/>
-    /// <remarks>If you plan to use this class with a specific type of character sequences, it may be convenient to 
-    /// create a subclass.</remarks>
+    /// <typeparam name="TSequence">The type of the sequence.</typeparam>
     [Serializable]
-    public class CharSequenceRope<TSequence> : FlatRope
-        where TSequence : IFlatCharSequence {
-        private readonly TSequence _charSequence;
+    public sealed class CharSequenceRope<TSequence> : FlatRope where TSequence : IFlatCharSequence {
+        /// <summary>
+        /// Gets the character sequence backing this rope.
+        /// </summary>
+        /// <value>The char sequence.</value>
+        public TSequence CharSequence { get; private set; }
+
+        /// <summary>
+        /// Gets the starting index of part of the character sequence contained by the rope.
+        /// </summary>
+        /// <value>The offset.</value>
+        public int StartIndex { get; private set; }
+        
+        private readonly int _count;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharSequenceRope{TSequence}"/> class.
         /// </summary>
-        /// <param name="charSequence">The character sequence.</param>
-        public CharSequenceRope(TSequence charSequence) {
-            _charSequence = charSequence;
-            if (_charSequence.Count < 0) {
-                throw new ArgumentException(
-                    string.Format(
-                        "Attempted to create a rope from character sequence {0} with apparent length {1}. " +
-                        "It's possible there is an overflow",
-                        _charSequence, _charSequence.Count));
-            }
-        }
-
-        public override sealed IEnumerator<char> GetEnumerator(int startIndex) {
-            return _charSequence.GetEnumerator(startIndex);
-        }
+        /// <param name="charSequence">The char sequence.</param>
+        public CharSequenceRope(TSequence charSequence) : this(charSequence, 0, charSequence.Count) { }
 
         /// <summary>
-        /// Gets the length of the sequence.
+        /// Initializes a new instance of the <see cref="CharSequenceRope{TSequence}"/> class.
         /// </summary>
-        public override sealed int Count {
-            get { return _charSequence.Count; }
+        /// <param name="charSequence">The char sequence.</param>
+        /// <param name="startIndex">The starting index.</param>
+        /// <param name="count">The length.</param>
+        public CharSequenceRope(TSequence charSequence, int startIndex, int count) {
+            Requires.That.
+                IsIndexAndCountInRange(charSequence, startIndex, count, "startIndex", "count").Check();
+
+            CharSequence = charSequence;
+            StartIndex = startIndex;
+            _count = count;
         }
 
-        public override sealed char this[int index] {
-            get {
-                // bounds checking is responsibility of _charSequence
-                return _charSequence[index];
+        public override IEnumerator<char> GetEnumerator(int startIndex) {
+            Requires.That.IsIndexInRange(this, startIndex, "startIndex").Check();
+
+            using (var en = CharSequence.GetEnumerator(StartIndex + startIndex)) {
+                int i = 0;
+                while (i < _count && en.MoveNext()) {
+                    yield return en.Current;
+                    i++;
+                }
             }
         }
 
-        public override sealed void CopyTo(int sourceIndex, char[] destination,
-                                           int destinationIndex, int count) {
-            _charSequence.CopyTo(sourceIndex, destination, destinationIndex, count);
+        public override int Count {
+            get { return _count; }
+        }
+
+        public override char this[int index] {
+            get {
+                Requires.That.IsIndexInRange(this, index, "startIndex").Check();
+
+                return CharSequence[StartIndex + index];
+            }
+        }
+
+        public override void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
+            Requires.That.IsIndexAndCountInRange(this, sourceIndex, count, "sourceIndex", "count").Check();
+
+            CharSequence.CopyTo(StartIndex + sourceIndex, destination, destinationIndex, count);
         }
 
         public override void WriteOut(TextWriter writer, int startIndex, int count) {
-            _charSequence.WriteOut(writer, startIndex, count);
+            CharSequence.WriteOut(writer, StartIndex + startIndex, count);
         }
 
-        public override Rope SubStringInternal(int startIndex, int count) {
+        internal override Rope SubStringInternal(int startIndex, int count) {
             if (startIndex == 0 && count == Count)
                 return this;
             if (count <= MAX_SHORT_SIZE) {
-                var array = _charSequence.ToArray(startIndex, count);
+                var array = CharSequence.ToArray(StartIndex + startIndex, count);
                 return array.ToRope();
             }
-            return new SubStringRope<TSequence>(this, startIndex, count);
+
+            return new CharSequenceRope<TSequence>(CharSequence, StartIndex + startIndex, count);
         }
 
         public override Rope Reverse() {
-            if (Count <= MAX_SHORT_SIZE) {
-                var array = _charSequence.ToArray();
-                Array.Reverse(array);
-                return array.ToRope();
-            }
-            return new ReverseRope<TSequence>(this, 0, Count);
+            return new ReverseRope<TSequence>(this);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace FP.Text {
             /* 31 */ 3524578, /* 32 */ 5702887, /* 33 */ 9227465, /* 34 */ 14930352,
             /* 35 */ 24157817, /* 36 */ 39088169, /* 37 */ 63245986, /* 38 */ 102334155,
             /* 39 */ 165580141, /* 40 */ 267914296, /* 41 */ 433494437, /* 42 */ 701408733,
-            /* 43 */ 1134903170, /* 44 */ 1836311903, /* 45 */  int.MaxValue
+            /* 43 */ 1134903170, /* 44 */ 1836311903, /* 45 */ int.MaxValue
                                                                               };
 
         private static readonly Rope _emptyInstance =
@@ -123,7 +123,7 @@ namespace FP.Text {
         /// </summary>
         /// <param name="startIndex">The start index.</param>
         /// <param name="count">The length.</param>
-        public abstract Rope SubStringInternal(int startIndex, int count);
+        internal abstract Rope SubStringInternal(int startIndex, int count);
 
         public Rope Append<TCharSequence>(
             TCharSequence charSequence, int startIndex, int count) where TCharSequence : IFlatCharSequence {
