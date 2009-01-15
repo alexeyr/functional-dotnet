@@ -33,7 +33,7 @@ namespace FP.Text {
             _sourceRope = sourceRope;
         }
 
-        public override IEnumerator<char> GetEnumerator(int startIndex) {
+        public override IEnumerable<char> IteratorFrom(int startIndex) {
             Requires.That.IsIndexInRange(this, startIndex, "startIndex").Check();
 
             for (int i = _sourceRope.Count - 1 - startIndex; i >= 0; i--)

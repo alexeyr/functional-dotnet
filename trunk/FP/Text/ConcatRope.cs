@@ -61,27 +61,14 @@ namespace FP.Text {
             _isBalanced = isBalanced;
         }
 
-        public override IEnumerator<char> GetEnumerator(int startIndex) {
+        public override IEnumerable<char> IteratorFrom(int startIndex) {
             if (_child1.Count <= startIndex)
-                return _child2.GetEnumerator(startIndex - _child1.Count);
-            return MergedEnumerator(startIndex);
+                return _child2.IteratorFrom(startIndex - _child1.Count);
+            return _child1.IteratorFrom(startIndex).Concat(_child2);
         }
 
         public override IEnumerable<char> ReverseIterator() {
             return _child2.ReverseIterator().Concat(_child1.ReverseIterator());
-        }
-
-        private IEnumerator<char> MergedEnumerator(int startIndex) {
-            using (var child1enum = _child1.GetEnumerator(startIndex)) {
-                while (child1enum.MoveNext()) {
-                    yield return child1enum.Current;
-                }
-            }
-            using (var child2enum = _child2.GetEnumerator(0)) {
-                while (child2enum.MoveNext()) {
-                    yield return child2enum.Current;
-                }
-            }
         }
 
         /// <summary>

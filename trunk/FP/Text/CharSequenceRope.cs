@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FP.Validation;
 
 namespace FP.Text {
@@ -60,16 +61,10 @@ namespace FP.Text {
             _count = count;
         }
 
-        public override IEnumerator<char> GetEnumerator(int startIndex) {
+        public override IEnumerable<char> IteratorFrom(int startIndex) {
             Requires.That.IsIndexInRange(this, startIndex, "startIndex").Check();
 
-            using (var en = CharSequence.GetEnumerator(StartIndex + startIndex)) {
-                int i = 0;
-                while (i < _count && en.MoveNext()) {
-                    yield return en.Current;
-                    i++;
-                }
-            }
+            return CharSequence.IteratorFrom(StartIndex + startIndex).Take(_count - startIndex);
         }
 
         public override IEnumerable<char> ReverseIterator() {

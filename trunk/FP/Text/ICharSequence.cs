@@ -13,7 +13,6 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-using System.Collections.Generic;
 using System.IO;
 using FP.Collections;
 
@@ -21,7 +20,7 @@ namespace FP.Text {
     /// <summary>
     /// Represents a random-access sequence of characters.
     /// </summary>
-    public interface ICharSequence : IRandomAccess<char>, IReversibleEnumerable<char> {
+    public interface ICharSequence : IRandomAccess<char>, IReversibleEnumerable<char>, IEnumerableFrom<char> {
         /// <summary>
         /// Copies the sequence to <paramref name="destination"/>, starting at <paramref name="destinationIndex"/>.
         /// </summary>
@@ -30,12 +29,6 @@ namespace FP.Text {
         /// <param name="destinationIndex">The index in the destination array.</param>
         /// <param name="count">The number of elements to copy.</param>
         void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count);
-
-        /// <summary>
-        /// Gets the enumerator starting at the given index.
-        /// </summary>
-        /// <param name="startIndex">The start index.</param>
-        IEnumerator<char> GetEnumerator(int startIndex);
 
         /// <summary>
         /// Writes the sequence out on the given writer.

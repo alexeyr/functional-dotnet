@@ -47,7 +47,7 @@ namespace FP.Text {
             return _string.GetEnumerator();
         }
 
-        public IEnumerator<char> GetEnumerator(int startIndex) {
+        public IEnumerable<char> IteratorFrom(int startIndex) {
             for (int i = startIndex; i < _string.Length; i++)
                 yield return _string[i];
         }
