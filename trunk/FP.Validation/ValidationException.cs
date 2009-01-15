@@ -22,32 +22,32 @@ namespace FP.Validation {
     /// prevent losing the stack trace.
     /// </summary>
     [Serializable]
-    public class ValidationException : Exception {
+    public class ValidationException : ArgumentException {
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="innerException">The inner exception.</param>
-        public ValidationException(string message, Exception innerException) : base(message, innerException) {}
+        public ValidationException(string message, Exception innerException) : base(message, innerException) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationException"/> class.
         /// </summary>
         /// <param name="innerException">The inner exception.</param>
-        public ValidationException(Exception innerException) : base(null, innerException) {}
+        public ValidationException(Exception innerException) : base(null, innerException) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="innerExceptions">The inner exception.</param>
-        public ValidationException(string message, Exception[] innerExceptions) : base(message, AggregateExceptions(innerExceptions)) { }
+        public ValidationException(string message, ArgumentException[] innerExceptions) : base(message, AggregateException(innerExceptions)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationException"/> class.
         /// </summary>
         /// <param name="innerExceptions">The inner exception.</param>
-        public ValidationException(Exception[] innerExceptions) : base(null, AggregateExceptions(innerExceptions)) { }
+        public ValidationException(ArgumentException[] innerExceptions) : base(null, AggregateException(innerExceptions)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationException"/> class.
@@ -63,7 +63,7 @@ namespace FP.Validation {
         protected ValidationException(SerializationInfo info, StreamingContext context)
             : base(info, context) {}
 
-        private static Exception AggregateExceptions(Exception[] exceptions) {
+        private static ArgumentException AggregateException(ArgumentException[] exceptions) {
             return exceptions.Length == 1
                        ? exceptions[0]
                        : new MultiException(exceptions);
