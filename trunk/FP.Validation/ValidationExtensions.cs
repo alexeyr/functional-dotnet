@@ -28,8 +28,7 @@ namespace FP.Validation {
         /// <param name="validation">The validation.</param>
         /// <param name="value">The value of the parameter.</param>
         /// <param name="paramName">The name of the parameter.</param>
-        public static Validation IsNotNull<T>(this Validation validation, T value,
-                                              string paramName) {
+        public static Validation IsNotNull<T>(this Validation validation, T value, string paramName) {
             // ReSharper disable CompareNonConstrainedGenericWithNull
             if (value != null) return validation;
             // ReSharper restore CompareNonConstrainedGenericWithNull
@@ -92,7 +91,7 @@ namespace FP.Validation {
                 validation.AddException(
                     new ArgumentOutOfRangeException(
                         paramName,
-                        string.Format("must be between {0} and {1}, but was {2}", lowerBound, upperBound, value)));
+                        string.Format("must be between {0} and {1} (exclusive), but was {2}", lowerBound, upperBound, value)));
         } // IsInRange(validation, lowerBound, upperBound, value, paramName)
 
         /// <summary>
@@ -113,7 +112,7 @@ namespace FP.Validation {
                 validation.AddException(
                     new ArgumentOutOfRangeException(
                         paramName,
-                        string.Format("must be between {0} and {1}, but was {2}", lowerBound, upperBound, value)));
+                        string.Format("must be strictly between {0} and {1}, but was {2}", lowerBound, upperBound, value)));
         } // IsInRange(validation, lowerBound, upperBound, value, paramName)
 
         /// <summary>
@@ -210,8 +209,8 @@ namespace FP.Validation {
         /// <param name="validation">The validation.</param>
         /// <param name="sequence">The value of the parameter.</param>
         /// <param name="paramName">The name of the parameter.</param>
-        public static Validation IsNotEmpty<T>(this Validation validation, IEnumerable<T> sequence,
-                                              string paramName) {
+        public static Validation IsNotEmpty<T>(
+            this Validation validation, IEnumerable<T> sequence, string paramName) {
             if (sequence.Any())
                 return validation;
             return
@@ -226,13 +225,12 @@ namespace FP.Validation {
         /// <param name="validation">The validation.</param>
         /// <param name="collection">The value of the parameter.</param>
         /// <param name="paramName">The name of the parameter.</param>
-        public static Validation IsNotEmpty<T>(this Validation validation, ICollection<T> collection,
-                                              string paramName) {
+        public static Validation IsNotEmpty<T>(
+            this Validation validation, ICollection<T> collection, string paramName) {
             if (collection.Count != 0)
                 return validation;
             return
-                validation.AddException(
-                    new EmptyEnumerableException(paramName));
+                validation.AddException(new EmptyEnumerableException(paramName));
         } // IsNotEmpty(validation, sequence, paramName)
 
         /// <summary>
@@ -242,8 +240,8 @@ namespace FP.Validation {
         /// <param name="validation">The validation.</param>
         /// <param name="collection">The value of the parameter.</param>
         /// <param name="paramName">The name of the parameter.</param>
-        public static Validation IsEmpty<T>(this Validation validation, ICollection<T> collection,
-                                              string paramName) {
+        public static Validation IsEmpty<T>(
+            this Validation validation, ICollection<T> collection, string paramName) {
             if (collection.Count == 0)
                 return validation;
             return
@@ -268,7 +266,7 @@ namespace FP.Validation {
                 new ArgumentOutOfRangeException(
                     paramName,
                     string.Format(
-                        "the collection has {0} elements, but tried to access element with index {1}",
+                        "tried to access element with index {1} in a collection with {0} elements",
                         collection.Count, index)));
         }
 
@@ -289,7 +287,7 @@ namespace FP.Validation {
                 new ArgumentOutOfRangeException(
                     paramName,
                     string.Format(
-                        "the array has {0} elements, but tried to access element with index {1}",
+                        "tried to access element with index {1} in an array with {0} elements",
                         array.Length, index)));
         }
 
@@ -313,14 +311,15 @@ namespace FP.Validation {
                     new ArgumentOutOfRangeException(
                         countParamName,
                         string.Format(
-                            "the collection has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
+                            "tried to access the subsequence of {1} elements starting at {2} and ending at {3} in a collection with {0} elements",
                             collection.Count, count, index, index + count)));
             }
             return validation.AddException(
                 new ArgumentOutOfRangeException(
                     indexParamName,
-                    string.Format("the collection has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
-                            collection.Count, count, index, index + count)));
+                    string.Format(
+                        "tried to access the subsequence of {1} elements starting at {2} and ending at {3} in a collection with {0} elements",
+                        collection.Count, count, index, index + count)));
         }
 
         /// <summary>
@@ -343,14 +342,15 @@ namespace FP.Validation {
                     new ArgumentOutOfRangeException(
                         countParamName,
                         string.Format(
-                            "the array has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
+                            "tried to access the subsequence of {1} elements starting at {2} and ending at {3} in an array with {0} elements",
                             array.Length, count, index, index + count)));
             }
             return validation.AddException(
                 new ArgumentOutOfRangeException(
                     indexParamName,
-                    string.Format("the array has {0} elements, but tried to access the subsequence of {1} elements starting at {2} and ending at {3}",
-                            array.Length, count, index, index + count)));
+                    string.Format(
+                        "tried to access the subsequence of {1} elements starting at {2} and ending at {3} in an array with {0} elements",
+                        array.Length, count, index, index + count)));
         }
 
         /// <summary>
