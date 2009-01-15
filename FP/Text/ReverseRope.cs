@@ -40,6 +40,10 @@ namespace FP.Text {
                 yield return _sourceRope[i];
         }
 
+        public override IEnumerable<char> ReverseIterator() {
+            return _sourceRope;
+        }
+
         public override int Count {
             get { return _sourceRope.Count; }
         }

@@ -35,6 +35,10 @@ namespace FP.Text {
             _count = count;
         }
 
+        public IEnumerable<char> ReverseIterator() {
+            return this;
+        }
+
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>

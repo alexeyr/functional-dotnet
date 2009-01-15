@@ -72,6 +72,11 @@ namespace FP.Text {
             }
         }
 
+        public override IEnumerable<char> ReverseIterator() {
+            for (int i = StartIndex + _count - 1; i >= StartIndex; i--)
+                yield return CharSequence[i];
+        }
+
         public override int Count {
             get { return _count; }
         }

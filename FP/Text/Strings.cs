@@ -212,5 +212,13 @@ namespace FP.Text {
         public static char[] WhitespaceChars {
             get { return _whitespaceChars; }
         }
+
+        /// <summary>
+        /// Enumerates the specified string in the reverse order.
+        /// </summary>
+        public static IEnumerable<char> ReverseIterator(this string s) {
+            for (int i = s.Length - 1; i >= 0; i--)
+                yield return s[i];
+        }
     }
 }

@@ -90,6 +90,10 @@ namespace FP.Text {
             get { return _string; }
         }
 
+        public IEnumerable<char> ReverseIterator() {
+            return _string.ReverseIterator();
+        }
+
         public override string ToString() {
             return String;
         }
