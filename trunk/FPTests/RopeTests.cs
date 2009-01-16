@@ -14,6 +14,7 @@
 */
 
 using System;
+using System.Linq;
 using FP.Text;
 using Microsoft.Pex.Framework;
 using Xunit;
@@ -81,15 +82,21 @@ namespace FPTests {
         }
 
         [PexMethod]
-        public void Test_TrimStart([PexAssumeNotNull] string largeString, [PexAssumeNotNull] char[] trimChars) {
+        public void Test_TrimStart([PexAssumeNotNull] string largeString, char[] trimChars) {
             var largeRope = MakeLargeRope(largeString);
             Assert.Equal(largeString.TrimStart(trimChars), largeRope.TrimStart(trimChars).AsString());
         }
 
         [PexMethod]
-        public void Test_TrimEnd([PexAssumeNotNull] string largeString, [PexAssumeNotNull] char[] trimChars) {
+        public void Test_TrimEnd([PexAssumeNotNull] string largeString, char[] trimChars) {
             var largeRope = MakeLargeRope(largeString);
             Assert.Equal(largeString.TrimEnd(trimChars), largeRope.TrimEnd(trimChars).AsString());
+        }
+
+        [PexMethod]
+        public void Test_Trim([PexAssumeNotNull] string largeString, char[] trimChars) {
+            var largeRope = MakeLargeRope(largeString);
+            Assert.Equal(largeString.Trim(trimChars), largeRope.Trim(trimChars).AsString());
         }
 
         [PexMethod]
@@ -140,6 +147,22 @@ namespace FPTests {
             var rope = s1.ToRope();
             PexAssert.AreEqual(s1.IndexOf(c), rope.IndexOf(c).ValueOrElse(-1));
             PexAssert.AreEqual(s1.LastIndexOf(c), rope.LastIndexOf(c).ValueOrElse(-1));
+        }
+
+        [PexMethod]
+        public void Test_Join([PexAssumeNotNull] string[] strings, string sep) {
+            PexAssume.TrueForAll(strings, s => s != null);
+            Rope rope = strings.Select(s => new StringCharSequence(s)).Join<StringCharSequence>(sep);
+            string str = string.Join(sep, strings);
+            PexAssert.AreEqual(str, rope.AsString());
+        }
+
+        [PexMethod]
+        public void Test_Concat1([PexAssumeNotNull] string[] strings) {
+            PexAssume.TrueForAll(strings, s => s != null);
+            Rope rope = strings.Select(s => new StringCharSequence(s)).Concat();
+            string str = string.Concat(strings);
+            PexAssert.AreEqual(str, rope.AsString());
         }
 
         [Fact]

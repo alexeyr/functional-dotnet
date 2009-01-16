@@ -126,6 +126,11 @@ namespace FP.Text {
             charSequence.WriteOut(writer, 0, charSequence.Count);
         }
 
+        public static bool IsNullOrEmpty<TSequence>(this TSequence charSequence) 
+            where TSequence : ICharSequence{
+            return charSequence == null || charSequence.IsEmpty;
+        }
+
         public static bool StartsWithOrdinal<TSequence1, TSequence2>(
             this TSequence1 charSequence1, TSequence2 charSequence2, bool ignoreCase) 
             where TSequence1 : ICharSequence where TSequence2 : ICharSequence {

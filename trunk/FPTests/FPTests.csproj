@@ -152,7 +152,7 @@
     </Compile>
     <Compile Include="RefTests.cs" />
     <Compile Include="RopeTests.cs" />
-    <Compile Include="RopeTests.Test_Concat.g.cs">
+    <Compile Include="RopeTests.Test_Concat1.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>
     <Compile Include="RopeTests.Test_Creation.g.cs">
@@ -171,6 +171,9 @@
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>
     <Compile Include="RopeTests.Test_IndexOfIgnoringCase.g.cs">
+      <DependentUpon>RopeTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RopeTests.Test_Join.g.cs">
       <DependentUpon>RopeTests.cs</DependentUpon>
     </Compile>
     <Compile Include="RopeTests.Test_Padding.g.cs">
