@@ -31,7 +31,7 @@ namespace FP.Text {
         /// </summary>
         /// <param name="array">The array.</param>
         public ArrayCharSequence(char[] array) {
-            _array = array;
+            _array = array ?? Arrays.Empty<char>();
         }
 
         public IEnumerable<char> ReverseIterator() {

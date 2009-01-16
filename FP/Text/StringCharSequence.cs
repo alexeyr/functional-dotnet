@@ -30,7 +30,7 @@ namespace FP.Text {
         /// </summary>
         /// <param name="s">The string.</param>
         public StringCharSequence(string s) {
-            _string = s;
+            _string = s ?? string.Empty;
         }
 
         /// <summary>

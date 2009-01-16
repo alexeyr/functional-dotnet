@@ -13,7 +13,9 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
+using System.Collections.Generic;
 using System.Globalization;
+using FP.Core;
 
 namespace FP.Text {
     /// <summary>
@@ -144,6 +146,41 @@ namespace FP.Text {
         public static int LastIndexOf<TRope>(this TRope rope, string str, int startIndex, int count, CultureInfo culture, CompareOptions options)
             where TRope : IRope<TRope> {
             throw new System.NotImplementedException();
+        }
+
+        public static Rope Concat(this IEnumerable<Rope> ropes) {
+            var rope = Rope.EmptyInstance;
+            foreach (var rope1 in ropes)
+                rope = rope.Concat(rope1);
+            return rope;
+        }
+
+        public static Rope Join(this IEnumerable<Rope> ropes, Rope separator) {
+            if (separator.IsNullOrEmpty())
+                return ropes.Concat();
+            return ropes.Intersperse(separator).Concat();
+        }
+
+        public static Rope Concat<TSequence>(this IEnumerable<TSequence> ropes) 
+            where TSequence : IFlatCharSequence {
+            var rope = Rope.EmptyInstance;
+            foreach (var sequence in ropes)
+                rope = rope.Append(sequence);
+            return rope;
+        }
+
+        public static Rope Join<TSequence>(this IEnumerable<TSequence> ropes, TSequence separator) 
+            where TSequence : IFlatCharSequence {
+            // ReSharper disable CompareNonConstrainedGenericWithNull
+            if (separator.IsNullOrEmpty())
+                return ropes.Concat();
+            // ReSharper restore CompareNonConstrainedGenericWithNull
+            return ropes.Intersperse(separator).Concat();
+        }
+
+        public static IRope<TRope> Trim<TRope>(this IRope<TRope> rope, params char[] trimChars) 
+            where TRope : IRope<TRope> {
+            return rope.TrimStart(trimChars).TrimEnd(trimChars);
         }
     } // class Ropes
 } // namespace FP.Text
