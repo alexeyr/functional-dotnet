@@ -13,7 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XunitExtensions", "XunitExt
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{0C945040-68D8-4D9C-903B-07A45321D95B}"
 	ProjectSection(SolutionItems) = preProject
-		Lib\Pex.Xunit.dll = Lib\Pex.Xunit.dll
+		Lib\MiniBench.dll = Lib\MiniBench.dll
+		Lib\MiniBench.xml = Lib\MiniBench.xml
 		Lib\xunit.dll = Lib\xunit.dll
 		Lib\xunit.xml = Lib\xunit.xml
 		Lib\xunitext.dll = Lib\xunitext.dll
@@ -24,11 +25,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{0C945040-68D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FP.Validation", "FP.Validation\FP.Validation.csproj", "{68D038C8-5F0A-4DE5-931C-7BE476A4EA37}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{855EFFB9-A634-45E4-85D6-E7E42E7D77E3}"
+EndProject
 Global
-	GlobalSection(SubversionScc) = preSolution
-		Svn-Managed = True
-		Manager = AnkhSVN - Subversion Support for Visual Studio
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -50,12 +49,20 @@ Global
 		{68D038C8-5F0A-4DE5-931C-7BE476A4EA37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68D038C8-5F0A-4DE5-931C-7BE476A4EA37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68D038C8-5F0A-4DE5-931C-7BE476A4EA37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{855EFFB9-A634-45E4-85D6-E7E42E7D77E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{855EFFB9-A634-45E4-85D6-E7E42E7D77E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{855EFFB9-A634-45E4-85D6-E7E42E7D77E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{855EFFB9-A634-45E4-85D6-E7E42E7D77E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		HeaderCommentSolution = /*$LineBreak$* %file% is part of functional-dotnet project$LineBreak$* $LineBreak$* Copyright (c) %years% Alexey Romanov$LineBreak$* All rights reserved.$LineBreak$*$LineBreak$* This source file is available under The New BSD License.$LineBreak$* See license.txt file for more information.$LineBreak$* $LineBreak$* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND $LineBreak$* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, $LineBreak$* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF $LineBreak$* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.$LineBreak$*/
 		AddHeaderCommentSolution = True
+		HeaderCommentSolution = /*$LineBreak$* %file% is part of functional-dotnet project$LineBreak$* $LineBreak$* Copyright (c) %years% Alexey Romanov$LineBreak$* All rights reserved.$LineBreak$*$LineBreak$* This source file is available under The New BSD License.$LineBreak$* See license.txt file for more information.$LineBreak$* $LineBreak$* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND $LineBreak$* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, $LineBreak$* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF $LineBreak$* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.$LineBreak$*/
+	EndGlobalSection
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
 	EndGlobalSection
 EndGlobal

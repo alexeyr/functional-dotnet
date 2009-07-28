@@ -87,7 +87,7 @@ namespace FP.Collections.Persistent {
         /// <returns>The new vector which contains all elements of this instance and 
         /// <paramref name="newValue"/>.</returns>
         public Vector<T> Append(T newValue) {
-            return AdjustAt(_count + 1, _ => newValue);
+            return AdjustAt(_count, _ => newValue);
         }
 
         /// <summary>
