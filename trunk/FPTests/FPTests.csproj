@@ -69,6 +69,10 @@
     <Compile Include="EnumerableTests.SortDescendingTest.g.cs">
       <DependentUpon>EnumerableTests.cs</DependentUpon>
     </Compile>
+    <Compile Include="LazyListTests.cs" />
+    <Compile Include="LazyListTests.Test_Enumeration.g.cs">
+      <DependentUpon>LazyListTests.cs</DependentUpon>
+    </Compile>
     <Compile Include="MaybeTests.Maybe_NothingShouldPropagateInQueries.g.cs">
       <DependentUpon>MaybeTests.cs</DependentUpon>
     </Compile>

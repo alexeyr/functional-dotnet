@@ -1167,23 +1167,17 @@ namespace FP.Core {
             this IEnumerable<T1> sequence1,
             IEnumerable<T2> sequence2, 
             Func<T1, T2, T> function) {
-            using (
-                IEnumerator<T1> enumerator1 =
-                    sequence1.GetEnumerator())
-            using (
-                IEnumerator<T2> enumerator2 =
-                    sequence2.GetEnumerator()) {
-                while (enumerator1.MoveNext() &&
-                       enumerator2.MoveNext()) {
+            using (IEnumerator<T1> enumerator1 = sequence1.GetEnumerator())
+            using (IEnumerator<T2> enumerator2 = sequence2.GetEnumerator()) {
+                while (enumerator1.MoveNext() && enumerator2.MoveNext()) {
                     yield return
-                        function(enumerator1.Current,
-                                 enumerator2.Current);
+                        function(enumerator1.Current, enumerator2.Current);
                 }
             }
-            //
-            //zipWith :: (a->b->c) -> [a]->[b]->[c]
-            //zipWith f (a:as) (b:bs) = f a b : zipWith f as bs
-            //zipWith _ _      _      = []
+            
+            // zipWith :: (a->b->c) -> [a]->[b]->[c]
+            // zipWith f (a:as) (b:bs) = f a b : zipWith f as bs
+            // zipWith _ _      _      = []
         }
 
         /// <summary>
@@ -1282,6 +1276,9 @@ namespace FP.Core {
         /// forall IEnumerable{T} seq. seq.SequenceEquals(seq.UnZip().Item1.Zip(seq.Unzip().Item2))
         /// </code>
         /// </summary>
+        /// <param name="sequence">
+        /// The sequence.
+        /// </param>
         public static Tuple<IEnumerable<T1>, IEnumerable<T2>> UnZip<T1, T2>(
             this IEnumerable<Tuple<T1, T2>> sequence) {
             var ll = sequence.ToLazyList();
@@ -1389,7 +1386,7 @@ namespace FP.Core {
         /// </summary>
         /// <param name="sequence">The sequence.</param>
         public static LazyList<T> ToLazyList<T>(this IEnumerable<T> sequence) {
-            return LazyList<T>.Create(sequence);
+            return LazyList<T>.Create(sequence.GetEnumerator());
         }
 
         /// <summary>
@@ -1397,6 +1394,7 @@ namespace FP.Core {
         /// having to reevaluate them.
         /// </summary>
         /// <param name="enumerator">The enumerator.</param>
+        /// <remarks>Do _not_ hold to any other references to this enumerator!</remarks>
         public static LazyList<T> ToLazyList<T>(this IEnumerator<T> enumerator) {
             return LazyList<T>.Create(enumerator);
         }

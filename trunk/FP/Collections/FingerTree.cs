@@ -291,7 +291,7 @@ namespace FP.Collections {
             return Plus(prependedMeasure, Measure);
         }
 
-        internal abstract Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight);
+        protected abstract Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight);
 
         /// <summary>
         /// Splits the list according to the specified predicate.
@@ -538,7 +538,7 @@ namespace FP.Collections {
             /// <param name="predicate">The predicate.</param>
             /// <param name="initial">The initial.</param>
             /// <exception cref="EmptyEnumerableException">Empty tree can't be split.</exception>
-            internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight) {
+            protected override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight) {
                 throw new EmptyEnumerableException("Empty tree can't be split");
             } // SplitTree
 
@@ -729,7 +729,7 @@ namespace FP.Collections {
                 return Value | rightTree.PrependRange(middleList);
             }
 
-            internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight) {
+            protected override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight) {
                 return new Split<T, FingerTree<T, V>>(EmptyInstance, Value, EmptyInstance);
             } // SplitTree
 
@@ -1089,7 +1089,7 @@ namespace FP.Collections {
                     Plus(Plus(t1.Measure, t2.Measure), t3.Measure), t1, t2, t3);
             }
 
-            internal override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight) {
+            protected override Split<T, FingerTree<T, V>> SplitTree(Func<V, bool> predicate, V initial, bool needLeft, bool needRight) {
                 V totalLeft = SumMeasures(initial, _left);
                 // is split on the left?
                 if (predicate(totalLeft)) {
