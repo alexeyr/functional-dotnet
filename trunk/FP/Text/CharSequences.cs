@@ -31,6 +31,10 @@ namespace FP.Text {
                 return (c1, c2) => c1 == c2;
         }
 
+        private static bool Equal(char c1, char c2, bool ignoreCase) {
+            return ignoreCase ? Char.ToUpperInvariant(c1) == Char.ToUpperInvariant(c2) : c1 == c2;
+        }
+
         /// <summary>
         /// Copies the given <paramref name="sequence"/> to <paramref name="destination"/>.
         /// </summary>
@@ -174,9 +178,47 @@ namespace FP.Text {
         }
 
         public static Optional<int> IndexOfOrdinal<TSequence1, TSequence2>(
-            this TSequence1 charSequence1, TSequence2 charSequence2, bool ignoreCase)
-            where TSequence1 : ICharSequence where TSequence2 : ICharSequence {
-            throw new System.NotImplementedException();
+            this TSequence1 charSequence1, TSequence2 pattern)
+            where TSequence1 : IFlatCharSequence where TSequence2 : IFlatCharSequence {
+            return IndexOfOrdinal(charSequence1, pattern, 0, charSequence1.Count);
+        }
+
+        public static Optional<int> IndexOfOrdinal<TSequence1, TSequence2>(
+            this TSequence1 charSequence1, TSequence2 pattern, int startIndex)
+            where TSequence1 : IFlatCharSequence where TSequence2 : IFlatCharSequence {
+            return IndexOfOrdinal(charSequence1, pattern, startIndex, charSequence1.Count - startIndex);
+        }
+
+        public static Optional<int> IndexOfOrdinal<TSequence1, TSequence2>(
+            this TSequence1 charSequence1, TSequence2 pattern, int startIndex, int count)
+            where TSequence1 : IFlatCharSequence where TSequence2 : IFlatCharSequence {
+            return IndexOfOrdinal(charSequence1, pattern, false, startIndex, count);
+        }
+
+        public static Optional<int> IndexOfOrdinal<TSequence1, TSequence2>(
+            this TSequence1 charSequence1, TSequence2 pattern, bool ignoreCase, int startIndex, int count)
+            where TSequence1 : IFlatCharSequence where TSequence2 : IFlatCharSequence {
+            var patternCount = pattern.Count;
+            if (pattern.IsNullOrEmpty() || charSequence1 == null 
+                || count < patternCount)
+                return Optional<int>.None;
+            if (patternCount == 1)
+                return charSequence1.IndexOf(pattern[0], ignoreCase, startIndex, count);
+
+            var bmh = new BoyerMooreHorspool(pattern, ignoreCase);
+            for (int seqIndex = startIndex + patternCount - 1; seqIndex < startIndex + count;) {
+                int seqIndex1 = seqIndex;
+                int patternIndex = patternCount - 1;
+                char c = pattern[patternIndex];
+                while (Equal(charSequence1[patternIndex], c, ignoreCase)) {
+                    if (patternIndex == 0)
+                        return seqIndex1;
+                    seqIndex1--;
+                    patternIndex--;
+                }
+                seqIndex += bmh.BadCharShift[c & 255];
+            }
+            return Optional<int>.None;
         }
 
         public static bool EqualsOrdinal<TSequence1, TSequence2>(
@@ -188,51 +230,78 @@ namespace FP.Text {
             return rope.ZipWith(charSequence, Equal(ignoreCase)).And();
         }
 
-        public static Optional<int> IndexOf<TEnumerable>(this TEnumerable rope, char c) 
-            where TEnumerable : IEnumerable<char> {
-            return IndexOf(rope, c, false);
+        public static Optional<int> IndexOf<TSequence>(this TSequence rope, char c, int startIndex, int count)
+            where TSequence : ICharSequence {
+            return IndexOf(rope, c, false, startIndex, count);
         }
 
-        public static Optional<int> IndexOf<TEnumerable>(this TEnumerable rope, char c, bool ignoreCase) 
-            where TEnumerable : IEnumerable<char> {
-            int i = 0;
+        public static Optional<int> IndexOf<TSequence>(
+            this TSequence charSequence, char c, bool ignoreCase, int startIndex, int count) 
+            where TSequence : ICharSequence {
+            int i = startIndex;
             if (ignoreCase) {
                 c = Char.ToUpperInvariant(c);
 
-                foreach (char c1 in rope) {
+                foreach (char c1 in charSequence.IteratorFrom(startIndex)) {
                     if (c == Char.ToUpperInvariant(c1))
                         return i;
                     i++;
+                    if (i - startIndex == count)
+                        return Optional<int>.None;
                 }
             }
             else {
-                foreach (char c1 in rope) {
+                foreach (char c1 in charSequence.IteratorFrom(startIndex)) {
                     if (c == c1)
                         return i;
                     i++;
+                    if (i - startIndex == count)
+                        return Optional<int>.None;
                 }
             }
             return Optional<int>.None;
         }
 
-        public static Optional<int> IndexOfAny<TEnumerable>(this TEnumerable rope, params char[] anyOf) 
-            where TEnumerable : IEnumerable<char> {
-            int i = 0;
-            foreach (char c in rope) {
-                if (anyOf.Contains(c))
-                    return i;
-                i++;
-            }
-            return Optional<int>.None;
+        public static Optional<int> IndexOfAny<TSequence>(
+            this TSequence charSequence, params char[] anyOf)
+            where TSequence : ICharSequence {
+            return IndexOfAny(charSequence, 0, charSequence.Count, anyOf);
         }
 
-        public static Optional<int> IndexOfAny<TEnumerable>(this TEnumerable rope, Func<char, bool> predicate)
-            where TEnumerable : IEnumerable<char> {
-            int i = 0;
-            foreach (char c in rope) {
+        public static Optional<int> IndexOfAny<TSequence>(
+            this TSequence charSequence, int startIndex, params char[] anyOf)
+            where TSequence : ICharSequence {
+            return IndexOfAny(charSequence, startIndex, charSequence.Count - startIndex, anyOf);
+        }
+
+        public static Optional<int> IndexOfAny<TSequence>(
+            this TSequence charSequence, int startIndex, int count, params char[] anyOf)
+            where TSequence : ICharSequence {
+            return charSequence.IndexOfAny(c => anyOf.Contains(c), startIndex, count);
+        }
+
+        public static Optional<int> IndexOfAny<TSequence>(
+            this TSequence charSequence, Func<char, bool> predicate)
+            where TSequence : ICharSequence {
+            return IndexOfAny(charSequence, predicate, 0, charSequence.Count);
+        }
+
+        public static Optional<int> IndexOfAny<TSequence>(
+            this TSequence charSequence, Func<char, bool> predicate, int startIndex)
+            where TSequence : ICharSequence {
+            return IndexOfAny(charSequence, predicate, startIndex, charSequence.Count - startIndex);
+        }
+
+        public static Optional<int> IndexOfAny<TSequence>(
+            this TSequence charSequence, Func<char, bool> predicate, int startIndex, int count)
+            where TSequence : ICharSequence {
+            int i = startIndex;
+            foreach (char c in charSequence.IteratorFrom(startIndex)) {
                 if (predicate(c))
                     return i;
                 i++;
+                if (i - startIndex == count)
+                    return Optional<int>.None;
             }
             return Optional<int>.None;
         }

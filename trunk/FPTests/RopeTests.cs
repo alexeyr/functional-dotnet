@@ -165,6 +165,11 @@ namespace FPTests {
             PexAssert.AreEqual(str, rope.AsString());
         }
 
+        [PexMethod]
+        public void Test_IndexOfFlat([PexAssumeNotNull] string str, [PexAssumeNotNull] string pat) {
+            PexAssert.AreEqual(str.IndexOf(pat, StringComparison.Ordinal), str.IndexOfOrdinal<StringCharSequence, StringCharSequence>(pat).ValueOrElse(-1));
+        }
+
         [Fact]
         public void Test_Rebalance() {
             string digits = "0123456789";

@@ -92,6 +92,7 @@
     <Compile Include="Future\PromiseAlreadyFulfilledException.cs" />
     <Compile Include="Future\Status.cs" />
     <Compile Include="Text\ArrayCharSequence.cs" />
+    <Compile Include="Text\BoyerMooreHorspool.cs" />
     <Compile Include="Text\CharSequences.cs" />
     <Compile Include="Text\FTRope.cs" />
     <Compile Include="Collections\IDeque.cs" />
@@ -176,7 +177,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
+      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
