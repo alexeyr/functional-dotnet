@@ -52,10 +52,22 @@ namespace FPTests {
         // [PexGenericArguments(typeof(object))]
         [PexMethod(MaxBranches = 40000)]
         public void Test_StoreManyElements<T>([PexAssumeNotNull] T[] array) {
-            PexAssume.IsNotNull(array);
             var vector = Vector<T>.Empty;
             for (int i = 0; i < array.Length; i++)
                 vector = vector.SetAt(i, array[i]);
+            for (int i = 0; i < array.Length; i++)
+                Assert.Equal(array[i], vector[i]);
+            Assert.Equal(array.Length, vector.Count);
+            Assert2.SequenceEqual(array, vector);
+        } // StoreManyElements()
+
+        [PexGenericArguments(typeof(int))]
+        // [PexGenericArguments(typeof(object))]
+        [PexMethod(MaxBranches = 40000)]
+        public void Test_Append<T>([PexAssumeNotNull] T[] array) {
+            var vector = Vector<T>.Empty;
+            foreach (T t in array)
+                vector = vector.Append(t);
             for (int i = 0; i < array.Length; i++)
                 Assert.Equal(array[i], vector[i]);
             Assert.Equal(array.Length, vector.Count);
