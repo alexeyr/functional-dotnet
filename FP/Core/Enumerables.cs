@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using FP.Collections;
+using FP.Collections.Persistent;
 using FP.HaskellNames;
 using FP.Validation;
 

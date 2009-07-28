@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using FP.Util;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// A node in the middle section of a deep finger tree.
     /// </summary>

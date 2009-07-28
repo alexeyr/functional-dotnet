@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Represents a splitting of a structure of type <typeparamref name="FT"/> with elements
     /// of type <typeparamref name="T"/>

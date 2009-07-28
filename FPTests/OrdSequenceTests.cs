@@ -15,7 +15,7 @@
 
 using System;
 using System.Linq;
-using FP.Collections;
+using FP.Collections.Persistent;
 using FP.Core;
 using Microsoft.Pex.Framework;
 using Xunit;

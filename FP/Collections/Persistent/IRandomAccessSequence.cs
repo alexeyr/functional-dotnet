@@ -15,7 +15,7 @@
 
 using System;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// A read interface for random access sequences.
     /// </summary>

@@ -15,7 +15,7 @@
 
 using FP.Core;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Represents a sequence which can be efficiently split at any given index.
     /// </summary>

@@ -14,7 +14,7 @@
 */
 using System.Collections.Generic;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Exposes a way to enumerate all elements of a collection starting from a given
     /// index and not just from beginning.

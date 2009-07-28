@@ -16,7 +16,7 @@
 using System;
 using FP.Validation;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Represents an immutable list of values.
     /// </summary>

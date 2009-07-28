@@ -18,7 +18,7 @@ using System.Linq;
 using FP.Core;
 using FP.Validation;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// More specific versions of some methods from <see cref="Enumerables"/> and
     /// <see cref="Enumerable"/>

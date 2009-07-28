@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FP.Collections;
+using FP.Collections.Persistent;
 using FP.Core;
 using Microsoft.Pex.Framework;
 

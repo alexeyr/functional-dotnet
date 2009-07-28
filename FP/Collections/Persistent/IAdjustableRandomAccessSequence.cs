@@ -15,7 +15,7 @@
 
 using System;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Represents a random access sequence where elements can be updated.
     /// </summary>

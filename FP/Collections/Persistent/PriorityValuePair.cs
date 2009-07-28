@@ -14,7 +14,7 @@
 */
 using System;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Simply a pair of priority and value for use in <see cref="PriorityQueue{T,TPriority}"/>.
     /// </summary>

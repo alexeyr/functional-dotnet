@@ -15,7 +15,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Represents a <see cref="IAdjustableRandomAccessSequence{T,TSequence}"/> where new elements can be inserted or removed.
     /// </summary>

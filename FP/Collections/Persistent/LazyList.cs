@@ -19,7 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using FP.Validation;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
 
     /// <summary>
     /// A lazy singly linked list which allows saving the state of enumerators.

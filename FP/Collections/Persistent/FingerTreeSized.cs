@@ -23,7 +23,7 @@ using FP.Util;
 using FP.Validation;
 
 // ReSharper disable RedundantThisQualifier
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// A specialization of <see cref="FingerTree{T,V}"/> using number of elements as measure
     /// and <see cref="Monoids.Size"/> as the monoid.

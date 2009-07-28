@@ -14,7 +14,7 @@
 */
 
 using System.Linq;
-using FP.Collections;
+using FP.Collections.Persistent;
 using FP.Core;
 using FP.HaskellNames;
 using FP.Validation;

@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using FP.Core;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Represents an immutable collection of key/value pairs.
     /// </summary>

@@ -23,7 +23,7 @@ using FP.Validation;
 
 // Inspired by the Scala implementation by Daniel Spiewak, 
 // http://www.codecommit.com/blog/scala/implementing-persistent-vectors-in-scala
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// A vector (nearly array-like sequence). Implemented as a 32-nary trie.
     /// </summary>
