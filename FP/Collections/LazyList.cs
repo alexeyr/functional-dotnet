@@ -57,21 +57,12 @@ namespace FP.Collections {
         }
 
         /// <summary>
-        /// Creates the list based on the specified sequence.
-        /// </summary>
-        /// <param name="sequence">The sequence.</param>
-        /// <returns></returns>
-        public static LazyList<T> Create(IEnumerable<T> sequence) {
-            return Create(sequence.GetEnumerator());
-        }
-
-        /// <summary>
         /// Creates the list based on the specified enumerator.
         /// </summary>
         /// <param name="enumerator">The enumerator.
         /// Do _not_ hold on to any other references to it!</param>
         /// <returns></returns>
-        public static LazyList<T> Create(IEnumerator<T> enumerator) {
+        internal static LazyList<T> Create(IEnumerator<T> enumerator) {
             return enumerator.MoveNext()
                        ? new LazyList<T>(enumerator.Current, enumerator)
                        : Empty;
@@ -151,7 +142,7 @@ namespace FP.Collections {
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public class EmptyList : LazyList<T> {
-            internal EmptyList() : base(default(T), (LazyList<T>) null) {}
+            internal EmptyList() : base(default(T), (LazyList<T>) null) { }
 
             /// <summary>
             /// Gets the "head" (first element) of the list.
