@@ -102,14 +102,14 @@ namespace FP.Collections {
         } // MakeSingle
 
         private Deep MakeDeep(T[] left, Func<FingerTree<FTNode<T, V>, V>> func, T[] right, V measure) {
-            return MakeDeep(left, new LazyValue<FingerTree<FTNode<T, V>, V>>(func), right, measure);
+            return MakeDeep(left, Lazy.New(func), right, measure);
         } // MakeDeep
 
-        private Deep MakeDeep(T[] left, LazyValue<FingerTree<FTNode<T, V>, V>> middle, T[] right, V measure) {
+        private Deep MakeDeep(T[] left, Lazy<FingerTree<FTNode<T, V>, V>> middle, T[] right, V measure) {
             return new Deep(left, middle, right, measure, MeasureMonoid);
         } // MakeDeep
 
-        private Deep MakeDeepForceMiddle(T[] left, LazyValue<FingerTree<FTNode<T, V>, V>> middle, T[] right) {
+        private Deep MakeDeepForceMiddle(T[] left, Lazy<FingerTree<FTNode<T, V>, V>> middle, T[] right) {
             return new Deep(left, middle, right, MeasureMonoid);
         } // MakeDeepForceMiddle
 
@@ -805,7 +805,7 @@ namespace FP.Collections {
 
             private readonly T[] _left;
             private readonly T[] _right;
-            private readonly LazyValue<FingerTree<FTNode<T, V>, V>> _middleLazy;
+            private readonly Lazy<FingerTree<FTNode<T, V>, V>> _middleLazy;
 
             private FingerTree<FTNode<T, V>, V> Middle {
                 get {
@@ -813,7 +813,7 @@ namespace FP.Collections {
                 }
             }
 
-            internal Deep(T[] left, LazyValue<FingerTree<FTNode<T, V>, V>> middleLazy, T[] right,
+            internal Deep(T[] left, Lazy<FingerTree<FTNode<T, V>, V>> middleLazy, T[] right,
                           Monoid<V> measureMonoid)
                 : base(measureMonoid) {
                 _left = left;
@@ -826,7 +826,7 @@ namespace FP.Collections {
                 Debug.Assert(_right != null && _right.Length > 0 && _right.Length <= 4);
             } // Deep
 
-            internal Deep(T[] left, LazyValue<FingerTree<FTNode<T, V>, V>> middleLazy, T[] right,
+            internal Deep(T[] left, Lazy<FingerTree<FTNode<T, V>, V>> middleLazy, T[] right,
                           V measure, Monoid<V> measureMonoid)
                 : base(measureMonoid) {
                 _left = left;

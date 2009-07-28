@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using FP.Validation;
 
 namespace FP.Collections {
-    //TODO: Test lazy lists!
+
     /// <summary>
     /// A lazy singly linked list which allows saving the state of enumerators.
     /// </summary>
@@ -33,7 +33,7 @@ namespace FP.Collections {
         /// <summary>
         /// The empty list.
         /// </summary>
-        public static readonly EmptyList Empty = new EmptyList();
+        public static readonly LazyList<T> Empty = new EmptyList();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LazyList{T}"/> class.
@@ -119,12 +119,12 @@ namespace FP.Collections {
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         public virtual IEnumerator<T> GetEnumerator() {
-            yield return _head;
-            LazyList<T> tail = Tail;
-            while (!tail.IsEmpty) {
-                yield return tail.Head;
-                tail = tail.Tail;
+            LazyList<T> list = this;
+            do {
+                yield return list.Head;
+                list = list.Tail;
             }
+            while (!list.IsEmpty);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace FP.Collections {
         /// The empty list.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public class EmptyList : LazyList<T> {
+        private class EmptyList : LazyList<T> {
             internal EmptyList() : base(default(T), (LazyList<T>) null) { }
 
             /// <summary>

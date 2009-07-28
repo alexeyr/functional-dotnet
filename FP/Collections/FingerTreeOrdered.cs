@@ -70,7 +70,7 @@ namespace FP.Collections {
             return MakeDeep(middle.Head.AsArray, () => middle.Tail, right, measure);
         }
 
-        private static Deep MakeDeepForceMiddle(T[] left, LazyValue<FingerTreeOrdered<FTNode<T, K>, K>> middle, T[] right) {
+        private static Deep MakeDeepForceMiddle(T[] left, Lazy<FingerTreeOrdered<FTNode<T, K>, K>> middle, T[] right) {
             return new Deep(left, middle, right);
         }
 
@@ -79,10 +79,10 @@ namespace FP.Collections {
         } // MakeSingle
 
         private static Deep MakeDeep(T[] left, Func<FingerTreeOrdered<FTNode<T, K>, K>> func, T[] right, K measure) {
-            return MakeDeep(left, new LazyValue<FingerTreeOrdered<FTNode<T, K>, K>>(func), right, measure);
+            return MakeDeep(left, Lazy.New(func), right, measure);
         } // MakeDeep
 
-        private static Deep MakeDeep(T[] left, LazyValue<FingerTreeOrdered<FTNode<T, K>, K>> middle, T[] right, K measure) {
+        private static Deep MakeDeep(T[] left, Lazy<FingerTreeOrdered<FTNode<T, K>, K>> middle, T[] right, K measure) {
             return new Deep(left, middle, right, measure);
         } // MakeDeep
 
@@ -879,7 +879,7 @@ namespace FP.Collections {
 
             private readonly T[] _left;
             private readonly T[] _right;
-            private readonly LazyValue<FingerTreeOrdered<FTNode<T, K>, K>> _middleLazy;
+            private readonly Lazy<FingerTreeOrdered<FTNode<T, K>, K>> _middleLazy;
 
             private FingerTreeOrdered<FTNode<T, K>, K> Middle {
                 get {
@@ -887,7 +887,7 @@ namespace FP.Collections {
                 }
             }
 
-            internal Deep(T[] left, LazyValue<FingerTreeOrdered<FTNode<T, K>, K>> middleLazy, T[] right) {
+            internal Deep(T[] left, Lazy<FingerTreeOrdered<FTNode<T, K>, K>> middleLazy, T[] right) {
                 _left = left;
                 _right = right;
                 _middleLazy = middleLazy;
@@ -897,7 +897,7 @@ namespace FP.Collections {
             } // Deep
 
             internal Deep(
-                T[] left, LazyValue<FingerTreeOrdered<FTNode<T, K>, K>> middleLazy, T[] right,
+                T[] left, Lazy<FingerTreeOrdered<FTNode<T, K>, K>> middleLazy, T[] right,
                 K measure) {
                 _left = left;
                 _right = right;
