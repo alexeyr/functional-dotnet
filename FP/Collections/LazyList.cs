@@ -26,8 +26,8 @@ namespace FP.Collections {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class LazyList<T> : IList<T, LazyList<T>> {
-        private LazyList<T> _tail;
         private readonly T _head;
+        private LazyList<T> _tail;
         private IEnumerator<T> _enumerator;
 
         /// <summary>
