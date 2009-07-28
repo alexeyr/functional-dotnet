@@ -1,4 +1,4 @@
-﻿/*
+/*
 * LazyValue.cs is part of functional-dotnet project
 * 
 * Copyright (c) 2009 Alexey Romanov
@@ -19,14 +19,13 @@ namespace FP.Core {
     /// A lazy value.
     /// </summary>
     /// <typeparam name="T">Type of the value.</typeparam>
-    /// <remarks>The difference with <see cref="LazyValue{T}"/> is that this class doesn't
-    /// allow for calculation of the value to throw exceptions, removing a level of
-    /// misdirection. Do _not_ use this class if there is any possibility that an
-    /// exception will be thrown.</remarks>
+    /// <remarks>The difference with <see cref="LazyValue{T}"/> is that any
+    /// exceptions thrown during calculation will be thrown immediately.
+    /// </remarks>
     public class LazyValue<T> {
+        private readonly object _syncRoot;
         private T _value;
         private Func<T> _calculation;
-        private object _syncRoot;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LazyValue{T}"/> class.
@@ -69,7 +68,6 @@ namespace FP.Core {
                 lock (_syncRoot) {
                     _value = _calculation();
                     _calculation = null;
-                    _syncRoot = null;
                 }
             }
         }
@@ -93,7 +91,7 @@ namespace FP.Core {
         /// </summary>
         /// <param name="lazy">The lazy value.</param>
         /// <returns>The result of forcing this lazy value.</returns>
-        public static explicit operator T(LazyValue<T> lazy) {
+        public static implicit operator T(LazyValue<T> lazy) {
             return lazy.Value;
         }
 
@@ -107,7 +105,7 @@ namespace FP.Core {
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="FP.Future.Lazy{T}"/> to <see cref="System.Func{T}"/>.
+        /// Performs an implicit conversion from <see cref="Lazy{T}"/> to <see cref="System.Func{T}"/>.
         /// </summary>
         /// <param name="lazy">The lazy value.</param>
         /// <returns>The calculation needed to return the value.</returns>
@@ -117,7 +115,7 @@ namespace FP.Core {
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.Func{T}"/> to 
-        /// <see cref="FP.Future.Lazy{T}"/>.
+        /// <see cref="Lazy{T}"/>.
         /// </summary>
         /// <param name="calculation">The calculation the returned future will do
         /// on-demand.</param>

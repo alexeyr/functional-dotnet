@@ -1,12 +1,12 @@
 using System;
-using System.IO;
-using Microsoft.Pex.Framework.Instrumentation;
-using System.Threading;
 using System.Security;
+using System.Threading;
+using Microsoft.Pex.Framework.Domains;
+using Microsoft.Pex.Framework.Instrumentation;
 
-[assembly : PexInstrumentAssembly("FP")]
-[assembly : PexAssemblyUnderTest("FP")]
-[assembly : PexInstrumentAssembly("XunitExtensions")]
+[assembly: PexInstrumentAssembly("FP")]
+[assembly: PexAssemblyUnderTest("FP")]
+[assembly: PexInstrumentAssembly("XunitExtensions")]
 [assembly: PexInstrumentAssembly("FP.Validation")]
 [assembly: PexInstrumentAssembly("Microsoft.Pex.Framework")]
 [assembly: PexInstrumentAssembly("Microsoft.ExtendedReflection")]
@@ -21,3 +21,4 @@ using System.Security;
 [assembly: PexInstrumentType(typeof(Predicate<string>))]
 [assembly: PexInstrumentType(typeof(Type))]
 [assembly: PexInstrumentType("mscorlib", "System.RuntimeType")]
+[assembly: PexBooleanAsZeroOrOne]

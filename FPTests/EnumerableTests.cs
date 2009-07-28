@@ -36,13 +36,13 @@ namespace FPTests {
 
         [Fact]
         public void IntersperseTest() {
-            Assert.Equal("a,b,c,d,e", "abcde".Intersperse(',').ToStringProper());
+            Assert.Equal("a,b,c,d,e", "abcde".Intersperse(',').AsString());
         }
 
         [Fact]
         public void IntercalateTest() {
             Assert.Equal("a,b,c,d,e",
-                         new[] {"a", "b", "c", "d", "e"}.Intercalate(",").ToStringProper());
+                         new[] {"a", "b", "c", "d", "e"}.Intercalate(",").AsString());
         }
 
         [Fact]

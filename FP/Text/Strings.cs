@@ -57,7 +57,7 @@ namespace FP.Text {
         /// </summary>
         /// <param name="charSequence">The char sequence.</param>
         /// <returns></returns>
-        public static string ToStringProper(this IEnumerable<char> charSequence) {
+        public static string AsString(this IEnumerable<char> charSequence) {
             return Switch.ExprOn<IEnumerable<char>, string>(charSequence)
                 .Case<string>(s => s)
                 .Default(cs => {
@@ -119,7 +119,7 @@ namespace FP.Text {
         }
 
         /// <summary>
-        /// Equivalent to <c>UnLines().ToStringProper()</c>, but more efficient.
+        /// Equivalent to <c>UnLines().AsString()</c>, but more efficient.
         /// </summary>
         /// <param name="lines">A sequence of strings.</param>
         public static string UnLinesAsString(this IEnumerable<string> lines) {
@@ -185,7 +185,7 @@ namespace FP.Text {
         }
 
         /// <summary>
-        /// Equivalent to <c>UnWords().ToStringProper()</c>, but more efficient.
+        /// Equivalent to <c>UnWords().AsString()</c>, but more efficient.
         /// </summary>
         /// <param name="words">A sequence of strings.</param>
         /// <returns></returns>
