@@ -281,18 +281,25 @@ namespace FP.Core {
             return optional.MapOrElse(t => t, Optional<T>.None);
         } // op_Implicit(optional)
 
-        ///<summary>
-        ///Compares the current object with another object of the same type. <c>None</c> is considered
-        ///to be less than all <c>Some(value)</c>; if both objects have values, they are compared.
-        ///</summary>
+        /// <summary>
+        /// Compares the current object with another object of the same type. 
+        /// <c>None</c> is considered to be less than all <c>Some(value)</c>; if
+        /// both objects have values, they are compared.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// A 32-bit signed integer that indicates the relative order of the
+        /// objects being compared.  The return value has the following
+        /// meanings: Value Meaning Less than zero This object is less than the 
+        /// <paramref name="other" /> parameter.Zero This object is equal to 
+        /// <paramref name="other" />. Greater than zero This object is greater
+        /// than <paramref name="other" />. 
+        /// </returns>
         ///
-        ///<returns>
-        ///A 32-bit signed integer that indicates the relative order of the objects being compared. 
-        /// The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />. 
-        ///</returns>
-        ///
-        ///<param name="other">An object to compare with this object.</param>
-        /// <remarks>Requires that <typeparamref name="T"/> is <see cref="IComparable{T}"/>. Null is considered to be less than <c>None</c>.</remarks>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <remarks>Requires that <typeparamref name="T"/> is 
+        /// <see cref="IComparable{T}"/>. Null is considered to be less than 
+        /// <c>None</c>.</remarks>
         public int CompareTo(OptionalNotNull<T> other) {
             return HasValue
                        ? (other.HasValue
