@@ -40,10 +40,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Pex.Framework, Version=0.14.40610.2, Culture=neutral, PublicKeyToken=76a274db078248c8, processorArchitecture=MSIL" />
-    <Reference Include="Pex.Xunit, Version=0.8.31021.3, Culture=neutral, PublicKeyToken=bc88a46a9dc0fdb6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\Pex.Xunit.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
