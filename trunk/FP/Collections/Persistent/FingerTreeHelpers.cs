@@ -16,7 +16,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Utility class.
     /// </summary>

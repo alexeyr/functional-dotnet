@@ -15,7 +15,7 @@
 
 using System.Collections.Generic;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Represents a collection.
     /// </summary>

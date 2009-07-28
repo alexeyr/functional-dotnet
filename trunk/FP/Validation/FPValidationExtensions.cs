@@ -13,7 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 using System;
-using FP.Collections;
+using FP.Collections.Persistent;
 
 namespace FP.Validation {
     /// <summary>

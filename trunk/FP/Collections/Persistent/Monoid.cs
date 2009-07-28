@@ -18,7 +18,7 @@ using System.Linq;
 using System.Collections.Generic;
 using FP.Core;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// A monoid structure on the type <typeparamref name="T"/>.
     /// </summary>

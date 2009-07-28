@@ -15,7 +15,7 @@
 
 using System.Collections.Generic;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Represents a sequence which can be effectively enumerated in reverse order.
     /// </summary>

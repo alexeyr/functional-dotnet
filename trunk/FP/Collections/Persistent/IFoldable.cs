@@ -15,7 +15,7 @@
 
 using System;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Any structure which can be folded into a summary value.
     /// </summary>

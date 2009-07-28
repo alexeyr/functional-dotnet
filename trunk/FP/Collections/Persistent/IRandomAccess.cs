@@ -14,7 +14,7 @@
 */
 using System;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     public interface IRandomAccess<T> : ICollection<T> {
         /// <summary>
         /// Gets the <see cref="T"/> at the specified index.

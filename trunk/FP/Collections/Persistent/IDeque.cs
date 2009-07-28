@@ -15,7 +15,7 @@
 
 using FP.Validation;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// An immutable double-ended queue.
     /// </summary>

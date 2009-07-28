@@ -13,7 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-using FP.Collections;
+using FP.Collections.Persistent;
 using Xunit;
 using XunitExtensions;
 using Microsoft.Pex.Framework;

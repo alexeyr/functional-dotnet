@@ -21,7 +21,7 @@ using System.Linq;
 using FP.Core;
 using FP.Validation;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// A finger-tree-based ordered sequence.
     /// </summary>

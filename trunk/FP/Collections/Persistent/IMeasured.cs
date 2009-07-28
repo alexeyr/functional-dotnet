@@ -13,7 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// The type implementing the interface can be measured by elements of the type <typeparamref name="V"/>.
     /// </summary>

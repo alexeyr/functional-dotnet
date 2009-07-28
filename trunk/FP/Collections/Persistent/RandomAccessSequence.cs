@@ -21,7 +21,7 @@ using FP.Core;
 using FP.HaskellNames;
 using FP.Validation;
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// A finger-tree-based random access sequence.
     /// An amortized running time is given for each operation, with <i>n</i> referring to the length 

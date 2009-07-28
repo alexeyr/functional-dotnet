@@ -13,7 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
-namespace FP.Collections {
+namespace FP.Collections.Persistent {
     /// <summary>
     /// Represents a collection which can be reversed efficiently.
     /// </summary>
