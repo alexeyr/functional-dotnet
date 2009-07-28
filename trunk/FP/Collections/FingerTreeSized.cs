@@ -59,14 +59,14 @@ namespace FP.Collections {
         } // MakeSingle
 
         private static Deep MakeDeep(T[] left, Func<FingerTreeSized<FTNode<T, int>>> func, T[] right, int measure) {
-            return MakeDeep(left, new LazyValue<FingerTreeSized<FTNode<T, int>>>(func), right, measure);
+            return MakeDeep(left, Lazy.New(func), right, measure);
         } // MakeDeep
 
-        private static Deep MakeDeep(T[] left, LazyValue<FingerTreeSized<FTNode<T, int>>> middle, T[] right, int measure) {
+        private static Deep MakeDeep(T[] left, Lazy<FingerTreeSized<FTNode<T, int>>> middle, T[] right, int measure) {
             return new Deep(left, middle, right, measure);
         } // MakeDeep
 
-        private static Deep MakeDeepForceMiddle(T[] left, LazyValue<FingerTreeSized<FTNode<T, int>>> middle, T[] right) {
+        private static Deep MakeDeepForceMiddle(T[] left, Lazy<FingerTreeSized<FTNode<T, int>>> middle, T[] right) {
             return new Deep(left, middle, right);
         } // MakeDeepForceMiddle
 
@@ -796,7 +796,7 @@ namespace FP.Collections {
 
             private readonly T[] _left;
             private readonly T[] _right;
-            private readonly LazyValue<FingerTreeSized<FTNode<T, int>>> _middleLazy;
+            private readonly Lazy<FingerTreeSized<FTNode<T, int>>> _middleLazy;
 
             private FingerTreeSized<FTNode<T, int>> Middle {
                 get {
@@ -804,7 +804,7 @@ namespace FP.Collections {
                 }
             }
 
-            internal Deep(T[] left, LazyValue<FingerTreeSized<FTNode<T, int>>> middleLazy, T[] right) {
+            internal Deep(T[] left, Lazy<FingerTreeSized<FTNode<T, int>>> middleLazy, T[] right) {
                 _left = left;
                 _right = right;
                 _middleLazy = middleLazy;
@@ -815,7 +815,7 @@ namespace FP.Collections {
                 Debug.Assert(_right != null && _right.Length > 0 && _right.Length <= 4);
             } // Deep
 
-            internal Deep(T[] left, LazyValue<FingerTreeSized<FTNode<T, int>>> middleLazy, T[] right,
+            internal Deep(T[] left, Lazy<FingerTreeSized<FTNode<T, int>>> middleLazy, T[] right,
                           int measure) {
                 _left = left;
                 _right = right;

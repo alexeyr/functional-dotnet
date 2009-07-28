@@ -39,8 +39,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Pex.Framework, Version=0.8.31021.3, Culture=neutral, PublicKeyToken=76a274db078248c8, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -69,7 +67,7 @@
     <Compile Include="Core\CPS\Cont.cs" />
     <Compile Include="Core\CPS\Actions.cs" />
     <Compile Include="Core\IRef.cs" />
-    <Compile Include="Core\LazyValue.cs" />
+    <Compile Include="Core\Lazy.cs" />
     <Compile Include="Core\OptionalNotNull.cs" />
     <Compile Include="Core\Ref.cs" />
     <Compile Include="Core\RefBase.cs" />
@@ -83,7 +81,6 @@
     <Compile Include="Core\RefObject.cs" />
     <Compile Include="Core\RefFloat.cs" />
     <Compile Include="Core\RefValidationException.cs" />
-    <Compile Include="Core\Lazy.cs" />
     <Compile Include="Collections\IDeque.cs" />
     <Compile Include="Collections\IRandomAccessSequence.cs" />
     <Compile Include="Collections\IEnumerableFrom.cs" />

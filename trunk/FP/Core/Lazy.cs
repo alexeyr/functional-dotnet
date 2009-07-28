@@ -1,7 +1,7 @@
-﻿/*
+/*
 * Lazy.cs is part of functional-dotnet project
 * 
-* Copyright (c) 2008 Alexey Romanov
+* Copyright (c) 2009 Alexey Romanov
 * All rights reserved.
 *
 * This source file is available under The New BSD License.
@@ -12,54 +12,63 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
-
 using System;
 
 namespace FP.Core {
     /// <summary>
-    /// Represents a suspended computation that will be performed once, in the thread
-    /// which requests it, to determine the value.
+    /// A lazy value.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Type of the value.</typeparam>
+    /// <remarks>The difference with <see cref="Lazy{T}"/> is that any
+    /// exceptions thrown during calculation will be thrown immediately.
+    /// </remarks>
     public class Lazy<T> {
-        private readonly object _syncRoot = new object();
-        private Result<T> _result;
+        private readonly object _syncRoot;
+        private T _value;
         private Func<T> _calculation;
 
         /// <summary>
-        /// Initializes a new instance of a <see cref="Lazy{T}"/>
+        /// Initializes a new instance of the <see cref="Lazy{T}"/> class.
         /// </summary>
         /// <param name="calculation">The calculation the new future will do on-demand.</param>
         /// <remarks><paramref name="calculation"/> should be side-effect-free.</remarks>
         public Lazy(Func<T> calculation) {
             _calculation = calculation;
-            _result = null;
+            _syncRoot = new object();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Lazy{T}"/> class which already holds
-        /// a result.
+        /// Initializes a new instance of the <see cref="Lazy{T}"/> class which already
+        /// holds a value.
         /// </summary>
-        /// <param name="result">The result.</param>
-        public Lazy(Result<T> result) {
+        /// <param name="value">The result.</param>
+        public Lazy(T value) {
             _calculation = null;
-            _result = result;
+            _value = value;
         }
 
         /// <summary>
-        /// Gets the result of the future, whether it is failed or successful. If the result isn't 
-        /// available yet, blocks the thread until it is obtained.
+        /// Gets the value of the lazy calculation.
         /// </summary>
-        /// <value>The result.</value>
-        public Result<T> Result {
+        /// <value>The value.</value>
+        /// <remarks>If the calculation has not been done before, it is called and its
+        /// result stored.</remarks>
+        public T Value {
             get {
-                if (!IsCompleted) {
-                    lock (_syncRoot) {
-                        _result = Core.Result.Try(_calculation);
-                        _calculation = null;                        
-                    }
-                }
-                return _result;
+                Force();
+                return _value;
+            }
+        }
+
+        /// <summary>
+        /// Forces calculation of this lazy calculation's value.
+        /// </summary>
+        internal void Force() {
+            if (IsCompleted) return;
+            lock (_syncRoot) {
+                if (IsCompleted) return;
+                _value = _calculation();
+                _calculation = null;
             }
         }
 
@@ -69,18 +78,12 @@ namespace FP.Core {
         /// <value>
         /// <c>true</c> if this lazy value has been forced; otherwise, <c>false</c>.
         /// </value>
-        private bool IsCompleted {
+        public bool IsCompleted {
             get { return _calculation == null; }
         }
 
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
         public override string ToString() {
-            return IsCompleted ? _result.ToString() : "Lazy<" + typeof(T).Name + ">";
+            return IsCompleted ? _value.ToString() : "Lazy";
         }
 
         /// <summary>
@@ -88,8 +91,8 @@ namespace FP.Core {
         /// </summary>
         /// <param name="lazy">The lazy value.</param>
         /// <returns>The result of forcing this lazy value.</returns>
-        public static explicit operator T(Lazy<T> lazy) {
-            return lazy.Result.Value;
+        public static implicit operator T(Lazy<T> lazy) {
+            return lazy.Value;
         }
 
         /// <summary>
@@ -98,16 +101,7 @@ namespace FP.Core {
         /// <param name="t">The lazy value.</param>
         /// <returns>The ready future with result <paramref name="t"/>.</returns>
         public static implicit operator Lazy<T>(T t) {
-            return new Lazy<T>(Core.Result.Success(t));
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Result{T}"/> to <see cref="Lazy{T}"/>.
-        /// </summary>
-        /// <param name="result">The lazy value.</param>
-        /// <returns>The ready future with result <paramref name="result"/>.</returns>
-        public static implicit operator Lazy<T>(Result<T> result) {
-            return new Lazy<T>(result);
+            return new Lazy<T>(t);
         }
 
         /// <summary>
@@ -115,8 +109,8 @@ namespace FP.Core {
         /// </summary>
         /// <param name="lazy">The lazy value.</param>
         /// <returns>The calculation needed to return the value.</returns>
-        public static implicit operator Func<T>(Lazy<T> lazy) {
-            return lazy.IsCompleted ? () => lazy._result.Value : lazy._calculation;
+        public static explicit operator Func<T>(Lazy<T> lazy) {
+            return lazy.IsCompleted ? () => lazy._value : lazy._calculation;
         }
 
         /// <summary>
@@ -128,6 +122,33 @@ namespace FP.Core {
         /// <returns>The lazy future with the specified calculation.</returns>
         public static implicit operator Lazy<T>(Func<T> calculation) {
             return new Lazy<T>(calculation);
+        }
+    }
+
+    /// <summary>
+    /// A convenience class for creating lazy values.
+    /// </summary>
+    public static class Lazy {
+        /// <summary>
+        /// Returns a lazy value based on the specified calculation.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="calculation">The calculation.</param>
+        /// <returns>The lazy value.</returns>
+        public static Lazy<T> New<T>(Func<T> calculation) {
+            return new Lazy<T>(calculation);
+        }
+
+        /// <summary>
+        /// Returns a lazy value wrapping the specified value. This should
+        /// rarely be necessary due to implicit conversion from 
+        /// <typeparamref name="T"/> to <see cref="Lazy{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="value">The value.</param>
+        /// <returns>The lazy value.</returns>
+        public static Lazy<T> New<T>(T value) {
+            return new Lazy<T>(value);
         }
     }
 }

@@ -829,8 +829,7 @@ namespace FP.Core {
         /// </exception>
         public static IEnumerable<T> StripPrefix<T>(
             this IEnumerable<T> sequence, IEnumerable<T> prefix) {
-            using (
-                IEnumerator<T> enumerator = sequence.GetEnumerator()) {
+            using (IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 foreach (T t in prefix) {
                     if (!enumerator.MoveNext() ||
                         !t.Equals(enumerator.Current))
@@ -864,8 +863,7 @@ namespace FP.Core {
                 throw new ArgumentNullException("prefix");
             if (sequence == null)
                 throw new ArgumentNullException("sequence");
-            using (
-                IEnumerator<T> enumerator = sequence.GetEnumerator()) {
+            using (IEnumerator<T> enumerator = sequence.GetEnumerator()) {
                 foreach (T t in prefix) {
                     if (!enumerator.MoveNext() ||
                         !t.Equals(enumerator.Current))
