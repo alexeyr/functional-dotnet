@@ -48,7 +48,7 @@ namespace FP.Collections {
         /// <param name="data">The data.</param>
         /// <param name="count">The count.</param>
         /// <param name="branches">The branches.</param>
-        public Vector(T data, int count, Vector<T>[] branches) {
+        private Vector(T data, int count, Vector<T>[] branches) {
             _data = data;
             _count = count;
             _branches = branches;

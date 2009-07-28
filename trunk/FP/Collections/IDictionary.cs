@@ -13,6 +13,7 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 
+using System;
 using System.Collections.Generic;
 using FP.Core;
 
@@ -38,17 +39,29 @@ namespace FP.Collections {
         /// <summary>
         /// Looks up the specified key.
         /// </summary>
-        /// <value><see cref="Optional.Some{T}"/><c>(value)</c> if the dictionary contains the specified key 
-        /// and associates <c>value</c> to it and <see cref="Optional.None{T}"/> otherwise.</value>
+        /// <value><see cref="Optional.Some{T}"/><c>(value)</c> if the
+        /// dictionary contains the specified key  and associates <c>value</c>
+        /// to it and <see cref="Optional.None{T}"/> otherwise.</value>
         Optional<TValue> this[TKey key] { get; }
 
         /// <summary>
         /// Adds the specified key with the specified value.
         /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>The resulting dictionary.</returns>
-        TDictionary Add(TKey key, TValue value);
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <param name="combiner">
+        /// The function to be called if the given key is already present. The
+        /// arguments are the key, the current value, and the added value. The
+        /// result is inserted in place of the current value.
+        /// </param>
+        /// <returns>
+        /// The resulting dictionary.
+        /// </returns>
+        TDictionary Add(TKey key, TValue value, Func<TKey, TValue, TValue, TValue> combiner);
 
         /// <summary>
         /// Removes the specified key and the associated value.
@@ -70,9 +83,10 @@ namespace FP.Collections {
         IEnumerable<TValue> Values { get; }
 
         /// <summary>
-        /// Gets the key-value pairs. Doesn't guarantee anything about the order in which they are yielded.
+        /// Gets the key-value pairs. Doesn't guarantee anything about the order
+        /// in which they are yielded.
         /// </summary>
         /// <value>The pairs.</value>
-        IEnumerable<KeyValuePair<TKey, TValue>> Pairs { get; }
+        IEnumerable<Tuple<TKey, TValue>> KeyValuePairs { get; }
         }
 }
