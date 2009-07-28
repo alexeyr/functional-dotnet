@@ -19,7 +19,7 @@ using FP.Text;
 using Xunit;
 
 namespace FPTests {
-    public partial class StringTests {
+    public class StringTests {
         [Fact]
         public void Test_EmptyStringContainsNoWords() {
             Assert.Empty("".Words());

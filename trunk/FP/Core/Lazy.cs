@@ -14,20 +14,20 @@
 */
 
 using System;
-using FP.Core;
 
-namespace FP.Future {
+namespace FP.Core {
     /// <summary>
     /// Represents a suspended computation that will be performed once, in the thread
     /// which requests it, to determine the value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Lazy<T> : Future<T> {
+    public class Lazy<T> {
+        private readonly object _syncRoot = new object();
         private Result<T> _result;
         private Func<T> _calculation;
 
         /// <summary>
-        /// Initializes a new instance of a <see cref="Lazy{T}"/> <see cref="Future{T}"/>.
+        /// Initializes a new instance of a <see cref="Lazy{T}"/>
         /// </summary>
         /// <param name="calculation">The calculation the new future will do on-demand.</param>
         /// <remarks><paramref name="calculation"/> should be side-effect-free.</remarks>
@@ -47,19 +47,11 @@ namespace FP.Future {
         }
 
         /// <summary>
-        /// Gets a value indicating whether this future is lazy (and not forced yet).
-        /// </summary>
-        /// <value><c>true</c> if this future is not forced yet; otherwise, <c>false</c>.</value>
-        public override bool IsLazy {
-            get { return !IsCompleted; }
-        }
-
-        /// <summary>
         /// Gets the result of the future, whether it is failed or successful. If the result isn't 
         /// available yet, blocks the thread until it is obtained.
         /// </summary>
         /// <value>The result.</value>
-        public override Result<T> Result {
+        public Result<T> Result {
             get {
                 if (!IsCompleted) {
                     lock (_syncRoot) {
@@ -77,16 +69,18 @@ namespace FP.Future {
         /// <value>
         /// <c>true</c> if this lazy value has been forced; otherwise, <c>false</c>.
         /// </value>
-        public override bool IsCompleted {
+        private bool IsCompleted {
             get { return _calculation == null; }
         }
 
         /// <summary>
-        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="Future{T}"/>.
+        /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
         public override string ToString() {
-            return ToStringHelper("Lazy");
+            return IsCompleted ? _result.ToString() : "Lazy<" + typeof(T).Name + ">";
         }
 
         /// <summary>
@@ -95,7 +89,7 @@ namespace FP.Future {
         /// <param name="lazy">The lazy value.</param>
         /// <returns>The result of forcing this lazy value.</returns>
         public static explicit operator T(Lazy<T> lazy) {
-            return lazy.Await();
+            return lazy.Result.Value;
         }
 
         /// <summary>
@@ -117,7 +111,7 @@ namespace FP.Future {
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="FP.Future.Lazy{T}"/> to <see cref="System.Func{T}"/>.
+        /// Performs an implicit conversion from <see cref="Lazy{T}"/> to <see cref="System.Func{T}"/>.
         /// </summary>
         /// <param name="lazy">The lazy value.</param>
         /// <returns>The calculation needed to return the value.</returns>
@@ -127,7 +121,7 @@ namespace FP.Future {
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.Func{T}"/> to 
-        /// <see cref="FP.Future.Lazy{T}"/>.
+        /// <see cref="Lazy{T}"/>.
         /// </summary>
         /// <param name="calculation">The calculation the returned future will do
         /// on-demand.</param>

@@ -24,7 +24,6 @@ using XunitExtensions;
 
 namespace FPTests {
     public partial class RASequenceTests {
-
         [PexMethod]
         [PexGenericArguments(new[] {typeof (int)})]
         public void Test_IsEmptyWorksCorrectly<T>(T[] arr) {
