@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{891E86F6-A992-4B42-B88A-F1F46EA0FCE1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FP</RootNamespace>
+    <AssemblyName>FP</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Pex.Framework, Version=0.8.31021.3, Culture=neutral, PublicKeyToken=76a274db078248c8, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Collections\FingerTreeOrdered.cs" />
+    <Compile Include="Collections\FingerTreeSized.cs" />
+    <Compile Include="Collections\ICatenable.cs" />
+    <Compile Include="Collections\ICollection.cs" />
+    <Compile Include="Collections\IInsertableRandomAccessSequence.cs" />
+    <Compile Include="Collections\IAdjustableRandomAccessSequence.cs" />
+    <Compile Include="Collections\IRandomAccess.cs" />
+    <Compile Include="Collections\IReversible.cs" />
+    <Compile Include="Collections\PriorityQueue.cs" />
+    <Compile Include="Collections\PriorityValuePair.cs" />
+    <Compile Include="Collections\Split.cs" />
+    <Compile Include="Collections\Vector.cs" />
+    <Compile Include="Collections\IReversibleEnumerable.cs" />
+    <Compile Include="Collections\ISplittable.cs" />
+    <Compile Include="Core\Combinators\Combinators.cs" />
+    <Compile Include="Core\CPS\ActionCPS.cs" />
+    <Compile Include="Core\CPS\ActionFailureException.cs" />
+    <Compile Include="Core\CPS\Cont.cs" />
+    <Compile Include="Core\CPS\Actions.cs" />
+    <Compile Include="Core\IRef.cs" />
+    <Compile Include="Core\LazyValue.cs" />
+    <Compile Include="Core\OptionalNotNull.cs" />
+    <Compile Include="Core\Ref.cs" />
+    <Compile Include="Core\RefBase.cs" />
+    <Compile Include="Core\RefBaseEx.cs" />
+    <Compile Include="Core\RefBool.cs" />
+    <Compile Include="Core\RefDouble.cs" />
+    <Compile Include="Core\RefInt.cs" />
+    <Compile Include="Core\RefIntPtr.cs" />
+    <Compile Include="Core\RefLocked.cs" />
+    <Compile Include="Core\RefLong.cs" />
+    <Compile Include="Core\RefObject.cs" />
+    <Compile Include="Core\RefFloat.cs" />
+    <Compile Include="Core\RefValidationException.cs" />
+    <Compile Include="Future\Concurrent.cs" />
+    <Compile Include="Future\CyclicFutureException.cs" />
+    <Compile Include="Future\EventArgs.cs" />
+    <Compile Include="Future\Future.cs" />
+    <Compile Include="Future\Lazy.cs" />
+    <Compile Include="Future\Promise.cs" />
+    <Compile Include="Future\PromiseAlreadyFulfilledException.cs" />
+    <Compile Include="Future\Status.cs" />
+    <Compile Include="Text\ArrayCharSequence.cs" />
+    <Compile Include="Text\BoyerMooreHorspool.cs" />
+    <Compile Include="Text\CharSequences.cs" />
+    <Compile Include="Text\FTRope.cs" />
+    <Compile Include="Collections\IDeque.cs" />
+    <Compile Include="Collections\IRandomAccessSequence.cs" />
+    <Compile Include="Text\ConcatRope.cs" />
+    <Compile Include="Text\ICharSequence.cs" />
+    <Compile Include="Text\FlatRope.cs" />
+    <Compile Include="Collections\IEnumerableFrom.cs" />
+    <Compile Include="Text\IRope.cs" />
+    <Compile Include="Text\RepeatedCharSequence.cs" />
+    <Compile Include="Text\ReverseRope.cs" />
+    <Compile Include="Text\Rope.cs" />
+    <Compile Include="Core\Either.cs" />
+    <Compile Include="Collections\FingerTreeHelpers.cs" />
+    <Compile Include="Collections\FingerTree.cs" />
+    <Compile Include="Collections\FingerTreeNode.cs" />
+    <Compile Include="Collections\Grouping.cs" />
+    <Compile Include="Collections\IFoldable.cs" />
+    <Compile Include="Collections\IDictionary.cs" />
+    <Compile Include="Collections\IList.cs" />
+    <Compile Include="Collections\IMeasured.cs" />
+    <Compile Include="Collections\LazyList.cs" />
+    <Compile Include="Collections\Lists.cs" />
+    <Compile Include="Collections\Monoid.cs" />
+    <Compile Include="Collections\OrderedSequence.cs" />
+    <Compile Include="Core\Result.cs" />
+    <Compile Include="Collections\RandomAccessSequence.cs" />
+    <Compile Include="Core\Tuple.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tuple.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Unit.cs" />
+    <Compile Include="Core\Comparers.cs" />
+    <Compile Include="Core\Continuations.cs" />
+    <Compile Include="Core\Enumerables.cs" />
+    <Compile Include="Core\Enumerables2.cs" />
+    <Compile Include="Core\Enumerators.cs" />
+    <Compile Include="Core\Functions.cs" />
+    <Compile Include="Core\Optional.cs" />
+    <Compile Include="Core\Ints.cs" />
+    <Compile Include="Linq\ContinuationMonad.cs" />
+    <Compile Include="Linq\OptionalMonad.cs" />
+    <Compile Include="Linq\ResultMonad.cs" />
+    <Compile Include="Core\NotFoundException.cs" />
+    <Compile Include="Core\Pair.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Text\Ropes.cs" />
+    <Compile Include="Text\StringCharSequence.cs" />
+    <Compile Include="Text\Strings.cs" />
+    <Compile Include="Core\Switch.cs" />
+    <Compile Include="Core\Triple.cs" />
+    <Compile Include="Text\CharSequenceRope.cs" />
+    <Compile Include="Util\Arrays.cs" />
+    <Compile Include="Validation\FPValidationExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Core\Tuple.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Tuple.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FP.Validation\FP.Validation.csproj">
+      <Project>{68D038C8-5F0A-4DE5-931C-7BE476A4EA37}</Project>
+      <Name>FP.Validation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
