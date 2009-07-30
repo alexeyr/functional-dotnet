@@ -1,7 +1,7 @@
 /*
 * IImmutableDictionary.cs is part of functional-dotnet project
 * 
-* Copyright (c) 2008 Alexey Romanov
+* Copyright (c) 2008-2009 Alexey Romanov
 * All rights reserved.
 *
 * This source file is available under The New BSD License.
@@ -25,7 +25,7 @@ namespace FP.Collections.Persistent {
     /// <typeparam name="TValue">The type of values.</typeparam>
     /// <typeparam name="TDictionary">The type of the dictionary.</typeparam>
     /// <seealso cref="System.Collections.Generic.IDictionary{TKey,TValue}"/>
-    public interface IDictionary<TKey, TValue, TDictionary>
+    public interface IDictionary<TKey, TValue, TDictionary> : ICollection<Tuple<TKey, TValue>>
         where TDictionary : IDictionary<TKey, TValue, TDictionary> {
         /// <summary>
         /// Determines whether this dictionary contains the specified key.
@@ -39,8 +39,9 @@ namespace FP.Collections.Persistent {
         /// <summary>
         /// Looks up the specified key.
         /// </summary>
+        /// <param name="key">The key.</param>
         /// <value><see cref="Optional.Some{T}"/><c>(value)</c> if the
-        /// dictionary contains the specified key  and associates <c>value</c>
+        /// dictionary contains the specified key and associates <c>value</c>
         /// to it and <see cref="Optional.None{T}"/> otherwise.</value>
         Optional<TValue> this[TKey key] { get; }
 
@@ -64,11 +65,50 @@ namespace FP.Collections.Persistent {
         TDictionary Add(TKey key, TValue value, Func<TKey, TValue, TValue, TValue> combiner);
 
         /// <summary>
+        /// Adds the specified key with the specified value. If the key is
+        /// already present, replaces the current value.
+        /// </summary>
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <returns>
+        /// The resulting dictionary.
+        /// </returns>
+        TDictionary Add(TKey key, TValue value);
+
+        /// <summary>
         /// Removes the specified key and the associated value.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>The resulting dictionary.</returns>
         TDictionary Remove(TKey key);
+
+        /// <summary>
+        /// Updates the specified key with the given function. If the dictionary
+        /// doesn't contain the key, it is returned unchanged; if 
+        /// <code>updater(key, currentValue)</code> returns <code>None</code>, the key is removed;
+        /// if it returns <code>Some(newValue)</code>, the current value is replaced with newValue.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="updater">The updating function.</param>
+        /// <returns>The resulting dictionary.</returns>
+        TDictionary Update(TKey key, Func<TKey, TValue, Optional<TValue>> updater);
+
+        /// <summary>
+        /// Updates the specified key with the given function.  If the
+        /// dictionary doesn't contain the key, <code>updater(key, None)</code>
+        /// is called to provide the new value; if it does, 
+        /// <code>updater(key, Some(currentValue))</code> is. If the call
+        /// returns <code>None</code>, the key is removed; if it returns 
+        /// <code>Some(newValue)</code>, the key is associated with newValue.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="updater">The updating function.</param>
+        /// <returns>The resulting dictionary.</returns>
+        TDictionary Update(TKey key, Func<TKey, Optional<TValue>, Optional<TValue>> updater);
 
         /// <summary>
         /// Gets the keys. Doesn't guarantee anything about the order in which they are yielded.
@@ -81,12 +121,5 @@ namespace FP.Collections.Persistent {
         /// </summary>
         /// <value>The values.</value>
         IEnumerable<TValue> Values { get; }
-
-        /// <summary>
-        /// Gets the key-value pairs. Doesn't guarantee anything about the order
-        /// in which they are yielded.
-        /// </summary>
-        /// <value>The pairs.</value>
-        IEnumerable<Tuple<TKey, TValue>> KeyValuePairs { get; }
-        }
+    }
 }

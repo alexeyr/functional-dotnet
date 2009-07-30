@@ -54,8 +54,10 @@
     <Compile Include="Collections\Persistent\ICollection.cs" />
     <Compile Include="Collections\Persistent\IInsertableRandomAccessSequence.cs" />
     <Compile Include="Collections\Persistent\IAdjustableRandomAccessSequence.cs" />
+    <Compile Include="Collections\Persistent\ICombinableDictionary.cs" />
     <Compile Include="Collections\Persistent\IRandomAccess.cs" />
     <Compile Include="Collections\Persistent\IReversible.cs" />
+    <Compile Include="Collections\Persistent\ISortedDictionary.cs" />
     <Compile Include="Collections\Persistent\PriorityQueue.cs" />
     <Compile Include="Collections\Persistent\PriorityValuePair.cs" />
     <Compile Include="Collections\Persistent\Split.cs" />
@@ -154,7 +156,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" AddHeaderCommentProject="False" />
+      <UserProperties AddHeaderCommentProject="False" HeaderCommentProject="// Author: %user name%$LineBreak$// Project: %project%$LineBreak$// Path: %path%$LineBreak$// Creation date: %creation date%$LineBreak$// Last modified: %last modified%$LineBreak$" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
