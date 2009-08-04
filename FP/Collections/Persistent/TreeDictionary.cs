@@ -245,43 +245,6 @@ namespace FP.Collections.Persistent {
             }
         }
 
-        private TreeDictionary<TKey, TValue, TComparer> AddRecursiveShortcut(TKey key, TValue value, Func<TValue, TValue> combiner) {
-            try {
-                bool needRebalance = false;
-                return AddRecursiveShortcut1(key, value, combiner, ref needRebalance);
-            }
-            catch (ReturnThisException) {
-                return this;
-            }
-        }
-
-        private TreeDictionary<TKey, TValue, TComparer> AddRecursiveShortcut1(TKey key, TValue value, Func<TValue, TValue> combiner, ref bool needRebalance) {
-            if (_count == 0) {
-                needRebalance = true;
-                return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
-            }
-            int comparison = _comparer.Compare(key, _key);
-            if (comparison == 0) {
-                var newValue = combiner(_value);
-                if (EqualityComparer<TValue>.Default.Equals(_value, value))
-                    throw new ReturnThisException();
-                needRebalance = false;
-                return ReplaceValueDontCheckEquality(newValue);
-            }
-            if (comparison < 0) {
-                var dict = _left.AddRecursiveShortcut1(key, value, combiner, ref needRebalance);
-                return needRebalance
-                           ? Balance(dict, _right)
-                           : Balanced(dict, _right);
-            }
-            else {
-                var dict = _right.AddRecursiveShortcut1(key, value, combiner, ref needRebalance);
-                return needRebalance
-                           ? Balance(_left, dict)
-                           : Balanced(_left, dict);
-            }
-        }
-
         /// <summary>
         /// Adds the specified key with the specified value. If the key is
         /// already present, replaces the current value.
@@ -303,11 +266,6 @@ namespace FP.Collections.Persistent {
         public TreeDictionary<TKey, TValue, TComparer> AddStack(TKey key, TValue value) {
             // TODO: Inline _after_ comparing performance:
             return AddStack(key, value, _ => value);
-        }
-
-        public TreeDictionary<TKey, TValue, TComparer> AddShortcut(TKey key, TValue value) {
-            // TODO: Inline _after_ comparing performance:
-            return AddRecursiveShortcut(key, value, _ => value);
         }
 
         /// <summary>
