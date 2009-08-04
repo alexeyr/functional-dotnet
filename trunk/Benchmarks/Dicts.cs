@@ -29,7 +29,6 @@ namespace Benchmarks {
                 "Compare adding to dictionary by different methods without repeats")
                 .Plus(AddStack, "Iterative")
                 .Plus(AddRecursive, "Recursive -- no shortcut")
-                .Plus(AddRecursiveShortcut, "Recursive -- shortcut")
                 .RunTests(Ints.Range(1, 2 * N + 1, 2), 2 * N + 2);
 
             results1.Display(ResultColumns.All, results1.FindBest());
@@ -38,7 +37,6 @@ namespace Benchmarks {
                 "Compare adding to dictionary by different methods with repeats")
                 .Plus(AddStack, "Iterative")
                 .Plus(AddRecursive, "Recursive -- no shortcut")
-                .Plus(AddRecursiveShortcut, "Recursive -- shortcut")
                 .RunTests(Ints.Range(0, 2 * N, 2), N + 1);
 
             results2.Display(ResultColumns.All, results1.FindBest());
@@ -59,16 +57,6 @@ namespace Benchmarks {
 
             foreach (var i in arg) {
                 dict1 = dict1.Add(i, i);
-            }
-
-            return dict1.Count;
-        }
-
-        private static int AddRecursiveShortcut(IEnumerable<int> arg) {
-            var dict1 = dict;
-
-            foreach (var i in arg) {
-                dict1 = dict1.AddShortcut(i, i);
             }
 
             return dict1.Count;
