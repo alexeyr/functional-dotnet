@@ -19,7 +19,7 @@ using MiniBench;
 
 namespace Benchmarks {
     public class Dicts {
-        private const int N = 5000;
+        private const int N = 500;
 
         private static readonly TreeDictionary<int, int, DefaultComparer<int>> dict =
             TreeDictionary.Empty<int, int>().AddAll(Ints.Range(0, 2 * N, 2).Zip(Ints.Range(0, 2 * N, 2)));
@@ -30,24 +30,18 @@ namespace Benchmarks {
                 .Plus(AddStack, "Iterative")
                 .Plus(AddRecursive, "Recursive -- no shortcut")
                 .Plus(AddRecursiveShortcut, "Recursive -- shortcut")
-                .RunTests(Ints.Range(1, 2 * N + 1, 2), 2 * N + 2)
-                .ScaleByBest(ScalingMode.VaryDuration);
+                .RunTests(Ints.Range(1, 2 * N + 1, 2), 2 * N + 2);
 
-            results1.Display(
-                ResultColumns.NameAndDuration | ResultColumns.Score,
-                results1.FindBest());
+            results1.Display(ResultColumns.All, results1.FindBest());
 
             var results2 = new TestSuite<IEnumerable<int>, int>(
                 "Compare adding to dictionary by different methods with repeats")
                 .Plus(AddStack, "Iterative")
                 .Plus(AddRecursive, "Recursive -- no shortcut")
                 .Plus(AddRecursiveShortcut, "Recursive -- shortcut")
-                .RunTests(Ints.Range(0, 2 * N, 2), N + 1)
-                .ScaleByBest(ScalingMode.VaryDuration);
+                .RunTests(Ints.Range(0, 2 * N, 2), N + 1);
 
-            results2.Display(
-                ResultColumns.NameAndDuration | ResultColumns.Score,
-                results2.FindBest());
+            results2.Display(ResultColumns.All, results1.FindBest());
         }
 
         private static int AddStack(IEnumerable<int> arg) {
