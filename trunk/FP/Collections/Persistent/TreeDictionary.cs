@@ -27,6 +27,7 @@ namespace FP.Collections.Persistent {
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <typeparam name="TComparer">The type of the comparer.</typeparam>
+    [Serializable]
     public class TreeDictionary<TKey, TValue, TComparer> :
         ISortedDictionary<TKey, TValue, TComparer, TreeDictionary<TKey, TValue, TComparer>>,
         ICombinableDictionary<TKey, TValue, TreeDictionary<TKey, TValue, TComparer>>,
@@ -161,6 +162,7 @@ namespace FP.Collections.Persistent {
 
         public TreeDictionary<TKey, TValue, TComparer> Add(
             TKey key, TValue value, Func<TValue, TValue> combiner) {
+            // Max height is under 3*log(Count), so recursive methods shouldn't cause a stack overflow
             bool needRebalance = false;
             return AddRecursive(key, value, combiner, ref needRebalance);
             // return AddStack(key, value, combiner);
@@ -296,6 +298,16 @@ namespace FP.Collections.Persistent {
         public TreeDictionary<TKey, TValue, TComparer> Add(TKey key, TValue value) {
             // TODO: Inline _after_ comparing performance:
             return Add(key, value, _ => value);
+        }
+
+        public TreeDictionary<TKey, TValue, TComparer> AddStack(TKey key, TValue value) {
+            // TODO: Inline _after_ comparing performance:
+            return AddStack(key, value, _ => value);
+        }
+
+        public TreeDictionary<TKey, TValue, TComparer> AddShortcut(TKey key, TValue value) {
+            // TODO: Inline _after_ comparing performance:
+            return AddRecursiveShortcut(key, value, _ => value);
         }
 
         /// <summary>
