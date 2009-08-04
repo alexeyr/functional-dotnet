@@ -25,7 +25,7 @@ namespace FP.Core
                     #region struct Tuple<T1, T2>
     /// <summary> An immutable tuple with 2 fields. </summary>
     [Serializable]
-    [DebuggerDisplay("{AsString()}")]
+    [DebuggerDisplay("{ToString()}")]
     [DebuggerStepThrough]
     public struct Tuple<T1, T2> : IEquatable<Tuple<T1, T2>>
     {
@@ -114,7 +114,7 @@ namespace FP.Core
                   #region struct Tuple<T1, T2, T3>
     /// <summary> An immutable tuple with 3 fields. </summary>
     [Serializable]
-    [DebuggerDisplay("{AsString()}")]
+    [DebuggerDisplay("{ToString()}")]
     [DebuggerStepThrough]
     public struct Tuple<T1, T2, T3> : IEquatable<Tuple<T1, T2, T3>>
     {
@@ -212,7 +212,7 @@ namespace FP.Core
                   #region class Tuple<T1, T2, T3, T4>
     /// <summary> An immutable tuple with 4 fields. </summary>
     [Serializable]
-    [DebuggerDisplay("{AsString()}")]
+    [DebuggerDisplay("{ToString()}")]
     [DebuggerStepThrough]
     public sealed class Tuple<T1, T2, T3, T4> : IEquatable<Tuple<T1, T2, T3, T4>>
     {
@@ -319,7 +319,7 @@ namespace FP.Core
                   #region class Tuple<T1, T2, T3, T4, T5>
     /// <summary> An immutable tuple with 5 fields. </summary>
     [Serializable]
-    [DebuggerDisplay("{AsString()}")]
+    [DebuggerDisplay("{ToString()}")]
     [DebuggerStepThrough]
     public sealed class Tuple<T1, T2, T3, T4, T5> : IEquatable<Tuple<T1, T2, T3, T4, T5>>
     {

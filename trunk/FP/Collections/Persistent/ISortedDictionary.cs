@@ -14,6 +14,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using FP.Core;
 
 namespace FP.Collections.Persistent {
@@ -22,14 +23,17 @@ namespace FP.Collections.Persistent {
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <typeparam name="TComparer">The type of the comparer. The comparer must
+    /// be stateless and have a default constructor.</typeparam>
     /// <typeparam name="TDictionary">The type of the dictionary.</typeparam>
-    /// <remarks><see cref="IDictionary{TKey,TValue,TDictionary}.Keys"/> and 
+    /// <remarks><see cref="IDictionary{TKey,TValue,TDictionary}.Keys"/> and
     /// <see cref="IDictionary{TKey,TValue,TDictionary}.Values"/> are guaranteed
     /// to return the results in ascending order of keys.</remarks>
-    public interface ISortedDictionary<TKey, TValue, TDictionary> :
-        IDictionary<TKey, TValue, TDictionary>
-        where TDictionary : ISortedDictionary<TKey, TValue, TDictionary>
-        where TKey : IComparable<TKey> {
+    public interface ISortedDictionary<TKey, TValue, TComparer, TDictionary> :
+        IDictionary<TKey, TValue, TDictionary>,
+        IReversibleEnumerable<Tuple<TKey, TValue>>
+        where TDictionary : ISortedDictionary<TKey, TValue, TComparer, TDictionary>
+        where TComparer : IComparer<TKey>, new() {
         /// <summary>
         /// Retrieves the minimum key, associated value, and the dictionary
         /// containing all other elements.

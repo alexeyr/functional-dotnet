@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using FP.Collections.Persistent;
 using FP.HaskellNames;
 
@@ -390,6 +391,10 @@ namespace FP.Core {
         public TAcc FoldRight<TAcc>(Func<T, TAcc, TAcc> binOp, TAcc initial) {
             return HasValue ? binOp(_value, initial) : initial;
         } // FoldRight(, binOp, initial)
+
+        public override string ToString() {
+            return HasValue ? "Some(" + _value + ")" : "None";
+        }
     } // struct Optional
 
     /// <summary>
