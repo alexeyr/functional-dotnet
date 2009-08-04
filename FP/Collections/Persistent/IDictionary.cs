@@ -28,13 +28,10 @@ namespace FP.Collections.Persistent {
     public interface IDictionary<TKey, TValue, TDictionary> : ICollection<Tuple<TKey, TValue>>
         where TDictionary : IDictionary<TKey, TValue, TDictionary> {
         /// <summary>
-        /// Determines whether this dictionary contains the specified key.
+        /// Gets the number of elements in the dictionary.
         /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>
-        /// <c>true</c> if this dictionary contains the specified key; otherwise, <c>false</c>.
-        /// </returns>
-        bool Contains(TKey key);
+        /// <value>The count.</value>
+        int Count { get; }
 
         /// <summary>
         /// Looks up the specified key.
@@ -56,13 +53,13 @@ namespace FP.Collections.Persistent {
         /// </param>
         /// <param name="combiner">
         /// The function to be called if the given key is already present. The
-        /// arguments are the key, the current value, and the added value. The
-        /// result is inserted in place of the current value.
+        /// argument is the value currently associated with the key, the result is the value
+        /// to be used in the new dictionary.
         /// </param>
         /// <returns>
         /// The resulting dictionary.
         /// </returns>
-        TDictionary Add(TKey key, TValue value, Func<TKey, TValue, TValue, TValue> combiner);
+        TDictionary Add(TKey key, TValue value, Func<TValue, TValue> combiner);
 
         /// <summary>
         /// Adds the specified key with the specified value. If the key is
@@ -80,7 +77,8 @@ namespace FP.Collections.Persistent {
         TDictionary Add(TKey key, TValue value);
 
         /// <summary>
-        /// Removes the specified key and the associated value.
+        /// Removes the specified key and the associated value. If the
+        /// dictionary doesn't contain this key, it is returned unchanged.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>The resulting dictionary.</returns>
@@ -109,6 +107,26 @@ namespace FP.Collections.Persistent {
         /// <param name="updater">The updating function.</param>
         /// <returns>The resulting dictionary.</returns>
         TDictionary Update(TKey key, Func<TKey, Optional<TValue>, Optional<TValue>> updater);
+
+        /// <summary>
+        /// Adds the specified key with the specified value.
+        /// </summary>
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <param name="combiner">
+        /// The function to be called if the given key is already present. The
+        /// arguments are the key, the current value, and the added value. The
+        /// result is inserted in place of the current value.
+        /// </param>
+        /// <returns>
+        /// The resulting dictionary.
+        /// </returns>
+        Tuple<TDictionary, Optional<TValue>> LookupAndUpdate(
+            TKey key, TValue value, Func<TKey, Optional<TValue>, TValue, Optional<TValue>> combiner);
 
         /// <summary>
         /// Gets the keys. Doesn't guarantee anything about the order in which they are yielded.

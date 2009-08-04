@@ -53,7 +53,7 @@ namespace FP.Core {
         /// <summary>
         /// Converts a <see cref="IComparer{T}"/> to a <see cref="IEqualityComparer{T}"/>.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type being compared.</typeparam>
         /// <param name="comparer">The comparer.</param>
         /// <returns></returns>
         public static IEqualityComparer<T> ToEqualityComparer<T>(this IComparer<T> comparer) {
@@ -83,7 +83,7 @@ namespace FP.Core {
     /// The comparer given by a function.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class FunctorComparer<T> : IComparer<T> {
+    public sealed class FunctorComparer<T> : IComparer<T> {
         private readonly Comparison<T> _comparison;
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace FP.Core {
     /// The comparer given by a function.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class FunctorEqualityComparer<T> : IEqualityComparer<T> {
+    public sealed class FunctorEqualityComparer<T> : IEqualityComparer<T> {
         private readonly Func<T, T, bool> _comparison;
 
         /// <summary>
@@ -126,30 +126,31 @@ namespace FP.Core {
             _comparison = comparison;
         }
 
-        ///<summary>
-        ///Determines whether the specified objects are equal.
-        ///</summary>
-        ///
-        ///<returns>
-        ///true if the specified objects are equal; otherwise, false.
-        ///</returns>
-        ///
-        ///<param name="x">The first object of type <typeparamref name="T" /> to compare.</param>
-        ///<param name="y">The second object of type <typeparamref name="T" /> to compare.</param>
+        /// <summary>
+        /// Determines whether the specified objects are equal.
+        /// </summary>
+        /// <returns>
+        /// <c>true</c> if the specified objects are equal; otherwise, <c>false</c>.
+        /// </returns>
+        /// <param name="x">The first object of type <typeparamref name="T" />
+        /// to compare.</param>
+        /// <param name="y">The second object of type <typeparamref name="T" />
+        /// to compare.</param>
         public bool Equals(T x, T y) {
             return _comparison(x, y);
         }
 
-        ///<summary>
-        ///Returns a hash code for the specified object.
-        ///</summary>
-        ///
-        ///<returns>
-        ///A hash code for the specified object.
-        ///</returns>
-        ///
-        ///<param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
-        ///<exception cref="T:System.ArgumentNullException">The type of <paramref name="obj" /> is a reference type and <paramref name="obj" /> is null.</exception>
+        /// <summary>
+        /// Returns a hash code for the specified object.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the specified object.
+        /// </returns>
+        /// <param name="obj">The <see cref="T:System.Object" /> for which a
+        /// hash code is to be returned.</param>
+        /// <exception cref= T:System.ArgumentNullException >The type of 
+        /// <paramref name= obj  /> is a reference type and 
+        /// <paramref name= obj  /> is null.</exception>
         public int GetHashCode(T obj) {
             return obj.GetHashCode();
         }
@@ -159,7 +160,7 @@ namespace FP.Core {
     /// A reverse comparer.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ReverseComparer<T> : IComparer<T> {
+    public sealed class ReverseComparer<T> : IComparer<T> {
         private readonly IComparer<T> _baseComparer;
 
         /// <summary>
@@ -170,18 +171,45 @@ namespace FP.Core {
             _baseComparer = baseComparer;
         }
 
-        ///<summary>
-        ///Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
-        ///</summary>
-        ///
-        ///<returns>
-        ///Value Condition Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.
-        ///</returns>
-        ///
-        ///<param name="x">The first object to compare.</param>
-        ///<param name="y">The second object to compare.</param>
+        /// <summary>
+        /// Compares two objects and returns a value indicating whether one is
+        /// less than, equal to, or greater than the other.
+        /// </summary>
+        /// <returns>
+        /// Value Condition Less than zero<paramref name="x" /> is less than 
+        /// <paramref name="y" />.Zero<paramref name="x" /> equals 
+        /// <paramref name="y" />.Greater than zero<paramref name="x" /> is
+        /// greater than <paramref name="y" />.
+        /// </returns>
+        /// <param name="x">The first object to compare.</param>
+        /// <param name="y">The second object to compare.</param>
         public int Compare(T x, T y) {
             return -_baseComparer.Compare(x, y);
+        }
+    }
+
+    /// <summary>
+    /// Does default comparison .
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class DefaultComparer<T> : IComparer<T> {
+        /// <summary>
+        /// Compares two objects and returns a value indicating whether one is
+        /// less than, equal to, or greater than the other.
+        /// </summary>
+        /// <returns>
+        /// Value  Condition  Less than zero
+        ///                 <paramref name="x"/> is less than 
+        ///                 <paramref name="y"/>. Zero
+        ///                 <paramref name="x"/> equals <paramref name="y"/>.
+        ///                 Greater than zero
+        ///                 <paramref name="x"/> is greater than 
+        ///                 <paramref name="y"/>.
+        /// </returns>
+        /// <param name="x">The first object to compare. </param>
+        /// <param name="y">The second object to compare. </param>
+        public int Compare(T x, T y) {
+            return Comparer<T>.Default.Compare(x, y);
         }
     }
 }

@@ -20,7 +20,7 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
-    <TargetFrameworkSubset>Client</TargetFrameworkSubset>
+    <TargetFrameworkSubset>Full</TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -156,6 +156,13 @@
     <Compile Include="RefTests.cs" />
     <Compile Include="StringTests.cs" />
     <Compile Include="SwitchTests.cs" />
+    <Compile Include="TreeDictionaryTests.cs" />
+    <Compile Include="TreeDictionaryTests.Test_Enumeration.g.cs">
+      <DependentUpon>TreeDictionaryTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TreeDictionaryTests.Test_Lookup.g.cs">
+      <DependentUpon>TreeDictionaryTests.cs</DependentUpon>
+    </Compile>
     <Compile Include="ValidationTests.cs" />
     <Compile Include="VectorTests.cs" />
     <Compile Include="VectorTests.Test_Append.g.cs">
