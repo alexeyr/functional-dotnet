@@ -169,57 +169,57 @@ namespace FP.Collections.Persistent {
             // return AddRecursiveShortcut(key, value, combiner);
         }
 
-        private TreeDictionary<TKey, TValue, TComparer> AddStack(TKey key, TValue value, Func<TValue, TValue> combiner) {
-            if (_count == 0)
-                return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
-            int comparison = _comparer.Compare(key, _key);
-            if (comparison == 0)
-                return ReplaceValue(combiner(_value));
-            var dict = this;
-            var stack = new Stack<Tuple<TreeDictionary<TKey, TValue, TComparer>, bool>>();
-            do {
-                stack.Push(Tuple.New(dict, comparison < 0));
-                dict = comparison < 0
-                           ? dict._left
-                           : dict._right;
-                comparison = _comparer.Compare(key, dict._key);
-            }
-            while (dict._count != 0 && comparison != 0);
-            if (dict._count == 0) {
-                dict = TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
-                while (stack.Count > 0) {
-                    var pair = stack.Pop();
-                    var dict1 = pair.Item1;
-                    bool dictGoesLeftOfDict1 = pair.Item2;
-                    Debug.Assert(
-                        _comparer.Compare(dict._key, dict1._key) != 0 &&
-                        dictGoesLeftOfDict1 == _comparer.Compare(dict._key, dict1._key) < 0);
-                    dict = dictGoesLeftOfDict1
-                               ? dict1.Balance(dict, dict1._right)
-                               : dict1.Balance(dict1._left, dict);
-                }
-                return dict;
-            }
-            else {
-                Debug.Assert(comparison == 0);
-                TValue newValue = combiner(dict._value);
-                if (EqualityComparer<TValue>.Default.Equals(_value, newValue))
-                    return this; // It turns out we don't need to replace anything!
-                dict = dict.ReplaceValueDontCheckEquality(newValue);
-                while (stack.Count > 0) {
-                    var pair = stack.Pop();
-                    var dict1 = pair.Item1;
-                    bool dictGoesLeftOfDict1 = pair.Item2;
-                    Debug.Assert(
-                        _comparer.Compare(dict._key, dict1._key) != 0 &&
-                        dictGoesLeftOfDict1 == _comparer.Compare(dict._key, dict1._key) < 0);
-                    dict = dictGoesLeftOfDict1
-                               ? dict1.Balanced(dict, dict1._right)
-                               : dict1.Balanced(dict1._left, dict);
-                }
-                return dict;
-            }
-        }
+//        private TreeDictionary<TKey, TValue, TComparer> AddStack(TKey key, TValue value, Func<TValue, TValue> combiner) {
+//            if (_count == 0)
+//                return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
+//            int comparison = _comparer.Compare(key, _key);
+//            if (comparison == 0)
+//                return ReplaceValue(combiner(_value));
+//            var dict = this;
+//            var stack = new Stack<Tuple<TreeDictionary<TKey, TValue, TComparer>, bool>>();
+//            do {
+//                stack.Push(Tuple.New(dict, comparison < 0));
+//                dict = comparison < 0
+//                           ? dict._left
+//                           : dict._right;
+//                comparison = _comparer.Compare(key, dict._key);
+//            }
+//            while (dict._count != 0 && comparison != 0);
+//            if (dict._count == 0) {
+//                dict = TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
+//                while (stack.Count > 0) {
+//                    var pair = stack.Pop();
+//                    var dict1 = pair.Item1;
+//                    bool dictGoesLeftOfDict1 = pair.Item2;
+//                    Debug.Assert(
+//                        _comparer.Compare(dict._key, dict1._key) != 0 &&
+//                        dictGoesLeftOfDict1 == _comparer.Compare(dict._key, dict1._key) < 0);
+//                    dict = dictGoesLeftOfDict1
+//                               ? dict1.Balance(dict, dict1._right)
+//                               : dict1.Balance(dict1._left, dict);
+//                }
+//                return dict;
+//            }
+//            else {
+//                Debug.Assert(comparison == 0);
+//                TValue newValue = combiner(dict._value);
+//                if (EqualityComparer<TValue>.Default.Equals(_value, newValue))
+//                    return this; // It turns out we don't need to replace anything!
+//                dict = dict.ReplaceValueDontCheckEquality(newValue);
+//                while (stack.Count > 0) {
+//                    var pair = stack.Pop();
+//                    var dict1 = pair.Item1;
+//                    bool dictGoesLeftOfDict1 = pair.Item2;
+//                    Debug.Assert(
+//                        _comparer.Compare(dict._key, dict1._key) != 0 &&
+//                        dictGoesLeftOfDict1 == _comparer.Compare(dict._key, dict1._key) < 0);
+//                    dict = dictGoesLeftOfDict1
+//                               ? dict1.Balanced(dict, dict1._right)
+//                               : dict1.Balanced(dict1._left, dict);
+//                }
+//                return dict;
+//            }
+//        }
 
         private TreeDictionary<TKey, TValue, TComparer> AddRecursive(TKey key, TValue value, Func<TValue, TValue> combiner, ref bool needRebalance) {
             if (_count == 0) {
@@ -263,10 +263,10 @@ namespace FP.Collections.Persistent {
             return Add(key, value, _ => value);
         }
 
-        public TreeDictionary<TKey, TValue, TComparer> AddStack(TKey key, TValue value) {
-            // TODO: Inline _after_ comparing performance:
-            return AddStack(key, value, _ => value);
-        }
+//        public TreeDictionary<TKey, TValue, TComparer> AddStack(TKey key, TValue value) {
+//            // TODO: Inline _after_ comparing performance:
+//            return AddStack(key, value, _ => value);
+//        }
 
         /// <summary>
         /// Removes the specified key and the associated value.

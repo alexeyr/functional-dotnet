@@ -19,7 +19,7 @@ using MiniBench;
 
 namespace Benchmarks {
     public class Dicts {
-        private const int N = 500;
+        private const int N = 20000;
 
         private static readonly TreeDictionary<int, int, DefaultComparer<int>> dict =
             TreeDictionary.Empty<int, int>().AddAll(Ints.Range(0, 2 * N, 2).Zip(Ints.Range(0, 2 * N, 2)));
@@ -27,7 +27,7 @@ namespace Benchmarks {
         public static void Main() {
             var results1 = new TestSuite<IEnumerable<int>, int>(
                 "Compare adding to dictionary by different methods without repeats")
-                .Plus(AddStack, "Iterative")
+                //.Plus(AddStack, "Iterative")
                 .Plus(AddRecursive, "Recursive -- no shortcut")
                 .RunTests(Ints.Range(1, 2 * N + 1, 2), 2 * N + 2);
 
@@ -35,22 +35,22 @@ namespace Benchmarks {
 
             var results2 = new TestSuite<IEnumerable<int>, int>(
                 "Compare adding to dictionary by different methods with repeats")
-                .Plus(AddStack, "Iterative")
+                //.Plus(AddStack, "Iterative")
                 .Plus(AddRecursive, "Recursive -- no shortcut")
                 .RunTests(Ints.Range(0, 2 * N, 2), N + 1);
 
             results2.Display(ResultColumns.All, results1.FindBest());
         }
 
-        private static int AddStack(IEnumerable<int> arg) {
-            var dict1 = dict;
-
-            foreach (var i in arg) {
-                dict1 = dict1.AddStack(i, i);
-            }
-
-            return dict1.Count;
-        }
+//        private static int AddStack(IEnumerable<int> arg) {
+//            var dict1 = dict;
+//
+//            foreach (var i in arg) {
+//                dict1 = dict1.AddStack(i, i);
+//            }
+//
+//            return dict1.Count;
+//        }
 
         private static int AddRecursive(IEnumerable<int> arg) {
             var dict1 = dict;
