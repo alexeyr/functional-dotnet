@@ -12,7 +12,7 @@
     <AssemblyName>Benchmarks</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <StartupObject>Benchmarks.Lists</StartupObject>
+    <StartupObject>Benchmarks.Dicts</StartupObject>
     <TargetFrameworkSubset>Client</TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -43,6 +43,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dicts.cs" />
     <Compile Include="Lists.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

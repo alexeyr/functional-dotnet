@@ -16,8 +16,9 @@ namespace Benchmarks {
                 .RunTests(numbers, 100)
                 .ScaleByBest(ScalingMode.VaryDuration);
 
-            results1.Display(ResultColumns.NameAndDuration | ResultColumns.Score,
-                             results1.FindBest());
+            results1.Display(
+                ResultColumns.NameAndDuration | ResultColumns.Score,
+                results1.FindBest());
 
             var results2 = new TestSuite<IEnumerable<int>, int>("Adding to beginning of the list")
                 .Plus(AddToBeginningSCGList, "SCG.List")
@@ -25,8 +26,9 @@ namespace Benchmarks {
                 .RunTests(numbers, 100)
                 .ScaleByBest(ScalingMode.VaryDuration);
 
-            results2.Display(ResultColumns.NameAndDuration | ResultColumns.Score,
-                 results1.FindBest());
+            results2.Display(
+                ResultColumns.NameAndDuration | ResultColumns.Score,
+                results1.FindBest());
 
             Console.ReadLine();
         }

@@ -13,9 +13,11 @@
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
 using System;
+using System.Linq;
 using FP.Collections.Persistent;
 using FP.Core;
 using Microsoft.Pex.Framework;
+using Xunit;
 
 namespace FPTests {
     [PexClass(typeof(TreeDictionary<,,>))]
@@ -36,6 +38,16 @@ namespace FPTests {
             for (int i = 0; i < keys.Length; i++) {
                 PexAssert.AreEqual(values[i], dict[keys[i]]);
             }
+        }
+
+        [Fact(Skip = "Too large for normal runs")]
+        public void Test_NoStackOverflowForLargeDictionaries() {
+            const int N = 1000000;
+            var array = new int[N];
+            for (int i = 0; i < N; i++) {
+                array[i] = i;
+            }
+            CreateDictionary(array, array);
         }
 
         [PexMethod]
