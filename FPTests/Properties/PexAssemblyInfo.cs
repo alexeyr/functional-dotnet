@@ -1,6 +1,7 @@
 using System;
 using System.Security;
 using System.Threading;
+using Microsoft.Pex.Framework.Creatable;
 using Microsoft.Pex.Framework.Domains;
 using Microsoft.Pex.Framework.Instrumentation;
 
@@ -22,3 +23,4 @@ using Microsoft.Pex.Framework.Instrumentation;
 [assembly: PexInstrumentType(typeof(Type))]
 [assembly: PexInstrumentType("mscorlib", "System.RuntimeType")]
 [assembly: PexBooleanAsZeroOrOne]
+[assembly: PexCreatableFactoryForDelegates]

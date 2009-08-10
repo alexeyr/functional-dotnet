@@ -40,7 +40,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Pex.Framework, Version=0.14.40610.2, Culture=neutral, PublicKeyToken=76a274db078248c8, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Pex.Framework, Version=0.15.40714.1, Culture=neutral, PublicKeyToken=76a274db078248c8, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -66,6 +66,7 @@
     <Compile Include="EnumerableTests.SortDescendingTest.g.cs">
       <DependentUpon>EnumerableTests.cs</DependentUpon>
     </Compile>
+    <Compile Include="Factories.cs" />
     <Compile Include="LazyListTests.cs" />
     <Compile Include="LazyListTests.Test_Enumeration.g.cs">
       <DependentUpon>LazyListTests.cs</DependentUpon>
@@ -161,6 +162,15 @@
       <DependentUpon>TreeDictionaryTests.cs</DependentUpon>
     </Compile>
     <Compile Include="TreeDictionaryTests.Test_Lookup.g.cs">
+      <DependentUpon>TreeDictionaryTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TreeDictionaryTests.Test_MapPartial.g.cs">
+      <DependentUpon>TreeDictionaryTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TreeDictionaryTests.Test_Remove.g.cs">
+      <DependentUpon>TreeDictionaryTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TreeDictionaryTests.Test_Update.g.cs">
       <DependentUpon>TreeDictionaryTests.cs</DependentUpon>
     </Compile>
     <Compile Include="ValidationTests.cs" />

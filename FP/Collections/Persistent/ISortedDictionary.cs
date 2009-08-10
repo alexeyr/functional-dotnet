@@ -35,30 +35,12 @@ namespace FP.Collections.Persistent {
         where TDictionary : ISortedDictionary<TKey, TValue, TComparer, TDictionary>
         where TComparer : IComparer<TKey>, new() {
         /// <summary>
-        /// Retrieves the minimum key, associated value, and the dictionary
-        /// containing all other elements.
-        /// </summary>
-        /// <returns>The tuple of the minimum key, associated value and the
-        /// dictionary containing all other elements, if the dictionary is
-        /// non-empty; <c>None</c> otherwise.</returns>
-        Optional<Tuple<TKey, TValue, TDictionary>> TakeMinKey();
-
-        /// <summary>
-        /// Retrieves the maximum key, associated value, and the dictionary
-        /// containing all other elements.
-        /// </summary>
-        /// <returns>The tuple of the maximum key, associated value and the
-        /// dictionary containing all other elements, if the dictionary is
-        /// non-empty; <c>None</c> otherwise.</returns>
-        Optional<Tuple<TKey, TValue, TDictionary>> TakeMaxKey();
-
-        /// <summary>
         /// Retrieves the minimum key and the associated value.
         /// </summary>
         /// <returns>The tuple of the minimum key, associated value and the
         /// dictionary containing all other elements, if the dictionary is
         /// non-empty; <c>None</c> otherwise.</returns>
-        Optional<Tuple<TKey, TValue>> MinKey();
+        Optional<Tuple<TKey, TValue>> MinKeyAndValue();
 
         /// <summary>
         /// Retrieves the maximum key and the associated value.
@@ -66,7 +48,7 @@ namespace FP.Collections.Persistent {
         /// <returns>The tuple of the maximum key, associated value and the
         /// dictionary containing all other elements, if the dictionary is
         /// non-empty; <c>None</c> otherwise.</returns>
-        Optional<Tuple<TKey, TValue>> MaxKey();
+        Optional<Tuple<TKey, TValue>> MaxKeyAndValue();
 
         /// <summary>
         /// Splits dictionary on the specified key.
@@ -77,5 +59,32 @@ namespace FP.Collections.Persistent {
         /// and the third element contains all keys greater than 
         /// <paramref name="key"/></returns>
         Tuple<TDictionary, Optional<TValue>, TDictionary> Split(TKey key);
+
+        /// <summary>
+        /// Retrieves the minimum key, associated value, and the dictionary
+        /// containing all other elements.
+        /// </summary>
+        /// <param name="minKey">Is bound to the minimum key, if the dictionary
+        /// isn't empty.</param>
+        /// <param name="minKeyValue">Is bound to the value associated to the
+        /// minimum key, if the dictionary isn't empty.</param>
+        /// <returns>
+        /// The dictionary containing all elements except the minimum key, if
+        /// the dictionary is non-empty; <c>None</c> otherwise.
+        /// </returns>
+        Optional<TreeDictionary<TKey, TValue, TComparer>> FindAndRemoveMinKey(out TKey minKey, out TValue minKeyValue);
+
+        /// <summary>
+        /// Retrieves the minimum key, associated value, and the dictionary
+        /// containing all other elements.
+        /// </summary>
+        /// <param name="maxKey">Is bound to the maximum key, if the dictionary
+        /// isn't empty.</param>
+        /// <param name="maxKeyValue">Is bound to the value associated to the
+        /// maximum key, if the dictionary isn't empty.</param>
+        /// <returns>The dictionary containing all elements except the maximum
+        /// key, if the dictionary is non-empty; <c>None</c> otherwise.
+        /// </returns>
+        Optional<TreeDictionary<TKey, TValue, TComparer>> FindAndRemoveMaxKey(out TKey maxKey, out TValue maxKeyValue);
     }
 }

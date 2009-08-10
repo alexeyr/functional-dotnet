@@ -51,7 +51,7 @@ namespace FP.Collections.Persistent {
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="combiner">
+        /// <param name="combineFunc">
         /// The function to be called if the given key is already present. The
         /// argument is the value currently associated with the key, the result is the value
         /// to be used in the new dictionary.
@@ -59,7 +59,7 @@ namespace FP.Collections.Persistent {
         /// <returns>
         /// The resulting dictionary.
         /// </returns>
-        TDictionary Add(TKey key, TValue value, Func<TValue, TValue> combiner);
+        TDictionary Add(TKey key, TValue value, Func<TValue, TValue> combineFunc);
 
         /// <summary>
         /// Adds the specified key with the specified value. If the key is
@@ -81,52 +81,40 @@ namespace FP.Collections.Persistent {
         /// dictionary doesn't contain this key, it is returned unchanged.
         /// </summary>
         /// <param name="key">The key.</param>
+        /// <param name="value">is bound to <c>this[key]</c>.</param>
         /// <returns>The resulting dictionary.</returns>
-        TDictionary Remove(TKey key);
+        TDictionary Remove(TKey key, out Optional<TValue> value);
 
         /// <summary>
-        /// Updates the specified key with the given function. If the dictionary
-        /// doesn't contain the key, it is returned unchanged; if 
-        /// <code>updater(key, currentValue)</code> returns <code>None</code>, the key is removed;
-        /// if it returns <code>Some(newValue)</code>, the current value is replaced with newValue.
+        /// Updates the value corresponding to the specified key. If the
+        /// dictionary doesn't contain the key, it is returned unchanged; if
+        /// <code>updateFunc(currentValue)</code> returns <code>None</code>, the
+        /// key is removed; if it returns <code>Some(newValue)</code>, the
+        /// current value is replaced with newValue.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <param name="updater">The updating function.</param>
+        /// <param name="updateFunc">The updating function.</param>
+        /// <param name="value">is bound to <c>this[key]</c>.</param>
         /// <returns>The resulting dictionary.</returns>
-        TDictionary Update(TKey key, Func<TKey, TValue, Optional<TValue>> updater);
+        TDictionary Update(TKey key, Func<TValue, Optional<TValue>> updateFunc, out Optional<TValue> value);
 
         /// <summary>
-        /// Updates the specified key with the given function.  If the
-        /// dictionary doesn't contain the key, <code>updater(key, None)</code>
-        /// is called to provide the new value; if it does, 
-        /// <code>updater(key, Some(currentValue))</code> is. If the call
-        /// returns <code>None</code>, the key is removed; if it returns 
-        /// <code>Some(newValue)</code>, the key is associated with newValue.
+        /// Updates values of all keys. For each key in the dictionary, if
+        /// <code>updateFunc(key, this[key])</code> returns <code>None</code>, the
+        /// key is removed; if it returns <code>Some(newValue)</code>, the
+        /// current value is replaced with <c>newValue</c>.
         /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="updater">The updating function.</param>
+        /// <param name="updateFunc">The updating function.</param>
         /// <returns>The resulting dictionary.</returns>
-        TDictionary Update(TKey key, Func<TKey, Optional<TValue>, Optional<TValue>> updater);
+        TDictionary MapPartial(Func<TKey, TValue, Optional<TValue>> updateFunc);
 
         /// <summary>
-        /// Adds the specified key with the specified value.
+        /// Updates values of all keys. For each key in the dictionary, the
+        /// value is replaced with <code>updateFunc(key, this[key])</code>.
         /// </summary>
-        /// <param name="key">
-        /// The key.
-        /// </param>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="combiner">
-        /// The function to be called if the given key is already present. The
-        /// arguments are the key, the current value, and the added value. The
-        /// result is inserted in place of the current value.
-        /// </param>
-        /// <returns>
-        /// The resulting dictionary.
-        /// </returns>
-        Tuple<TDictionary, Optional<TValue>> LookupAndUpdate(
-            TKey key, TValue value, Func<TKey, Optional<TValue>, TValue, Optional<TValue>> combiner);
+        /// <param name="updateFunc">The updating function.</param>
+        /// <returns>The resulting dictionary.</returns>
+        TDictionary Map(Func<TKey, TValue, TValue> updateFunc);
 
         /// <summary>
         /// Gets the keys. Doesn't guarantee anything about the order in which they are yielded.

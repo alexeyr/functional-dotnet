@@ -62,5 +62,55 @@ namespace FPTests {
                 i++;
             }
         }
+
+        [PexMethod]
+        [PexGenericArguments(new[] { typeof(int), typeof(object) })]
+        public void Test_Remove<TValue>(int[] keys, TValue[] values, int key, int key1) {
+            var dict = CreateDictionary(keys, values);
+            PexAssume.AreNotEqual(key, key1);
+            Optional<TValue> value;
+            var dict1 = dict.Remove(key, out value);
+            Array.Sort(keys, values);
+            int i = Array.BinarySearch(keys, key);
+            PexAssert
+                .Case(i >= 0).Implies(() => dict[key] == value && dict1[key] == Optional<TValue>.None && dict[key1] == dict1[key1])
+                .Case(i < 0).Implies(() => dict[key] == Optional<TValue>.None && ReferenceEquals(dict1, dict))
+                .ExpectExactlyOne();
+        }
+
+        [PexMethod]
+        public void Test_Update(int[] keys, int[] values, int key, int key1, [PexAssumeNotNull] Func<int, Optional<int>> updateFunc) {
+            var dict = CreateDictionary(keys, values);
+            PexAssume.AreNotEqual(key, key1);
+            Optional<int> value;
+            var dict1 = dict.Update(key, updateFunc, out value);
+            Array.Sort(keys, values);
+            int i = Array.BinarySearch(keys, key);
+            PexAssert
+                .Case(i >= 0).Implies(() => dict[key] == value && dict1[key] == updateFunc(value.Value) && dict[key1] == dict1[key1])
+                .Case(i < 0).Implies(() => dict[key] == Optional<int>.None && ReferenceEquals(dict1, dict))
+                .ExpectExactlyOne();
+        }
+
+        [PexMethod]
+        public void Test_Map(int[] keys, int[] values, [PexAssumeNotNull] Func<int, int, int> func) {
+            var dict = CreateDictionary(keys, values);
+            PexAssume.AreNotEqual(0, keys.Length);
+            func = func.Memoize();
+            var dict1 = dict.Map(func);
+            PexAssert.AreEqual(func(keys[0], values[0]), dict1[keys[0]]);
+        }
+
+        [PexMethod]
+        public void Test_MapPartial(int[] keys, int[] values, int key1, [PexAssumeNotNull] Func<int, int, Optional<int>> func) {
+            var dict = CreateDictionary(keys, values);
+            PexAssume.AreNotEqual(0, keys.Length);
+            int i = PexChoose.DefaultSession.ChooseIndexValue("From keys", keys);
+            foreach (int key in keys)
+                PexAssume.AreNotEqual(key, key1);
+            var dict1 = dict.MapPartial(func);
+            PexAssert.AreEqual(Optional<int>.None, dict1[key1]);
+            PexAssert.AreEqual(func(keys[i], values[i]), dict1[keys[i]]);
+        }
     }
 }
