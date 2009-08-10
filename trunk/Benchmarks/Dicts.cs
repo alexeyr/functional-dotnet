@@ -12,6 +12,7 @@
 * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 */
+using System;
 using System.Collections.Generic;
 using FP.Collections.Persistent;
 using FP.Core;
@@ -19,27 +20,27 @@ using MiniBench;
 
 namespace Benchmarks {
     public class Dicts {
-        private const int N = 20000;
+        private const int N = 5000;
 
         private static readonly TreeDictionary<int, int, DefaultComparer<int>> dict =
             TreeDictionary.Empty<int, int>().AddAll(Ints.Range(0, 2 * N, 2).Zip(Ints.Range(0, 2 * N, 2)));
 
         public static void Main() {
-            var results1 = new TestSuite<IEnumerable<int>, int>(
-                "Compare adding to dictionary by different methods without repeats")
-                //.Plus(AddStack, "Iterative")
-                .Plus(AddRecursive, "Recursive -- no shortcut")
-                .RunTests(Ints.Range(1, 2 * N + 1, 2), 2 * N + 2);
-
-            results1.Display(ResultColumns.All, results1.FindBest());
-
-            var results2 = new TestSuite<IEnumerable<int>, int>(
-                "Compare adding to dictionary by different methods with repeats")
-                //.Plus(AddStack, "Iterative")
-                .Plus(AddRecursive, "Recursive -- no shortcut")
-                .RunTests(Ints.Range(0, 2 * N, 2), N + 1);
-
-            results2.Display(ResultColumns.All, results1.FindBest());
+//            var results1 = new TestSuite<IEnumerable<int>, int>(
+//                "Compare adding to dictionary by different methods without repeats")
+//                .Plus(AddDirect, "Call Add(key, value)")
+//                .Plus(AddWithFunc, "Call Add(key, value, combiner)")
+//                .RunTests(Ints.Range(1, 2 * N + 1, 2), 2 * N + 2);
+//
+//            results1.Display(ResultColumns.All, results1.FindBest());
+//
+//            var results2 = new TestSuite<IEnumerable<int>, int>(
+//                "Compare adding to dictionary by different methods with repeats")
+//                .Plus(AddDirect, "Call Add(key, value)")
+//                .Plus(AddWithFunc, "Call Add(key, value, combiner)")
+//                .RunTests(Ints.Range(0, 2 * N, 2), N + 1);
+//
+//            results2.Display(ResultColumns.All, results1.FindBest());
         }
 
 //        private static int AddStack(IEnumerable<int> arg) {
@@ -52,14 +53,12 @@ namespace Benchmarks {
 //            return dict1.Count;
 //        }
 
-        private static int AddRecursive(IEnumerable<int> arg) {
-            var dict1 = dict;
+        private static int AddDirect(IEnumerable<int> arg) {
+            return dict.AddAll(arg.Zip(arg)).Count;
+        }
 
-            foreach (var i in arg) {
-                dict1 = dict1.Add(i, i);
-            }
-
-            return dict1.Count;
+        private static int AddWithFunc(IEnumerable<int> arg) {
+            return dict.AddAll(arg.Zip(arg), (key, v1, v2) => v2).Count;
         }
     }
 }

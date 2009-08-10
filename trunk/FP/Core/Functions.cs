@@ -14,6 +14,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 
 namespace FP.Core {
     /// <summary>
@@ -182,6 +183,42 @@ namespace FP.Core {
         /// <returns></returns>
         public static Func<T, bool> Not<T>(this Func<T, bool> predicate) {
             return x => !predicate(x);
+        }
+
+        public static Func<R> Memoize<R>(this Func<R> f) {
+            R value = default(R);
+            bool hasValue = false;
+            return () => {
+                  if (!hasValue) {
+                      hasValue = true;
+                      value = f();
+                  }
+                  return value;
+              };
+        }
+
+        public static Func<T, R> Memoize<T, R>(this Func<T, R> f) {
+            var map = new Dictionary<T, R>();
+            return arg => {
+                  R value;
+                  if (map.TryGetValue(arg, out value))
+                      return value;
+                  value = f(arg);
+                  map.Add(arg, value);
+                  return value;
+              };
+        }
+
+        public static Func<T1, T2, R> Memoize<T1, T2, R>(this Func<T1, T2, R> f) {
+            var map = new Dictionary<Tuple<T1, T2>, R>();
+            return (arg1, arg2) => {
+                R value;
+                if (map.TryGetValue(Tuple.New(arg1, arg2), out value))
+                    return value;
+                value = f(arg1, arg2);
+                map.Add(Tuple.New(arg1, arg2), value);
+                return value;
+            };
         }
     }
 }

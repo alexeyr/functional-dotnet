@@ -73,5 +73,53 @@ namespace FP.Collections.Persistent {
             return dictionary;
         }
 
+        /// <summary>
+        /// For each key in <paramref name="keys"/> which is present in 
+        /// <paramref name="dictionary"/>: if the key is already present, the
+        /// new value is found by calling <paramref name="updateFunc"/>; if the key is absent,
+        /// the dictionary isn't changed.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <typeparam name="TDictionary">The type of the dictionary.</typeparam>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="keys">The sequence of keys.</param>
+        /// <param name="updateFunc">The combining function. It is called with 
+        /// the key and <c>dictionary[key]</c> as arguments.</param>
+        /// <returns>The resulting dictionary.</returns>
+        public static TDictionary UpdateAll<TKey, TValue, TDictionary>(
+            this TDictionary dictionary, IEnumerable<TKey> keys, Func<TKey, TValue, Optional<TValue>> updateFunc)
+            where TDictionary : IDictionary<TKey, TValue, TDictionary> {
+            foreach (var key in keys) {
+                Optional<TValue> ignore;
+                TKey key1 = key;
+                dictionary = dictionary.Update(key1, val => updateFunc(key1, val), out ignore);
+            }
+            return dictionary;
+        }
+
+        /// <summary>
+        /// Updates the value corresponding to the specified key. If the
+        /// dictionary doesn't contain the key, it is returned unchanged; if
+        /// <code>updateFunc(currentValue)</code> returns <code>None</code>, the
+        /// key is removed; if it returns <code>Some(newValue)</code>, the
+        /// current value is replaced with newValue.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <typeparam name="TDictionary">The type of the dictionary.</typeparam>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="updateFunc">The updating function.</param>
+        /// <returns>The resulting dictionary.</returns>
+        /// <remarks>This is a variant of <see cref="IDictionary{TKey,TValue,TDictionary}.Update"/>
+        /// to use when the old value isn't interesting.</remarks>
+        public static TDictionary Update<TKey, TValue, TDictionary>(
+            this TDictionary dictionary, TKey key, Func<TValue, Optional<TValue>> updateFunc)
+            where TDictionary : IDictionary<TKey, TValue, TDictionary> {
+                Optional<TValue> ignore;
+                dictionary = dictionary.Update(key, updateFunc, out ignore);
+            return dictionary;
+        }
     }
 }

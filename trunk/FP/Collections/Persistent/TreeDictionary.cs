@@ -161,12 +161,12 @@ namespace FP.Collections.Persistent {
         }
 
         public TreeDictionary<TKey, TValue, TComparer> Add(
-            TKey key, TValue value, Func<TValue, TValue> combiner) {
+            TKey key, TValue value, Func<TValue, TValue> combineFunc) {
             // Max height is under 3*log(Count), so recursive methods shouldn't cause a stack overflow
             bool needRebalance = false;
-            return AddRecursive(key, value, combiner, ref needRebalance);
-            // return AddStack(key, value, combiner);
-            // return AddRecursiveShortcut(key, value, combiner);
+            return AddRecursive(key, value, combineFunc, ref needRebalance);
+            // return AddStack(key, value, combineFunc);
+            // return AddRecursiveShortcut(key, value, combineFunc);
         }
 
 //        private TreeDictionary<TKey, TValue, TComparer> AddStack(TKey key, TValue value, Func<TValue, TValue> combiner) {
@@ -259,81 +259,153 @@ namespace FP.Collections.Persistent {
         /// The resulting dictionary.
         /// </returns>
         public TreeDictionary<TKey, TValue, TComparer> Add(TKey key, TValue value) {
-            // TODO: Inline _after_ comparing performance:
-            return Add(key, value, _ => value);
+            bool needRebalance = false;
+            return AddRecursive(key, value, ref needRebalance);
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> AddRecursive(TKey key, TValue value, ref bool needRebalance) {
+            if (_count == 0) {
+                needRebalance = true;
+                return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
+            }
+            int comparison = _comparer.Compare(key, _key);
+            if (comparison == 0) {
+                needRebalance = false;
+                return ReplaceValue(value);
+            }
+            if (comparison < 0) {
+                var newLeft = _left.AddRecursive(key, value, ref needRebalance);
+                return needRebalance
+                           ? Balance(newLeft, _right)
+                           : Balanced(newLeft, _right);
+            }
+            else {
+                var newRight = _right.AddRecursive(key, value, ref needRebalance);
+                return needRebalance
+                           ? Balance(_left, newRight)
+                           : Balanced(_left, newRight);
+            }
         }
 
 //        public TreeDictionary<TKey, TValue, TComparer> AddStack(TKey key, TValue value) {
-//            // TODO: Inline _after_ comparing performance:
 //            return AddStack(key, value, _ => value);
 //        }
 
-        /// <summary>
-        /// Removes the specified key and the associated value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>The resulting dictionary.</returns>
-        public TreeDictionary<TKey, TValue, TComparer> Remove(TKey key) {
-            throw new NotImplementedException();
+        public TreeDictionary<TKey, TValue, TComparer> Remove(TKey key, out Optional<TValue> value) {
+            if (Count == 0) {
+                value = Optional<TValue>.None;
+                return this;
+            }
+            int comparison = _comparer.Compare(key, _key);
+            if (comparison == 0) {
+                value = _value;
+                return GlueBalanced(_left, _right);
+            }
+            if (comparison < 0) {
+                var newLeft = _left.Remove(key, out value);
+                return value.HasValue
+                           ? Balance(newLeft, _right)
+                           : Balanced(newLeft, _right);
+            }
+            else {
+                var newRight = _right.Remove(key, out value);
+                return value.HasValue
+                           ? Balance(_left, newRight)
+                           : Balanced(_left, newRight);                
+            }
         }
 
-        /// <summary>
-        /// Updates the specified key with the given function. If the dictionary
-        /// doesn't contain the key, it is returned unchanged; if 
-        /// <code>updater(key, currentValue)</code> returns <code>None</code>, the key is removed;
-        /// if it returns <code>Some(newValue)</code>, the current value is replaced with newValue.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="updater">The updating function.</param>
-        /// <returns>The resulting dictionary.</returns>
         public TreeDictionary<TKey, TValue, TComparer> Update(
-            TKey key, Func<TKey, TValue, Optional<TValue>> updater) {
-            throw new NotImplementedException();
+            TKey key, Func<TValue, Optional<TValue>> updateFunc, out Optional<TValue> value) {
+            bool needRebalance;
+            return UpdateHelper(key, updateFunc, out value, out needRebalance);
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> UpdateHelper(
+            TKey key, Func<TValue, Optional<TValue>> updateFunc, out Optional<TValue> value, out bool needRebalance) {
+            if (Count == 0) {
+                value = Optional<TValue>.None;
+                needRebalance = false;
+                return this;
+            }
+            int comparison = _comparer.Compare(key, _key);
+            if (comparison == 0) {
+                value = _value;
+                var newValue = updateFunc(_value);
+                needRebalance = !newValue.HasValue;
+                return needRebalance
+                    ? GlueBalanced(_left, _right)
+                    : ReplaceValue(newValue.Value);
+            }
+            if (comparison < 0) {
+                var newLeft = _left.UpdateHelper(key, updateFunc, out value, out needRebalance);
+                return needRebalance
+                           ? Balance(newLeft, _right)
+                           : Balanced(newLeft, _right);
+            }
+            else {
+                var newRight = _right.UpdateHelper(key, updateFunc, out value, out needRebalance);
+                return needRebalance
+                           ? Balance(_left, newRight)
+                           : Balanced(_left, newRight);
+            }
         }
 
         /// <summary>
-        /// Updates the specified key with the given function.  If the
-        /// dictionary doesn't contain the key, <code>updater(key, None)</code>
-        /// is called to provide the new value; if it does, 
-        /// <code>updater(key, Some(currentValue))</code> is. If the call
-        /// returns <code>None</code>, the key is removed; if it returns 
-        /// <code>Some(newValue)</code>, the key is associated with newValue.
+        /// Updates values of all keys. For each key in the dictionary, if
+        /// <code>updateFunc(key, this[key])</code> returns <code>None</code>, the
+        /// key is removed; if it returns <code>Some(newValue)</code>, the
+        /// current value is replaced with <c>newValue</c>.
         /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="updater">The updating function.</param>
+        /// <param name="updateFunc">The updating function.</param>
         /// <returns>The resulting dictionary.</returns>
-        public TreeDictionary<TKey, TValue, TComparer> Update(
-            TKey key, Func<TKey, Optional<TValue>, Optional<TValue>> updater) {
-            throw new NotImplementedException();
+        public TreeDictionary<TKey, TValue, TComparer> MapPartial(Func<TKey, TValue, Optional<TValue>> updateFunc) {
+            if (Count == 0)
+                return this;
+            var newValue = updateFunc(_key, _value);
+            return newValue.HasValue
+                       ? Unbalanced(newValue.Value, _left.MapPartial(updateFunc), _right.MapPartial(updateFunc))
+                       : GlueUnbalanced(_left.MapPartial(updateFunc), _right.MapPartial(updateFunc));
         }
 
         /// <summary>
-        /// Adds the specified key with the specified value.
+        /// Updates values of all keys. For each key in the dictionary, the
+        /// value is replaced with <code>updateFunc(key, this[key])</code>.
         /// </summary>
-        /// <param name="key">
-        /// The key.
-        /// </param>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="combiner">
-        /// The function to be called if the given key is already present. The
-        /// arguments are the key, the current value, and the added value. The
-        /// result is inserted in place of the current value.
-        /// </param>
-        /// <returns>
-        /// The resulting dictionary.
-        /// </returns>
-        public Tuple<TreeDictionary<TKey, TValue, TComparer>, Optional<TValue>> LookupAndUpdate(TKey key, TValue value, Func<TKey, Optional<TValue>, TValue, Optional<TValue>> combiner) {
-            throw new NotImplementedException();
+        /// <param name="updateFunc">The updating function.</param>
+        /// <returns>The resulting dictionary.</returns>
+        public TreeDictionary<TKey, TValue, TComparer> Map(Func<TKey, TValue, TValue> updateFunc) {
+            if (Count == 0)
+                return this;
+            return Balanced(
+                updateFunc(_key, _value), _left.Map(updateFunc), _right.Map(updateFunc));
         }
 
         /// <summary>
-        /// Gets the keys. Doesn't guarantee anything about the order in which they are yielded.
+        /// Returns the dictionary with the same keys.
         /// </summary>
-        /// <value>The keys.</value>
-        public IEnumerable<TKey> Keys {
-            get { throw new NotImplementedException(); }
+        /// <param name="func">The updating function.</param>
+        /// <returns>The resulting dictionary.</returns>
+        public TreeDictionary<TKey, TValue1, TComparer> Map<TValue1>(Func<TKey, TValue, TValue1> func) {
+            if (Count == 0)
+                return TreeDictionary<TKey, TValue1, TComparer>.Empty;
+            return TreeDictionary<TKey, TValue1, TComparer>.Balanced(
+                _key, func(_key, _value), _left.Map(func), _right.Map(func));
+        }
+
+        /// <summary>
+        /// Updates values of all keys. For each key in the dictionary, the
+        /// value is replaced with <code>updateFunc(key, this[key])</code>.
+        /// </summary>
+        /// <param name="func">The updating function.</param>
+        /// <returns>The resulting dictionary.</returns>
+        public TreeDictionary<TKey, TValue1, TComparer> MapPartial<TValue1>(Func<TKey, TValue, Optional<TValue1>> func) {
+            if (Count == 0)
+                return TreeDictionary<TKey, TValue1, TComparer>.Empty;
+            var newValue = func(_key, _value);
+            return newValue.HasValue
+                       ? TreeDictionary<TKey, TValue1, TComparer>.Unbalanced(_key, newValue.Value, _left.MapPartial(func), _right.MapPartial(func))
+                       : TreeDictionary<TKey, TValue1, TComparer>.GlueUnbalanced(_left.MapPartial(func), _right.MapPartial(func));
         }
 
         /// <summary>
@@ -341,29 +413,78 @@ namespace FP.Collections.Persistent {
         /// </summary>
         /// <value>The values.</value>
         public IEnumerable<TValue> Values {
-            get { throw new NotImplementedException(); }
+            get {
+                if (Count == 0)
+                    yield break;
+                if (_left.Count() != 0) {
+                    foreach (var value in _left.Values)
+                        yield return value;
+                }
+                yield return _value;
+                if (_right.Count() != 0) {
+                    foreach (var value in _right.Values)
+                        yield return value;
+                }
+            }
         }
 
         /// <summary>
         /// Retrieves the minimum key, associated value, and the dictionary
         /// containing all other elements.
         /// </summary>
-        /// <returns>The tuple of the minimum key, associated value and the
-        /// dictionary containing all other elements, if the dictionary is
-        /// non-empty; <c>None</c> otherwise.</returns>
-        public Optional<Tuple<TKey, TValue, TreeDictionary<TKey, TValue, TComparer>>> TakeMinKey() {
-            throw new NotImplementedException();
+        /// <param name="minKey">Is bound to the minimum key, if the dictionary
+        /// isn't empty.</param>
+        /// <param name="minKeyValue">Is bound to the value associated to the
+        /// minimum key, if the dictionary isn't empty.</param>
+        /// <returns>
+        /// The dictionary containing all elements except the minimum key, if
+        /// the dictionary is non-empty; <c>None</c> otherwise.
+        /// </returns>
+        public Optional<TreeDictionary<TKey, TValue, TComparer>> FindAndRemoveMinKey(out TKey minKey, out TValue minKeyValue) {
+            if (Count == 0) {
+                minKey = default(TKey);
+                minKeyValue = default(TValue);
+                return Optional.None<TreeDictionary<TKey, TValue, TComparer>>();
+            }
+            return FindAndRemoveMinKeyFromNonEmpty(out minKey, out minKeyValue);
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> FindAndRemoveMinKeyFromNonEmpty(out TKey minKey, out TValue minKeyValue) {
+            if (_left.Count() == 0) {
+                minKey = _key;
+                minKeyValue = _value;
+                return _right;
+            }
+            return Balance(_left.FindAndRemoveMinKeyFromNonEmpty(out minKey, out minKeyValue), _right);
         }
 
         /// <summary>
-        /// Retrieves the maximum key, associated value, and the dictionary
+        /// Retrieves the minimum key, associated value, and the dictionary
         /// containing all other elements.
         /// </summary>
-        /// <returns>The tuple of the maximum key, associated value and the
-        /// dictionary containing all other elements, if the dictionary is
-        /// non-empty; <c>None</c> otherwise.</returns>
-        public Optional<Tuple<TKey, TValue, TreeDictionary<TKey, TValue, TComparer>>> TakeMaxKey() {
-            throw new NotImplementedException();
+        /// <param name="maxKey">Is bound to the maximum key, if the dictionary
+        /// isn't empty.</param>
+        /// <param name="maxKeyValue">Is bound to the value associated to the
+        /// maximum key, if the dictionary isn't empty.</param>
+        /// <returns>The dictionary containing all elements except the maximum
+        /// key, if the dictionary is non-empty; <c>None</c> otherwise.
+        /// </returns>
+        public Optional<TreeDictionary<TKey, TValue, TComparer>> FindAndRemoveMaxKey(out TKey maxKey, out TValue maxKeyValue) {
+            if (Count == 0) {
+                maxKey = default(TKey);
+                maxKeyValue = default(TValue);
+                return Optional.None<TreeDictionary<TKey, TValue, TComparer>>();
+            }
+            return FindAndRemoveMaxKeyFromNonEmpty(out maxKey, out maxKeyValue);
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> FindAndRemoveMaxKeyFromNonEmpty(out TKey maxKey, out TValue maxKeyValue) {
+            if (_right.Count() == 0) {
+                maxKey = _key;
+                maxKeyValue = _value;
+                return _left;
+            }
+            return Balance(_left, _right.FindAndRemoveMaxKeyFromNonEmpty(out maxKey, out maxKeyValue));
         }
 
         /// <summary>
@@ -372,8 +493,12 @@ namespace FP.Collections.Persistent {
         /// <returns>The tuple of the minimum key, associated value and the
         /// dictionary containing all other elements, if the dictionary is
         /// non-empty; <c>None</c> otherwise.</returns>
-        public Optional<Tuple<TKey, TValue>> MinKey() {
-            throw new NotImplementedException();
+        public Optional<Tuple<TKey, TValue>> MinKeyAndValue() {
+            if (Count == 0)
+                return Optional<Tuple<TKey, TValue>>.None;
+            if (Count == 1)
+                return Optional.Some(Tuple.New(_key, _value));
+            return _left.MinKeyAndValue();
         }
 
         /// <summary>
@@ -382,8 +507,12 @@ namespace FP.Collections.Persistent {
         /// <returns>The tuple of the maximum key, associated value and the
         /// dictionary containing all other elements, if the dictionary is
         /// non-empty; <c>None</c> otherwise.</returns>
-        public Optional<Tuple<TKey, TValue>> MaxKey() {
-            throw new NotImplementedException();
+        public Optional<Tuple<TKey, TValue>> MaxKeyAndValue() {
+            if (Count == 0)
+                return Optional<Tuple<TKey, TValue>>.None;
+            if (Count == 1)
+                return Optional.Some(Tuple.New(_key, _value));
+            return _right.MaxKeyAndValue();
         }
 
         /// <summary>
@@ -459,10 +588,6 @@ namespace FP.Collections.Persistent {
         private const int DELTA = 5;
         private const int RATIO = 2;
 
-        /// <summary>
-        /// Called instead of the constructor when <paramref name="left"/> and 
-        /// <paramref name="right"/> may be unbalanced.
-        /// </summary>
         private TreeDictionary<TKey, TValue, TComparer> ReplaceValue(TValue value) {
             return
                 EqualityComparer<TValue>.Default.Equals(_value, value)
@@ -470,12 +595,50 @@ namespace FP.Collections.Persistent {
                     : ReplaceValueDontCheckEquality(value);
         }
 
-        /// <summary>
-        /// Called instead of the constructor when <paramref name="left"/> and 
-        /// <paramref name="right"/> may be unbalanced.
-        /// </summary>
         private TreeDictionary<TKey, TValue, TComparer> ReplaceValueDontCheckEquality(TValue value) {
             return new TreeDictionary<TKey, TValue, TComparer>(_count, _key, value, _left, _right);
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> Unbalanced(
+            TValue value, TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
+            if (left.Count() == 0)
+                return right.InsertMin(_key, value);
+            if (right.Count() == 0)
+                return left.InsertMax(_key, value);
+            if (DELTA * left.Count <= right.Count) {
+                return right.Balance(Unbalanced(_key, value, left, right._left), right._right);
+            }
+            if (DELTA * right.Count <= left.Count) {
+                return left.Balance(left._left, Unbalanced(_key, value, left._right, right));
+            }
+            return Balanced(_key, value, left, right);
+        }
+
+        private static TreeDictionary<TKey, TValue, TComparer> Unbalanced(
+            TKey key, TValue value, TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
+            if (left.Count() == 0)
+                return right.InsertMin(key, value);
+            if (right.Count() == 0)
+                return left.InsertMax(key, value);
+            if (DELTA * left.Count <= right.Count) {
+                return right.Balance(Unbalanced(key, value, left, right._left), right._right);
+            }
+            if (DELTA * right.Count <= left.Count) {
+                return left.Balance(left._left, Unbalanced(key, value, left._right, right));
+            }
+            return Balanced(key, value, left, right);
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> InsertMin(TKey key, TValue value) {
+            if (Count == 0)
+                return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
+            return Balance(_left.InsertMin(key, value), _right);
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> InsertMax(TKey key, TValue value) {
+            if (Count == 0)
+                return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
+            return Balance(_left, _right.InsertMax(key, value));
         }
 
         /// <summary>
@@ -498,9 +661,7 @@ namespace FP.Collections.Persistent {
         }
 
         private TreeDictionary<TKey, TValue, TComparer> Balance(TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
-            return ReferenceEquals(_left, left) && ReferenceEquals(_right, right)
-                       ? this
-                       : Balance(_key, _value, left, right);
+            return Balance(_key, _value, left, right);
         }
 
         private static TreeDictionary<TKey, TValue, TComparer> Balanced(
@@ -528,6 +689,26 @@ namespace FP.Collections.Persistent {
             return ReferenceEquals(_left, left) && ReferenceEquals(_right, right)
                        ? this
                        : Balanced(_key, _value, left, right);
+        }
+
+        /// <summary>
+        /// Gets the keys. Doesn't guarantee anything about the order in which they are yielded.
+        /// </summary>
+        /// <value>The keys.</value>
+        public IEnumerable<TKey> Keys {
+            get {
+                if (Count == 0)
+                    yield break;
+                if (_left.Count() != 0) {
+                    foreach (var key in _left.Keys)
+                        yield return key;
+                }
+                yield return _key;
+                if (_right.Count() != 0) {
+                    foreach (var key in _right.Keys)
+                        yield return key;
+                }
+            }
         }
 
         private static TreeDictionary<TKey, TValue, TComparer> RotateLeft(
@@ -576,6 +757,40 @@ namespace FP.Collections.Persistent {
                 leftRight._key, leftRight._value,
                 Balanced(left._key, left._value, left._left, leftRight._left),
                 Balanced(key, value, leftRight._right, right));
+        }
+
+        /// <summary>
+        /// Given two trees with sizes within <c>DELTA</c> of each other, and
+        /// all keys in <paramref name="left"/> are less than all keys in 
+        /// <paramref name="right">, creates their union.
+        /// </summary>
+        private static TreeDictionary<TKey, TValue, TComparer> GlueBalanced(
+            TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
+            if (left.Count() == 0)
+                return right;
+            if (right.Count() == 0)
+                return left;
+            TKey minKeyRight;
+            TValue minKeyValueRight;
+            var newRight = right.FindAndRemoveMinKeyFromNonEmpty(out minKeyRight, out minKeyValueRight);
+            return Balance(minKeyRight, minKeyValueRight, left, newRight);
+        }
+
+        /// <summary>
+        /// Given two trees such that all keys in <paramref name="left"/> are
+        /// less than all keys in <paramref name="right"/>, creates their union.
+        /// </summary>
+        private static TreeDictionary<TKey, TValue, TComparer> GlueUnbalanced(
+            TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
+            if (left.Count() == 0)
+                return right;
+            if (right.Count() == 0)
+                return left;
+            if (DELTA * left.Count <= right.Count)
+                return right.Balance(GlueUnbalanced(left, right._left), right._right);
+            if (DELTA * right.Count <= left.Count)
+                return left.Balance(left._left, GlueUnbalanced(left._right, right));
+            return GlueBalanced(left, right);
         }
 
         /// <summary>
