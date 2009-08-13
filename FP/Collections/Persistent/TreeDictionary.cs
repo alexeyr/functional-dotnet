@@ -33,7 +33,11 @@ namespace FP.Collections.Persistent {
         ICombinableDictionary<TKey, TValue, TreeDictionary<TKey, TValue, TComparer>>,
         IEquatable<TreeDictionary<TKey, TValue, TComparer>>
         where TComparer : IComparer<TKey>, new() {
-        private static readonly TComparer _comparer = new TComparer();
+        private static readonly TComparer _Comparer = new TComparer();
+        
+        /// <summary>
+        /// An empty dictionary with no keys or values.
+        /// </summary>
         public static readonly TreeDictionary<TKey, TValue, TComparer> Empty = 
             new TreeDictionary<TKey, TValue, TComparer>(0, default(TKey), default(TValue), null, null);
         
@@ -64,9 +68,9 @@ namespace FP.Collections.Persistent {
             bool searchTree = true;
             // ReSharper disable PossibleNullReferenceException
             if (leftCount > 0)
-                searchTree = _comparer.Compare(_left._key, _key) < 0;
+                searchTree = _Comparer.Compare(_left._key, _key) < 0;
             if (rightCount > 0)
-                searchTree = searchTree && _comparer.Compare(_key, _right._key) < 0;
+                searchTree = searchTree && _Comparer.Compare(_key, _right._key) < 0;
             // ReSharper restore PossibleNullReferenceException
             Debug.Assert(_count == 0 || _count == 1 + leftCount + rightCount);
             Debug.Assert(searchTree);
@@ -152,7 +156,7 @@ namespace FP.Collections.Persistent {
             get {
                 var dict = this;
                 while (dict.Count() != 0) {
-                    int comparison = _comparer.Compare(key, dict._key);
+                    int comparison = _Comparer.Compare(key, dict._key);
                     if (comparison == 0) return dict._value;
                     dict = comparison < 0 ? dict._left : dict._right;
                 }
@@ -169,64 +173,12 @@ namespace FP.Collections.Persistent {
             // return AddRecursiveShortcut(key, value, combineFunc);
         }
 
-//        private TreeDictionary<TKey, TValue, TComparer> AddStack(TKey key, TValue value, Func<TValue, TValue> combiner) {
-//            if (_count == 0)
-//                return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
-//            int comparison = _comparer.Compare(key, _key);
-//            if (comparison == 0)
-//                return ReplaceValue(combiner(_value));
-//            var dict = this;
-//            var stack = new Stack<Tuple<TreeDictionary<TKey, TValue, TComparer>, bool>>();
-//            do {
-//                stack.Push(Tuple.New(dict, comparison < 0));
-//                dict = comparison < 0
-//                           ? dict._left
-//                           : dict._right;
-//                comparison = _comparer.Compare(key, dict._key);
-//            }
-//            while (dict._count != 0 && comparison != 0);
-//            if (dict._count == 0) {
-//                dict = TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
-//                while (stack.Count > 0) {
-//                    var pair = stack.Pop();
-//                    var dict1 = pair.Item1;
-//                    bool dictGoesLeftOfDict1 = pair.Item2;
-//                    Debug.Assert(
-//                        _comparer.Compare(dict._key, dict1._key) != 0 &&
-//                        dictGoesLeftOfDict1 == _comparer.Compare(dict._key, dict1._key) < 0);
-//                    dict = dictGoesLeftOfDict1
-//                               ? dict1.Balance(dict, dict1._right)
-//                               : dict1.Balance(dict1._left, dict);
-//                }
-//                return dict;
-//            }
-//            else {
-//                Debug.Assert(comparison == 0);
-//                TValue newValue = combiner(dict._value);
-//                if (EqualityComparer<TValue>.Default.Equals(_value, newValue))
-//                    return this; // It turns out we don't need to replace anything!
-//                dict = dict.ReplaceValueDontCheckEquality(newValue);
-//                while (stack.Count > 0) {
-//                    var pair = stack.Pop();
-//                    var dict1 = pair.Item1;
-//                    bool dictGoesLeftOfDict1 = pair.Item2;
-//                    Debug.Assert(
-//                        _comparer.Compare(dict._key, dict1._key) != 0 &&
-//                        dictGoesLeftOfDict1 == _comparer.Compare(dict._key, dict1._key) < 0);
-//                    dict = dictGoesLeftOfDict1
-//                               ? dict1.Balanced(dict, dict1._right)
-//                               : dict1.Balanced(dict1._left, dict);
-//                }
-//                return dict;
-//            }
-//        }
-
         private TreeDictionary<TKey, TValue, TComparer> AddRecursive(TKey key, TValue value, Func<TValue, TValue> combiner, ref bool needRebalance) {
             if (_count == 0) {
                 needRebalance = true;
                 return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
             }
-            int comparison = _comparer.Compare(key, _key);
+            int comparison = _Comparer.Compare(key, _key);
             if (comparison == 0) {
                 needRebalance = false;
                 return ReplaceValue(combiner(_value));
@@ -234,13 +186,13 @@ namespace FP.Collections.Persistent {
             if (comparison < 0) {
                 var dict = _left.AddRecursive(key, value, combiner, ref needRebalance);
                 return needRebalance
-                           ? Balance(dict, _right)
+                           ? NearlyBalanced(dict, _right)
                            : Balanced(dict, _right);
             }
             else {
                 var dict = _right.AddRecursive(key, value, combiner, ref needRebalance);
                 return needRebalance
-                           ? Balance(_left, dict)
+                           ? NearlyBalanced(_left, dict)
                            : Balanced(_left, dict);
             }
         }
@@ -268,7 +220,7 @@ namespace FP.Collections.Persistent {
                 needRebalance = true;
                 return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
             }
-            int comparison = _comparer.Compare(key, _key);
+            int comparison = _Comparer.Compare(key, _key);
             if (comparison == 0) {
                 needRebalance = false;
                 return ReplaceValue(value);
@@ -276,27 +228,23 @@ namespace FP.Collections.Persistent {
             if (comparison < 0) {
                 var newLeft = _left.AddRecursive(key, value, ref needRebalance);
                 return needRebalance
-                           ? Balance(newLeft, _right)
+                           ? NearlyBalanced(newLeft, _right)
                            : Balanced(newLeft, _right);
             }
             else {
                 var newRight = _right.AddRecursive(key, value, ref needRebalance);
                 return needRebalance
-                           ? Balance(_left, newRight)
+                           ? NearlyBalanced(_left, newRight)
                            : Balanced(_left, newRight);
             }
         }
-
-//        public TreeDictionary<TKey, TValue, TComparer> AddStack(TKey key, TValue value) {
-//            return AddStack(key, value, _ => value);
-//        }
 
         public TreeDictionary<TKey, TValue, TComparer> Remove(TKey key, out Optional<TValue> value) {
             if (Count == 0) {
                 value = Optional<TValue>.None;
                 return this;
             }
-            int comparison = _comparer.Compare(key, _key);
+            int comparison = _Comparer.Compare(key, _key);
             if (comparison == 0) {
                 value = _value;
                 return GlueBalanced(_left, _right);
@@ -304,13 +252,13 @@ namespace FP.Collections.Persistent {
             if (comparison < 0) {
                 var newLeft = _left.Remove(key, out value);
                 return value.HasValue
-                           ? Balance(newLeft, _right)
+                           ? NearlyBalanced(newLeft, _right)
                            : Balanced(newLeft, _right);
             }
             else {
                 var newRight = _right.Remove(key, out value);
                 return value.HasValue
-                           ? Balance(_left, newRight)
+                           ? NearlyBalanced(_left, newRight)
                            : Balanced(_left, newRight);                
             }
         }
@@ -328,7 +276,7 @@ namespace FP.Collections.Persistent {
                 needRebalance = false;
                 return this;
             }
-            int comparison = _comparer.Compare(key, _key);
+            int comparison = _Comparer.Compare(key, _key);
             if (comparison == 0) {
                 value = _value;
                 var newValue = updateFunc(_value);
@@ -340,13 +288,13 @@ namespace FP.Collections.Persistent {
             if (comparison < 0) {
                 var newLeft = _left.UpdateHelper(key, updateFunc, out value, out needRebalance);
                 return needRebalance
-                           ? Balance(newLeft, _right)
+                           ? NearlyBalanced(newLeft, _right)
                            : Balanced(newLeft, _right);
             }
             else {
                 var newRight = _right.UpdateHelper(key, updateFunc, out value, out needRebalance);
                 return needRebalance
-                           ? Balance(_left, newRight)
+                           ? NearlyBalanced(_left, newRight)
                            : Balanced(_left, newRight);
             }
         }
@@ -369,22 +317,24 @@ namespace FP.Collections.Persistent {
         }
 
         /// <summary>
-        /// Updates values of all keys. For each key in the dictionary, the
-        /// value is replaced with <code>updateFunc(key, this[key])</code>.
+        /// Returns a dictionary with the same keys. For each key in the dictionary, the
+        /// value is obtained by calling <code>func(key, this[key])</code>.
         /// </summary>
-        /// <param name="updateFunc">The updating function.</param>
+        /// <param name="func">The function mapped.</param>
         /// <returns>The resulting dictionary.</returns>
-        public TreeDictionary<TKey, TValue, TComparer> Map(Func<TKey, TValue, TValue> updateFunc) {
+        public TreeDictionary<TKey, TValue, TComparer> Map(Func<TKey, TValue, TValue> func) {
             if (Count == 0)
                 return this;
             return Balanced(
-                updateFunc(_key, _value), _left.Map(updateFunc), _right.Map(updateFunc));
+                func(_key, _value), _left.Map(func), _right.Map(func));
         }
 
         /// <summary>
-        /// Returns the dictionary with the same keys.
+        /// Returns a dictionary with the same keys. The value for each key is
+        /// obtained by calling <c>func(key, this[key])</c>.
         /// </summary>
-        /// <param name="func">The updating function.</param>
+        /// <typeparam name="TValue1">The type of the values in the returned dictionary.</typeparam>
+        /// <param name="func">The function mapped.</param>
         /// <returns>The resulting dictionary.</returns>
         public TreeDictionary<TKey, TValue1, TComparer> Map<TValue1>(Func<TKey, TValue, TValue1> func) {
             if (Count == 0)
@@ -395,8 +345,9 @@ namespace FP.Collections.Persistent {
 
         /// <summary>
         /// Updates values of all keys. For each key in the dictionary, the
-        /// value is replaced with <code>updateFunc(key, this[key])</code>.
+        /// value is replaced with <code>func(key, this[key])</code>.
         /// </summary>
+        /// <typeparam name="TValue1">The type of the values in the returned dictionary.</typeparam>
         /// <param name="func">The updating function.</param>
         /// <returns>The resulting dictionary.</returns>
         public TreeDictionary<TKey, TValue1, TComparer> MapPartial<TValue1>(Func<TKey, TValue, Optional<TValue1>> func) {
@@ -455,7 +406,7 @@ namespace FP.Collections.Persistent {
                 minKeyValue = _value;
                 return _right;
             }
-            return Balance(_left.FindAndRemoveMinKeyFromNonEmpty(out minKey, out minKeyValue), _right);
+            return NearlyBalanced(_left.FindAndRemoveMinKeyFromNonEmpty(out minKey, out minKeyValue), _right);
         }
 
         /// <summary>
@@ -484,7 +435,7 @@ namespace FP.Collections.Persistent {
                 maxKeyValue = _value;
                 return _left;
             }
-            return Balance(_left, _right.FindAndRemoveMaxKeyFromNonEmpty(out maxKey, out maxKeyValue));
+            return NearlyBalanced(_left, _right.FindAndRemoveMaxKeyFromNonEmpty(out maxKey, out maxKeyValue));
         }
 
         /// <summary>
@@ -524,6 +475,56 @@ namespace FP.Collections.Persistent {
         /// and the third element contains all keys greater than 
         /// <paramref name="key"/></returns>
         public Tuple<TreeDictionary<TKey, TValue, TComparer>, Optional<TValue>, TreeDictionary<TKey, TValue, TComparer>> Split(TKey key) {
+            TreeDictionary<TKey, TValue, TComparer> less;
+            Optional<TValue> value;
+            TreeDictionary<TKey, TValue, TComparer> greater;
+            SplitRecursive(key, out less, out value, out greater);
+            return Tuple.New(less, value, greater);
+        }
+
+        private void SplitRecursive(
+            TKey key,
+            out TreeDictionary<TKey, TValue, TComparer> less, 
+            out Optional<TValue> value, 
+            out TreeDictionary<TKey, TValue, TComparer> greater) {
+            if (Count == 0) {
+                less = Empty;
+                value = Optional<TValue>.None;
+                greater = Empty;
+                return;
+            }
+            int comparison = _Comparer.Compare(key, _key);
+            if (comparison == 0) {
+                less = _left;
+                value = Optional.Some(_value);
+                greater = _right;
+                return;
+            }
+            if (comparison < 0) {
+                _left.SplitRecursive(key, out less, out value, out greater);
+                greater = Unbalanced(_key, _value, greater, _right);
+                return;
+            }
+            else {
+                _right.SplitRecursive(key, out less, out value, out greater);
+                less = Unbalanced(_key, _value, _left, less);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Returns the dictionary containing all keys present in one of the
+        /// dictionaries with the same values. If a key is present in both dictionaries, 
+        /// the value from <c>this</c> dictionary is used.
+        /// </summary>
+        /// <param name="otherDict">
+        /// The other dictionary.
+        /// </param>
+        /// <returns>
+        /// The union of two dictionaries.
+        /// </returns>
+        public TreeDictionary<TKey, TValue, TComparer> UnionLeftBiased(
+            TreeDictionary<TKey, TValue, TComparer> otherDict) {
             throw new NotImplementedException();
         }
 
@@ -546,11 +547,14 @@ namespace FP.Collections.Persistent {
             throw new NotImplementedException();
         }
 
+        public TreeDictionary<TKey, TValue, TComparer> Difference(
+            TreeDictionary<TKey, TValue, TComparer> otherDict) {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
-        /// Returns the dictionary containing all keys present in this
-        /// dictionary, but not in the other. If a key is present in both
-        /// dictionaries, the value is obtained by using the 
-        /// <paramref name="combiner"/>.
+        /// Returns the dictionary containing all keys present in both
+        /// dictionaries. The value from <c>this</c> dictionary is used.
         /// </summary>
         /// <param name="otherDict">
         /// The other dictionary.
@@ -561,8 +565,7 @@ namespace FP.Collections.Persistent {
         /// <returns>
         /// The difference of two dictionaries.
         /// </returns>
-        public TreeDictionary<TKey, TValue, TComparer> Difference(
-            TreeDictionary<TKey, TValue, TComparer> otherDict, Func<TKey, TValue, TValue, TValue> combiner) {
+        public TreeDictionary<TKey, TValue, TComparer> IntersectionLeftBiased(TreeDictionary<TKey, TValue, TComparer> otherDict) {
             throw new NotImplementedException();
         }
 
@@ -580,8 +583,64 @@ namespace FP.Collections.Persistent {
         /// <returns>
         /// The difference of two dictionaries.
         /// </returns>
-        public TreeDictionary<TKey, TValue, TComparer> Intersect(
+        public TreeDictionary<TKey, TValue, TComparer> Intersection(
             TreeDictionary<TKey, TValue, TComparer> otherDict, Func<TKey, TValue, TValue, TValue> combiner) {
+            throw new NotImplementedException();
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> Trim(TKey low, TKey high) {
+            if (Count == 0)
+                return this;
+            if (_Comparer.Compare(low, _key) < 0) {
+                if (_Comparer.Compare(high, _key) > 0) return this;
+                else return _left.Trim(low, high);
+            }
+            else return _right.Trim(low, high);
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> TrimLow(TKey low) {
+            if (Count == 0)
+                return this;
+            if (_Comparer.Compare(low, _key) < 0)
+                return this;
+            else 
+                return _right.TrimLow(low);
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> TrimHigh(TKey high) {
+            if (Count == 0)
+                return this;
+            if (_Comparer.Compare(high, _key) > 0) 
+                return this;
+            else 
+                return _left.TrimHigh(high);
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> UnionTrim(
+            TreeDictionary<TKey, TValue, TComparer> otherDict, 
+            TKey low, TKey high, 
+            Func<TKey, TValue, TValue, TValue> combiner) {
+            if (otherDict.Count == 0)
+                return this;
+            if (Count == 0) {
+                var otherLeft = otherDict._left.FilterLess(high);
+                var otherRight = otherDict._right.FilterGreater(low);
+                return ReferenceEquals(otherDict._left, otherLeft) && ReferenceEquals(otherDict._right, otherRight)
+                           ? otherDict
+                           : otherDict.Unbalanced(otherDict._value, otherLeft, otherRight);
+            }
+            Debug.Assert(_Comparer.Compare(low, _key) < 0 && _Comparer.Compare(high, _key) > 0);
+            return Unbalanced(
+                _value,
+                _left.UnionTrim(otherDict.Trim(low, _key), low, _key, combiner),
+                _right.UnionTrim(otherDict.Trim(_key, high), _key, high, combiner));
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> FilterGreater(TKey key) {
+            throw new NotImplementedException();
+        }
+
+        private TreeDictionary<TKey, TValue, TComparer> FilterLess(TKey key) {
             throw new NotImplementedException();
         }
 
@@ -606,10 +665,10 @@ namespace FP.Collections.Persistent {
             if (right.Count() == 0)
                 return left.InsertMax(_key, value);
             if (DELTA * left.Count <= right.Count) {
-                return right.Balance(Unbalanced(_key, value, left, right._left), right._right);
+                return right.NearlyBalanced(Unbalanced(_key, value, left, right._left), right._right);
             }
             if (DELTA * right.Count <= left.Count) {
-                return left.Balance(left._left, Unbalanced(_key, value, left._right, right));
+                return left.NearlyBalanced(left._left, Unbalanced(_key, value, left._right, right));
             }
             return Balanced(_key, value, left, right);
         }
@@ -621,10 +680,10 @@ namespace FP.Collections.Persistent {
             if (right.Count() == 0)
                 return left.InsertMax(key, value);
             if (DELTA * left.Count <= right.Count) {
-                return right.Balance(Unbalanced(key, value, left, right._left), right._right);
+                return right.NearlyBalanced(Unbalanced(key, value, left, right._left), right._right);
             }
             if (DELTA * right.Count <= left.Count) {
-                return left.Balance(left._left, Unbalanced(key, value, left._right, right));
+                return left.NearlyBalanced(left._left, Unbalanced(key, value, left._right, right));
             }
             return Balanced(key, value, left, right);
         }
@@ -632,20 +691,16 @@ namespace FP.Collections.Persistent {
         private TreeDictionary<TKey, TValue, TComparer> InsertMin(TKey key, TValue value) {
             if (Count == 0)
                 return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
-            return Balance(_left.InsertMin(key, value), _right);
+            return NearlyBalanced(_left.InsertMin(key, value), _right);
         }
 
         private TreeDictionary<TKey, TValue, TComparer> InsertMax(TKey key, TValue value) {
             if (Count == 0)
                 return TreeDictionary.Single<TKey, TValue, TComparer>(key, value);
-            return Balance(_left, _right.InsertMax(key, value));
+            return NearlyBalanced(_left, _right.InsertMax(key, value));
         }
 
-        /// <summary>
-        /// Called instead of the constructor when <paramref name="left"/> and 
-        /// <paramref name="right"/> may be unbalanced.
-        /// </summary>
-        private static TreeDictionary<TKey, TValue, TComparer> Balance(
+        private static TreeDictionary<TKey, TValue, TComparer> NearlyBalanced(
             TKey key, TValue value, TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
             int countLeft = left.Count();
             int countRight = right.Count();
@@ -660,8 +715,8 @@ namespace FP.Collections.Persistent {
             return new TreeDictionary<TKey, TValue, TComparer>(count, key, value, left, right);
         }
 
-        private TreeDictionary<TKey, TValue, TComparer> Balance(TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
-            return Balance(_key, _value, left, right);
+        private TreeDictionary<TKey, TValue, TComparer> NearlyBalanced(TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
+            return NearlyBalanced(_key, _value, left, right);
         }
 
         private static TreeDictionary<TKey, TValue, TComparer> Balanced(
@@ -669,10 +724,6 @@ namespace FP.Collections.Persistent {
             return new TreeDictionary<TKey, TValue, TComparer>(key, value, left, right);
         }
 
-        /// <summary>
-        /// Called instead of the constructor when <paramref name="left"/> and 
-        /// <paramref name="right"/> may be unbalanced.
-        /// </summary>
         private TreeDictionary<TKey, TValue, TComparer> Balanced(TValue value, TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
             return EqualityComparer<TValue>.Default.Equals(_value, value)
                 && ReferenceEquals(_left, left) && ReferenceEquals(_right, right)
@@ -680,10 +731,6 @@ namespace FP.Collections.Persistent {
                        : Balanced(_key, value, left, right);
         }
 
-        /// <summary>
-        /// Called instead of the constructor when <paramref name="left"/> and 
-        /// <paramref name="right"/> may be unbalanced.
-        /// </summary>
         private TreeDictionary<TKey, TValue, TComparer> Balanced(
             TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
             return ReferenceEquals(_left, left) && ReferenceEquals(_right, right)
@@ -759,11 +806,6 @@ namespace FP.Collections.Persistent {
                 Balanced(key, value, leftRight._right, right));
         }
 
-        /// <summary>
-        /// Given two trees with sizes within <c>DELTA</c> of each other, and
-        /// all keys in <paramref name="left"/> are less than all keys in 
-        /// <paramref name="right">, creates their union.
-        /// </summary>
         private static TreeDictionary<TKey, TValue, TComparer> GlueBalanced(
             TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
             if (left.Count() == 0)
@@ -773,13 +815,9 @@ namespace FP.Collections.Persistent {
             TKey minKeyRight;
             TValue minKeyValueRight;
             var newRight = right.FindAndRemoveMinKeyFromNonEmpty(out minKeyRight, out minKeyValueRight);
-            return Balance(minKeyRight, minKeyValueRight, left, newRight);
+            return NearlyBalanced(minKeyRight, minKeyValueRight, left, newRight);
         }
 
-        /// <summary>
-        /// Given two trees such that all keys in <paramref name="left"/> are
-        /// less than all keys in <paramref name="right"/>, creates their union.
-        /// </summary>
         private static TreeDictionary<TKey, TValue, TComparer> GlueUnbalanced(
             TreeDictionary<TKey, TValue, TComparer> left, TreeDictionary<TKey, TValue, TComparer> right) {
             if (left.Count() == 0)
@@ -787,9 +825,9 @@ namespace FP.Collections.Persistent {
             if (right.Count() == 0)
                 return left;
             if (DELTA * left.Count <= right.Count)
-                return right.Balance(GlueUnbalanced(left, right._left), right._right);
+                return right.NearlyBalanced(GlueUnbalanced(left, right._left), right._right);
             if (DELTA * right.Count <= left.Count)
-                return left.Balance(left._left, GlueUnbalanced(left._right, right));
+                return left.NearlyBalanced(left._left, GlueUnbalanced(left._right, right));
             return GlueBalanced(left, right);
         }
 
